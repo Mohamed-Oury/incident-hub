@@ -173,7 +173,7 @@ export default function LoginPage() {
 
         {/* Signature & Copyright */}
         <div style={{ marginTop: "1rem", textAlign: "center", fontSize: "0.72rem", color: "#6b7280", borderTop: "1px solid #f3f4f6", paddingTop: "0.75rem" }}>
-          © {new Date().getFullYear()} <strong>M.Oury</strong> • <span style={{ color: "#e60028", fontWeight: 600 }}>Ingénieur IT BANKING &amp; Expert Monétique - CBS</span>
+          © {new Date().getFullYear() - 1} <strong>M.Oury</strong> • <span style={{ color: "#e60028", fontWeight: 600 }}>Ingénieur IT BANKING &amp; Expert Monétique - CBS</span>
         </div>
       </div>
     </div>

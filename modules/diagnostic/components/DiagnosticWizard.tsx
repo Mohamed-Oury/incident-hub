@@ -82,7 +82,7 @@ export function DiagnosticWizard() {
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
           <div>
             <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "#e60028", letterSpacing: "0.08em" }}>
-              MÉTHODOLOGIE STANDARDISÉE DU CAHIER DES CHARGES
+              MÉTHODOLOGIE D'ANALYSE DES INCIDENTS
             </span>
             <h3 style={{ fontSize: "1.1rem", fontWeight: 700, color: "#111827" }}>
               Étape {currentStep} / {STEPS.length} : {STEPS[currentStep - 1].name}

@@ -23,18 +23,59 @@ export function AppShell({ children, user, pageTitle = "Vue d'ensemble", eyebrow
     router.refresh();
   };
 
-  const navLinks = [
-    { href: "/", label: "Vue d'ensemble", icon: "⊞" },
-    { href: "/knowledge", label: "Base de connaissance", icon: "📚" },
-    { href: "/parser", label: "Parseur Trame ISO", icon: "🔍" },
-    { href: "/bitmap", label: "Décodeur Bitmap", icon: "🧮" },
-    { href: "/emv", label: "Décodeur EMV / DE55", icon: "💳" },
-    { href: "/atm-ej", label: "Journal GAB (ATM EJ)", icon: "🖨️" },
-    { href: "/mti", label: "Référentiel MTI", icon: "📬" },
-    { href: "/de39", label: "Référentiel DE39", icon: "🏷️" },
-    { href: "/diagnostic", label: "Diagnostic Assistant", icon: "⚡" },
-    //{ href: "/incidents/new", label: "Nouvel incident", icon: "➕" },
-    { href: "/audit", label: "Piste d'audit", icon: "🛡️" },
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({
+    exploitation: true,
+    decoders: true,
+    referentials: false,
+    advanced: true,
+  });
+
+  const toggleGroup = (groupKey: string) => {
+    setOpenGroups((prev) => ({ ...prev, [groupKey]: !prev[groupKey] }));
+  };
+
+  const navSections = [
+    {
+      key: "exploitation",
+      title: "EXPLOITATION",
+      icon: "⚡",
+      items: [
+        { href: "/", label: "Vue d'ensemble", icon: "⊞" },
+        { href: "/knowledge", label: "Base de connaissance", icon: "📚" },
+        { href: "/diagnostic", label: "Diagnostic Assistant", icon: "⚡" },
+      ],
+    },
+    {
+      key: "decoders",
+      title: "DÉCODEURS",
+      icon: "🧮",
+      items: [
+        { href: "/parser", label: "Parseur Trame ISO", icon: "🔍" },
+        { href: "/bitmap", label: "Décodeur Bitmap", icon: "🧮" },
+        { href: "/emv", label: "Décodeur EMV / DE55", icon: "💳" },
+        { href: "/atm-ej", label: "Journal GAB (ATM EJ)", icon: "🖨️" },
+      ],
+    },
+    {
+      key: "referentials",
+      title: "RÉFÉRENTIELS",
+      icon: "📖",
+      items: [
+        { href: "/mti", label: "Référentiel MTI", icon: "📬" },
+        { href: "/de39", label: "Référentiel DE39", icon: "🏷️" },
+        { href: "/audit", label: "Piste d'audit", icon: "🛡️" },
+      ],
+    },
+    {
+      key: "advanced",
+      title: "EXPERTISE & OUTILS",
+      icon: "🛠️",
+      items: [
+        { href: "/crypto-hsm", label: "Diagnostic Clés HSM", icon: "🔐" },
+        { href: "/timeout-matrix", label: "Matrice Time-Outs", icon: "⏱️" },
+        { href: "/post-mortem", label: "Générateur Rapport", icon: "📑" },
+      ],
+    },
   ];
 
   return (
@@ -72,18 +113,47 @@ export function AppShell({ children, user, pageTitle = "Vue d'ensemble", eyebrow
         </div>
 
         <nav className="nav-menu" aria-label="Navigation principale">
-          {navLinks.map((link) => {
-            const isActive = pathname === link.href;
+          {navSections.map((section) => {
+            const hasActiveChild = section.items.some((item) => pathname === item.href);
+            const isOpen = openGroups[section.key] ?? true;
+
             return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`nav-item ${isActive ? "active" : ""}`}
-                title={collapsed ? link.label : undefined}
-              >
-                <span className="nav-icon">{link.icon}</span>
-                <span className="nav-label">{link.label}</span>
-              </Link>
+              <div key={section.key} className="nav-group">
+                {!collapsed ? (
+                  <button
+                    type="button"
+                    onClick={() => toggleGroup(section.key)}
+                    className={`nav-group-header ${hasActiveChild ? "active-group" : ""}`}
+                  >
+                    <span style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                      <span style={{ fontSize: "0.9rem" }}>{section.icon}</span>
+                      <span style={{ fontSize: "0.72rem", letterSpacing: "0.08em", fontWeight: 700, color: "#94a3b8" }}>
+                        {section.title}
+                      </span>
+                    </span>
+                    <span className={`nav-chevron ${isOpen ? "expanded" : ""}`}>▶</span>
+                  </button>
+                ) : null}
+
+                {(isOpen || collapsed) && (
+                  <div className={!collapsed ? "nav-submenu" : ""}>
+                    {section.items.map((item) => {
+                      const isActive = pathname === item.href;
+                      return (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          className={`nav-item ${isActive ? "active" : ""}`}
+                          title={collapsed ? `${section.title} - ${item.label}` : undefined}
+                        >
+                          <span className="nav-icon">{item.icon}</span>
+                          <span className="nav-label">{item.label}</span>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             );
           })}
         </nav>
@@ -96,20 +166,6 @@ export function AppShell({ children, user, pageTitle = "Vue d'ensemble", eyebrow
               <br />
               <b>Données sensibles masquées</b>
             </div>
-          </div>
-          <div
-            style={{
-              fontSize: "0.72rem",
-              color: "#94a3b8",
-              borderTop: "1px solid rgba(255,255,255,0.08)",
-              paddingTop: "0.6rem",
-              width: "100%",
-              lineHeight: "1.3",
-            }}
-          >
-            © {new Date().getFullYear()} <b>M.Oury</b>
-            <br />
-            <span style={{ color: "#e60028", fontWeight: 600 }}>Ingénieur IT BANKING &amp; Expert Monétique - CBS</span>
           </div>
         </div>
       </aside>
@@ -175,11 +231,11 @@ export function AppShell({ children, user, pageTitle = "Vue d'ensemble", eyebrow
                 style={{ width: "24px", height: "24px", borderRadius: "50%", border: "1px solid #e60028" }}
               />
               <span>
-                <b>M.OURY INCIDENT HUB</b> • Plateforme d&apos;exploitation monétique avancée
+                Plateforme d&apos;exploitation monétique avancée
               </span>
             </div>
             <div style={{ textAlign: "right" }}>
-              © {new Date().getFullYear()} <strong style={{ color: "var(--text-primary)" }}>M.Oury</strong> —{" "}
+              © {new Date().getFullYear() - 1} <strong style={{ color: "var(--text-primary)" }}>M.Oury</strong> —{" "}
               <span style={{ color: "var(--sg-red-600)", fontWeight: 600 }}>
                 Ingénieur IT BANKING &amp; Expert Monétique - CBS
               </span>
