@@ -26,9 +26,11 @@ export function AppShell({ children, user, pageTitle = "Vue d'ensemble", eyebrow
   const navLinks = [
     { href: "/", label: "Vue d'ensemble", icon: "⊞" },
     { href: "/knowledge", label: "Base de connaissance", icon: "📚" },
+    { href: "/parser", label: "Parseur Trame ISO", icon: "🔍" },
+    { href: "/bitmap", label: "Décodeur Bitmap", icon: "🧮" },
+    { href: "/emv", label: "Décodeur EMV / DE55", icon: "💳" },
     { href: "/mti", label: "Référentiel MTI", icon: "📬" },
     { href: "/de39", label: "Référentiel DE39", icon: "🏷️" },
-    { href: "/bitmap", label: "Décodeur Bitmap", icon: "🧮" },
     { href: "/diagnostic", label: "Diagnostic Assistant", icon: "⚡" },
     //{ href: "/incidents/new", label: "Nouvel incident", icon: "➕" },
     { href: "/audit", label: "Piste d'audit", icon: "🛡️" },

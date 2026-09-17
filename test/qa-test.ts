@@ -196,6 +196,51 @@ async function runQATest() {
     failed++;
   }
 
+  // TEST 8 : Vérification du Parseur Complet de Trames ISO 8583
+  try {
+    const { parseIso8583Message } = await import("../modules/knowledge-base/data/iso-message-parser");
+    const sampleMsg = "02007238200108E1800016497010123456789001000000000005000009171200001234561200000917601105112345678901234123456789012ATM00001COMMERCE0000001AGENCE PRINCIPALE DAKAR  952";
+    const parseRes = parseIso8583Message(sampleMsg);
+
+    const isMtiValid = parseRes.mti === "0200";
+    const hasCorrectAmount = parseRes.criticalInsights.amount === "500.00";
+    const hasMaskedPan = parseRes.criticalInsights.pan?.includes("******");
+    const hasFields = parseRes.fields.length >= 10;
+
+    if (isMtiValid && hasCorrectAmount && hasMaskedPan && hasFields) {
+      console.log(`✅ TEST 8 - Parseur de Trame ISO 8583 conforme (MTI ${parseRes.mti}, Montant ${parseRes.criticalInsights.amount}, PAN masqué ${parseRes.criticalInsights.pan}, ${parseRes.fields.length} champs extraits).`);
+      passed++;
+    } else {
+      throw new Error(`Échec parsing trame : MTI=${parseRes.mti}, Amount=${parseRes.criticalInsights.amount}, Fields=${parseRes.fields.length}`);
+    }
+  } catch (err: any) {
+    console.error("❌ TEST 8 ÉCHOUÉ :", err.message);
+    failed++;
+  }
+
+  // TEST 9 : Vérification du Décodeur EMV / DE55 & Analyseur TVR (Tag 95)
+  try {
+    const { parseEmvTlv, decodeTvrHex } = await import("../modules/knowledge-base/data/emv-tlv-decoder");
+    const sampleDe55 = "9F26084D5E12F9884511A29F2701809F10120110A00003220000000000000000000000009F3704C8912A349F3602005A950500000480009A032409179C01019F02060000000500005F2A020952820238009F1A020952";
+    const emvRes = parseEmvTlv(sampleDe55);
+
+    const hasArqc = emvRes.tags.some((t) => t.tag === "9F26");
+    const hasTvrTag = emvRes.tags.some((t) => t.tag === "95");
+    // TVR avec bit 6 de l'octet 3 actif (PIN try limit exceeded) : 0000208000 (0x20 = bit 6)
+    const tvrDecoded = decodeTvrHex("0000208000");
+    const pinExceededFlag = tvrDecoded.criticalFlags.some((f) => f.includes("PIN"));
+
+    if (hasArqc && hasTvrTag && pinExceededFlag && emvRes.tags.length >= 8) {
+      console.log(`✅ TEST 9 - Décodeur EMV & TVR conforme (${emvRes.tags.length} tags TLV extraits, Tag 9F26 ARQC et Tag 95 TVR décodés bit-à-bit).`);
+      passed++;
+    } else {
+      throw new Error(`Incohérence dans le décodage EMV/TVR : Tags=${emvRes.tags.length}, hasArqc=${hasArqc}, hasTvr=${hasTvrTag}`);
+    }
+  } catch (err: any) {
+    console.error("❌ TEST 9 ÉCHOUÉ :", err.message);
+    failed++;
+  }
+
   console.log("\n=================================================");
   console.log(`📊 BILAN DU QA TEST : ${passed} RÉUSSIS / ${failed} ÉCHECS`);
   console.log("=================================================");

@@ -67,7 +67,7 @@ export default function LoginPage() {
           >
             P
           </div>
-          <h1 style={{ fontSize: "1.5rem", fontWeight: 800, color: "#0f172a" }}>PAYWAY INCIDENT HUB</h1>
+          <h1 style={{ fontSize: "1.5rem", fontWeight: 800, color: "#0f172a" }}>M.OURY INCIDENT HUB</h1>
           <p style={{ fontSize: "0.88rem", color: "#64748b", marginTop: "0.25rem" }}>
             Plateforme d&apos;exploitation et diagnostic d&apos;incidents monétiques
           </p>
