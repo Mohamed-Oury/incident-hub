@@ -36,7 +36,7 @@ export default function LoginPage() {
         throw new Error(data.error || "Échec de connexion.");
       }
 
-      window.location.href = "/";
+      window.location.href = data.redirectTo || "/";
     } catch (err: any) {
       setError(err.message || "Impossible de se connecter.");
     } finally {

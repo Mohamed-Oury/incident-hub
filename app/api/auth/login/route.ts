@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { createSession } from "@/modules/auth/auth-service";
+import { ROLE_DEFAULT_PAGES, UserRole } from "@/modules/auth/types";
 import crypto from "crypto";
 
 function hashPassword(password: string): string {
@@ -34,7 +35,7 @@ export async function POST(request: Request) {
     if (demoEmail) {
       if (!user) {
         // Profils démo de repli
-        const rolesMapping: Record<string, string> = {
+        const rolesMapping: Record<string, UserRole> = {
           "ourykohkoun@gmail.com": "ADMIN",
           "exploitant@monetique.com": "ROLE_EXPLOITATION",
           "analyste@monetique.com": "ROLE_DECODEURS",
@@ -79,7 +80,7 @@ export async function POST(request: Request) {
       id: user.id,
       email: user.email,
       name: user.name,
-      role: user.role,
+      role: user.role as UserRole,
     };
 
     await createSession(sessionUser);
@@ -99,7 +100,10 @@ export async function POST(request: Request) {
       // ignore
     }
 
-    return NextResponse.json({ success: true, user: sessionUser });
+    // Calcul de la page de destination par défaut selon le rôle
+    const redirectTo = ROLE_DEFAULT_PAGES[user.role as UserRole] || "/";
+
+    return NextResponse.json({ success: true, user: sessionUser, redirectTo });
   } catch (error: any) {
     console.error("Erreur login API:", error);
     return NextResponse.json({ error: "Erreur interne lors de la connexion." }, { status: 500 });

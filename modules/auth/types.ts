@@ -1,9 +1,9 @@
 export type UserRole = 
   | "ADMIN"           // Accès total
-  | "ROLE_EXPLOITATION" // Vue d'ensemble, Base de connaissance, Diagnostic Assistant
-  | "ROLE_DECODEURS"    // Parseur Trame ISO, Décodeur Bitmap, Décodeur EMV/DE55, Journal GAB
-  | "ROLE_REFERENTIELS" // Référentiel MTI, Référentiel DE39, Piste d'audit
-  | "ROLE_EXPERTISE";   // Diagnostic Clés HSM, Matrice Time-Outs, Générateur Post-Mortem
+  | "ROLE_EXPLOITATION" // Vue d'ensemble (/), Base de connaissance (/knowledge), Diagnostic Assistant (/diagnostic)
+  | "ROLE_DECODEURS"    // Parseur Trame ISO (/parser), Décodeur Bitmap (/bitmap), Décodeur EMV/DE55 (/emv), Journal GAB (/atm-ej)
+  | "ROLE_REFERENTIELS" // Référentiel MTI (/mti), Référentiel DE39 (/de39), Piste d'audit (/audit)
+  | "ROLE_EXPERTISE";   // Diagnostic Clés HSM (/crypto-hsm), Matrice Time-Outs (/timeout-matrix), Générateur Post-Mortem (/post-mortem)
 
 export interface SessionUser {
   id: string;
@@ -11,6 +11,24 @@ export interface SessionUser {
   name: string;
   role: UserRole;
 }
+
+// 1ère page par défaut pour chaque rôle
+export const ROLE_DEFAULT_PAGES: Record<UserRole, string> = {
+  ADMIN: "/",
+  ROLE_EXPLOITATION: "/",
+  ROLE_DECODEURS: "/parser",
+  ROLE_REFERENTIELS: "/mti",
+  ROLE_EXPERTISE: "/crypto-hsm",
+};
+
+// Liste des routes autorisées pour chaque rôle
+export const ROLE_ALLOWED_ROUTES: Record<UserRole, string[]> = {
+  ADMIN: ["*"], // Tout est autorisé
+  ROLE_EXPLOITATION: ["/", "/knowledge", "/diagnostic", "/incidents"],
+  ROLE_DECODEURS: ["/parser", "/bitmap", "/emv", "/atm-ej"],
+  ROLE_REFERENTIELS: ["/mti", "/de39", "/audit"],
+  ROLE_EXPERTISE: ["/crypto-hsm", "/timeout-matrix", "/post-mortem"],
+};
 
 export const ROLE_LABELS: Record<UserRole, string> = {
   ADMIN: "Administrateur Global (Accès Total)",

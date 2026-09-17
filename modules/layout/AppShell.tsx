@@ -90,7 +90,7 @@ export function AppShell({ children, user, pageTitle = "Vue d'ensemble", eyebrow
       icon: "👑",
       roleRequired: "ADMIN",
       items: [
-        { href: "/admin/users", label: "Gestion Utilisateurs & Rôles", icon: "👥" },
+        { href: "/admin/users", label: "Utilisateurs & Rôles", icon: "👥" },
       ],
     },
   ];

@@ -25,6 +25,15 @@ export default function UsersAdminPage() {
   const [role, setRole] = useState<UserRole>("ROLE_EXPLOITATION");
   const [submitting, setSubmitting] = useState(false);
 
+  // Modal / Mode Édition
+  const [editingUser, setEditingUser] = useState<UserItem | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editEmail, setEditEmail] = useState("");
+  const [editRole, setEditRole] = useState<UserRole>("ROLE_EXPLOITATION");
+  const [editActive, setEditActive] = useState(true);
+  const [editResetPwd, setEditResetPwd] = useState(false);
+  const [updating, setUpdating] = useState(false);
+
   const fetchUsers = async () => {
     try {
       setLoading(true);
@@ -71,6 +80,61 @@ export default function UsersAdminPage() {
     }
   };
 
+  const openEditModal = (u: UserItem) => {
+    setEditingUser(u);
+    setEditName(u.name);
+    setEditEmail(u.email);
+    setEditRole(u.role);
+    setEditActive(u.active);
+    setEditResetPwd(false);
+  };
+
+  const handleUpdateUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingUser) return;
+    setUpdating(true);
+    setError(null);
+    setSuccessMsg(null);
+
+    try {
+      const res = await fetch(`/api/users/${editingUser.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: editName,
+          email: editEmail,
+          role: editRole,
+          active: editActive,
+          resetPassword: editResetPwd,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Échec modification utilisateur");
+
+      setSuccessMsg(`Utilisateur ${editName} mis à jour avec succès ! ${editResetPwd ? "(Mot de passe réinitialisé à 123456)" : ""}`);
+      setEditingUser(null);
+      fetchUsers();
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const handleDeleteUser = async (id: string, name: string) => {
+    if (!confirm(`Êtes-vous certain de vouloir supprimer l'utilisateur ${name} ?`)) return;
+    try {
+      const res = await fetch(`/api/users/${id}`, { method: "DELETE" });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Échec suppression");
+      setSuccessMsg(`Utilisateur ${name} supprimé avec succès.`);
+      fetchUsers();
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+
   return (
     <AppShell pageTitle="Gestion des Utilisateurs & Rôles Applicatifs" eyebrow="ADMINISTRATION SYSTÈME">
       <div style={{ display: "flex", flexDirection: "column", gap: "1.75rem" }}>
@@ -96,7 +160,7 @@ export default function UsersAdminPage() {
               Chaque onglet regroupé correspond à un pôle de compétences
             </h3>
             <p style={{ fontSize: "0.85rem", color: "#9ca3af", marginTop: "0.15rem" }}>
-              Les nouveaux comptes disposent par défaut du mot de passe temporaire : <code style={{ color: "#ffffff", background: "#374151", padding: "0.15rem 0.4rem", borderRadius: "4px" }}>123456</code>. Seul l&apos;Administrateur a accès à la totalité des fonctionnalités.
+              Les collaborateurs accèdent directement à la première vue de leur pôle sans voir les autres sections. Mot de passe initial : <code style={{ color: "#ffffff", background: "#374151", padding: "0.15rem 0.4rem", borderRadius: "4px" }}>123456</code>.
             </p>
           </div>
         </div>
@@ -113,12 +177,138 @@ export default function UsersAdminPage() {
           </div>
         )}
 
-        <div style={{ display: "grid", gridTemplateColumns: "1.2fr 2fr", gap: "1.5rem" }}>
+        {/* Modal de modification d'utilisateur */}
+        {editingUser && (
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: "rgba(0,0,0,0.6)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              zIndex: 1000,
+              padding: "1rem",
+            }}
+          >
+            <div
+              className="card"
+              style={{
+                width: "100%",
+                maxWidth: "500px",
+                background: "#ffffff",
+                boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3)",
+              }}
+            >
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem" }}>
+                <h3 style={{ fontSize: "1.2rem", fontWeight: 800 }}>Modifier l&apos;utilisateur</h3>
+                <button
+                  onClick={() => setEditingUser(null)}
+                  style={{ background: "none", border: "none", fontSize: "1.2rem", cursor: "pointer" }}
+                >
+                  ✕
+                </button>
+              </div>
+
+              <form onSubmit={handleUpdateUser} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                <div>
+                  <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 700, marginBottom: "0.3rem" }}>
+                    Nom complet :
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    className="input"
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 700, marginBottom: "0.3rem" }}>
+                    Email professionnel :
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    value={editEmail}
+                    onChange={(e) => setEditEmail(e.target.value)}
+                    className="input"
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 700, marginBottom: "0.3rem" }}>
+                    Rôle / Périmètre applicatif :
+                  </label>
+                  <select
+                    value={editRole}
+                    onChange={(e) => setEditRole(e.target.value as UserRole)}
+                    className="input"
+                    disabled={editingUser.email === "ourykohkoun@gmail.com"}
+                  >
+                    <option value="ROLE_EXPLOITATION">⚡ Pôle Exploitation (Dashboard, Base Connaissances, Diagnostic)</option>
+                    <option value="ROLE_DECODEURS">🧮 Pôle Décodeurs (Parseur ISO 8583, Bitmap, EMV/DE55, Journal GAB)</option>
+                    <option value="ROLE_REFERENTIELS">📖 Pôle Référentiels (MTI, DE39, Piste d&apos;audit)</option>
+                    <option value="ROLE_EXPERTISE">🛠️ Pôle Expertise &amp; Outils (Clés HSM, Timeouts, Post-Mortem)</option>
+                    <option value="ADMIN">👑 Administrateur Global (Accès Intégral)</option>
+                  </select>
+                </div>
+
+                <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+                  <input
+                    type="checkbox"
+                    id="activeCheckbox"
+                    checked={editActive}
+                    onChange={(e) => setEditActive(e.target.checked)}
+                    disabled={editingUser.email === "ourykohkoun@gmail.com"}
+                  />
+                  <label htmlFor="activeCheckbox" style={{ fontSize: "0.85rem", fontWeight: 600 }}>
+                    Compte actif (autorisé à se connecter)
+                  </label>
+                </div>
+
+                <div style={{ background: "#f8fafc", padding: "0.75rem", borderRadius: "8px", border: "1px solid var(--border-light)" }}>
+                  <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.85rem", fontWeight: 600, color: "#e60028" }}>
+                    <input
+                      type="checkbox"
+                      checked={editResetPwd}
+                      onChange={(e) => setEditResetPwd(e.target.checked)}
+                    />
+                    Réinitialiser le mot de passe à &quot;123456&quot;
+                  </label>
+                </div>
+
+                <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.75rem", marginTop: "0.5rem" }}>
+                  <button
+                    type="button"
+                    onClick={() => setEditingUser(null)}
+                    className="btn-secondary"
+                  >
+                    Annuler
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={updating}
+                    className="btn-primary"
+                  >
+                    {updating ? "Enregistrement..." : "Enregistrer les modifications"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        <div style={{ display: "grid", gridTemplateColumns: "1.1fr 2fr", gap: "1.5rem" }}>
           
           {/* Formulaire de création */}
           <div className="card">
             <h2 style={{ fontSize: "1.15rem", fontWeight: 800, marginBottom: "0.5rem" }}>
-              ➕ Créer un nouvel utilisateur
+              ➕ Créer un collaborateur
             </h2>
             <p style={{ fontSize: "0.82rem", color: "var(--text-secondary)", marginBottom: "1.25rem" }}>
               Attribuez le rôle adéquat pour restreindre l&apos;accès au périmètre métier du collaborateur.
@@ -167,7 +357,7 @@ export default function UsersAdminPage() {
                   <option value="ROLE_DECODEURS">🧮 Pôle Décodeurs (Parseur ISO 8583, Bitmap, EMV/DE55, Journal GAB)</option>
                   <option value="ROLE_REFERENTIELS">📖 Pôle Référentiels (MTI, DE39, Piste d&apos;audit)</option>
                   <option value="ROLE_EXPERTISE">🛠️ Pôle Expertise &amp; Outils (Clés HSM, Timeouts, Post-Mortem)</option>
-                  <option value="ADMIN">👑 Administrateur Global (Accès Intégral à l&apos;ensemble de l&apos;application)</option>
+                  <option value="ADMIN">👑 Administrateur Global (Accès Intégral)</option>
                 </select>
               </div>
 
@@ -186,7 +376,7 @@ export default function UsersAdminPage() {
             </form>
           </div>
 
-          {/* Liste des utilisateurs existants */}
+          {/* Liste des utilisateurs existants avec action Modifier & Supprimer */}
           <div className="card">
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
               <h3 style={{ fontSize: "1.1rem", fontWeight: 800 }}>Utilisateurs Enregistrés ({users.length})</h3>
@@ -208,18 +398,19 @@ export default function UsersAdminPage() {
                     <th>Email</th>
                     <th>Rôle / Périmètre</th>
                     <th>Statut</th>
+                    <th style={{ textAlign: "right" }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {loading ? (
                     <tr>
-                      <td colSpan={4} style={{ textAlign: "center", padding: "2rem", color: "#64748b" }}>
+                      <td colSpan={5} style={{ textAlign: "center", padding: "2rem", color: "#64748b" }}>
                         Chargement des profils...
                       </td>
                     </tr>
                   ) : users.length === 0 ? (
                     <tr>
-                      <td colSpan={4} style={{ textAlign: "center", padding: "2rem", color: "#64748b" }}>
+                      <td colSpan={5} style={{ textAlign: "center", padding: "2rem", color: "#64748b" }}>
                         Aucun utilisateur trouvé.
                       </td>
                     </tr>
@@ -250,6 +441,36 @@ export default function UsersAdminPage() {
                           <span style={{ fontSize: "0.75rem", color: u.active ? "#16a34a" : "#dc2626", fontWeight: 700 }}>
                             {u.active ? "● Actif" : "○ Inactif"}
                           </span>
+                        </td>
+                        <td style={{ textAlign: "right" }}>
+                          <div style={{ display: "inline-flex", gap: "0.35rem" }}>
+                            <button
+                              type="button"
+                              onClick={() => openEditModal(u)}
+                              className="btn-secondary"
+                              style={{ padding: "0.3rem 0.6rem", fontSize: "0.75rem" }}
+                            >
+                              ✏️ Modifier
+                            </button>
+                            {u.email !== "ourykohkoun@gmail.com" && (
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteUser(u.id, u.name)}
+                                style={{
+                                  background: "#fee2e2",
+                                  border: "1px solid #fecaca",
+                                  color: "#991b1b",
+                                  padding: "0.3rem 0.6rem",
+                                  fontSize: "0.75rem",
+                                  borderRadius: "6px",
+                                  cursor: "pointer",
+                                  fontWeight: 600,
+                                }}
+                              >
+                                🗑️
+                              </button>
+                            )}
+                          </div>
                         </td>
                       </tr>
                     ))
