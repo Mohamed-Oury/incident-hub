@@ -51,19 +51,19 @@ export function BitmapDecoderTool() {
       </div>
 
       {/* Zone de saisie & Exemples */}
-      <div className="card" style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+      <div className="card" style={{ display: "flex", flexDirection: "column", gap: "1.25rem", background: "#ffffff", border: "1px solid #e2e8f0" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.75rem" }}>
-          <label style={{ fontWeight: 700, fontSize: "0.95rem", color: "#e2e8f0" }}>
+          <label style={{ fontWeight: 700, fontSize: "0.95rem", color: "#0f172a" }}>
             Saisie du Bitmap (Hexadécimal ou Binaire) :
           </label>
           <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
-            <span style={{ fontSize: "0.82rem", color: "#94a3b8", alignSelf: "center" }}>Exemples rapides :</span>
+            <span style={{ fontSize: "0.82rem", color: "#64748b", alignSelf: "center", fontWeight: 600 }}>Exemples :</span>
             {SAMPLE_BITMAPS.map((sample, idx) => (
               <button
                 key={idx}
                 onClick={() => setInputHex(sample.hex)}
                 className="btn-ghost"
-                style={{ fontSize: "0.78rem", padding: "0.25rem 0.6rem" }}
+                style={{ fontSize: "0.8rem", padding: "0.3rem 0.65rem", background: "#f8fafc", border: "1px solid #cbd5e1" }}
                 title={sample.desc}
               >
                 {sample.label}
@@ -73,35 +73,37 @@ export function BitmapDecoderTool() {
         </div>
 
         <div style={{ display: "flex", gap: "0.75rem" }}>
-          <input
-            type="text"
-            className="input"
-            value={inputHex}
-            onChange={(e) => setInputHex(e.target.value)}
-            placeholder="Ex: 7238200108E18000 ou B238200108E18000..."
-            style={{
-              fontFamily: "var(--font-mono, monospace)",
-              fontSize: "1.05rem",
-              fontWeight: 700,
-              letterSpacing: "1.5px",
-              color: "#34d399",
-              background: "#0f172a",
-              border: "1px solid #334155",
-            }}
-          />
+          <div style={{ position: "relative", flex: 1 }}>
+            <input
+              type="text"
+              className="input"
+              value={inputHex}
+              onChange={(e) => setInputHex(e.target.value)}
+              placeholder="Ex: 7238200108E18000 ou B238200108E18000..."
+              style={{
+                fontFamily: "var(--font-mono, monospace)",
+                fontSize: "1.05rem",
+                fontWeight: 700,
+                letterSpacing: "1px",
+                color: "#047857",
+                background: "#f0fdf4",
+                border: "2px solid #a7f3d0",
+              }}
+            />
+          </div>
           <button
             onClick={() => setInputHex("")}
             className="btn-ghost"
-            style={{ padding: "0 1rem" }}
+            style={{ padding: "0 1.25rem", fontWeight: 600 }}
           >
             Effacer
           </button>
         </div>
 
         {decoded.warnings.length > 0 && (
-          <div style={{ background: "rgba(245, 158, 11, 0.1)", border: "1px solid #f59e0b", padding: "0.75rem 1rem", borderRadius: "8px" }}>
+          <div style={{ background: "#fef3c7", border: "1px solid #fde68a", padding: "0.75rem 1rem", borderRadius: "8px" }}>
             {decoded.warnings.map((w, idx) => (
-              <p key={idx} style={{ color: "#fbbf24", fontSize: "0.85rem", margin: 0 }}>⚠️ {w}</p>
+              <p key={idx} style={{ color: "#92400e", fontSize: "0.85rem", margin: 0, fontWeight: 500 }}>⚠️ {w}</p>
             ))}
           </div>
         )}
@@ -111,42 +113,42 @@ export function BitmapDecoderTool() {
       <div className="grid-metrics">
         <div className="metric-card">
           <span className="metric-label">Format Détecté</span>
-          <p className="metric-value" style={{ color: "#38bdf8" }}>
+          <p className="metric-value" style={{ color: "#0369a1" }}>
             {decoded.isSecondaryPresent ? "Primaire + Secondaire" : "Primaire Seul"}
           </p>
-          <span className="text-muted" style={{ fontSize: "0.8rem" }}>
+          <span className="text-muted" style={{ fontSize: "0.8rem", color: "#64748b" }}>
             {decoded.totalBits} bits ({decoded.normalizedHex.length / 2} octets)
           </span>
         </div>
 
         <div className="metric-card">
           <span className="metric-label">Champs Présents</span>
-          <p className="metric-value" style={{ color: "#34d399" }}>
+          <p className="metric-value" style={{ color: "#059669" }}>
             {decoded.presentFields.length} DE
           </p>
-          <span className="text-muted" style={{ fontSize: "0.8rem" }}>
+          <span className="text-muted" style={{ fontSize: "0.8rem", color: "#64748b" }}>
             {decoded.isSecondaryPresent ? "Inclus DE1 (Extension)" : "Champs DE1 à DE64"}
           </span>
         </div>
 
         <div className="metric-card">
           <span className="metric-label">Bit 1 (Secondary Map)</span>
-          <p className="metric-value" style={{ color: decoded.isSecondaryPresent ? "#10b981" : "#94a3b8" }}>
+          <p className="metric-value" style={{ color: decoded.isSecondaryPresent ? "#059669" : "#64748b" }}>
             {decoded.isSecondaryPresent ? "ACTIF (1)" : "INACTIF (0)"}
           </p>
-          <span className="text-muted" style={{ fontSize: "0.8rem" }}>
+          <span className="text-muted" style={{ fontSize: "0.8rem", color: "#64748b" }}>
             {decoded.isSecondaryPresent ? "Trame étendue (DE65-128)" : "Trame standard"}
           </span>
         </div>
       </div>
 
       {/* Grille Visuelle des Bits (64 ou 128 bits) */}
-      <div className="card" style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+      <div className="card" style={{ display: "flex", flexDirection: "column", gap: "1rem", background: "#ffffff", border: "1px solid #e2e8f0" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: "#f8fafc" }}>
+          <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: "#0f172a" }}>
             Matrice Binaire du Bitmap (Visualisation des bits 1 à {decoded.totalBits})
           </h3>
-          <span style={{ fontSize: "0.8rem", color: "#94a3b8" }}>
+          <span style={{ fontSize: "0.82rem", color: "#64748b", fontWeight: 500 }}>
             Vert = Présent (1) | Gris = Absent (0)
           </span>
         </div>
@@ -156,10 +158,10 @@ export function BitmapDecoderTool() {
             display: "grid",
             gridTemplateColumns: "repeat(auto-fill, minmax(36px, 1fr))",
             gap: "5px",
-            background: "#0f172a",
+            background: "#f8fafc",
             padding: "1rem",
             borderRadius: "8px",
-            border: "1px solid #1e293b",
+            border: "1px solid #e2e8f0",
           }}
         >
           {Array.from({ length: decoded.totalBits }).map((_, idx) => {
@@ -175,14 +177,15 @@ export function BitmapDecoderTool() {
                   flexDirection: "column",
                   alignItems: "center",
                   justifyContent: "center",
-                  background: isSet ? "#065f46" : "#1e293b",
-                  border: isSet ? "1px solid #10b981" : "1px solid #334155",
-                  color: isSet ? "#a7f3d0" : "#64748b",
+                  background: isSet ? "#ecfdf5" : "#ffffff",
+                  border: isSet ? "1.5px solid #059669" : "1px solid #e2e8f0",
+                  color: isSet ? "#047857" : "#94a3b8",
                   borderRadius: "4px",
-                  fontSize: "0.72rem",
-                  fontWeight: 700,
+                  fontSize: "0.75rem",
+                  fontWeight: 800,
                   cursor: isSet ? "pointer" : "default",
                   transition: "all 0.15s ease",
+                  boxShadow: isSet ? "0 1px 3px rgba(5, 150, 105, 0.2)" : "none",
                 }}
                 onClick={() => {
                   if (isSet) setSearchTerm(`de${deNum}`);
@@ -196,13 +199,13 @@ export function BitmapDecoderTool() {
       </div>
 
       {/* Liste Détaillée des Champs DE Présents */}
-      <div className="card" style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+      <div className="card" style={{ display: "flex", flexDirection: "column", gap: "1.25rem", background: "#ffffff", border: "1px solid #e2e8f0" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
           <div>
-            <h3 style={{ fontSize: "1.1rem", fontWeight: 700, color: "#f8fafc" }}>
+            <h3 style={{ fontSize: "1.1rem", fontWeight: 700, color: "#0f172a" }}>
               Détail des {decoded.presentFields.length} Champs DE Détectés
             </h3>
-            <p style={{ fontSize: "0.85rem", color: "#94a3b8" }}>
+            <p style={{ fontSize: "0.85rem", color: "#64748b" }}>
               Spécifications formelles ISO 8583 associées aux bits activés
             </p>
           </div>
@@ -214,13 +217,13 @@ export function BitmapDecoderTool() {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="input"
-              style={{ width: "240px", fontSize: "0.85rem", padding: "0.4rem 0.75rem" }}
+              style={{ width: "240px", fontSize: "0.85rem", padding: "0.5rem 0.85rem", background: "#ffffff", border: "1px solid #cbd5e1" }}
             />
             <select
               value={filterCategory}
               onChange={(e) => setFilterCategory(e.target.value)}
               className="input"
-              style={{ fontSize: "0.85rem", padding: "0.4rem 0.75rem" }}
+              style={{ fontSize: "0.85rem", padding: "0.5rem 0.85rem", background: "#ffffff", border: "1px solid #cbd5e1", width: "auto" }}
             >
               <option value="ALL">Toutes les catégories</option>
               <option value="IDENTIFICATION">Identification</option>

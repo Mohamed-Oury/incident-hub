@@ -70,7 +70,7 @@ export function MTIDirectory() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "1.75rem" }}>
-      {/* En-tête */}
+      {/* En-tête avec bannière hero-search */}
       <div className="hero-search">
         <div>
           <p className="eyebrow accent" style={{ color: "#34d399" }}>NORME ISO 8583 - TYPOLOGIE DES MESSAGES</p>
@@ -79,10 +79,77 @@ export function MTIDirectory() {
             Maîtrisez la structure à 4 chiffres du MTI (0100, 0200, 0400, 0800...), leur signification métier, le flux transactionnel et les diagnostics d&apos;exploitation.
           </p>
         </div>
+
+        {/* Barre de recherche intégrée */}
+        <div className="search-input-wrapper">
+          <span style={{ fontSize: "1.2rem" }}>🔎</span>
+          <input
+            type="text"
+            placeholder="Rechercher par MTI (ex: 0200, 0400), nom, champ clé (PIN, DE55) ou cas d'usage..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            style={{ fontSize: "1rem" }}
+          />
+          {search && (
+            <button
+              onClick={() => setSearch("")}
+              style={{ background: "none", border: "none", cursor: "pointer", color: "#64748b", fontWeight: "bold" }}
+            >
+              ✕
+            </button>
+          )}
+        </div>
+
+        {/* Filtres par famille et direction */}
+        <div style={{ display: "flex", gap: "0.6rem", flexWrap: "wrap", alignItems: "center" }}>
+          <span style={{ fontSize: "0.82rem", color: "#94a3b8", fontWeight: 700, marginRight: "0.25rem" }}>
+            Catégorie :
+          </span>
+          {categories.map((c) => (
+            <button
+              key={c.key}
+              onClick={() => setSelectedCategory(c.key)}
+              style={{
+                background: selectedCategory === c.key ? "#059669" : "#334155",
+                color: selectedCategory === c.key ? "#ffffff" : "#cbd5e1",
+                border: "none",
+                padding: "0.4rem 0.8rem",
+                borderRadius: "6px",
+                fontSize: "0.82rem",
+                cursor: "pointer",
+                fontWeight: 600,
+                transition: "all 0.15s ease",
+              }}
+            >
+              {c.label}
+            </button>
+          ))}
+
+          <div style={{ marginLeft: "auto" }}>
+            <select
+              value={selectedDirection}
+              onChange={(e) => setSelectedDirection(e.target.value)}
+              style={{
+                background: "#1e293b",
+                color: "#f8fafc",
+                border: "1px solid #334155",
+                borderRadius: "6px",
+                padding: "0.4rem 0.8rem",
+                fontSize: "0.82rem",
+                cursor: "pointer",
+              }}
+            >
+              <option value="ALL">Toutes directions</option>
+              <option value="REQUEST">Demandes (Requests)</option>
+              <option value="RESPONSE">Réponses (Responses)</option>
+              <option value="ADVICE">Avis (Advices)</option>
+            </select>
+          </div>
+        </div>
       </div>
 
       {/* Onglets : Catalogue vs Anatomie des 4 Chiffres */}
-      <div style={{ display: "flex", gap: "0.75rem", borderBottom: "1px solid #1e293b", paddingBottom: "0.5rem" }}>
+      <div style={{ display: "flex", gap: "0.75rem", borderBottom: "2px solid #e2e8f0", paddingBottom: "0.5rem" }}>
         <button
           onClick={() => setActiveTab("CATALOG")}
           className={activeTab === "CATALOG" ? "btn-primary" : "btn-ghost"}
@@ -102,26 +169,26 @@ export function MTIDirectory() {
       {activeTab === "STRUCTURE" ? (
         /* VUE ANATOMIE DES 4 CHIFFRES */
         <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-          <div className="card" style={{ background: "#0f172a", border: "1px solid #1e293b" }}>
-            <h3 style={{ fontSize: "1.1rem", fontWeight: 800, color: "#f8fafc", marginBottom: "0.5rem" }}>
+          <div className="card" style={{ background: "#ffffff", border: "1px solid #e2e8f0" }}>
+            <h3 style={{ fontSize: "1.1rem", fontWeight: 800, color: "#0f172a", marginBottom: "0.5rem" }}>
               Comment est composé un code MTI (4 chiffres) ?
             </h3>
-            <p style={{ fontSize: "0.9rem", color: "#94a3b8", lineHeight: 1.6 }}>
-              Dans la norme ISO 8583, chaque position du code MTI à 4 chiffres (ex: <code style={{ color: "#34d399", fontWeight: 800 }}>0200</code>) a une fonction normalisée précise.
+            <p style={{ fontSize: "0.92rem", color: "#475569", lineHeight: 1.6 }}>
+              Dans la norme ISO 8583, chaque position du code MTI à 4 chiffres (ex: <code style={{ color: "#059669", fontWeight: 800, background: "#ecfdf5", padding: "0.15rem 0.4rem", borderRadius: "4px" }}>0200</code>) a une fonction normalisée précise.
             </p>
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1.25rem" }}>
             {MTI_DIGITS_STRUCTURE.map((digit) => (
-              <div key={digit.digitPosition} className="card" style={{ display: "flex", flexDirection: "column", gap: "0.85rem" }}>
+              <div key={digit.digitPosition} className="card" style={{ display: "flex", flexDirection: "column", gap: "0.85rem", background: "#ffffff", border: "1px solid #e2e8f0" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
                   <div
                     style={{
-                      width: "36px",
-                      height: "36px",
+                      width: "38px",
+                      height: "38px",
                       borderRadius: "8px",
-                      background: "#065f46",
-                      color: "#34d399",
+                      background: "#059669",
+                      color: "#ffffff",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -132,13 +199,13 @@ export function MTIDirectory() {
                     #{digit.digitPosition}
                   </div>
                   <div>
-                    <h4 style={{ fontSize: "0.98rem", fontWeight: 700, color: "#f8fafc", margin: 0 }}>
+                    <h4 style={{ fontSize: "0.98rem", fontWeight: 700, color: "#0f172a", margin: 0 }}>
                       {digit.digitRole}
                     </h4>
-                    <span style={{ fontSize: "0.78rem", color: "#94a3b8" }}>Position {digit.digitPosition}</span>
+                    <span style={{ fontSize: "0.78rem", color: "#64748b" }}>Position {digit.digitPosition}</span>
                   </div>
                 </div>
-                <p style={{ fontSize: "0.85rem", color: "#cbd5e1", margin: 0 }}>
+                <p style={{ fontSize: "0.85rem", color: "#475569", margin: 0 }}>
                   {digit.description}
                 </p>
 
@@ -147,18 +214,18 @@ export function MTIDirectory() {
                     <div
                       key={v.value}
                       style={{
-                        background: "#0f172a",
-                        padding: "0.5rem 0.75rem",
+                        background: "#f8fafc",
+                        padding: "0.6rem 0.75rem",
                         borderRadius: "6px",
-                        border: "1px solid #1e293b",
+                        border: "1px solid #e2e8f0",
                         fontSize: "0.82rem",
                       }}
                     >
                       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.2rem" }}>
-                        <strong style={{ color: "#38bdf8", fontFamily: "monospace" }}>Chiffre &apos;{v.value}&apos;</strong>
-                        <span style={{ color: "#34d399", fontWeight: 600 }}>{v.meaning}</span>
+                        <strong style={{ color: "#0369a1", fontFamily: "monospace", fontSize: "0.9rem" }}>Chiffre &apos;{v.value}&apos;</strong>
+                        <span style={{ color: "#059669", fontWeight: 700 }}>{v.meaning}</span>
                       </div>
-                      <p style={{ margin: 0, color: "#94a3b8", fontSize: "0.78rem" }}>{v.description}</p>
+                      <p style={{ margin: 0, color: "#64748b", fontSize: "0.78rem" }}>{v.description}</p>
                     </div>
                   ))}
                 </div>
@@ -169,52 +236,9 @@ export function MTIDirectory() {
       ) : (
         /* VUE CATALOGUE DES MTI */
         <>
-          {/* Barre de Recherche et Filtres */}
-          <div className="card" style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-            <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", alignItems: "center" }}>
-              <input
-                type="text"
-                className="input"
-                placeholder="Rechercher par MTI (ex: 0200, 0400), nom, champ ou cas d'usage..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                style={{ flex: 1, minWidth: "260px" }}
-              />
-              <select
-                className="input"
-                value={selectedDirection}
-                onChange={(e) => setSelectedDirection(e.target.value)}
-                style={{ width: "200px" }}
-              >
-                <option value="ALL">Toutes directions</option>
-                <option value="REQUEST">Demandes (Requests)</option>
-                <option value="RESPONSE">Réponses (Responses)</option>
-                <option value="ADVICE">Avis (Advices)</option>
-              </select>
-            </div>
-
-            {/* Chips de Catégorie */}
-            <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
-              {categories.map((c) => (
-                <button
-                  key={c.key}
-                  onClick={() => setSelectedCategory(c.key)}
-                  className={`btn-ghost ${selectedCategory === c.key ? "btn-primary" : ""}`}
-                  style={{
-                    fontSize: "0.82rem",
-                    padding: "0.35rem 0.75rem",
-                    borderRadius: "6px",
-                  }}
-                >
-                  {c.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
           {/* Nombre de Résultats */}
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span style={{ fontSize: "0.9rem", color: "#94a3b8" }}>
+            <span style={{ fontSize: "0.9rem", color: "#64748b" }}>
               <b>{filteredMTIs.length}</b> type(s) de message MTI affiché(s)
             </span>
           </div>
@@ -231,6 +255,10 @@ export function MTIDirectory() {
                   justifyContent: "space-between",
                   gap: "1rem",
                   borderLeft: "4px solid #059669",
+                  background: "#ffffff",
+                  border: "1px solid #e2e8f0",
+                  borderLeftWidth: "4px",
+                  borderLeftColor: "#059669",
                 }}
               >
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
@@ -238,14 +266,14 @@ export function MTIDirectory() {
                     <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
                       <span
                         style={{
-                          fontSize: "1.3rem",
+                          fontSize: "1.25rem",
                           fontWeight: 900,
                           fontFamily: "monospace",
-                          color: "#34d399",
-                          background: "#064e3b",
-                          padding: "0.2rem 0.6rem",
+                          color: "#047857",
+                          background: "#ecfdf5",
+                          padding: "0.25rem 0.65rem",
                           borderRadius: "6px",
-                          border: "1px solid #059669",
+                          border: "1px solid #a7f3d0",
                         }}
                       >
                         {mti.mti}
@@ -257,18 +285,18 @@ export function MTIDirectory() {
                     <div style={{ fontSize: "0.8rem" }}>{getDirectionBadge(mti.direction)}</div>
                   </div>
 
-                  <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: "#f8fafc", margin: "0.2rem 0 0 0" }}>
+                  <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: "#0f172a", margin: "0.2rem 0 0 0" }}>
                     {mti.name}
                   </h3>
 
-                  <p style={{ fontSize: "0.88rem", color: "#cbd5e1", lineHeight: 1.5, margin: 0 }}>
+                  <p style={{ fontSize: "0.9rem", color: "#334155", lineHeight: 1.5, margin: 0 }}>
                     {mti.meaning}
                   </p>
                 </div>
 
-                <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", background: "#0f172a", padding: "0.85rem", borderRadius: "6px", border: "1px solid #1e293b" }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", background: "#f8fafc", padding: "0.9rem", borderRadius: "8px", border: "1px solid #e2e8f0" }}>
                   <div>
-                    <span style={{ fontSize: "0.75rem", textTransform: "uppercase", fontWeight: 700, color: "#94a3b8" }}>
+                    <span style={{ fontSize: "0.75rem", textTransform: "uppercase", fontWeight: 700, color: "#64748b" }}>
                       Champs Clés ISO Présents :
                     </span>
                     <div style={{ display: "flex", flexWrap: "wrap", gap: "0.35rem", marginTop: "0.3rem" }}>
@@ -277,11 +305,13 @@ export function MTIDirectory() {
                           key={idx}
                           style={{
                             fontSize: "0.75rem",
-                            background: "#1e293b",
-                            color: "#38bdf8",
-                            padding: "0.15rem 0.45rem",
+                            background: "#ffffff",
+                            color: "#0369a1",
+                            border: "1px solid #cbd5e1",
+                            padding: "0.2rem 0.5rem",
                             borderRadius: "4px",
                             fontFamily: "monospace",
+                            fontWeight: 600,
                           }}
                         >
                           {f}
@@ -291,21 +321,21 @@ export function MTIDirectory() {
                   </div>
 
                   <div>
-                    <span style={{ fontSize: "0.75rem", textTransform: "uppercase", fontWeight: 700, color: "#fbbf24" }}>
+                    <span style={{ fontSize: "0.75rem", textTransform: "uppercase", fontWeight: 700, color: "#b45309" }}>
                       ⚡ Conduite d&apos;Analyse Incident :
                     </span>
-                    <p style={{ fontSize: "0.82rem", color: "#fde68a", margin: "0.2rem 0 0 0", lineHeight: 1.4 }}>
+                    <p style={{ fontSize: "0.84rem", color: "#92400e", margin: "0.2rem 0 0 0", lineHeight: 1.45, fontWeight: 500 }}>
                       {mti.diagnosticAdvice}
                     </p>
                   </div>
                 </div>
 
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid #1e293b", paddingTop: "0.75rem" }}>
-                  <span style={{ fontSize: "0.75rem", color: "#64748b" }}>{mti.isoVersion}</span>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid #e2e8f0", paddingTop: "0.75rem" }}>
+                  <span style={{ fontSize: "0.75rem", color: "#64748b", fontWeight: 500 }}>{mti.isoVersion}</span>
                   <Link
                     href={`/knowledge?search=${mti.mti}`}
                     className="btn-ghost"
-                    style={{ fontSize: "0.8rem", color: "#34d399", textDecoration: "none" }}
+                    style={{ fontSize: "0.8rem", color: "#059669", textDecoration: "none", fontWeight: 600 }}
                   >
                     Voir incidents associés ➜
                   </Link>

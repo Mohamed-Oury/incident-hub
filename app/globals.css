@@ -566,3 +566,93 @@ tr:hover td {
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
 }
+
+/* ========================================================
+   Classes utilitaires et composants Card & Input
+   ======================================================== */
+.card {
+  background: #ffffff;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-light);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  color: var(--text-primary);
+}
+
+.input {
+  width: 100%;
+  padding: 0.65rem 1rem;
+  background: #ffffff;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.input:focus {
+  border-color: var(--emerald-500);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+}
+
+.btn-primary {
+  background: var(--emerald-600);
+  color: #ffffff;
+  border: none;
+  padding: 0.55rem 1.1rem;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.btn-primary:hover {
+  background: var(--emerald-700);
+}
+
+.btn-ghost {
+  background: #ffffff;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-light);
+  padding: 0.55rem 1rem;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-ghost:hover {
+  background: var(--bg-subtle);
+  color: var(--text-primary);
+  border-color: #cbd5e1;
+}
+
+.btn-ghost.btn-primary {
+  background: var(--emerald-600);
+  color: #ffffff;
+  border-color: var(--emerald-600);
+}
+
+.grid-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+}
+
+.metric-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.metric-value {
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin: 0.25rem 0;
+}
