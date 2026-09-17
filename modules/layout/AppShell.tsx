@@ -29,6 +29,7 @@ export function AppShell({ children, user, pageTitle = "Vue d'ensemble", eyebrow
     { href: "/parser", label: "Parseur Trame ISO", icon: "🔍" },
     { href: "/bitmap", label: "Décodeur Bitmap", icon: "🧮" },
     { href: "/emv", label: "Décodeur EMV / DE55", icon: "💳" },
+    { href: "/atm-ej", label: "Journal GAB (ATM EJ)", icon: "🖨️" },
     { href: "/mti", label: "Référentiel MTI", icon: "📬" },
     { href: "/de39", label: "Référentiel DE39", icon: "🏷️" },
     { href: "/diagnostic", label: "Diagnostic Assistant", icon: "⚡" },

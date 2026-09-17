@@ -241,6 +241,35 @@ async function runQATest() {
     failed++;
   }
 
+  // TEST 10 : Vérification de l'Analyseur de Journal GAB (ATM EJ Analyzer)
+  try {
+    const { parseAtmElectronicJournal } = await import("../modules/knowledge-base/data/atm-ej-analyzer");
+    const sampleEj = `14:32:01 ATM: GAB-AG-04 TID: 88776655
+14:32:03 CARD INSERTED: PAN 4970101234567890
+14:32:08 PIN ENTERED (EPP OK)
+14:32:11 AUTH OK (HOST APPROVED, RC:00) AMOUNT: 50000 STAN: 045123
+14:32:14 DISPENSE REQ: 5 NOTES OF 10000 XOF
+14:32:17 HARDWARE ERROR: STACKER JAMMED IN TRANSPORT MODULE
+14:32:18 BILL JAM SENSOR TRIGGERED
+14:32:20 CARD EJECTED
+14:32:25 TRANSACTION ABORTED - SHUTTER NOT OPENED`;
+
+    const ejRes = parseAtmElectronicJournal(sampleEj);
+    const hasDetectedJam = ejRes.summary.hasBillJam;
+    const isVerdictFavorable = ejRes.summary.claimAdvice === "FAVORABLE_RECREDIT";
+    const hasMaskedPan = ejRes.summary.panDetected?.includes("*");
+
+    if (hasDetectedJam && isVerdictFavorable && hasMaskedPan && ejRes.events.length >= 6) {
+      console.log(`✅ TEST 10 - Analyseur de Journal GAB conforme (Bourrage détecté, Décision Recrédit validée, PAN masqué ${ejRes.summary.panDetected}, ${ejRes.events.length} étapes décodées).`);
+      passed++;
+    } else {
+      throw new Error(`Échec analyse EJ : Jam=${hasDetectedJam}, Advice=${ejRes.summary.claimAdvice}, Events=${ejRes.events.length}`);
+    }
+  } catch (err: any) {
+    console.error("❌ TEST 10 ÉCHOUÉ :", err.message);
+    failed++;
+  }
+
   console.log("\n=================================================");
   console.log(`📊 BILAN DU QA TEST : ${passed} RÉUSSIS / ${failed} ÉCHECS`);
   console.log("=================================================");
