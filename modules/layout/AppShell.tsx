@@ -28,7 +28,7 @@ export function AppShell({ children, user, pageTitle = "Vue d'ensemble", eyebrow
     { href: "/knowledge", label: "Base de connaissance", icon: "📚" },
     { href: "/de39", label: "Référentiel DE39", icon: "🏷️" },
     { href: "/diagnostic", label: "Diagnostic Assistant", icon: "⚡" },
-    { href: "/incidents/new", label: "Nouvel incident", icon: "➕" },
+    //{ href: "/incidents/new", label: "Nouvel incident", icon: "➕" },
     { href: "/audit", label: "Piste d'audit", icon: "🛡️" },
   ];
 
@@ -37,7 +37,7 @@ export function AppShell({ children, user, pageTitle = "Vue d'ensemble", eyebrow
       {/* Sidebar FIXÉE & RÉDUCTIBLE */}
       <aside className={`sidebar ${collapsed ? "collapsed" : ""}`}>
         <div className="brand">
-          <span className="brand-mark">P</span>
+          <span className="brand-mark">O</span>
           <div className="brand-text">
             M.OURY
             <b>INCIDENT HUB</b>
