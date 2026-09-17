@@ -55,20 +55,28 @@ export default function LoginPage() {
           <div
             style={{
               display: "inline-flex",
-              padding: "1rem",
-              background: "linear-gradient(135deg, #059669, #047857)",
-              borderRadius: "16px",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "60px",
+              height: "60px",
+              background: "linear-gradient(to bottom, #e60028 0%, #e60028 48%, #ffffff 48%, #ffffff 52%, #111827 52%, #111827 100%)",
+              borderRadius: "12px",
               color: "white",
-              fontWeight: 800,
-              fontSize: "1.5rem",
-              boxShadow: "0 10px 20px rgba(5, 150, 105, 0.3)",
+              fontWeight: 900,
+              fontSize: "1.75rem",
+              boxShadow: "0 10px 25px rgba(230, 0, 40, 0.35)",
+              border: "1px solid rgba(255, 255, 255, 0.2)",
               marginBottom: "1rem",
+              textShadow: "0 1px 3px rgba(0,0,0,0.8)"
             }}
           >
-            P
+            SG
           </div>
-          <h1 style={{ fontSize: "1.5rem", fontWeight: 800, color: "#0f172a" }}>M.OURY INCIDENT HUB</h1>
-          <p style={{ fontSize: "0.88rem", color: "#64748b", marginTop: "0.25rem" }}>
+          <h1 style={{ fontSize: "1.5rem", fontWeight: 800, color: "#111827" }}>SOCIÉTÉ GÉNÉRALE</h1>
+          <p style={{ fontSize: "0.85rem", fontWeight: 700, letterSpacing: "0.08em", color: "#e60028", textTransform: "uppercase", marginTop: "0.15rem" }}>
+            EXPLOITATION &amp; MONÉTIQUE HUB
+          </p>
+          <p style={{ fontSize: "0.85rem", color: "#6b7280", marginTop: "0.25rem" }}>
             Plateforme d&apos;exploitation et diagnostic d&apos;incidents monétiques
           </p>
         </div>
@@ -162,7 +170,7 @@ export default function LoginPage() {
                 onClick={() => handleLogin(user.email)}
               >
                 <strong style={{ fontSize: "0.88rem", color: "#0f172a" }}>{user.name}</strong>
-                <span style={{ fontSize: "0.75rem", color: "#059669", fontWeight: 700 }}>{user.role}</span>
+                <span style={{ fontSize: "0.75rem", color: "#e60028", fontWeight: 700 }}>{user.role}</span>
               </button>
             ))}
           </div>

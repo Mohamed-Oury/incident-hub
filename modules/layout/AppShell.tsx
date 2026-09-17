@@ -42,10 +42,10 @@ export function AppShell({ children, user, pageTitle = "Vue d'ensemble", eyebrow
       {/* Sidebar FIXÉE & RÉDUCTIBLE */}
       <aside className={`sidebar ${collapsed ? "collapsed" : ""}`}>
         <div className="brand">
-          <span className="brand-mark">O</span>
+          <span className="brand-mark">SG</span>
           <div className="brand-text">
-            M.OURY
-            <b>INCIDENT HUB</b>
+            SOCIÉTÉ GÉNÉRALE
+            <b>MONÉTIQUE HUB</b>
           </div>
           <button
             type="button"
@@ -103,7 +103,7 @@ export function AppShell({ children, user, pageTitle = "Vue d'ensemble", eyebrow
                 {user?.role ? user.role.slice(0, 2) : "AD"}
               </div>
               <div style={{ display: "flex", flexDirection: "column", fontSize: "0.82rem" }}>
-                <span style={{ color: "#059669", fontWeight: 700, fontSize: "0.78rem" }}>
+                <span style={{ color: "var(--sg-red-600)", fontWeight: 700, fontSize: "0.78rem" }}>
                   {user?.role || "ADMIN"}
                 </span>
               </div>

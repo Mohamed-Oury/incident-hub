@@ -96,7 +96,7 @@ export function KnowledgeCatalog({ initialIncidents }: KnowledgeCatalogProps) {
                 setCurrentPage(1);
               }}
               style={{
-                background: selectedDomain === d ? "#059669" : "#334155",
+                background: selectedDomain === d ? "#e60028" : "#334155",
                 color: selectedDomain === d ? "#ffffff" : "#cbd5e1",
                 border: "none",
                 padding: "0.35rem 0.75rem",
@@ -285,8 +285,8 @@ export function KnowledgeCatalog({ initialIncidents }: KnowledgeCatalogProps) {
                     height: "36px",
                     padding: "0 0.5rem",
                     borderRadius: "8px",
-                    border: safePage === pageNumber ? "1.5px solid #059669" : "1px solid #cbd5e1",
-                    background: safePage === pageNumber ? "#059669" : "#ffffff",
+                    border: safePage === pageNumber ? "1.5px solid #e60028" : "1px solid #cbd5e1",
+                    background: safePage === pageNumber ? "#e60028" : "#ffffff",
                     color: safePage === pageNumber ? "#ffffff" : "#0f172a",
                     fontWeight: 700,
                     fontSize: "0.85rem",

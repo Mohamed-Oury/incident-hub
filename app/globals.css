@@ -1,33 +1,45 @@
 :root {
-  /* Charte demandée : Vert Émeraude, Blanc, Ardoise/Bleu Marine très foncé (au lieu du noir) */
-  --emerald-50: #ecfdf5;
-  --emerald-100: #d1fae5;
-  --emerald-200: #a7f3d0;
-  --emerald-400: #34d399;
-  --emerald-500: #10b981;
-  --emerald-600: #059669;
-  --emerald-700: #047857;
-  --emerald-800: #065f46;
-  --emerald-900: #064e3b;
-  --emerald-950: #022c22;
+  /* Charte Officielle GROUPE SOCIÉTÉ GÉNÉRALE : Rouge SG (#E60028), Noir profond (#1A1A1A / #111827), Blanc */
+  --sg-red-50: #fef2f2;
+  --sg-red-100: #fee2e2;
+  --sg-red-200: #fecaca;
+  --sg-red-400: #f87171;
+  --sg-red-500: #ef4444;
+  --sg-red-600: #e60028; /* ROUGE OFFICIEL SOCIÉTÉ GÉNÉRALE */
+  --sg-red-700: #cc0024;
+  --sg-red-800: #99001b;
+  --sg-red-900: #7f1d1d;
+  --sg-red-950: #450a0a;
 
-  /* Remplacement du noir par un Bleu Nuit / Ardoise élégant et doux */
-  --slate-darkest: #0f172a;    /* Ardoise très foncée pour la sidebar */
-  --slate-surface: #1e293b;    /* Surface secondaire */
-  --slate-card: #1e293b;
-  --slate-border: #334155;
-  --slate-muted: #475569;
+  /* Aliases de compatibilité pour les composants existants */
+  --emerald-50: var(--sg-red-50);
+  --emerald-100: var(--sg-red-100);
+  --emerald-200: var(--sg-red-200);
+  --emerald-400: var(--sg-red-400);
+  --emerald-500: var(--sg-red-600);
+  --emerald-600: var(--sg-red-600);
+  --emerald-700: var(--sg-red-700);
+  --emerald-800: var(--sg-red-800);
+  --emerald-900: var(--sg-red-900);
+  --emerald-950: var(--sg-red-950);
 
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --text-muted: #64748b;
+  /* Noir profond & Ardoise Société Générale */
+  --slate-darkest: #111827;    /* Noir épuré / Gris très sombre pour la sidebar */
+  --slate-surface: #1f2937;    /* Surface secondaire */
+  --slate-card: #1f2937;
+  --slate-border: #374151;
+  --slate-muted: #6b7280;
+
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --text-muted: #6b7280;
   --text-inverse: #ffffff;
 
-  --bg-app: #f8fafc;
+  --bg-app: #f9fafb;
   --bg-card: #ffffff;
-  --bg-subtle: #f1f5f9;
+  --bg-subtle: #f3f4f6;
 
-  --border-light: #e2e8f0;
+  --border-light: #e5e7eb;
 
   --radius-sm: 6px;
   --radius-md: 10px;
@@ -130,17 +142,20 @@ button, input, select, textarea {
 }
 
 .brand-mark {
-  width: 42px;
-  height: 42px;
-  background: linear-gradient(135deg, var(--emerald-500), var(--emerald-700));
+  width: 40px;
+  height: 40px;
+  /* Carré divisé Société Générale : Moitié Rouge SG #e60028 en haut, Moitié Noir #111827 en bas séparés par une ligne blanche */
+  background: linear-gradient(to bottom, #e60028 0%, #e60028 48%, #ffffff 48%, #ffffff 52%, #111827 52%, #111827 100%);
   color: white;
   display: grid;
   place-items: center;
-  font-weight: 800;
-  font-size: 1.25rem;
-  border-radius: var(--radius-md);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+  font-weight: 900;
+  font-size: 1.15rem;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 4px 12px rgba(230, 0, 40, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   flex-shrink: 0;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
 }
 
 .brand-text {
@@ -215,10 +230,10 @@ button, input, select, textarea {
 }
 
 .nav-item.active {
-  background: var(--emerald-800);
-  color: var(--emerald-100);
+  background: var(--sg-red-700);
+  color: #ffffff;
   font-weight: 600;
-  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.25);
+  box-shadow: 0 2px 8px rgba(230, 0, 40, 0.35);
 }
 
 .nav-icon {
@@ -532,7 +547,7 @@ tr:hover td {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(circle at 50% 20%, #064e3b 0%, #0f172a 75%);
+  background: radial-gradient(circle at 50% 20%, #7f1d1d 0%, #111827 75%);
   padding: 1.5rem;
 }
 
