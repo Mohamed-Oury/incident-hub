@@ -34,6 +34,10 @@ export default function UsersAdminPage() {
   const [editResetPwd, setEditResetPwd] = useState(false);
   const [updating, setUpdating] = useState(false);
 
+  // Modal de Confirmation de Suppression Propre
+  const [userToDelete, setUserToDelete] = useState<UserItem | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
   const fetchUsers = async () => {
     try {
       setLoading(true);
@@ -122,16 +126,20 @@ export default function UsersAdminPage() {
     }
   };
 
-  const handleDeleteUser = async (id: string, name: string) => {
-    if (!confirm(`Êtes-vous certain de vouloir supprimer l'utilisateur ${name} ?`)) return;
+  const confirmDeleteUser = async () => {
+    if (!userToDelete) return;
+    setDeleting(true);
     try {
-      const res = await fetch(`/api/users/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/users/${userToDelete.id}`, { method: "DELETE" });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Échec suppression");
-      setSuccessMsg(`Utilisateur ${name} supprimé avec succès.`);
+      setSuccessMsg(`L'utilisateur ${userToDelete.name} a été supprimé avec succès.`);
+      setUserToDelete(null);
       fetchUsers();
     } catch (err: any) {
       setError(err.message);
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -177,7 +185,104 @@ export default function UsersAdminPage() {
           </div>
         )}
 
-        {/* Modal de modification d'utilisateur */}
+        {/* 1. Modal Propre de Confirmation de Suppression */}
+        {userToDelete && (
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: "rgba(17, 24, 39, 0.75)",
+              backdropFilter: "blur(4px)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              zIndex: 1100,
+              padding: "1rem",
+              animation: "fadeIn 0.15s ease-out",
+            }}
+          >
+            <div
+              className="card"
+              style={{
+                width: "100%",
+                maxWidth: "460px",
+                background: "#ffffff",
+                borderRadius: "16px",
+                padding: "1.75rem 2rem",
+                boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.35)",
+                border: "1px solid #e5e7eb",
+                textAlign: "center",
+              }}
+            >
+              <div
+                style={{
+                  width: "56px",
+                  height: "56px",
+                  borderRadius: "50%",
+                  background: "#fee2e2",
+                  color: "#dc2626",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "1.75rem",
+                  marginBottom: "1rem",
+                }}
+              >
+                🗑️
+              </div>
+
+              <h3 style={{ fontSize: "1.25rem", fontWeight: 800, color: "#111827", marginBottom: "0.5rem" }}>
+                Confirmer la suppression
+              </h3>
+
+              <p style={{ fontSize: "0.9rem", color: "#4b5563", lineHeight: "1.5", marginBottom: "1.5rem" }}>
+                Êtes-vous certain de vouloir supprimer définitivement le collaborateur{" "}
+                <b style={{ color: "#111827" }}>{userToDelete.name}</b> ({userToDelete.email}) ?
+                <br />
+                <span style={{ fontSize: "0.8rem", color: "#dc2626", fontWeight: 600, display: "block", marginTop: "0.4rem" }}>
+                  ⚠️ Cette action est irréversible et révoquera immédiatement tous ses accès.
+                </span>
+              </p>
+
+              <div style={{ display: "flex", gap: "0.75rem", justifyContent: "center" }}>
+                <button
+                  type="button"
+                  onClick={() => setUserToDelete(null)}
+                  className="btn-secondary"
+                  style={{ flex: 1, padding: "0.65rem 1rem", fontSize: "0.9rem" }}
+                  disabled={deleting}
+                >
+                  Annuler
+                </button>
+                <button
+                  type="button"
+                  onClick={confirmDeleteUser}
+                  style={{
+                    flex: 1,
+                    background: "#dc2626",
+                    color: "#ffffff",
+                    border: "none",
+                    borderRadius: "8px",
+                    fontWeight: 700,
+                    fontSize: "0.9rem",
+                    padding: "0.65rem 1rem",
+                    cursor: "pointer",
+                    boxShadow: "0 4px 12px rgba(220, 38, 38, 0.3)",
+                    transition: "background 0.15s ease",
+                  }}
+                  disabled={deleting}
+                >
+                  {deleting ? "Suppression..." : "Oui, supprimer"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 2. Modal Propre d'Édition d'Utilisateur */}
         {editingUser && (
           <div
             style={{
@@ -186,7 +291,8 @@ export default function UsersAdminPage() {
               left: 0,
               right: 0,
               bottom: 0,
-              background: "rgba(0,0,0,0.6)",
+              background: "rgba(17, 24, 39, 0.75)",
+              backdropFilter: "blur(4px)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -200,14 +306,16 @@ export default function UsersAdminPage() {
                 width: "100%",
                 maxWidth: "500px",
                 background: "#ffffff",
-                boxShadow: "0 20px 25px -5px rgba(0,0,0,0.3)",
+                borderRadius: "16px",
+                padding: "2rem",
+                boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.35)",
               }}
             >
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem" }}>
                 <h3 style={{ fontSize: "1.2rem", fontWeight: 800 }}>Modifier l&apos;utilisateur</h3>
                 <button
                   onClick={() => setEditingUser(null)}
-                  style={{ background: "none", border: "none", fontSize: "1.2rem", cursor: "pointer" }}
+                  style={{ background: "none", border: "none", fontSize: "1.2rem", cursor: "pointer", color: "#64748b" }}
                 >
                   ✕
                 </button>
@@ -376,7 +484,7 @@ export default function UsersAdminPage() {
             </form>
           </div>
 
-          {/* Liste des utilisateurs existants avec action Modifier & Supprimer */}
+          {/* Liste des utilisateurs existants avec action Modifier & Supprimer via modal propre */}
           <div className="card">
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
               <h3 style={{ fontSize: "1.1rem", fontWeight: 800 }}>Utilisateurs Enregistrés ({users.length})</h3>
@@ -455,7 +563,7 @@ export default function UsersAdminPage() {
                             {u.email !== "ourykohkoun@gmail.com" && (
                               <button
                                 type="button"
-                                onClick={() => handleDeleteUser(u.id, u.name)}
+                                onClick={() => setUserToDelete(u)}
                                 style={{
                                   background: "#fee2e2",
                                   border: "1px solid #fecaca",
@@ -465,9 +573,13 @@ export default function UsersAdminPage() {
                                   borderRadius: "6px",
                                   cursor: "pointer",
                                   fontWeight: 600,
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                  gap: "0.25rem",
                                 }}
+                                title="Supprimer cet utilisateur"
                               >
-                                🗑️
+                                🗑️ Supprimer
                               </button>
                             )}
                           </div>

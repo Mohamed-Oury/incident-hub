@@ -1,4 +1,4 @@
-export type UserRole = 
+export type UserRole =
   | "ADMIN"           // Accès total
   | "ROLE_EXPLOITATION" // Vue d'ensemble (/), Base de connaissance (/knowledge), Diagnostic Assistant (/diagnostic)
   | "ROLE_DECODEURS"    // Parseur Trame ISO (/parser), Décodeur Bitmap (/bitmap), Décodeur EMV/DE55 (/emv), Journal GAB (/atm-ej)
@@ -44,29 +44,5 @@ export const DEMO_USERS: SessionUser[] = [
     email: "ourykohkoun@gmail.com",
     name: "Oury Kohkoun",
     role: "ADMIN",
-  },
-  {
-    id: "usr-exploitant",
-    email: "exploitant@monetique.com",
-    name: "Agent Exploitation",
-    role: "ROLE_EXPLOITATION",
-  },
-  {
-    id: "usr-analyste-iso",
-    email: "analyste@monetique.com",
-    name: "Analyste Décodeurs ISO",
-    role: "ROLE_DECODEURS",
-  },
-  {
-    id: "usr-referentiel",
-    email: "normes@monetique.com",
-    name: "Gestionnaire Référentiels",
-    role: "ROLE_REFERENTIELS",
-  },
-  {
-    id: "usr-expert-cbs",
-    email: "expert@monetique.com",
-    name: "Expert HSM & Architecte",
-    role: "ROLE_EXPERTISE",
-  },
+  }
 ];

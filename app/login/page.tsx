@@ -152,9 +152,6 @@ export default function LoginPage() {
         </form>
 
         <div style={{ marginTop: "1.25rem", borderTop: "1px solid #f1f5f9", paddingTop: "0.85rem" }}>
-          <p style={{ fontSize: "0.72rem", fontWeight: 700, color: "#64748b", textTransform: "uppercase", marginBottom: "0.4rem", textAlign: "center" }}>
-            Test des Rôles &amp; Profils Métier (1 clic)
-          </p>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.4rem" }}>
             {DEMO_USERS.map((user) => (
               <button
