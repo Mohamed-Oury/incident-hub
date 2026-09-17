@@ -1,0 +1,226 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum IncidentStatus {
+  DRAFT
+  OPEN
+  UNDER_INVESTIGATION
+  RESOLVED
+  CLOSED
+}
+
+enum Severity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum HypothesisStatus {
+  OPEN
+  REJECTED
+  PROBABLE
+  CONFIRMED
+}
+
+enum KnowledgeStatus {
+  REFERENCE_SCENARIO
+  VALIDATED
+}
+
+enum Role {
+  VIEWER
+  OPERATOR
+  EXPERT
+  VALIDATOR
+  ADMIN
+}
+
+model User {
+  id           String     @id @default(cuid())
+  email        String     @unique
+  name         String
+  passwordHash String?
+  role         Role       @default(OPERATOR)
+  active       Boolean    @default(true)
+  incidents    Incident[] @relation("IncidentAuthor")
+  audits       AuditLog[]
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model Incident {
+  id              String          @id @default(cuid())
+  reference       String          @unique
+  title           String
+  description     String?         @db.Text
+  status          IncidentStatus  @default(DRAFT)
+  severity        Severity        @default(MEDIUM)
+  knowledgeStatus KnowledgeStatus @default(REFERENCE_SCENARIO)
+  domain          String?
+  channel         String?
+  operation       String?
+  network         String?
+  environment     String?
+  component       String?
+  host            String?
+  errorCode       String?
+  occurredAt      DateTime?
+  resolvedAt      DateTime?
+  authorId        String
+  author          User            @relation("IncidentAuthor", fields: [authorId], references: [id])
+  observations    Observation[]
+  flowSteps       FlowStep[]
+  isoMessages     IsoMessage[]
+  hypotheses      Hypothesis[]
+  evidence        Evidence[]
+  rootCause       RootCause?
+  resolution      Resolution?
+  prevention      PreventionAction[]
+  comments        Comment[]
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@index([authorId])
+  @@index([status])
+  @@index([severity])
+  @@index([domain])
+  @@index([knowledgeStatus])
+}
+
+model Observation {
+  id         String   @id @default(cuid())
+  symptom    String   @db.Text
+  facts      String   @db.Text
+  scope      String?  @db.Text
+  context    String?  @db.Text
+  incidentId String
+  incident   Incident @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+
+  @@index([incidentId])
+}
+
+model FlowStep {
+  id          String    @id @default(cuid())
+  position    Int
+  source      String
+  destination String
+  event       String    @db.Text
+  status      String?
+  occurredAt  DateTime?
+  incidentId  String
+  incident    Incident  @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+
+  @@unique([incidentId, position])
+  @@index([incidentId])
+}
+
+model IsoMessage {
+  id               String   @id @default(cuid())
+  mti              String?
+  bitmap           String?
+  stan             String?
+  rrn              String?
+  responseCode     String?
+  terminalId       String?
+  maskedRawMessage String?  @db.Text
+  fields           Json?
+  incidentId       String
+  incident         Incident @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+
+  @@index([incidentId])
+  @@index([responseCode])
+  @@index([mti])
+  @@index([stan])
+}
+
+model Hypothesis {
+  id          String           @id @default(cuid())
+  description String           @db.Text
+  status      HypothesisStatus @default(OPEN)
+  evidence    String?          @db.Text
+  incidentId  String
+  incident    Incident         @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+  createdAt   DateTime         @default(now())
+
+  @@index([incidentId])
+}
+
+model Evidence {
+  id            String    @id @default(cuid())
+  type          String
+  content       String    @db.Text
+  source        String?
+  occurredAt    DateTime?
+  attachmentUrl String?   @db.Text
+  incidentId    String
+  incident      Incident  @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+  createdAt     DateTime  @default(now())
+
+  @@index([incidentId])
+}
+
+model RootCause {
+  id            String    @id @default(cuid())
+  category      String
+  description   String    @db.Text
+  justification String    @db.Text
+  validatedAt   DateTime?
+  validatedBy   String?
+  incidentId    String    @unique
+  incident      Incident  @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+}
+
+model Resolution {
+  id         String   @id @default(cuid())
+  actions    String   @db.Text
+  executor   String?
+  approver   String?
+  result     String?  @db.Text
+  incidentId String   @unique
+  incident   Incident @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+}
+
+model PreventionAction {
+  id         String    @id @default(cuid())
+  action     String    @db.Text
+  owner      String?
+  priority   String?
+  status     String    @default("OPEN")
+  dueDate    DateTime?
+  incidentId String
+  incident   Incident  @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+
+  @@index([incidentId])
+}
+
+model Comment {
+  id         String   @id @default(cuid())
+  content    String   @db.Text
+  authorName String
+  incidentId String
+  incident   Incident @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@index([incidentId])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  action    String
+  entity    String
+  entityId  String
+  metadata  Json?
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@index([entity, entityId])
+  @@index([userId])
+}

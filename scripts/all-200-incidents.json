@@ -1,0 +1,1402 @@
+[
+  {
+    "ref": "INC-001",
+    "title": "GAB - Retraits en échec suite à timeout CBS / lock ACCOUNT",
+    "domain": "GAB",
+    "component": "CBS/DB",
+    "keys": "DE39, STAN, RRN"
+  },
+  {
+    "ref": "INC-002",
+    "title": "GAB - DE39=91 massif avec timeout côté Issuer",
+    "domain": "GAB",
+    "component": "Issuer/DB",
+    "keys": "DE39=91, STAN, RRN"
+  },
+  {
+    "ref": "INC-003",
+    "title": "GAB - Carte acceptée mais aucun cash délivré",
+    "domain": "GAB",
+    "component": "ATM/Host",
+    "keys": "0200/0210, DE39, DE11"
+  },
+  {
+    "ref": "INC-004",
+    "title": "GAB - Compte débité mais cash non délivré",
+    "domain": "GAB",
+    "component": "CBS/Host",
+    "keys": "DE4, DE11, DE37, DE90"
+  },
+  {
+    "ref": "INC-005",
+    "title": "GAB - Double débit après timeout transactionnel",
+    "domain": "GAB",
+    "component": "CBS/Reversal",
+    "keys": "DE11, DE37, DE90"
+  },
+  {
+    "ref": "INC-006",
+    "title": "GAB - Reversal absent après transaction timeout",
+    "domain": "GAB",
+    "component": "Payway/Switch",
+    "keys": "0400/0410, DE90"
+  },
+  {
+    "ref": "INC-007",
+    "title": "GAB - Reversal rejeté par l'Host",
+    "domain": "GAB",
+    "component": "Host",
+    "keys": "0400/0410, DE39"
+  },
+  {
+    "ref": "INC-008",
+    "title": "GAB - STAN dupliqué",
+    "domain": "GAB",
+    "component": "Payway/Switch",
+    "keys": "DE11"
+  },
+  {
+    "ref": "INC-009",
+    "title": "GAB - RRN dupliqué ou incohérent",
+    "domain": "GAB",
+    "component": "Payway/Switch",
+    "keys": "DE37"
+  },
+  {
+    "ref": "INC-010",
+    "title": "GAB - Terminal ID inconnu ou mal routé",
+    "domain": "GAB",
+    "component": "Payway/Routing",
+    "keys": "DE41"
+  },
+  {
+    "ref": "INC-011",
+    "title": "TPE - Paiements systématiquement rejetés",
+    "domain": "TPE",
+    "component": "Payway/Host",
+    "keys": "DE39, DE41"
+  },
+  {
+    "ref": "INC-012",
+    "title": "TPE - DE39=05 sur un périmètre marchand",
+    "domain": "TPE",
+    "component": "Issuer",
+    "keys": "DE39=05"
+  },
+  {
+    "ref": "INC-013",
+    "title": "TPE - DE39=91 sur un périmètre marchand",
+    "domain": "TPE",
+    "component": "Issuer/Switch",
+    "keys": "DE39=91"
+  },
+  {
+    "ref": "INC-014",
+    "title": "TPE - Timeout entre Payway et Host",
+    "domain": "TPE",
+    "component": "Payway/Host",
+    "keys": "timeout, MTI"
+  },
+  {
+    "ref": "INC-015",
+    "title": "TPE - Transaction autorisée mais non comptabilisée",
+    "domain": "TPE",
+    "component": "CBS/Clearing",
+    "keys": "DE38, DE39, DE90"
+  },
+  {
+    "ref": "INC-016",
+    "title": "TPE - Reversal automatique non généré",
+    "domain": "TPE",
+    "component": "Payway",
+    "keys": "0400/0410"
+  },
+  {
+    "ref": "INC-017",
+    "title": "TPE - Terminal non joignable",
+    "domain": "TPE",
+    "component": "Réseau/Terminal",
+    "keys": "DE41"
+  },
+  {
+    "ref": "INC-018",
+    "title": "TPE - Mauvaise devise ou currency code",
+    "domain": "TPE",
+    "component": "Host/Mapping",
+    "keys": "DE49"
+  },
+  {
+    "ref": "INC-019",
+    "title": "TPE - Montant incorrect dans DE4",
+    "domain": "TPE",
+    "component": "Mapping/Interface",
+    "keys": "DE4"
+  },
+  {
+    "ref": "INC-020",
+    "title": "TPE - Merchant ID mal configuré",
+    "domain": "TPE",
+    "component": "Routing",
+    "keys": "DE42"
+  },
+  {
+    "ref": "INC-021",
+    "title": "EMV - Transaction puce rejetée",
+    "domain": "Carte",
+    "component": "EMV/Host",
+    "keys": "DE55, DE39"
+  },
+  {
+    "ref": "INC-022",
+    "title": "EMV - ARQC invalide",
+    "domain": "Carte",
+    "component": "HSM/Issuer",
+    "keys": "DE55"
+  },
+  {
+    "ref": "INC-023",
+    "title": "EMV - Cryptogramme de transaction non validé",
+    "domain": "Carte",
+    "component": "HSM/Issuer",
+    "keys": "DE55"
+  },
+  {
+    "ref": "INC-024",
+    "title": "PIN - PIN block invalide",
+    "domain": "Carte",
+    "component": "HSM",
+    "keys": "DE52, DE53"
+  },
+  {
+    "ref": "INC-025",
+    "title": "PIN - Erreur de traduction de PIN block",
+    "domain": "Carte",
+    "component": "HSM/Switch",
+    "keys": "DE52"
+  },
+  {
+    "ref": "INC-026",
+    "title": "HSM - HSM indisponible",
+    "domain": "Infrastructure",
+    "component": "HSM",
+    "keys": "DE53"
+  },
+  {
+    "ref": "INC-027",
+    "title": "HSM - Latence excessive des requêtes cryptographiques",
+    "domain": "Infrastructure",
+    "component": "HSM",
+    "keys": "latence/HSM"
+  },
+  {
+    "ref": "INC-028",
+    "title": "HSM - Clé cryptographique indisponible ou incorrecte",
+    "domain": "Infrastructure",
+    "component": "HSM",
+    "keys": "clé/crypto"
+  },
+  {
+    "ref": "INC-029",
+    "title": "ISO 8583 - Bitmap incohérent",
+    "domain": "Interface",
+    "component": "ISO 8583",
+    "keys": "Bitmap"
+  },
+  {
+    "ref": "INC-030",
+    "title": "ISO 8583 - Data Element obligatoire absent",
+    "domain": "Interface",
+    "component": "ISO 8583",
+    "keys": "DE"
+  },
+  {
+    "ref": "INC-031",
+    "title": "ISO 8583 - Format ou longueur d'un DE incorrect",
+    "domain": "Interface",
+    "component": "ISO 8583",
+    "keys": "DE"
+  },
+  {
+    "ref": "INC-032",
+    "title": "ISO 8583 - MTI inattendu ou non supporté",
+    "domain": "Interface",
+    "component": "ISO 8583",
+    "keys": "MTI"
+  },
+  {
+    "ref": "INC-033",
+    "title": "Payway - Problème de routage vers un Host",
+    "domain": "Payway",
+    "component": "Routing",
+    "keys": "destination/Host"
+  },
+  {
+    "ref": "INC-034",
+    "title": "Payway - Queue de messages en accumulation",
+    "domain": "Payway",
+    "component": "Payway/Messaging",
+    "keys": "queue"
+  },
+  {
+    "ref": "INC-035",
+    "title": "Payway - Service d'interface arrêté",
+    "domain": "Payway",
+    "component": "Payway",
+    "keys": "service/status"
+  },
+  {
+    "ref": "INC-036",
+    "title": "Payway - Pool de connexions saturé",
+    "domain": "Payway",
+    "component": "Payway/DB",
+    "keys": "connection pool"
+  },
+  {
+    "ref": "INC-037",
+    "title": "Payway - Latence anormale d'un Host",
+    "domain": "Payway",
+    "component": "Host/Réseau",
+    "keys": "latence"
+  },
+  {
+    "ref": "INC-038",
+    "title": "Payway - Réponse reçue mais non corrélée",
+    "domain": "Payway",
+    "component": "Payway/Switch",
+    "keys": "STAN/RRN"
+  },
+  {
+    "ref": "INC-039",
+    "title": "Host - Réponse tardive après expiration du timeout",
+    "domain": "Host",
+    "component": "Host/Network",
+    "keys": "timeout"
+  },
+  {
+    "ref": "INC-040",
+    "title": "Host - Host UP mais transactions rejetées massivement",
+    "domain": "Host",
+    "component": "Host/Issuer",
+    "keys": "DE39"
+  },
+  {
+    "ref": "INC-041",
+    "title": "Issuer - Base ACCOUNT verrouillée",
+    "domain": "Issuer",
+    "component": "DB",
+    "keys": "locks/sessions"
+  },
+  {
+    "ref": "INC-042",
+    "title": "Issuer - Pool de sessions DB saturé",
+    "domain": "Issuer",
+    "component": "DB",
+    "keys": "sessions"
+  },
+  {
+    "ref": "INC-043",
+    "title": "Issuer - Requête ACCOUNT très lente",
+    "domain": "Issuer",
+    "component": "DB",
+    "keys": "SQL/performance"
+  },
+  {
+    "ref": "INC-044",
+    "title": "Issuer - Session Back Office bloquante",
+    "domain": "Issuer",
+    "component": "DB/Back Office",
+    "keys": "lock"
+  },
+  {
+    "ref": "INC-045",
+    "title": "Clearing - Fichier batch non généré",
+    "domain": "Clearing",
+    "component": "Batch",
+    "keys": "batch/file"
+  },
+  {
+    "ref": "INC-046",
+    "title": "Clearing - Batch bloqué sur une étape",
+    "domain": "Clearing",
+    "component": "Batch/DB",
+    "keys": "batch/lock"
+  },
+  {
+    "ref": "INC-047",
+    "title": "Clearing - Suspense comptable sur transactions VISA/MC",
+    "domain": "Clearing",
+    "component": "CBS/Reconciliation",
+    "keys": "DE4/DE39/DE90"
+  },
+  {
+    "ref": "INC-048",
+    "title": "Clearing - Écart entre transactions et fichier de compensation",
+    "domain": "Clearing",
+    "component": "Reconciliation",
+    "keys": "STAN/RRN"
+  },
+  {
+    "ref": "INC-049",
+    "title": "Network Management - Echo test 0800/0810 en échec",
+    "domain": "Réseau",
+    "component": "Network Management",
+    "keys": "MTI 0800/0810, DE70"
+  },
+  {
+    "ref": "INC-050",
+    "title": "Production - Déploiement monétique avec régression de transactions",
+    "domain": "Production",
+    "component": "Release/Payway",
+    "keys": "MTI/DE39/logs"
+  },
+  {
+    "ref": "INC-051",
+    "title": "GAB - EPP Clavier - Anomalie type 1 sur PIN Pad chiffrant",
+    "domain": "GAB",
+    "component": "ATM/EPP",
+    "keys": "DE52, KSN, DUKPT"
+  },
+  {
+    "ref": "INC-052",
+    "title": "GAB - Lecteur Carte - Anomalie type 1 sur Lecteur hybride motorisé",
+    "domain": "GAB",
+    "component": "ATM/Lecteur",
+    "keys": "Track2, Chip, MTI 0200"
+  },
+  {
+    "ref": "INC-053",
+    "title": "GAB - Cassette Billets - Anomalie type 1 sur Module de distribution",
+    "domain": "GAB",
+    "component": "ATM/Cassettes",
+    "keys": "Cassette Status, DE4"
+  },
+  {
+    "ref": "INC-054",
+    "title": "GAB - Dépôt Automatique - Anomalie type 1 sur Module de recyclage/dépôt",
+    "domain": "GAB",
+    "component": "ATM/Dépôt",
+    "keys": "Envelope, Depository, 0200"
+  },
+  {
+    "ref": "INC-055",
+    "title": "GAB - Audit Trail - Anomalie type 1 sur Journal électronique",
+    "domain": "GAB",
+    "component": "ATM/Journal",
+    "keys": "EJ, Decryption, Audit"
+  },
+  {
+    "ref": "INC-056",
+    "title": "TPE - Paiement NFC - Anomalie type 1 sur Lecteur NFC sans contact",
+    "domain": "TPE",
+    "component": "TPE/Contactless",
+    "keys": "NFC, Tag 9F6E, DE55"
+  },
+  {
+    "ref": "INC-057",
+    "title": "TPE - Passerelle Monétique - Anomalie type 1 sur Concentrateur TPE",
+    "domain": "TPE",
+    "component": "TPE/Passerelle",
+    "keys": "TLS, IP, Port 8443"
+  },
+  {
+    "ref": "INC-058",
+    "title": "TPE - Télécollecte Fin Journée - Anomalie type 1 sur Télécollecte CB",
+    "domain": "TPE",
+    "component": "TPE/Télécollecte",
+    "keys": "MTI 0500, Batch Upload"
+  },
+  {
+    "ref": "INC-059",
+    "title": "TPE - Conversion Devise DCC - Anomalie type 1 sur DCC Dynamic Currency",
+    "domain": "TPE",
+    "component": "TPE/Multi-devise",
+    "keys": "DE49, DE51, DE6"
+  },
+  {
+    "ref": "INC-060",
+    "title": "TPE - Remboursement Commerçant - Anomalie type 1 sur Opération Refund",
+    "domain": "TPE",
+    "component": "TPE/Remboursement",
+    "keys": "MTI 0200, DE3=200000"
+  },
+  {
+    "ref": "INC-061",
+    "title": "Carte - Kernel EMV Contact - Anomalie type 1 sur Noyau EMV L2",
+    "domain": "Carte",
+    "component": "EMV/Kernel",
+    "keys": "Tag 9F36, Tag 9F10, DE55"
+  },
+  {
+    "ref": "INC-062",
+    "title": "Carte - Authentification 3DSv2 - Anomalie type 1 sur Plateforme 3D-Secure",
+    "domain": "Carte",
+    "component": "Carte/3DS",
+    "keys": "CAVV, AAV, E-commerce"
+  },
+  {
+    "ref": "INC-063",
+    "title": "Carte - Token ApplePay/GooglePay - Anomalie type 1 sur Service de Tokenisation",
+    "domain": "Carte",
+    "component": "Carte/Tokenisation",
+    "keys": "PAR, DPAN, Token Vault"
+  },
+  {
+    "ref": "INC-064",
+    "title": "Carte - Dépassement Plafond - Anomalie type 1 sur Gestion des plafonds cartes",
+    "domain": "Carte",
+    "component": "Carte/Plafond",
+    "keys": "DE39=61, DE39=65"
+  },
+  {
+    "ref": "INC-065",
+    "title": "Infrastructure - Sécurité Clé LMK - Anomalie type 1 sur Local Master Key",
+    "domain": "Infrastructure",
+    "component": "HSM/LMK",
+    "keys": "LMK, HSM PayShield"
+  },
+  {
+    "ref": "INC-066",
+    "title": "Infrastructure - Validation CVV2 - Anomalie type 1 sur Générateur CVV/iCVV",
+    "domain": "Infrastructure",
+    "component": "HSM/CVV",
+    "keys": "CVV2, CSC, DE39=82"
+  },
+  {
+    "ref": "INC-067",
+    "title": "Infrastructure - Vérification PVV/IBM3624 - Anomalie type 1 sur PIN Verification Value",
+    "domain": "Infrastructure",
+    "component": "HSM/PVV",
+    "keys": "PVV, PVKI, DE52"
+  },
+  {
+    "ref": "INC-068",
+    "title": "Infrastructure - Certificat Root CA EMV - Anomalie type 1 sur Infrastructure PKI",
+    "domain": "Infrastructure",
+    "component": "HSM/Certificats",
+    "keys": "EMV CA Public Key, RID"
+  },
+  {
+    "ref": "INC-069",
+    "title": "Interface - Décodage Processing Code - Anomalie type 1 sur Processing Code",
+    "domain": "Interface",
+    "component": "ISO 8583/DE3",
+    "keys": "DE3 (000000, 010000, 310000)"
+  },
+  {
+    "ref": "INC-070",
+    "title": "Interface - Identification Marchand - Anomalie type 1 sur Card Acceptor Name",
+    "domain": "Interface",
+    "component": "ISO 8583/DE43",
+    "keys": "DE43 City/Country"
+  },
+  {
+    "ref": "INC-071",
+    "title": "Interface - Montants Additionnels Solde - Anomalie type 1 sur Additional Amounts",
+    "domain": "Interface",
+    "component": "ISO 8583/DE54",
+    "keys": "DE54 Available Balance"
+  },
+  {
+    "ref": "INC-072",
+    "title": "Interface - Données Privées Terminal - Anomalie type 1 sur Terminal Data",
+    "domain": "Interface",
+    "component": "ISO 8583/DE60",
+    "keys": "DE60 Terminal Capability"
+  },
+  {
+    "ref": "INC-073",
+    "title": "Switch - Interface VISA SMS - Anomalie type 1 sur Lien Direct VISA Base I/II",
+    "domain": "Switch",
+    "component": "Switch/VISA",
+    "keys": "VISA VIP, VAP, 0100"
+  },
+  {
+    "ref": "INC-074",
+    "title": "Switch - Interface Mastercard Banknet - Anomalie type 1 sur Lien Mastercard MIP",
+    "domain": "Switch",
+    "component": "Switch/Mastercard",
+    "keys": "MIP, 0100, DE48 SE"
+  },
+  {
+    "ref": "INC-075",
+    "title": "Switch - Interbancarité GIMAC - Anomalie type 1 sur Switch Régional GIMAC",
+    "domain": "Switch",
+    "component": "Switch/GIMAC",
+    "keys": "GIMAC MTI, 0200, DE100"
+  },
+  {
+    "ref": "INC-076",
+    "title": "Switch - Bascule Haute Disponibilité - Anomalie type 1 sur Routage Fallback",
+    "domain": "Switch",
+    "component": "Switch/Bascule",
+    "keys": "Active/Passive Switch, VIP"
+  },
+  {
+    "ref": "INC-077",
+    "title": "Clearing - Extourne Comptable - Anomalie type 1 sur Contrepassation d'écritures",
+    "domain": "Clearing",
+    "component": "CBS/Contrepassation",
+    "keys": "DE90, Annulation CBS"
+  },
+  {
+    "ref": "INC-078",
+    "title": "Clearing - Heure de Coupure Cut-Off - Anomalie type 1 sur Arrêté comptable journalier",
+    "domain": "Clearing",
+    "component": "Clearing/CutOff",
+    "keys": "Cut-Off, Batch Balance"
+  },
+  {
+    "ref": "INC-079",
+    "title": "Clearing - Rejet Lot Compensation - Anomalie type 1 sur Rejet fichier compensation",
+    "domain": "Clearing",
+    "component": "Clearing/Rejet",
+    "keys": "Fichier EPA, Chargeback"
+  },
+  {
+    "ref": "INC-080",
+    "title": "Clearing - Litige & Chargeback TC40 - Anomalie type 1 sur Déclaration Impayés/Fraude",
+    "domain": "Clearing",
+    "component": "Clearing/Fraude",
+    "keys": "Chargeback, Representment"
+  },
+  {
+    "ref": "INC-081",
+    "title": "GAB - EPP Clavier - Anomalie type 2 sur PIN Pad chiffrant",
+    "domain": "GAB",
+    "component": "ATM/EPP",
+    "keys": "DE52, KSN, DUKPT"
+  },
+  {
+    "ref": "INC-082",
+    "title": "GAB - Lecteur Carte - Anomalie type 2 sur Lecteur hybride motorisé",
+    "domain": "GAB",
+    "component": "ATM/Lecteur",
+    "keys": "Track2, Chip, MTI 0200"
+  },
+  {
+    "ref": "INC-083",
+    "title": "GAB - Cassette Billets - Anomalie type 2 sur Module de distribution",
+    "domain": "GAB",
+    "component": "ATM/Cassettes",
+    "keys": "Cassette Status, DE4"
+  },
+  {
+    "ref": "INC-084",
+    "title": "GAB - Dépôt Automatique - Anomalie type 2 sur Module de recyclage/dépôt",
+    "domain": "GAB",
+    "component": "ATM/Dépôt",
+    "keys": "Envelope, Depository, 0200"
+  },
+  {
+    "ref": "INC-085",
+    "title": "GAB - Audit Trail - Anomalie type 2 sur Journal électronique",
+    "domain": "GAB",
+    "component": "ATM/Journal",
+    "keys": "EJ, Decryption, Audit"
+  },
+  {
+    "ref": "INC-086",
+    "title": "TPE - Paiement NFC - Anomalie type 2 sur Lecteur NFC sans contact",
+    "domain": "TPE",
+    "component": "TPE/Contactless",
+    "keys": "NFC, Tag 9F6E, DE55"
+  },
+  {
+    "ref": "INC-087",
+    "title": "TPE - Passerelle Monétique - Anomalie type 2 sur Concentrateur TPE",
+    "domain": "TPE",
+    "component": "TPE/Passerelle",
+    "keys": "TLS, IP, Port 8443"
+  },
+  {
+    "ref": "INC-088",
+    "title": "TPE - Télécollecte Fin Journée - Anomalie type 2 sur Télécollecte CB",
+    "domain": "TPE",
+    "component": "TPE/Télécollecte",
+    "keys": "MTI 0500, Batch Upload"
+  },
+  {
+    "ref": "INC-089",
+    "title": "TPE - Conversion Devise DCC - Anomalie type 2 sur DCC Dynamic Currency",
+    "domain": "TPE",
+    "component": "TPE/Multi-devise",
+    "keys": "DE49, DE51, DE6"
+  },
+  {
+    "ref": "INC-090",
+    "title": "TPE - Remboursement Commerçant - Anomalie type 2 sur Opération Refund",
+    "domain": "TPE",
+    "component": "TPE/Remboursement",
+    "keys": "MTI 0200, DE3=200000"
+  },
+  {
+    "ref": "INC-091",
+    "title": "Carte - Kernel EMV Contact - Anomalie type 2 sur Noyau EMV L2",
+    "domain": "Carte",
+    "component": "EMV/Kernel",
+    "keys": "Tag 9F36, Tag 9F10, DE55"
+  },
+  {
+    "ref": "INC-092",
+    "title": "Carte - Authentification 3DSv2 - Anomalie type 2 sur Plateforme 3D-Secure",
+    "domain": "Carte",
+    "component": "Carte/3DS",
+    "keys": "CAVV, AAV, E-commerce"
+  },
+  {
+    "ref": "INC-093",
+    "title": "Carte - Token ApplePay/GooglePay - Anomalie type 2 sur Service de Tokenisation",
+    "domain": "Carte",
+    "component": "Carte/Tokenisation",
+    "keys": "PAR, DPAN, Token Vault"
+  },
+  {
+    "ref": "INC-094",
+    "title": "Carte - Dépassement Plafond - Anomalie type 2 sur Gestion des plafonds cartes",
+    "domain": "Carte",
+    "component": "Carte/Plafond",
+    "keys": "DE39=61, DE39=65"
+  },
+  {
+    "ref": "INC-095",
+    "title": "Infrastructure - Sécurité Clé LMK - Anomalie type 2 sur Local Master Key",
+    "domain": "Infrastructure",
+    "component": "HSM/LMK",
+    "keys": "LMK, HSM PayShield"
+  },
+  {
+    "ref": "INC-096",
+    "title": "Infrastructure - Validation CVV2 - Anomalie type 2 sur Générateur CVV/iCVV",
+    "domain": "Infrastructure",
+    "component": "HSM/CVV",
+    "keys": "CVV2, CSC, DE39=82"
+  },
+  {
+    "ref": "INC-097",
+    "title": "Infrastructure - Vérification PVV/IBM3624 - Anomalie type 2 sur PIN Verification Value",
+    "domain": "Infrastructure",
+    "component": "HSM/PVV",
+    "keys": "PVV, PVKI, DE52"
+  },
+  {
+    "ref": "INC-098",
+    "title": "Infrastructure - Certificat Root CA EMV - Anomalie type 2 sur Infrastructure PKI",
+    "domain": "Infrastructure",
+    "component": "HSM/Certificats",
+    "keys": "EMV CA Public Key, RID"
+  },
+  {
+    "ref": "INC-099",
+    "title": "Interface - Décodage Processing Code - Anomalie type 2 sur Processing Code",
+    "domain": "Interface",
+    "component": "ISO 8583/DE3",
+    "keys": "DE3 (000000, 010000, 310000)"
+  },
+  {
+    "ref": "INC-100",
+    "title": "Interface - Identification Marchand - Anomalie type 2 sur Card Acceptor Name",
+    "domain": "Interface",
+    "component": "ISO 8583/DE43",
+    "keys": "DE43 City/Country"
+  },
+  {
+    "ref": "INC-101",
+    "title": "Interface - Montants Additionnels Solde - Anomalie type 2 sur Additional Amounts",
+    "domain": "Interface",
+    "component": "ISO 8583/DE54",
+    "keys": "DE54 Available Balance"
+  },
+  {
+    "ref": "INC-102",
+    "title": "Interface - Données Privées Terminal - Anomalie type 2 sur Terminal Data",
+    "domain": "Interface",
+    "component": "ISO 8583/DE60",
+    "keys": "DE60 Terminal Capability"
+  },
+  {
+    "ref": "INC-103",
+    "title": "Switch - Interface VISA SMS - Anomalie type 2 sur Lien Direct VISA Base I/II",
+    "domain": "Switch",
+    "component": "Switch/VISA",
+    "keys": "VISA VIP, VAP, 0100"
+  },
+  {
+    "ref": "INC-104",
+    "title": "Switch - Interface Mastercard Banknet - Anomalie type 2 sur Lien Mastercard MIP",
+    "domain": "Switch",
+    "component": "Switch/Mastercard",
+    "keys": "MIP, 0100, DE48 SE"
+  },
+  {
+    "ref": "INC-105",
+    "title": "Switch - Interbancarité GIMAC - Anomalie type 2 sur Switch Régional GIMAC",
+    "domain": "Switch",
+    "component": "Switch/GIMAC",
+    "keys": "GIMAC MTI, 0200, DE100"
+  },
+  {
+    "ref": "INC-106",
+    "title": "Switch - Bascule Haute Disponibilité - Anomalie type 2 sur Routage Fallback",
+    "domain": "Switch",
+    "component": "Switch/Bascule",
+    "keys": "Active/Passive Switch, VIP"
+  },
+  {
+    "ref": "INC-107",
+    "title": "Clearing - Extourne Comptable - Anomalie type 2 sur Contrepassation d'écritures",
+    "domain": "Clearing",
+    "component": "CBS/Contrepassation",
+    "keys": "DE90, Annulation CBS"
+  },
+  {
+    "ref": "INC-108",
+    "title": "Clearing - Heure de Coupure Cut-Off - Anomalie type 2 sur Arrêté comptable journalier",
+    "domain": "Clearing",
+    "component": "Clearing/CutOff",
+    "keys": "Cut-Off, Batch Balance"
+  },
+  {
+    "ref": "INC-109",
+    "title": "Clearing - Rejet Lot Compensation - Anomalie type 2 sur Rejet fichier compensation",
+    "domain": "Clearing",
+    "component": "Clearing/Rejet",
+    "keys": "Fichier EPA, Chargeback"
+  },
+  {
+    "ref": "INC-110",
+    "title": "Clearing - Litige & Chargeback TC40 - Anomalie type 2 sur Déclaration Impayés/Fraude",
+    "domain": "Clearing",
+    "component": "Clearing/Fraude",
+    "keys": "Chargeback, Representment"
+  },
+  {
+    "ref": "INC-111",
+    "title": "GAB - EPP Clavier - Anomalie type 3 sur PIN Pad chiffrant",
+    "domain": "GAB",
+    "component": "ATM/EPP",
+    "keys": "DE52, KSN, DUKPT"
+  },
+  {
+    "ref": "INC-112",
+    "title": "GAB - Lecteur Carte - Anomalie type 3 sur Lecteur hybride motorisé",
+    "domain": "GAB",
+    "component": "ATM/Lecteur",
+    "keys": "Track2, Chip, MTI 0200"
+  },
+  {
+    "ref": "INC-113",
+    "title": "GAB - Cassette Billets - Anomalie type 3 sur Module de distribution",
+    "domain": "GAB",
+    "component": "ATM/Cassettes",
+    "keys": "Cassette Status, DE4"
+  },
+  {
+    "ref": "INC-114",
+    "title": "GAB - Dépôt Automatique - Anomalie type 3 sur Module de recyclage/dépôt",
+    "domain": "GAB",
+    "component": "ATM/Dépôt",
+    "keys": "Envelope, Depository, 0200"
+  },
+  {
+    "ref": "INC-115",
+    "title": "GAB - Audit Trail - Anomalie type 3 sur Journal électronique",
+    "domain": "GAB",
+    "component": "ATM/Journal",
+    "keys": "EJ, Decryption, Audit"
+  },
+  {
+    "ref": "INC-116",
+    "title": "TPE - Paiement NFC - Anomalie type 3 sur Lecteur NFC sans contact",
+    "domain": "TPE",
+    "component": "TPE/Contactless",
+    "keys": "NFC, Tag 9F6E, DE55"
+  },
+  {
+    "ref": "INC-117",
+    "title": "TPE - Passerelle Monétique - Anomalie type 3 sur Concentrateur TPE",
+    "domain": "TPE",
+    "component": "TPE/Passerelle",
+    "keys": "TLS, IP, Port 8443"
+  },
+  {
+    "ref": "INC-118",
+    "title": "TPE - Télécollecte Fin Journée - Anomalie type 3 sur Télécollecte CB",
+    "domain": "TPE",
+    "component": "TPE/Télécollecte",
+    "keys": "MTI 0500, Batch Upload"
+  },
+  {
+    "ref": "INC-119",
+    "title": "TPE - Conversion Devise DCC - Anomalie type 3 sur DCC Dynamic Currency",
+    "domain": "TPE",
+    "component": "TPE/Multi-devise",
+    "keys": "DE49, DE51, DE6"
+  },
+  {
+    "ref": "INC-120",
+    "title": "TPE - Remboursement Commerçant - Anomalie type 3 sur Opération Refund",
+    "domain": "TPE",
+    "component": "TPE/Remboursement",
+    "keys": "MTI 0200, DE3=200000"
+  },
+  {
+    "ref": "INC-121",
+    "title": "Carte - Kernel EMV Contact - Anomalie type 3 sur Noyau EMV L2",
+    "domain": "Carte",
+    "component": "EMV/Kernel",
+    "keys": "Tag 9F36, Tag 9F10, DE55"
+  },
+  {
+    "ref": "INC-122",
+    "title": "Carte - Authentification 3DSv2 - Anomalie type 3 sur Plateforme 3D-Secure",
+    "domain": "Carte",
+    "component": "Carte/3DS",
+    "keys": "CAVV, AAV, E-commerce"
+  },
+  {
+    "ref": "INC-123",
+    "title": "Carte - Token ApplePay/GooglePay - Anomalie type 3 sur Service de Tokenisation",
+    "domain": "Carte",
+    "component": "Carte/Tokenisation",
+    "keys": "PAR, DPAN, Token Vault"
+  },
+  {
+    "ref": "INC-124",
+    "title": "Carte - Dépassement Plafond - Anomalie type 3 sur Gestion des plafonds cartes",
+    "domain": "Carte",
+    "component": "Carte/Plafond",
+    "keys": "DE39=61, DE39=65"
+  },
+  {
+    "ref": "INC-125",
+    "title": "Infrastructure - Sécurité Clé LMK - Anomalie type 3 sur Local Master Key",
+    "domain": "Infrastructure",
+    "component": "HSM/LMK",
+    "keys": "LMK, HSM PayShield"
+  },
+  {
+    "ref": "INC-126",
+    "title": "Infrastructure - Validation CVV2 - Anomalie type 3 sur Générateur CVV/iCVV",
+    "domain": "Infrastructure",
+    "component": "HSM/CVV",
+    "keys": "CVV2, CSC, DE39=82"
+  },
+  {
+    "ref": "INC-127",
+    "title": "Infrastructure - Vérification PVV/IBM3624 - Anomalie type 3 sur PIN Verification Value",
+    "domain": "Infrastructure",
+    "component": "HSM/PVV",
+    "keys": "PVV, PVKI, DE52"
+  },
+  {
+    "ref": "INC-128",
+    "title": "Infrastructure - Certificat Root CA EMV - Anomalie type 3 sur Infrastructure PKI",
+    "domain": "Infrastructure",
+    "component": "HSM/Certificats",
+    "keys": "EMV CA Public Key, RID"
+  },
+  {
+    "ref": "INC-129",
+    "title": "Interface - Décodage Processing Code - Anomalie type 3 sur Processing Code",
+    "domain": "Interface",
+    "component": "ISO 8583/DE3",
+    "keys": "DE3 (000000, 010000, 310000)"
+  },
+  {
+    "ref": "INC-130",
+    "title": "Interface - Identification Marchand - Anomalie type 3 sur Card Acceptor Name",
+    "domain": "Interface",
+    "component": "ISO 8583/DE43",
+    "keys": "DE43 City/Country"
+  },
+  {
+    "ref": "INC-131",
+    "title": "Interface - Montants Additionnels Solde - Anomalie type 3 sur Additional Amounts",
+    "domain": "Interface",
+    "component": "ISO 8583/DE54",
+    "keys": "DE54 Available Balance"
+  },
+  {
+    "ref": "INC-132",
+    "title": "Interface - Données Privées Terminal - Anomalie type 3 sur Terminal Data",
+    "domain": "Interface",
+    "component": "ISO 8583/DE60",
+    "keys": "DE60 Terminal Capability"
+  },
+  {
+    "ref": "INC-133",
+    "title": "Switch - Interface VISA SMS - Anomalie type 3 sur Lien Direct VISA Base I/II",
+    "domain": "Switch",
+    "component": "Switch/VISA",
+    "keys": "VISA VIP, VAP, 0100"
+  },
+  {
+    "ref": "INC-134",
+    "title": "Switch - Interface Mastercard Banknet - Anomalie type 3 sur Lien Mastercard MIP",
+    "domain": "Switch",
+    "component": "Switch/Mastercard",
+    "keys": "MIP, 0100, DE48 SE"
+  },
+  {
+    "ref": "INC-135",
+    "title": "Switch - Interbancarité GIMAC - Anomalie type 3 sur Switch Régional GIMAC",
+    "domain": "Switch",
+    "component": "Switch/GIMAC",
+    "keys": "GIMAC MTI, 0200, DE100"
+  },
+  {
+    "ref": "INC-136",
+    "title": "Switch - Bascule Haute Disponibilité - Anomalie type 3 sur Routage Fallback",
+    "domain": "Switch",
+    "component": "Switch/Bascule",
+    "keys": "Active/Passive Switch, VIP"
+  },
+  {
+    "ref": "INC-137",
+    "title": "Clearing - Extourne Comptable - Anomalie type 3 sur Contrepassation d'écritures",
+    "domain": "Clearing",
+    "component": "CBS/Contrepassation",
+    "keys": "DE90, Annulation CBS"
+  },
+  {
+    "ref": "INC-138",
+    "title": "Clearing - Heure de Coupure Cut-Off - Anomalie type 3 sur Arrêté comptable journalier",
+    "domain": "Clearing",
+    "component": "Clearing/CutOff",
+    "keys": "Cut-Off, Batch Balance"
+  },
+  {
+    "ref": "INC-139",
+    "title": "Clearing - Rejet Lot Compensation - Anomalie type 3 sur Rejet fichier compensation",
+    "domain": "Clearing",
+    "component": "Clearing/Rejet",
+    "keys": "Fichier EPA, Chargeback"
+  },
+  {
+    "ref": "INC-140",
+    "title": "Clearing - Litige & Chargeback TC40 - Anomalie type 3 sur Déclaration Impayés/Fraude",
+    "domain": "Clearing",
+    "component": "Clearing/Fraude",
+    "keys": "Chargeback, Representment"
+  },
+  {
+    "ref": "INC-141",
+    "title": "GAB - EPP Clavier - Anomalie type 4 sur PIN Pad chiffrant",
+    "domain": "GAB",
+    "component": "ATM/EPP",
+    "keys": "DE52, KSN, DUKPT"
+  },
+  {
+    "ref": "INC-142",
+    "title": "GAB - Lecteur Carte - Anomalie type 4 sur Lecteur hybride motorisé",
+    "domain": "GAB",
+    "component": "ATM/Lecteur",
+    "keys": "Track2, Chip, MTI 0200"
+  },
+  {
+    "ref": "INC-143",
+    "title": "GAB - Cassette Billets - Anomalie type 4 sur Module de distribution",
+    "domain": "GAB",
+    "component": "ATM/Cassettes",
+    "keys": "Cassette Status, DE4"
+  },
+  {
+    "ref": "INC-144",
+    "title": "GAB - Dépôt Automatique - Anomalie type 4 sur Module de recyclage/dépôt",
+    "domain": "GAB",
+    "component": "ATM/Dépôt",
+    "keys": "Envelope, Depository, 0200"
+  },
+  {
+    "ref": "INC-145",
+    "title": "GAB - Audit Trail - Anomalie type 4 sur Journal électronique",
+    "domain": "GAB",
+    "component": "ATM/Journal",
+    "keys": "EJ, Decryption, Audit"
+  },
+  {
+    "ref": "INC-146",
+    "title": "TPE - Paiement NFC - Anomalie type 4 sur Lecteur NFC sans contact",
+    "domain": "TPE",
+    "component": "TPE/Contactless",
+    "keys": "NFC, Tag 9F6E, DE55"
+  },
+  {
+    "ref": "INC-147",
+    "title": "TPE - Passerelle Monétique - Anomalie type 4 sur Concentrateur TPE",
+    "domain": "TPE",
+    "component": "TPE/Passerelle",
+    "keys": "TLS, IP, Port 8443"
+  },
+  {
+    "ref": "INC-148",
+    "title": "TPE - Télécollecte Fin Journée - Anomalie type 4 sur Télécollecte CB",
+    "domain": "TPE",
+    "component": "TPE/Télécollecte",
+    "keys": "MTI 0500, Batch Upload"
+  },
+  {
+    "ref": "INC-149",
+    "title": "TPE - Conversion Devise DCC - Anomalie type 4 sur DCC Dynamic Currency",
+    "domain": "TPE",
+    "component": "TPE/Multi-devise",
+    "keys": "DE49, DE51, DE6"
+  },
+  {
+    "ref": "INC-150",
+    "title": "TPE - Remboursement Commerçant - Anomalie type 4 sur Opération Refund",
+    "domain": "TPE",
+    "component": "TPE/Remboursement",
+    "keys": "MTI 0200, DE3=200000"
+  },
+  {
+    "ref": "INC-151",
+    "title": "Carte - Kernel EMV Contact - Anomalie type 4 sur Noyau EMV L2",
+    "domain": "Carte",
+    "component": "EMV/Kernel",
+    "keys": "Tag 9F36, Tag 9F10, DE55"
+  },
+  {
+    "ref": "INC-152",
+    "title": "Carte - Authentification 3DSv2 - Anomalie type 4 sur Plateforme 3D-Secure",
+    "domain": "Carte",
+    "component": "Carte/3DS",
+    "keys": "CAVV, AAV, E-commerce"
+  },
+  {
+    "ref": "INC-153",
+    "title": "Carte - Token ApplePay/GooglePay - Anomalie type 4 sur Service de Tokenisation",
+    "domain": "Carte",
+    "component": "Carte/Tokenisation",
+    "keys": "PAR, DPAN, Token Vault"
+  },
+  {
+    "ref": "INC-154",
+    "title": "Carte - Dépassement Plafond - Anomalie type 4 sur Gestion des plafonds cartes",
+    "domain": "Carte",
+    "component": "Carte/Plafond",
+    "keys": "DE39=61, DE39=65"
+  },
+  {
+    "ref": "INC-155",
+    "title": "Infrastructure - Sécurité Clé LMK - Anomalie type 4 sur Local Master Key",
+    "domain": "Infrastructure",
+    "component": "HSM/LMK",
+    "keys": "LMK, HSM PayShield"
+  },
+  {
+    "ref": "INC-156",
+    "title": "Infrastructure - Validation CVV2 - Anomalie type 4 sur Générateur CVV/iCVV",
+    "domain": "Infrastructure",
+    "component": "HSM/CVV",
+    "keys": "CVV2, CSC, DE39=82"
+  },
+  {
+    "ref": "INC-157",
+    "title": "Infrastructure - Vérification PVV/IBM3624 - Anomalie type 4 sur PIN Verification Value",
+    "domain": "Infrastructure",
+    "component": "HSM/PVV",
+    "keys": "PVV, PVKI, DE52"
+  },
+  {
+    "ref": "INC-158",
+    "title": "Infrastructure - Certificat Root CA EMV - Anomalie type 4 sur Infrastructure PKI",
+    "domain": "Infrastructure",
+    "component": "HSM/Certificats",
+    "keys": "EMV CA Public Key, RID"
+  },
+  {
+    "ref": "INC-159",
+    "title": "Interface - Décodage Processing Code - Anomalie type 4 sur Processing Code",
+    "domain": "Interface",
+    "component": "ISO 8583/DE3",
+    "keys": "DE3 (000000, 010000, 310000)"
+  },
+  {
+    "ref": "INC-160",
+    "title": "Interface - Identification Marchand - Anomalie type 4 sur Card Acceptor Name",
+    "domain": "Interface",
+    "component": "ISO 8583/DE43",
+    "keys": "DE43 City/Country"
+  },
+  {
+    "ref": "INC-161",
+    "title": "Interface - Montants Additionnels Solde - Anomalie type 4 sur Additional Amounts",
+    "domain": "Interface",
+    "component": "ISO 8583/DE54",
+    "keys": "DE54 Available Balance"
+  },
+  {
+    "ref": "INC-162",
+    "title": "Interface - Données Privées Terminal - Anomalie type 4 sur Terminal Data",
+    "domain": "Interface",
+    "component": "ISO 8583/DE60",
+    "keys": "DE60 Terminal Capability"
+  },
+  {
+    "ref": "INC-163",
+    "title": "Switch - Interface VISA SMS - Anomalie type 4 sur Lien Direct VISA Base I/II",
+    "domain": "Switch",
+    "component": "Switch/VISA",
+    "keys": "VISA VIP, VAP, 0100"
+  },
+  {
+    "ref": "INC-164",
+    "title": "Switch - Interface Mastercard Banknet - Anomalie type 4 sur Lien Mastercard MIP",
+    "domain": "Switch",
+    "component": "Switch/Mastercard",
+    "keys": "MIP, 0100, DE48 SE"
+  },
+  {
+    "ref": "INC-165",
+    "title": "Switch - Interbancarité GIMAC - Anomalie type 4 sur Switch Régional GIMAC",
+    "domain": "Switch",
+    "component": "Switch/GIMAC",
+    "keys": "GIMAC MTI, 0200, DE100"
+  },
+  {
+    "ref": "INC-166",
+    "title": "Switch - Bascule Haute Disponibilité - Anomalie type 4 sur Routage Fallback",
+    "domain": "Switch",
+    "component": "Switch/Bascule",
+    "keys": "Active/Passive Switch, VIP"
+  },
+  {
+    "ref": "INC-167",
+    "title": "Clearing - Extourne Comptable - Anomalie type 4 sur Contrepassation d'écritures",
+    "domain": "Clearing",
+    "component": "CBS/Contrepassation",
+    "keys": "DE90, Annulation CBS"
+  },
+  {
+    "ref": "INC-168",
+    "title": "Clearing - Heure de Coupure Cut-Off - Anomalie type 4 sur Arrêté comptable journalier",
+    "domain": "Clearing",
+    "component": "Clearing/CutOff",
+    "keys": "Cut-Off, Batch Balance"
+  },
+  {
+    "ref": "INC-169",
+    "title": "Clearing - Rejet Lot Compensation - Anomalie type 4 sur Rejet fichier compensation",
+    "domain": "Clearing",
+    "component": "Clearing/Rejet",
+    "keys": "Fichier EPA, Chargeback"
+  },
+  {
+    "ref": "INC-170",
+    "title": "Clearing - Litige & Chargeback TC40 - Anomalie type 4 sur Déclaration Impayés/Fraude",
+    "domain": "Clearing",
+    "component": "Clearing/Fraude",
+    "keys": "Chargeback, Representment"
+  },
+  {
+    "ref": "INC-171",
+    "title": "GAB - EPP Clavier - Anomalie type 5 sur PIN Pad chiffrant",
+    "domain": "GAB",
+    "component": "ATM/EPP",
+    "keys": "DE52, KSN, DUKPT"
+  },
+  {
+    "ref": "INC-172",
+    "title": "GAB - Lecteur Carte - Anomalie type 5 sur Lecteur hybride motorisé",
+    "domain": "GAB",
+    "component": "ATM/Lecteur",
+    "keys": "Track2, Chip, MTI 0200"
+  },
+  {
+    "ref": "INC-173",
+    "title": "GAB - Cassette Billets - Anomalie type 5 sur Module de distribution",
+    "domain": "GAB",
+    "component": "ATM/Cassettes",
+    "keys": "Cassette Status, DE4"
+  },
+  {
+    "ref": "INC-174",
+    "title": "GAB - Dépôt Automatique - Anomalie type 5 sur Module de recyclage/dépôt",
+    "domain": "GAB",
+    "component": "ATM/Dépôt",
+    "keys": "Envelope, Depository, 0200"
+  },
+  {
+    "ref": "INC-175",
+    "title": "GAB - Audit Trail - Anomalie type 5 sur Journal électronique",
+    "domain": "GAB",
+    "component": "ATM/Journal",
+    "keys": "EJ, Decryption, Audit"
+  },
+  {
+    "ref": "INC-176",
+    "title": "TPE - Paiement NFC - Anomalie type 5 sur Lecteur NFC sans contact",
+    "domain": "TPE",
+    "component": "TPE/Contactless",
+    "keys": "NFC, Tag 9F6E, DE55"
+  },
+  {
+    "ref": "INC-177",
+    "title": "TPE - Passerelle Monétique - Anomalie type 5 sur Concentrateur TPE",
+    "domain": "TPE",
+    "component": "TPE/Passerelle",
+    "keys": "TLS, IP, Port 8443"
+  },
+  {
+    "ref": "INC-178",
+    "title": "TPE - Télécollecte Fin Journée - Anomalie type 5 sur Télécollecte CB",
+    "domain": "TPE",
+    "component": "TPE/Télécollecte",
+    "keys": "MTI 0500, Batch Upload"
+  },
+  {
+    "ref": "INC-179",
+    "title": "TPE - Conversion Devise DCC - Anomalie type 5 sur DCC Dynamic Currency",
+    "domain": "TPE",
+    "component": "TPE/Multi-devise",
+    "keys": "DE49, DE51, DE6"
+  },
+  {
+    "ref": "INC-180",
+    "title": "TPE - Remboursement Commerçant - Anomalie type 5 sur Opération Refund",
+    "domain": "TPE",
+    "component": "TPE/Remboursement",
+    "keys": "MTI 0200, DE3=200000"
+  },
+  {
+    "ref": "INC-181",
+    "title": "Carte - Kernel EMV Contact - Anomalie type 5 sur Noyau EMV L2",
+    "domain": "Carte",
+    "component": "EMV/Kernel",
+    "keys": "Tag 9F36, Tag 9F10, DE55"
+  },
+  {
+    "ref": "INC-182",
+    "title": "Carte - Authentification 3DSv2 - Anomalie type 5 sur Plateforme 3D-Secure",
+    "domain": "Carte",
+    "component": "Carte/3DS",
+    "keys": "CAVV, AAV, E-commerce"
+  },
+  {
+    "ref": "INC-183",
+    "title": "Carte - Token ApplePay/GooglePay - Anomalie type 5 sur Service de Tokenisation",
+    "domain": "Carte",
+    "component": "Carte/Tokenisation",
+    "keys": "PAR, DPAN, Token Vault"
+  },
+  {
+    "ref": "INC-184",
+    "title": "Carte - Dépassement Plafond - Anomalie type 5 sur Gestion des plafonds cartes",
+    "domain": "Carte",
+    "component": "Carte/Plafond",
+    "keys": "DE39=61, DE39=65"
+  },
+  {
+    "ref": "INC-185",
+    "title": "Infrastructure - Sécurité Clé LMK - Anomalie type 5 sur Local Master Key",
+    "domain": "Infrastructure",
+    "component": "HSM/LMK",
+    "keys": "LMK, HSM PayShield"
+  },
+  {
+    "ref": "INC-186",
+    "title": "Infrastructure - Validation CVV2 - Anomalie type 5 sur Générateur CVV/iCVV",
+    "domain": "Infrastructure",
+    "component": "HSM/CVV",
+    "keys": "CVV2, CSC, DE39=82"
+  },
+  {
+    "ref": "INC-187",
+    "title": "Infrastructure - Vérification PVV/IBM3624 - Anomalie type 5 sur PIN Verification Value",
+    "domain": "Infrastructure",
+    "component": "HSM/PVV",
+    "keys": "PVV, PVKI, DE52"
+  },
+  {
+    "ref": "INC-188",
+    "title": "Infrastructure - Certificat Root CA EMV - Anomalie type 5 sur Infrastructure PKI",
+    "domain": "Infrastructure",
+    "component": "HSM/Certificats",
+    "keys": "EMV CA Public Key, RID"
+  },
+  {
+    "ref": "INC-189",
+    "title": "Interface - Décodage Processing Code - Anomalie type 5 sur Processing Code",
+    "domain": "Interface",
+    "component": "ISO 8583/DE3",
+    "keys": "DE3 (000000, 010000, 310000)"
+  },
+  {
+    "ref": "INC-190",
+    "title": "Interface - Identification Marchand - Anomalie type 5 sur Card Acceptor Name",
+    "domain": "Interface",
+    "component": "ISO 8583/DE43",
+    "keys": "DE43 City/Country"
+  },
+  {
+    "ref": "INC-191",
+    "title": "Interface - Montants Additionnels Solde - Anomalie type 5 sur Additional Amounts",
+    "domain": "Interface",
+    "component": "ISO 8583/DE54",
+    "keys": "DE54 Available Balance"
+  },
+  {
+    "ref": "INC-192",
+    "title": "Interface - Données Privées Terminal - Anomalie type 5 sur Terminal Data",
+    "domain": "Interface",
+    "component": "ISO 8583/DE60",
+    "keys": "DE60 Terminal Capability"
+  },
+  {
+    "ref": "INC-193",
+    "title": "Switch - Interface VISA SMS - Anomalie type 5 sur Lien Direct VISA Base I/II",
+    "domain": "Switch",
+    "component": "Switch/VISA",
+    "keys": "VISA VIP, VAP, 0100"
+  },
+  {
+    "ref": "INC-194",
+    "title": "Switch - Interface Mastercard Banknet - Anomalie type 5 sur Lien Mastercard MIP",
+    "domain": "Switch",
+    "component": "Switch/Mastercard",
+    "keys": "MIP, 0100, DE48 SE"
+  },
+  {
+    "ref": "INC-195",
+    "title": "Switch - Interbancarité GIMAC - Anomalie type 5 sur Switch Régional GIMAC",
+    "domain": "Switch",
+    "component": "Switch/GIMAC",
+    "keys": "GIMAC MTI, 0200, DE100"
+  },
+  {
+    "ref": "INC-196",
+    "title": "Switch - Bascule Haute Disponibilité - Anomalie type 5 sur Routage Fallback",
+    "domain": "Switch",
+    "component": "Switch/Bascule",
+    "keys": "Active/Passive Switch, VIP"
+  },
+  {
+    "ref": "INC-197",
+    "title": "Clearing - Extourne Comptable - Anomalie type 5 sur Contrepassation d'écritures",
+    "domain": "Clearing",
+    "component": "CBS/Contrepassation",
+    "keys": "DE90, Annulation CBS"
+  },
+  {
+    "ref": "INC-198",
+    "title": "Clearing - Heure de Coupure Cut-Off - Anomalie type 5 sur Arrêté comptable journalier",
+    "domain": "Clearing",
+    "component": "Clearing/CutOff",
+    "keys": "Cut-Off, Batch Balance"
+  },
+  {
+    "ref": "INC-199",
+    "title": "Clearing - Rejet Lot Compensation - Anomalie type 5 sur Rejet fichier compensation",
+    "domain": "Clearing",
+    "component": "Clearing/Rejet",
+    "keys": "Fichier EPA, Chargeback"
+  },
+  {
+    "ref": "INC-200",
+    "title": "Clearing - Litige & Chargeback TC40 - Anomalie type 5 sur Déclaration Impayés/Fraude",
+    "domain": "Clearing",
+    "component": "Clearing/Fraude",
+    "keys": "Chargeback, Representment"
+  }
+]
