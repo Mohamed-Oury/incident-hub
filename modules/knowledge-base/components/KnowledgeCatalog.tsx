@@ -54,7 +54,7 @@ export function KnowledgeCatalog({ initialIncidents }: KnowledgeCatalogProps) {
       {/* Barre de recherche et filtres */}
       <div className="hero-search">
         <div>
-          <p className="eyebrow accent" style={{ color: "#34d399" }}>BASE DE CONNAISSANCES EXPERTE</p>
+          <p className="eyebrow accent" style={{ color: "#e60028" }}>BASE DE CONNAISSANCES EXPERTE</p>
           <h2 style={{ fontSize: "1.35rem", fontWeight: 800 }}>Catalogue des Incidents Monétiques Capitalisés</h2>
           <p style={{ fontSize: "0.9rem", color: "#94a3b8", marginTop: "0.25rem" }}>
             Recherche par MTI, code réponse DE39, STAN, canal (GAB, TPE, EMV, HSM, Switch) ou composant technique.
@@ -96,9 +96,9 @@ export function KnowledgeCatalog({ initialIncidents }: KnowledgeCatalogProps) {
                 setCurrentPage(1);
               }}
               style={{
-                background: selectedDomain === d ? "#e60028" : "#334155",
-                color: selectedDomain === d ? "#ffffff" : "#cbd5e1",
-                border: "none",
+                background: selectedDomain === d ? "#e60028" : "#1f2937",
+                color: selectedDomain === d ? "#ffffff" : "#d1d5db",
+                border: "1px solid #374151",
                 padding: "0.35rem 0.75rem",
                 borderRadius: "6px",
                 fontSize: "0.8rem",
@@ -118,9 +118,9 @@ export function KnowledgeCatalog({ initialIncidents }: KnowledgeCatalogProps) {
               setCurrentPage(1);
             }}
             style={{
-              background: "#1e293b",
+              background: "#111827",
               color: "#ffffff",
-              border: "1px solid #475569",
+              border: "1px solid #374151",
               borderRadius: "6px",
               padding: "0.35rem 0.75rem",
               fontSize: "0.8rem",
@@ -211,7 +211,7 @@ export function KnowledgeCatalog({ initialIncidents }: KnowledgeCatalogProps) {
                       <span style={{ fontWeight: 600, color: "#334155" }}>{inc.component || "—"}</span>
                     </td>
                     <td>
-                      <code style={{ background: "#f1f5f9", padding: "0.2rem 0.45rem", borderRadius: "4px", fontSize: "0.82rem", color: "#059669", fontWeight: 700 }}>
+                      <code style={{ background: "#fef2f2", border: "1px solid #fee2e2", padding: "0.2rem 0.45rem", borderRadius: "4px", fontSize: "0.82rem", color: "#e60028", fontWeight: 700 }}>
                         {inc.errorCode || "ISO"}
                       </code>
                     </td>

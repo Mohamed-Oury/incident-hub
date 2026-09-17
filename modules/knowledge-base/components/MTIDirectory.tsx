@@ -110,9 +110,9 @@ export function MTIDirectory() {
               key={c.key}
               onClick={() => setSelectedCategory(c.key)}
               style={{
-                background: selectedCategory === c.key ? "#059669" : "#334155",
+                background: selectedCategory === c.key ? "#e60028" : "#1f2937",
                 color: selectedCategory === c.key ? "#ffffff" : "#cbd5e1",
-                border: "none",
+                border: "1px solid #374151",
                 padding: "0.4rem 0.8rem",
                 borderRadius: "6px",
                 fontSize: "0.82rem",

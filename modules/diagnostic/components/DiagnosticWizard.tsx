@@ -81,10 +81,10 @@ export function DiagnosticWizard() {
       <div style={{ background: "#ffffff", padding: "1.25rem", borderRadius: "14px", border: "1px solid #e4e4e7" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
           <div>
-            <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "#059669", letterSpacing: "0.08em" }}>
+            <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "#e60028", letterSpacing: "0.08em" }}>
               MÉTHODOLOGIE STANDARDISÉE DU CAHIER DES CHARGES
             </span>
-            <h3 style={{ fontSize: "1.1rem", fontWeight: 700, color: "#09090b" }}>
+            <h3 style={{ fontSize: "1.1rem", fontWeight: 700, color: "#111827" }}>
               Étape {currentStep} / {STEPS.length} : {STEPS[currentStep - 1].name}
             </h3>
           </div>
@@ -99,14 +99,14 @@ export function DiagnosticWizard() {
               key={s.id}
               onClick={() => setCurrentStep(s.id)}
               className={`step-pill ${currentStep === s.id ? "active" : ""}`}
-              style={{ cursor: "pointer", border: currentStep === s.id ? "1px solid #10b981" : "1px solid #e4e4e7" }}
+              style={{ cursor: "pointer", border: currentStep === s.id ? "1px solid #e60028" : "1px solid #e4e4e7" }}
             >
               <span
                 style={{
                   width: "20px",
                   height: "20px",
                   borderRadius: "50%",
-                  background: currentStep === s.id ? "#059669" : "#e4e4e7",
+                  background: currentStep === s.id ? "#e60028" : "#e4e4e7",
                   color: currentStep === s.id ? "#ffffff" : "#71717a",
                   display: "inline-grid",
                   placeItems: "center",
@@ -124,12 +124,12 @@ export function DiagnosticWizard() {
       {/* Note d'avertissement méthodologique */}
       <div
         style={{
-          background: "#ecfdf5",
-          borderLeft: "4px solid #059669",
+          background: "#fef2f2",
+          borderLeft: "4px solid #e60028",
           padding: "1rem 1.25rem",
           borderRadius: "0 8px 8px 0",
           fontSize: "0.88rem",
-          color: "#065f46",
+          color: "#991b1b",
           display: "flex",
           alignItems: "center",
           gap: "0.75rem",

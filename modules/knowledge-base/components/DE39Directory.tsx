@@ -91,9 +91,9 @@ export function DE39Directory() {
               key={cat.key}
               onClick={() => setSelectedCategory(cat.key)}
               style={{
-                background: selectedCategory === cat.key ? "#059669" : "#334155",
+                background: selectedCategory === cat.key ? "#e60028" : "#1f2937",
                 color: selectedCategory === cat.key ? "#ffffff" : "#cbd5e1",
-                border: "none",
+                border: "1px solid #374151",
                 padding: "0.4rem 0.8rem",
                 borderRadius: "6px",
                 fontSize: "0.82rem",
@@ -185,14 +185,14 @@ export function DE39Directory() {
                         background: "#f8fafc",
                         padding: "0.6rem 0.8rem",
                         borderRadius: "8px",
-                        borderLeft: "3px solid #059669",
+                        borderLeft: "3px solid #111827",
                       }}
                     >
                       {item.impactIncident}
                     </div>
                   </td>
                   <td>
-                    <p style={{ fontSize: "0.84rem", color: "#059669", fontWeight: 600 }}>
+                    <p style={{ fontSize: "0.84rem", color: "#e60028", fontWeight: 600 }}>
                       👉 {item.recommendedAction}
                     </p>
                   </td>

@@ -11,8 +11,8 @@ export function MetricsOverview({ incidents }: { incidents: IncidentRecord[] }) 
       <article className="metric-card">
         <span>Incidents Actifs</span>
         <strong>{openCount}</strong>
-        <small style={{ color: criticalCount > 0 ? "#dc2626" : "#059669" }}>
-          {criticalCount} critique{criticalCount > 1 ? "s" : ""}
+        <small style={{ color: criticalCount > 0 ? "#dc2626" : "#4b5563", fontWeight: 700 }}>
+          {criticalCount > 0 ? `${criticalCount} critique${criticalCount > 1 ? "s" : ""}` : "Aucun incident critique"}
         </small>
       </article>
 
