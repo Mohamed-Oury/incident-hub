@@ -28,7 +28,7 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
             setCurrentUser(data.user);
           }
         })
-        .catch(() => {});
+        .catch(() => { });
     }
   }, [currentUser]);
 
@@ -88,26 +88,26 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
         { href: "/audit", label: "Piste d'audit", icon: "🛡️" },
       ],
     },
-    {
-      key: "advanced",
-      title: "EXPERTISE & OUTILS",
-      icon: "🛠️",
-      roleRequired: "ROLE_EXPERTISE",
-      items: [
-        { href: "/crypto-hsm", label: "Diagnostic Clés HSM", icon: "🔐" },
-        { href: "/timeout-matrix", label: "Matrice Time-Outs", icon: "⏱️" },
-        { href: "/post-mortem", label: "Générateur Rapport", icon: "📑" },
-      ],
-    },
-    {
-      key: "admin",
-      title: "ADMINISTRATION",
-      icon: "👑",
-      roleRequired: "ADMIN",
-      items: [
-        { href: "/admin/users", label: "Utilisateurs & Rôles", icon: "👥" },
-      ],
-    },
+    // {
+    //   key: "advanced",
+    //   title: "EXPERTISE & OUTILS",
+    //   icon: "🛠️",
+    //   roleRequired: "ROLE_EXPERTISE",
+    //   items: [
+    //     { href: "/crypto-hsm", label: "Diagnostic Clés HSM", icon: "🔐" },
+    //     { href: "/timeout-matrix", label: "Matrice Time-Outs", icon: "⏱️" },
+    //     { href: "/post-mortem", label: "Générateur Rapport", icon: "📑" },
+    //   ],
+    // },
+    // {
+    //   key: "admin",
+    //   title: "ADMINISTRATION",
+    //   icon: "👑",
+    //   roleRequired: "ADMIN",
+    //   items: [
+    //     { href: "/admin/users", label: "Utilisateurs & Rôles", icon: "👥" },
+    //   ],
+    // },
   ];
 
   // Filtrage strict : Seul ADMIN voit TOUT. Les autres ne voient QUE leur section respective.
@@ -205,7 +205,7 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
               <b>Données sensibles masquées</b>
             </div>
           </div>
-          <div
+          {/* <div
             style={{
               fontSize: "0.72rem",
               color: "#94a3b8",
@@ -218,7 +218,7 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
             © {new Date().getFullYear()} <b>M.Oury</b>
             <br />
             <span style={{ color: "#e60028", fontWeight: 600 }}>Ingénieur IT BANKING &amp; Expert Monétique - CBS</span>
-          </div>
+          </div> */}
         </div>
       </aside>
 
@@ -231,11 +231,11 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: "1.25rem" }}>
-            {userRole === "ADMIN" && (
+            {/* {userRole === "ADMIN" && (
               <Link href="/admin/users" className="btn-secondary" style={{ padding: "0.5rem 0.85rem", fontSize: "0.82rem" }}>
                 👥 Utilisateurs
               </Link>
-            )}
+            )} */}
 
             {userRole === "ADMIN" || userRole === "ROLE_EXPLOITATION" ? (
               <Link href="/incidents/new" className="btn-emerald" style={{ padding: "0.5rem 1rem", fontSize: "0.85rem" }}>
@@ -251,9 +251,6 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
               <div style={{ display: "flex", flexDirection: "column", fontSize: "0.82rem" }}>
                 <span style={{ color: "var(--sg-red-600)", fontWeight: 700, fontSize: "0.75rem" }}>
                   {userRole}
-                </span>
-                <span style={{ fontSize: "0.7rem", color: "#64748b" }}>
-                  {currentUser?.name || initialUser?.name || "Oury Kohkoun"}
                 </span>
               </div>
               <button
@@ -294,11 +291,11 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
                 style={{ width: "24px", height: "24px", borderRadius: "50%", border: "1px solid #e60028" }}
               />
               <span>
-                <b>M.OURY INCIDENT HUB</b> • Plateforme d&apos;exploitation monétique avancée
+                Plateforme d&apos;exploitation monétique avancée
               </span>
             </div>
             <div style={{ textAlign: "right" }}>
-              © {new Date().getFullYear()} <strong style={{ color: "var(--text-primary)" }}>M.Oury</strong> —{" "}
+              © {new Date().getFullYear() - 1} <strong style={{ color: "var(--text-primary)" }}>M.Oury</strong> —{" "}
               <span style={{ color: "var(--sg-red-600)", fontWeight: 600 }}>
                 Ingénieur IT BANKING &amp; Expert Monétique - CBS
               </span>
