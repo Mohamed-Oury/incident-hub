@@ -88,12 +88,28 @@ export function AppShell({ children, user, pageTitle = "Vue d'ensemble", eyebrow
           })}
         </nav>
 
-        <div className="sidebar-footer">
-          <span style={{ fontSize: "1.1rem" }}>🛡️</span>
-          <div>
-            Environnement sécurisé
+        <div className="sidebar-footer" style={{ flexDirection: "column", alignItems: "flex-start", gap: "0.6rem" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+            <span style={{ fontSize: "1.1rem" }}>🛡️</span>
+            <div>
+              Environnement sécurisé
+              <br />
+              <b>Données sensibles masquées</b>
+            </div>
+          </div>
+          <div
+            style={{
+              fontSize: "0.72rem",
+              color: "#94a3b8",
+              borderTop: "1px solid rgba(255,255,255,0.08)",
+              paddingTop: "0.6rem",
+              width: "100%",
+              lineHeight: "1.3",
+            }}
+          >
+            © {new Date().getFullYear()} <b>M.Oury</b>
             <br />
-            <b>Données sensibles masquées</b>
+            <span style={{ color: "#e60028", fontWeight: 600 }}>Ingénieur IT BANKING &amp; Expert Monétique - CBS</span>
           </div>
         </div>
       </aside>
@@ -135,6 +151,40 @@ export function AppShell({ children, user, pageTitle = "Vue d'ensemble", eyebrow
 
         <main className="view-container">
           {children}
+
+          {/* Signature & Copyright global */}
+          <footer
+            style={{
+              marginTop: "auto",
+              paddingTop: "2.5rem",
+              paddingBottom: "1.5rem",
+              borderTop: "1px solid var(--border-light)",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              flexWrap: "wrap",
+              gap: "1rem",
+              fontSize: "0.82rem",
+              color: "var(--text-muted)",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+              <img
+                src="/logo.png"
+                alt="Logo M.OURY"
+                style={{ width: "24px", height: "24px", borderRadius: "50%", border: "1px solid #e60028" }}
+              />
+              <span>
+                <b>M.OURY INCIDENT HUB</b> • Plateforme d&apos;exploitation monétique avancée
+              </span>
+            </div>
+            <div style={{ textAlign: "right" }}>
+              © {new Date().getFullYear()} <strong style={{ color: "var(--text-primary)" }}>M.Oury</strong> —{" "}
+              <span style={{ color: "var(--sg-red-600)", fontWeight: 600 }}>
+                Ingénieur IT BANKING &amp; Expert Monétique - CBS
+              </span>
+            </div>
+          </footer>
         </main>
       </div>
     </div>
