@@ -148,6 +148,54 @@ async function runQATest() {
     failed++;
   }
 
+  // TEST 6 : Vérification de conformité du Référentiel MTI (ISO 8583)
+  try {
+    const { MTI_CATALOG, MTI_DIGITS_STRUCTURE } = await import("../modules/knowledge-base/data/iso-mti-reference");
+    const requiredMTIs = ["0100", "0110", "0200", "0210", "0400", "0410", "0500", "0800", "0810"];
+    const hasAllMTIs = requiredMTIs.every((mti) =>
+      MTI_CATALOG.some((item) => item.mti === mti)
+    );
+
+    const hasCompleteFields = MTI_CATALOG.every(
+      (item) => item.mti && item.name && item.meaning && item.operationalUsage && item.diagnosticAdvice && item.keyFields.length > 0
+    );
+
+    if (hasAllMTIs && hasCompleteFields && MTI_DIGITS_STRUCTURE.length === 4) {
+      console.log(`✅ TEST 6 - Référentiel MTI conforme (${MTI_CATALOG.length} MTI documentés avec anatomie à 4 chiffres).`);
+      passed++;
+    } else {
+      throw new Error(`Incohérence dans le dictionnaire MTI (total: ${MTI_CATALOG.length})`);
+    }
+  } catch (err: any) {
+    console.error("❌ TEST 6 ÉCHOUÉ :", err.message);
+    failed++;
+  }
+
+  // TEST 7 : Vérification du Moteur de Déchiffrement des Bitmaps ISO 8583
+  try {
+    const { decodeIsoBitmap } = await import("../modules/knowledge-base/data/iso-bitmap-decoder");
+    // Test 1: 0200 nominal -> 7238200108E18000
+    const res1 = decodeIsoBitmap("7238200108E18000");
+    const fields1 = res1.presentFields.map((f) => f.de);
+
+    const expectedDe = [2, 3, 4, 7, 11, 12, 13, 19, 32, 37, 41, 42, 43, 48, 49];
+    const matchDe = expectedDe.every((de) => fields1.includes(de));
+
+    // Test 2: Extended bitmap avec bit 1 actif (Secondary map)
+    const res2 = decodeIsoBitmap("B238200108E180000000000000000020");
+    const hasSecondary = res2.isSecondaryPresent && res2.totalBits === 128;
+
+    if (matchDe && hasSecondary) {
+      console.log(`✅ TEST 7 - Moteur de Déchiffrement Bitmap validé (Bitmaps primaire 64-bits et étendu 128-bits testés avec succès).`);
+      passed++;
+    } else {
+      throw new Error("Résultat inattendu lors du décodage du Bitmap de test");
+    }
+  } catch (err: any) {
+    console.error("❌ TEST 7 ÉCHOUÉ :", err.message);
+    failed++;
+  }
+
   console.log("\n=================================================");
   console.log(`📊 BILAN DU QA TEST : ${passed} RÉUSSIS / ${failed} ÉCHECS`);
   console.log("=================================================");
