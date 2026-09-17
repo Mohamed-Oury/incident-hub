@@ -261,32 +261,44 @@ export function KnowledgeCatalog({ initialIncidents }: KnowledgeCatalogProps) {
             ←
           </button>
 
-          {Array.from({ length: Math.min(10, totalPages) }, (_, i) => {
-            let pageNumber = i + 1;
-            if (safePage > 6 && totalPages > 10) {
-              pageNumber = Math.min(safePage - 5 + i, totalPages);
+          {(() => {
+            const maxVisible = 10;
+            let startPage = 1;
+            if (totalPages > maxVisible) {
+              if (safePage <= Math.floor(maxVisible / 2)) {
+                startPage = 1;
+              } else if (safePage + Math.floor(maxVisible / 2) >= totalPages) {
+                startPage = totalPages - maxVisible + 1;
+              } else {
+                startPage = safePage - Math.floor(maxVisible / 2);
+              }
             }
-            return (
-              <button
-                key={pageNumber}
-                onClick={() => setCurrentPage(pageNumber)}
-                style={{
-                  minWidth: "36px",
-                  height: "36px",
-                  padding: "0 0.5rem",
-                  borderRadius: "8px",
-                  border: "1px solid #cbd5e1",
-                  background: safePage === pageNumber ? "#059669" : "#ffffff",
-                  color: safePage === pageNumber ? "#ffffff" : "#0f172a",
-                  fontWeight: 700,
-                  fontSize: "0.85rem",
-                  cursor: "pointer",
-                }}
-              >
-                {pageNumber}
-              </button>
-            );
-          })}
+            const pagesCount = Math.min(maxVisible, totalPages);
+            return Array.from({ length: pagesCount }, (_, i) => {
+              const pageNumber = startPage + i;
+              return (
+                <button
+                  key={pageNumber}
+                  onClick={() => setCurrentPage(pageNumber)}
+                  style={{
+                    minWidth: "36px",
+                    height: "36px",
+                    padding: "0 0.5rem",
+                    borderRadius: "8px",
+                    border: safePage === pageNumber ? "1.5px solid #059669" : "1px solid #cbd5e1",
+                    background: safePage === pageNumber ? "#059669" : "#ffffff",
+                    color: safePage === pageNumber ? "#ffffff" : "#0f172a",
+                    fontWeight: 700,
+                    fontSize: "0.85rem",
+                    cursor: "pointer",
+                    transition: "all 0.15s ease",
+                  }}
+                >
+                  {pageNumber}
+                </button>
+              );
+            });
+          })()}
 
           <button
             type="button"
