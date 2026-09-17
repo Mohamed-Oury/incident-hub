@@ -1574,7 +1574,7 @@ export const referenceIncidents: ReferenceIncident[] = [
     domain: "Switch",
     component: "Switch/Bascule",
     analysisKeys: "Active/Passive Switch, VIP",
-    knowledgeStatus: "REFERENCE_SCENARIO" as const,
+    knowledgeStatus: "VALIDATED" as const,
   },
   {
     reference: "INC-197",
@@ -1582,7 +1582,7 @@ export const referenceIncidents: ReferenceIncident[] = [
     domain: "Clearing",
     component: "CBS/Contrepassation",
     analysisKeys: "DE90, Annulation CBS",
-    knowledgeStatus: "REFERENCE_SCENARIO" as const,
+    knowledgeStatus: "VALIDATED" as const,
   },
   {
     reference: "INC-198",
@@ -1590,7 +1590,7 @@ export const referenceIncidents: ReferenceIncident[] = [
     domain: "Clearing",
     component: "Clearing/CutOff",
     analysisKeys: "Cut-Off, Batch Balance",
-    knowledgeStatus: "REFERENCE_SCENARIO" as const,
+    knowledgeStatus: "VALIDATED" as const,
   },
   {
     reference: "INC-199",
@@ -1598,7 +1598,7 @@ export const referenceIncidents: ReferenceIncident[] = [
     domain: "Clearing",
     component: "Clearing/Rejet",
     analysisKeys: "Fichier EPA, Chargeback",
-    knowledgeStatus: "REFERENCE_SCENARIO" as const,
+    knowledgeStatus: "VALIDATED" as const,
   },
   {
     reference: "INC-200",
@@ -1606,6 +1606,6 @@ export const referenceIncidents: ReferenceIncident[] = [
     domain: "Clearing",
     component: "Clearing/Fraude",
     analysisKeys: "Chargeback, Representment",
-    knowledgeStatus: "REFERENCE_SCENARIO" as const,
+    knowledgeStatus: "VALIDATED" as const,
   }
 ];

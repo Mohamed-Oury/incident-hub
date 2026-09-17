@@ -483,6 +483,63 @@ export default async function IncidentDetailPage({ params }: IncidentDetailPageP
           )}
         </div>
 
+        {/* 7. Plan d'Actions Préventives & Amélioration Continue */}
+        {incident.prevention && incident.prevention.length > 0 && (
+          <div style={{ background: "#ffffff", padding: "2rem", borderRadius: "16px", border: "1px solid #e4e4e7" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", marginBottom: "1.25rem" }}>
+              <span style={{ fontSize: "1.3rem" }}>🛡️</span>
+              <h3 style={{ fontSize: "1.2rem", fontWeight: 800, color: "#09090b" }}>
+                7. Plan d&apos;Actions Préventives & Amélioration Continue
+              </h3>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "1.25rem" }}>
+              {incident.prevention.map((prev, idx) => (
+                <div
+                  key={idx}
+                  style={{
+                    padding: "1.25rem",
+                    background: "#f8fafc",
+                    borderRadius: "12px",
+                    border: "1px solid #e2e8f0",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                    gap: "0.75rem",
+                  }}
+                >
+                  <div>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.4rem" }}>
+                      <span
+                        style={{
+                          fontSize: "0.75rem",
+                          fontWeight: 800,
+                          padding: "0.2rem 0.6rem",
+                          borderRadius: "6px",
+                          background: prev.priority === "CRITICAL" ? "#fee2e2" : prev.priority === "HIGH" ? "#fef3c7" : "#e0f2fe",
+                          color: prev.priority === "CRITICAL" ? "#991b1b" : prev.priority === "HIGH" ? "#92400e" : "#0369a1",
+                        }}
+                      >
+                        Priorité: {prev.priority || "NORMALE"}
+                      </span>
+                      <span style={{ fontSize: "0.75rem", fontWeight: 800, color: "#059669" }}>
+                        ✓ {prev.status || "DONE"}
+                      </span>
+                    </div>
+                    <p style={{ fontSize: "0.92rem", fontWeight: 600, color: "#0f172a" }}>
+                      {prev.action}
+                    </p>
+                  </div>
+                  {prev.owner && (
+                    <div style={{ fontSize: "0.82rem", color: "#64748b" }}>
+                      Responsable : <strong style={{ color: "#334155" }}>{prev.owner}</strong>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
       </div>
     </AppShell>
   );
