@@ -6,10 +6,11 @@ import { IncidentRecord } from "@/modules/incidents/types";
 
 interface KnowledgeCatalogProps {
   initialIncidents: IncidentRecord[];
+  initialSearch?: string;
 }
 
-export function KnowledgeCatalog({ initialIncidents }: KnowledgeCatalogProps) {
-  const [search, setSearch] = useState("");
+export function KnowledgeCatalog({ initialIncidents, initialSearch = "" }: KnowledgeCatalogProps) {
+  const [search, setSearch] = useState(initialSearch);
   const [selectedDomain, setSelectedDomain] = useState<string>("ALL");
   const [selectedStatus, setSelectedStatus] = useState<string>("ALL");
   const [currentPage, setCurrentPage] = useState<number>(1);
