@@ -52,29 +52,24 @@ export default function LoginPage() {
     <div className="login-container">
       <div className="login-card">
         <div style={{ textAlign: "center", marginBottom: "2rem" }}>
-          <div
+          <img
+            src="/logo.png"
+            alt="M.OURY Logo"
             style={{
-              display: "inline-flex",
-              alignItems: "center",
-              justifyContent: "center",
-              width: "60px",
-              height: "60px",
-              background: "linear-gradient(to bottom, #e60028 0%, #e60028 48%, #ffffff 48%, #ffffff 52%, #111827 52%, #111827 100%)",
-              borderRadius: "12px",
-              color: "white",
-              fontWeight: 900,
-              fontSize: "1.75rem",
+              width: "88px",
+              height: "88px",
+              borderRadius: "50%",
+              objectFit: "cover",
+              border: "3px solid #e60028",
               boxShadow: "0 10px 25px rgba(230, 0, 40, 0.35)",
-              border: "1px solid rgba(255, 255, 255, 0.2)",
+              background: "#ffffff",
               marginBottom: "1rem",
-              textShadow: "0 1px 3px rgba(0,0,0,0.8)"
+              display: "inline-block",
             }}
-          >
-            SG
-          </div>
-          <h1 style={{ fontSize: "1.5rem", fontWeight: 800, color: "#111827" }}>SOCIÉTÉ GÉNÉRALE</h1>
+          />
+          <h1 style={{ fontSize: "1.6rem", fontWeight: 800, color: "#111827", letterSpacing: "0.02em" }}>M.OURY</h1>
           <p style={{ fontSize: "0.85rem", fontWeight: 700, letterSpacing: "0.08em", color: "#e60028", textTransform: "uppercase", marginTop: "0.15rem" }}>
-            EXPLOITATION &amp; MONÉTIQUE HUB
+            EXPERT MONÉTIQUE HUB
           </p>
           <p style={{ fontSize: "0.85rem", color: "#6b7280", marginTop: "0.25rem" }}>
             Plateforme d&apos;exploitation et diagnostic d&apos;incidents monétiques

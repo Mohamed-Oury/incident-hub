@@ -42,9 +42,23 @@ export function AppShell({ children, user, pageTitle = "Vue d'ensemble", eyebrow
       {/* Sidebar FIXÉE & RÉDUCTIBLE */}
       <aside className={`sidebar ${collapsed ? "collapsed" : ""}`}>
         <div className="brand">
-          <span className="brand-mark">SG</span>
+          <img
+            src="/logo.png"
+            alt="M.OURY Logo"
+            className="brand-logo-img"
+            style={{
+              width: "42px",
+              height: "42px",
+              borderRadius: "50%",
+              objectFit: "cover",
+              border: "2px solid #e60028",
+              boxShadow: "0 0 10px rgba(230, 0, 40, 0.4)",
+              background: "#ffffff",
+              flexShrink: 0,
+            }}
+          />
           <div className="brand-text">
-            SOCIÉTÉ GÉNÉRALE
+            M.OURY
             <b>MONÉTIQUE HUB</b>
           </div>
           <button
