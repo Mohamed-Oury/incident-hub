@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { SessionUser, ROLE_LABELS } from "@/modules/auth/types";
+import { SessionUser, ROLE_LABELS, UserRole } from "@/modules/auth/types";
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -12,10 +12,25 @@ interface AppShellProps {
   eyebrow?: string;
 }
 
-export function AppShell({ children, user, pageTitle = "Vue d'ensemble", eyebrow = "EXPLOITATION MONÉTIQUE" }: AppShellProps) {
+export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensemble", eyebrow = "EXPLOITATION MONÉTIQUE" }: AppShellProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
+  const [currentUser, setCurrentUser] = useState<SessionUser | null>(initialUser || null);
+
+  // Si le composant parent (ex: Page Client) n'a pas passé user, on le récupère automatiquement via la session
+  useEffect(() => {
+    if (!currentUser) {
+      fetch("/api/auth/me")
+        .then((res) => res.ok ? res.json() : { user: null })
+        .then((data) => {
+          if (data.user) {
+            setCurrentUser(data.user);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [currentUser]);
 
   const handleLogout = async () => {
     await fetch("/api/auth/logout", { method: "POST" });
@@ -23,7 +38,7 @@ export function AppShell({ children, user, pageTitle = "Vue d'ensemble", eyebrow
     router.refresh();
   };
 
-  const userRole = user?.role || "ADMIN";
+  const userRole: UserRole = currentUser?.role || initialUser?.role || "ADMIN";
 
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({
     exploitation: true,
@@ -95,7 +110,7 @@ export function AppShell({ children, user, pageTitle = "Vue d'ensemble", eyebrow
     },
   ];
 
-  // Filtrage : Seul ADMIN voit TOUT. Les autres ne voient QUE leur section respective.
+  // Filtrage strict : Seul ADMIN voit TOUT. Les autres ne voient QUE leur section respective.
   const authorizedSections = allNavSections.filter((section) => {
     if (userRole === "ADMIN") return true;
     return section.roleRequired === userRole;
@@ -222,21 +237,23 @@ export function AppShell({ children, user, pageTitle = "Vue d'ensemble", eyebrow
               </Link>
             )}
 
-            <Link href="/incidents/new" className="btn-emerald" style={{ padding: "0.5rem 1rem", fontSize: "0.85rem" }}>
-              + Déclarer incident
-            </Link>
+            {userRole === "ADMIN" || userRole === "ROLE_EXPLOITATION" ? (
+              <Link href="/incidents/new" className="btn-emerald" style={{ padding: "0.5rem 1rem", fontSize: "0.85rem" }}>
+                + Déclarer incident
+              </Link>
+            ) : null}
 
             {/* Header épuré : rôle et déconnexion */}
             <div className="user-badge">
               <div className="user-avatar">
-                {user?.name ? user.name.slice(0, 2).toUpperCase() : "AD"}
+                {currentUser?.name ? currentUser.name.slice(0, 2).toUpperCase() : initialUser?.name ? initialUser.name.slice(0, 2).toUpperCase() : "AD"}
               </div>
               <div style={{ display: "flex", flexDirection: "column", fontSize: "0.82rem" }}>
                 <span style={{ color: "var(--sg-red-600)", fontWeight: 700, fontSize: "0.75rem" }}>
-                  {user?.role || "ADMIN"}
+                  {userRole}
                 </span>
                 <span style={{ fontSize: "0.7rem", color: "#64748b" }}>
-                  {user?.name || "Oury Kohkoun"}
+                  {currentUser?.name || initialUser?.name || "Oury Kohkoun"}
                 </span>
               </div>
               <button
