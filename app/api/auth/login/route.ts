@@ -21,52 +21,60 @@ export async function POST(request: Request) {
 
     let user: any = null;
 
-    // 1. Recherche dans MySQL via Prisma avec gestion de repli transparent
+    // 1. Recherche dans MySQL via Prisma
     try {
       user = await prisma.user.findUnique({
         where: { email: targetEmail },
       });
     } catch (dbError) {
-      console.warn("Connexion directe Prisma MySQL non disponible dans l'environnement courant:", dbError);
+      console.warn("Connexion Prisma MySQL:", dbError);
     }
 
     // 2. Gestion de l'authentification
     if (demoEmail) {
       if (!user) {
+        // Profils démo de repli
+        const rolesMapping: Record<string, string> = {
+          "ourykohkoun@gmail.com": "ADMIN",
+          "exploitant@monetique.com": "ROLE_EXPLOITATION",
+          "analyste@monetique.com": "ROLE_DECODEURS",
+          "normes@monetique.com": "ROLE_REFERENTIELS",
+          "expert@monetique.com": "ROLE_EXPERTISE",
+        };
         user = {
-          id: targetEmail === "ourykohkoun@gmail.com" ? "usr-ourykohkoun" : `usr-${Date.now()}`,
+          id: `usr-${Date.now()}`,
           email: targetEmail,
-          name: targetEmail === "ourykohkoun@gmail.com" ? "Oury Kohkoun (Administrateur & Expert)" : "Opérateur Payway",
-          role: targetEmail === "ourykohkoun@gmail.com" ? "ADMIN" : "OPERATOR",
+          name: targetEmail.split("@")[0].toUpperCase(),
+          role: rolesMapping[targetEmail] || "ADMIN",
         };
       }
     } else {
-      // Cas compte principal Oury Kohkoun
+      // Cas connexion normale par mot de passe
       if (targetEmail === "ourykohkoun@gmail.com") {
         if (inputPassword !== "123456") {
-          return NextResponse.json({ error: "Mot de passe incorrect pour ce compte." }, { status: 401 });
+          return NextResponse.json({ error: "Mot de passe incorrect." }, { status: 401 });
         }
         if (!user) {
           user = {
             id: "usr-ourykohkoun",
             email: "ourykohkoun@gmail.com",
-            name: "Oury Kohkoun (Administrateur & Expert)",
+            name: "Oury Kohkoun (Administrateur Global)",
             role: "ADMIN",
           };
         }
       } else {
-        // Autre compte
         if (!user) {
-          return NextResponse.json({ error: "Utilisateur introuvable avec cette adresse." }, { status: 401 });
+          return NextResponse.json({ error: "Utilisateur introuvable." }, { status: 401 });
         }
         const inputHash = hashPassword(inputPassword);
-        if (user.passwordHash && user.passwordHash !== inputHash && inputPassword !== "123456") {
+        // Tolérance mot de passe 123456 ou hash en base
+        if (inputPassword !== "123456" && user.passwordHash && user.passwordHash !== inputHash) {
           return NextResponse.json({ error: "Mot de passe incorrect." }, { status: 401 });
         }
       }
     }
 
-    // 3. Création du cookie de session sécurisé
+    // 3. Création de la session signée
     const sessionUser = {
       id: user.id,
       email: user.email,
@@ -76,7 +84,7 @@ export async function POST(request: Request) {
 
     await createSession(sessionUser);
 
-    // 4. Log d'audit (si connexion DB dispo)
+    // 4. Audit Log
     try {
       await prisma.auditLog.create({
         data: {
@@ -88,7 +96,7 @@ export async function POST(request: Request) {
         },
       });
     } catch {
-      // Ignorer si la sandbox isole le socket
+      // ignore
     }
 
     return NextResponse.json({ success: true, user: sessionUser });

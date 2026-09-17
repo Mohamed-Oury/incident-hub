@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { SessionUser } from "@/modules/auth/types";
+import { SessionUser, ROLE_LABELS } from "@/modules/auth/types";
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -23,22 +23,27 @@ export function AppShell({ children, user, pageTitle = "Vue d'ensemble", eyebrow
     router.refresh();
   };
 
+  const userRole = user?.role || "ADMIN";
+
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({
     exploitation: true,
     decoders: true,
-    referentials: false,
+    referentials: true,
     advanced: true,
+    admin: true,
   });
 
   const toggleGroup = (groupKey: string) => {
     setOpenGroups((prev) => ({ ...prev, [groupKey]: !prev[groupKey] }));
   };
 
-  const navSections = [
+  // Liste complète des sections avec contrôle d'accès RBAC
+  const allNavSections = [
     {
       key: "exploitation",
       title: "EXPLOITATION",
       icon: "⚡",
+      roleRequired: "ROLE_EXPLOITATION",
       items: [
         { href: "/", label: "Vue d'ensemble", icon: "⊞" },
         { href: "/knowledge", label: "Base de connaissance", icon: "📚" },
@@ -49,6 +54,7 @@ export function AppShell({ children, user, pageTitle = "Vue d'ensemble", eyebrow
       key: "decoders",
       title: "DÉCODEURS",
       icon: "🧮",
+      roleRequired: "ROLE_DECODEURS",
       items: [
         { href: "/parser", label: "Parseur Trame ISO", icon: "🔍" },
         { href: "/bitmap", label: "Décodeur Bitmap", icon: "🧮" },
@@ -60,6 +66,7 @@ export function AppShell({ children, user, pageTitle = "Vue d'ensemble", eyebrow
       key: "referentials",
       title: "RÉFÉRENTIELS",
       icon: "📖",
+      roleRequired: "ROLE_REFERENTIELS",
       items: [
         { href: "/mti", label: "Référentiel MTI", icon: "📬" },
         { href: "/de39", label: "Référentiel DE39", icon: "🏷️" },
@@ -70,13 +77,29 @@ export function AppShell({ children, user, pageTitle = "Vue d'ensemble", eyebrow
       key: "advanced",
       title: "EXPERTISE & OUTILS",
       icon: "🛠️",
+      roleRequired: "ROLE_EXPERTISE",
       items: [
         { href: "/crypto-hsm", label: "Diagnostic Clés HSM", icon: "🔐" },
         { href: "/timeout-matrix", label: "Matrice Time-Outs", icon: "⏱️" },
         { href: "/post-mortem", label: "Générateur Rapport", icon: "📑" },
       ],
     },
+    {
+      key: "admin",
+      title: "ADMINISTRATION",
+      icon: "👑",
+      roleRequired: "ADMIN",
+      items: [
+        { href: "/admin/users", label: "Gestion Utilisateurs & Rôles", icon: "👥" },
+      ],
+    },
   ];
+
+  // Filtrage : Seul ADMIN voit TOUT. Les autres ne voient QUE leur section respective.
+  const authorizedSections = allNavSections.filter((section) => {
+    if (userRole === "ADMIN") return true;
+    return section.roleRequired === userRole;
+  });
 
   return (
     <div className="shell">
@@ -113,7 +136,7 @@ export function AppShell({ children, user, pageTitle = "Vue d'ensemble", eyebrow
         </div>
 
         <nav className="nav-menu" aria-label="Navigation principale">
-          {navSections.map((section) => {
+          {authorizedSections.map((section) => {
             const hasActiveChild = section.items.some((item) => pathname === item.href);
             const isOpen = openGroups[section.key] ?? true;
 
@@ -167,6 +190,20 @@ export function AppShell({ children, user, pageTitle = "Vue d'ensemble", eyebrow
               <b>Données sensibles masquées</b>
             </div>
           </div>
+          <div
+            style={{
+              fontSize: "0.72rem",
+              color: "#94a3b8",
+              borderTop: "1px solid rgba(255,255,255,0.08)",
+              paddingTop: "0.6rem",
+              width: "100%",
+              lineHeight: "1.3",
+            }}
+          >
+            © {new Date().getFullYear()} <b>M.Oury</b>
+            <br />
+            <span style={{ color: "#e60028", fontWeight: 600 }}>Ingénieur IT BANKING &amp; Expert Monétique - CBS</span>
+          </div>
         </div>
       </aside>
 
@@ -179,6 +216,12 @@ export function AppShell({ children, user, pageTitle = "Vue d'ensemble", eyebrow
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: "1.25rem" }}>
+            {userRole === "ADMIN" && (
+              <Link href="/admin/users" className="btn-secondary" style={{ padding: "0.5rem 0.85rem", fontSize: "0.82rem" }}>
+                👥 Utilisateurs
+              </Link>
+            )}
+
             <Link href="/incidents/new" className="btn-emerald" style={{ padding: "0.5rem 1rem", fontSize: "0.85rem" }}>
               + Déclarer incident
             </Link>
@@ -186,11 +229,14 @@ export function AppShell({ children, user, pageTitle = "Vue d'ensemble", eyebrow
             {/* Header épuré : rôle et déconnexion */}
             <div className="user-badge">
               <div className="user-avatar">
-                {user?.role ? user.role.slice(0, 2) : "AD"}
+                {user?.name ? user.name.slice(0, 2).toUpperCase() : "AD"}
               </div>
               <div style={{ display: "flex", flexDirection: "column", fontSize: "0.82rem" }}>
-                <span style={{ color: "var(--sg-red-600)", fontWeight: 700, fontSize: "0.78rem" }}>
+                <span style={{ color: "var(--sg-red-600)", fontWeight: 700, fontSize: "0.75rem" }}>
                   {user?.role || "ADMIN"}
+                </span>
+                <span style={{ fontSize: "0.7rem", color: "#64748b" }}>
+                  {user?.name || "Oury Kohkoun"}
                 </span>
               </div>
               <button
@@ -231,11 +277,11 @@ export function AppShell({ children, user, pageTitle = "Vue d'ensemble", eyebrow
                 style={{ width: "24px", height: "24px", borderRadius: "50%", border: "1px solid #e60028" }}
               />
               <span>
-                Plateforme d&apos;exploitation monétique avancée
+                <b>M.OURY INCIDENT HUB</b> • Plateforme d&apos;exploitation monétique avancée
               </span>
             </div>
             <div style={{ textAlign: "right" }}>
-              © {new Date().getFullYear() - 1} <strong style={{ color: "var(--text-primary)" }}>M.Oury</strong> —{" "}
+              © {new Date().getFullYear()} <strong style={{ color: "var(--text-primary)" }}>M.Oury</strong> —{" "}
               <span style={{ color: "var(--sg-red-600)", fontWeight: 600 }}>
                 Ingénieur IT BANKING &amp; Expert Monétique - CBS
               </span>

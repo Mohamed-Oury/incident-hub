@@ -151,21 +151,28 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <div style={{ marginTop: "1.25rem", borderTop: "1px solid #f1f5f9", paddingTop: "1rem" }}>
-          <p style={{ fontSize: "0.72rem", fontWeight: 700, color: "#64748b", textTransform: "uppercase", marginBottom: "0.5rem", textAlign: "center" }}>
-            Accès rapide profil (1 clic)
+        <div style={{ marginTop: "1.25rem", borderTop: "1px solid #f1f5f9", paddingTop: "0.85rem" }}>
+          <p style={{ fontSize: "0.72rem", fontWeight: 700, color: "#64748b", textTransform: "uppercase", marginBottom: "0.4rem", textAlign: "center" }}>
+            Test des Rôles &amp; Profils Métier (1 clic)
           </p>
-          <div style={{ display: "flex", justifyContent: "center" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.4rem" }}>
             {DEMO_USERS.map((user) => (
               <button
                 key={user.id}
                 type="button"
                 className="demo-account-chip"
-                style={{ width: "100%", textAlign: "center", alignItems: "center" }}
+                style={{
+                  textAlign: "left",
+                  padding: "0.4rem 0.6rem",
+                  border: "1px solid #e2e8f0",
+                  gridColumn: user.role === "ADMIN" ? "1 / -1" : undefined,
+                }}
                 onClick={() => handleLogin(user.email)}
               >
-                <strong style={{ fontSize: "0.85rem", color: "#0f172a" }}>{user.name}</strong>
-                <span style={{ fontSize: "0.72rem", color: "#e60028", fontWeight: 700 }}>{user.role}</span>
+                <strong style={{ fontSize: "0.78rem", color: "#0f172a" }}>{user.name}</strong>
+                <span style={{ fontSize: "0.68rem", color: user.role === "ADMIN" ? "#111827" : "#e60028", fontWeight: 700 }}>
+                  {user.role}
+                </span>
               </button>
             ))}
           </div>
