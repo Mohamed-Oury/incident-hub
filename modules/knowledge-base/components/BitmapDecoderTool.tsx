@@ -237,56 +237,147 @@ export function BitmapDecoderTool() {
           </div>
         </div>
 
-        <div className="table-wrapper">
-          <table className="table">
+        <div className="table-wrapper" style={{ border: "1px solid #e2e8f0", borderRadius: "12px", boxShadow: "0 1px 3px rgba(0,0,0,0.05)", overflow: "hidden" }}>
+          <table>
             <thead>
-              <tr>
-                <th style={{ width: "80px" }}>Élément</th>
-                <th style={{ width: "180px" }}>Nom Normatif</th>
-                <th style={{ width: "100px" }}>Format</th>
-                <th style={{ width: "110px" }}>Catégorie</th>
-                <th style={{ width: "110px" }}>Position</th>
-                <th>Rôle Monétique &amp; Description</th>
+              <tr style={{ background: "#f8fafc", borderBottom: "2px solid #e2e8f0" }}>
+                <th style={{ width: "90px", padding: "1rem 1.25rem", color: "#0f172a", fontWeight: 800, fontSize: "0.8rem", letterSpacing: "0.05em" }}>ÉLÉMENT</th>
+                <th style={{ width: "220px", padding: "1rem 1.25rem", color: "#0f172a", fontWeight: 800, fontSize: "0.8rem", letterSpacing: "0.05em" }}>NOM NORMATIF</th>
+                <th style={{ width: "110px", padding: "1rem 1.25rem", color: "#0f172a", fontWeight: 800, fontSize: "0.8rem", letterSpacing: "0.05em" }}>FORMAT</th>
+                <th style={{ width: "140px", padding: "1rem 1.25rem", color: "#0f172a", fontWeight: 800, fontSize: "0.8rem", letterSpacing: "0.05em" }}>CATÉGORIE</th>
+                <th style={{ width: "130px", padding: "1rem 1.25rem", color: "#0f172a", fontWeight: 800, fontSize: "0.8rem", letterSpacing: "0.05em" }}>POSITION</th>
+                <th style={{ padding: "1rem 1.25rem", color: "#0f172a", fontWeight: 800, fontSize: "0.8rem", letterSpacing: "0.05em" }}>RÔLE MONÉTIQUE &amp; DESCRIPTION</th>
               </tr>
             </thead>
             <tbody>
               {filteredFields.length === 0 ? (
                 <tr>
-                  <td colSpan={6} style={{ textAlign: "center", padding: "2rem", color: "#94a3b8" }}>
-                    Aucun champ DE correspondant au filtre.
+                  <td colSpan={6} style={{ textAlign: "center", padding: "3rem", color: "#64748b", fontSize: "0.95rem" }}>
+                    Aucun champ DE ne correspond à vos critères de recherche.
                   </td>
                 </tr>
               ) : (
                 filteredFields.map((field) => {
                   const spec = field.spec;
+                  
+                  // Palette par catégorie
+                  const getCatStyle = (cat?: string) => {
+                    switch (cat) {
+                      case "DONNEES_CARTE":
+                        return { bg: "#ecfdf5", color: "#047857", border: "#a7f3d0" };
+                      case "TRACE":
+                        return { bg: "#eff6ff", color: "#1d4ed8", border: "#bfdbfe" };
+                      case "MONTANT":
+                        return { bg: "#fef3c7", color: "#b45309", border: "#fde68a" };
+                      case "SECURITE":
+                        return { bg: "#fdf2f8", color: "#be185d", border: "#fbcfe8" };
+                      case "TERMINAL":
+                        return { bg: "#f5f3ff", color: "#6d28d9", border: "#ddd6fe" };
+                      case "IDENTIFICATION":
+                        return { bg: "#f0fdfa", color: "#0f766e", border: "#99f6e4" };
+                      default:
+                        return { bg: "#f1f5f9", color: "#334155", border: "#cbd5e1" };
+                    }
+                  };
+
+                  const catStyle = getCatStyle(spec?.category);
+
                   return (
-                    <tr key={field.de}>
-                      <td>
+                    <tr
+                      key={field.de}
+                      style={{
+                        borderBottom: "1px solid #f1f5f9",
+                        transition: "background 0.15s ease",
+                      }}
+                    >
+                      {/* Badge DE */}
+                      <td style={{ padding: "1rem 1.25rem", verticalAlign: "middle" }}>
                         <span
-                          className="badge badge-emerald"
-                          style={{ fontWeight: 800, fontSize: "0.85rem" }}
+                          style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            background: "#ecfdf5",
+                            color: "#047857",
+                            border: "1.5px solid #059669",
+                            padding: "0.3rem 0.65rem",
+                            borderRadius: "6px",
+                            fontWeight: 900,
+                            fontSize: "0.85rem",
+                            fontFamily: "monospace",
+                            boxShadow: "0 1px 2px rgba(5, 150, 105, 0.15)",
+                          }}
                         >
                           DE {field.de}
                         </span>
                       </td>
-                      <td style={{ fontWeight: 600, color: "#f1f5f9" }}>
-                        {spec ? spec.name : `Champ Propriétaire DE ${field.de}`}
+
+                      {/* Nom normatif */}
+                      <td style={{ padding: "1rem 1.25rem", verticalAlign: "middle" }}>
+                        <span style={{ fontWeight: 700, color: "#0f172a", fontSize: "0.92rem", display: "block" }}>
+                          {spec ? spec.name : `Champ Propriétaire DE ${field.de}`}
+                        </span>
+                        {spec?.lengthType && (
+                          <span style={{ fontSize: "0.75rem", color: "#64748b", fontWeight: 500 }}>
+                            {spec.lengthType} (Max: {spec.maxLength})
+                          </span>
+                        )}
                       </td>
-                      <td>
-                        <code style={{ fontSize: "0.8rem", color: "#38bdf8", background: "#0f172a", padding: "0.2rem 0.4rem", borderRadius: "4px" }}>
+
+                      {/* Format */}
+                      <td style={{ padding: "1rem 1.25rem", verticalAlign: "middle" }}>
+                        <code
+                          style={{
+                            fontSize: "0.82rem",
+                            fontWeight: 700,
+                            color: "#0369a1",
+                            background: "#f0f9ff",
+                            border: "1px solid #bae6fd",
+                            padding: "0.25rem 0.55rem",
+                            borderRadius: "6px",
+                            fontFamily: "monospace",
+                          }}
+                        >
                           {spec ? spec.format : "ans"}
                         </code>
                       </td>
-                      <td>
-                        <span className="badge" style={{ fontSize: "0.72rem" }}>
-                          {spec ? spec.category : "EXTERNE"}
+
+                      {/* Catégorie */}
+                      <td style={{ padding: "1rem 1.25rem", verticalAlign: "middle" }}>
+                        <span
+                          style={{
+                            display: "inline-block",
+                            background: catStyle.bg,
+                            color: catStyle.color,
+                            border: `1px solid ${catStyle.border}`,
+                            padding: "0.25rem 0.6rem",
+                            borderRadius: "6px",
+                            fontSize: "0.75rem",
+                            fontWeight: 700,
+                            letterSpacing: "0.02em",
+                          }}
+                        >
+                          {spec ? spec.category.replace("_", " ") : "EXTERNE"}
                         </span>
                       </td>
-                      <td style={{ fontSize: "0.8rem", color: "#94a3b8" }}>
-                        Octet {field.bytePosition} (bit {field.bitInByte})
+
+                      {/* Position Octet / Bit */}
+                      <td style={{ padding: "1rem 1.25rem", verticalAlign: "middle" }}>
+                        <div style={{ display: "flex", flexDirection: "column", gap: "0.1rem" }}>
+                          <span style={{ fontSize: "0.84rem", color: "#0f172a", fontWeight: 600 }}>
+                            Octet {field.bytePosition}
+                          </span>
+                          <span style={{ fontSize: "0.75rem", color: "#64748b" }}>
+                            bit {field.bitInByte} / 8
+                          </span>
+                        </div>
                       </td>
-                      <td style={{ fontSize: "0.85rem", color: "#cbd5e1" }}>
-                        {spec ? spec.description : "Élément de données privatif ou non renseigné dans la norme standard."}
+
+                      {/* Rôle & Description */}
+                      <td style={{ padding: "1rem 1.25rem", verticalAlign: "middle" }}>
+                        <p style={{ fontSize: "0.88rem", color: "#334155", lineHeight: 1.5, margin: 0, fontWeight: 450 }}>
+                          {spec ? spec.description : "Élément de données privatif ou non renseigné dans la norme standard."}
+                        </p>
                       </td>
                     </tr>
                   );
