@@ -45,25 +45,44 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: Row(
           children: [
+            // Logo avec bordure rouge Société Générale identique au Web
             Container(
-              padding: const EdgeInsets.all(6),
+              width: 36,
+              height: 36,
               decoration: BoxDecoration(
-                color: AppTheme.primaryBlue.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(8),
+                shape: BoxShape.circle,
+                border: Border.all(color: AppTheme.sgRed, width: 2),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppTheme.sgRed.withValues(alpha: 0.4),
+                    blurRadius: 8,
+                    spreadRadius: 1,
+                  ),
+                ],
               ),
-              child: const Icon(Icons.flash_on, color: AppTheme.accentCyan, size: 20),
+              child: ClipOval(
+                child: Image.asset(
+                  'assets/icon/app_icon_1024.png',
+                  fit: BoxFit.cover,
+                ),
+              ),
             ),
-            const SizedBox(width: 10),
+            const SizedBox(width: 12),
             const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Payway Incident Hub',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  'M.OURY',
+                  style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 0.8,
+                    color: Colors.white,
+                  ),
                 ),
                 Text(
-                  'Astreinte & Diagnostic Hors-ligne',
-                  style: TextStyle(fontSize: 11, color: Color(0xFF94A3B8)),
+                  'Incident Hub • Astreinte Monétique',
+                  style: TextStyle(fontSize: 11, color: AppTheme.textSecondary),
                 ),
               ],
             ),
@@ -71,8 +90,9 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator(color: AppTheme.sgRed))
           : RefreshIndicator(
+              color: AppTheme.sgRed,
               onRefresh: _loadDashboard,
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
@@ -80,12 +100,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Stats Row
+                    // Stats Row - Société Générale Style (Noir & Rouge)
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
-                          colors: [Color(0xFF1E293B), Color(0xFF0F172A)],
+                          colors: [Color(0xFF1F2937), Color(0xFF111827)],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
@@ -95,8 +115,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          _buildStatWidget('${_stats['total']}', 'Incidents BDD', Icons.storage, AppTheme.primaryBlue),
-                          _buildStatWidget('${_stats['de39']}', 'Codes DE39', Icons.code, AppTheme.accentCyan),
+                          _buildStatWidget('${_stats['total']}', 'Incidents BDD', Icons.storage, AppTheme.sgRed),
+                          _buildStatWidget('${_stats['de39']}', 'Codes DE39', Icons.code, Colors.white),
                           _buildStatWidget('${_stats['validated']}', 'Cas Validés', Icons.verified, AppTheme.successGreen),
                         ],
                       ),
@@ -123,7 +143,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           title: '500 Incidents',
                           desc: 'Catalogue & Recherche hors-ligne',
                           icon: Icons.list_alt,
-                          color: AppTheme.primaryBlue,
+                          color: AppTheme.sgRed,
                           onTap: () => Navigator.push(
                             context,
                             MaterialPageRoute(builder: (_) => const IncidentListScreen()),
@@ -143,7 +163,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           title: 'Bitmap ISO',
                           desc: 'Décodeur Binaire & Champs 1-128',
                           icon: Icons.memory,
-                          color: AppTheme.accentCyan,
+                          color: Colors.white70,
                           onTap: () => Navigator.push(
                             context,
                             MaterialPageRoute(builder: (_) => const BitmapScreen()),
@@ -153,7 +173,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           title: 'Urgences DE39',
                           desc: 'Recherche directe 91, 51, 55...',
                           icon: Icons.bolt,
-                          color: const Color(0xFFA855F7),
+                          color: AppTheme.sgRedDark,
                           onTap: () => Navigator.push(
                             context,
                             MaterialPageRoute(builder: (_) => const DE39Screen()),
@@ -177,7 +197,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             context,
                             MaterialPageRoute(builder: (_) => const IncidentListScreen()),
                           ),
-                          child: const Text('Voir les 500 ->', style: TextStyle(color: AppTheme.primaryBlue)),
+                          child: const Text('Voir les 500 ->', style: TextStyle(color: AppTheme.sgRed, fontWeight: FontWeight.bold)),
                         ),
                       ],
                     ),
@@ -194,15 +214,16 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: ListTile(
                             dense: true,
                             leading: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                               decoration: BoxDecoration(
-                                color: AppTheme.primaryBlue.withValues(alpha: 0.15),
+                                color: AppTheme.sgRed.withValues(alpha: 0.15),
                                 borderRadius: BorderRadius.circular(4),
+                                border: Border.all(color: AppTheme.sgRed.withValues(alpha: 0.3)),
                               ),
                               child: Text(
                                 inc.reference,
                                 style: const TextStyle(
-                                  color: AppTheme.primaryBlue,
+                                  color: AppTheme.sgRed,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 11,
                                 ),
@@ -216,9 +237,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             subtitle: Text(
                               '${inc.domain} • ${inc.component}',
-                              style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 11),
+                              style: const TextStyle(color: AppTheme.textSecondary, fontSize: 11),
                             ),
-                            trailing: const Icon(Icons.chevron_right, size: 18, color: Color(0xFF64748B)),
+                            trailing: const Icon(Icons.chevron_right, size: 18, color: AppTheme.textMuted),
                             onTap: () => Navigator.push(
                               context,
                               MaterialPageRoute(builder: (_) => IncidentDetailScreen(incident: inc)),
@@ -246,7 +267,7 @@ class _HomeScreenState extends State<HomeScreen> {
         const SizedBox(height: 2),
         Text(
           label,
-          style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 11),
+          style: const TextStyle(color: AppTheme.textSecondary, fontSize: 11),
         ),
       ],
     );
@@ -295,7 +316,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       fontSize: 10,
-                      color: Color(0xFF94A3B8),
+                      color: AppTheme.textSecondary,
                     ),
                   ),
                 ],

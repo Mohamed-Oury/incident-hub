@@ -53,9 +53,9 @@ class _DE39ScreenState extends State<DE39Screen> {
       case 'SECURITE_CRYPTO':
         return const Color(0xFFA855F7);
       case 'TECHNIQUE_RESEAU':
-        return AppTheme.errorRed;
+        return AppTheme.sgRed;
       default:
-        return AppTheme.primaryBlue;
+        return AppTheme.sgRed;
     }
   }
 
@@ -75,10 +75,10 @@ class _DE39ScreenState extends State<DE39Screen> {
               onChanged: (_) => _loadData(),
               decoration: InputDecoration(
                 hintText: 'Rechercher un code (ex: 00, 51, 91, timeout...)',
-                prefixIcon: const Icon(Icons.search, color: Color(0xFF64748B)),
+                prefixIcon: const Icon(Icons.search, color: AppTheme.textMuted),
                 suffixIcon: _searchCtrl.text.isNotEmpty
                     ? IconButton(
-                        icon: const Icon(Icons.clear, color: Color(0xFF64748B)),
+                        icon: const Icon(Icons.clear, color: AppTheme.textMuted),
                         onPressed: () {
                           _searchCtrl.clear();
                           _loadData();
@@ -109,10 +109,10 @@ class _DE39ScreenState extends State<DE39Screen> {
                       _loadData();
                     }
                   },
-                  selectedColor: AppTheme.primaryBlue,
+                  selectedColor: AppTheme.sgRed,
                   backgroundColor: AppTheme.darkCard,
                   labelStyle: TextStyle(
-                    color: isSelected ? Colors.white : const Color(0xFF94A3B8),
+                    color: isSelected ? Colors.white : AppTheme.textSecondary,
                     fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                     fontSize: 12,
                   ),
@@ -125,12 +125,12 @@ class _DE39ScreenState extends State<DE39Screen> {
 
           Expanded(
             child: _isLoading
-                ? const Center(child: CircularProgressIndicator())
+                ? const Center(child: CircularProgressIndicator(color: AppTheme.sgRed))
                 : _items.isEmpty
                     ? Center(
                         child: Text(
                           'Aucun code DE39 trouvé',
-                          style: const TextStyle(color: Color(0xFF94A3B8)),
+                          style: const TextStyle(color: AppTheme.textSecondary),
                         ),
                       )
                     : ListView.builder(
@@ -178,7 +178,7 @@ class _DE39ScreenState extends State<DE39Screen> {
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(
-                                    color: Color(0xFF94A3B8),
+                                    color: AppTheme.textSecondary,
                                     fontSize: 12,
                                   ),
                                 ),

@@ -70,10 +70,10 @@ class _IncidentListScreenState extends State<IncidentListScreen> {
               onChanged: (_) => _performSearch(),
               decoration: InputDecoration(
                 hintText: 'Rechercher un incident (ex: DE39=91, GAB, STAN...)',
-                prefixIcon: const Icon(Icons.search, color: Color(0xFF64748B)),
+                prefixIcon: const Icon(Icons.search, color: AppTheme.textMuted),
                 suffixIcon: _searchCtrl.text.isNotEmpty
                     ? IconButton(
-                        icon: const Icon(Icons.clear, color: Color(0xFF64748B)),
+                        icon: const Icon(Icons.clear, color: AppTheme.textMuted),
                         onPressed: () {
                           _searchCtrl.clear();
                           _performSearch();
@@ -105,10 +105,10 @@ class _IncidentListScreenState extends State<IncidentListScreen> {
                         _performSearch();
                       }
                     },
-                    selectedColor: AppTheme.primaryBlue,
+                    selectedColor: AppTheme.sgRed,
                     backgroundColor: AppTheme.darkCard,
                     labelStyle: TextStyle(
-                      color: isSelected ? Colors.white : const Color(0xFF94A3B8),
+                      color: isSelected ? Colors.white : AppTheme.textSecondary,
                       fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                       fontSize: 12,
                     ),
@@ -127,7 +127,7 @@ class _IncidentListScreenState extends State<IncidentListScreen> {
               children: [
                 Text(
                   '${_incidents.length} incident(s) trouvé(s)',
-                  style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 13),
+                  style: const TextStyle(color: AppTheme.textSecondary, fontSize: 13),
                 ),
               ],
             ),
@@ -138,17 +138,17 @@ class _IncidentListScreenState extends State<IncidentListScreen> {
           // Incident List
           Expanded(
             child: _isLoading
-                ? const Center(child: CircularProgressIndicator())
+                ? const Center(child: CircularProgressIndicator(color: AppTheme.sgRed))
                 : _incidents.isEmpty
                     ? Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Icon(Icons.search_off, size: 48, color: Color(0xFF64748B)),
+                            const Icon(Icons.search_off, size: 48, color: AppTheme.textMuted),
                             const SizedBox(height: 12),
                             Text(
                               'Aucun incident trouvé pour "${_searchCtrl.text}"',
-                              style: const TextStyle(color: Color(0xFF94A3B8)),
+                              style: const TextStyle(color: AppTheme.textSecondary),
                             ),
                           ],
                         ),
@@ -186,13 +186,14 @@ class _IncidentListScreenState extends State<IncidentListScreen> {
                                               padding: const EdgeInsets.symmetric(
                                                   horizontal: 8, vertical: 3),
                                               decoration: BoxDecoration(
-                                                color: AppTheme.primaryBlue.withValues(alpha: 0.15),
+                                                color: AppTheme.sgRed.withValues(alpha: 0.15),
                                                 borderRadius: BorderRadius.circular(4),
+                                                border: Border.all(color: AppTheme.sgRed.withValues(alpha: 0.3)),
                                               ),
                                               child: Text(
                                                 inc.reference,
                                                 style: const TextStyle(
-                                                  color: AppTheme.primaryBlue,
+                                                  color: AppTheme.sgRed,
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 12,
                                                 ),
@@ -203,13 +204,14 @@ class _IncidentListScreenState extends State<IncidentListScreen> {
                                               padding: const EdgeInsets.symmetric(
                                                   horizontal: 8, vertical: 3),
                                               decoration: BoxDecoration(
-                                                color: const Color(0xFF0F172A),
+                                                color: const Color(0xFF111827),
                                                 borderRadius: BorderRadius.circular(4),
+                                                border: Border.all(color: AppTheme.borderDark),
                                               ),
                                               child: Text(
                                                 inc.domain,
                                                 style: const TextStyle(
-                                                  color: AppTheme.accentCyan,
+                                                  color: Colors.white70,
                                                   fontSize: 11,
                                                 ),
                                               ),
@@ -234,13 +236,13 @@ class _IncidentListScreenState extends State<IncidentListScreen> {
                                     Row(
                                       children: [
                                         const Icon(Icons.vpn_key,
-                                            size: 13, color: Color(0xFF64748B)),
+                                            size: 13, color: AppTheme.textMuted),
                                         const SizedBox(width: 4),
                                         Expanded(
                                           child: Text(
                                             inc.analysisKeys,
                                             style: const TextStyle(
-                                              color: Color(0xFF94A3B8),
+                                              color: AppTheme.textSecondary,
                                               fontSize: 12,
                                               fontFamily: 'monospace',
                                             ),
@@ -251,7 +253,7 @@ class _IncidentListScreenState extends State<IncidentListScreen> {
                                         Text(
                                           inc.component,
                                           style: const TextStyle(
-                                            color: Color(0xFF64748B),
+                                            color: AppTheme.textMuted,
                                             fontSize: 11,
                                           ),
                                         ),

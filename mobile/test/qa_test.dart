@@ -34,7 +34,9 @@ void main() {
         expect((item['title'] as String).isNotEmpty, isTrue);
         expect(item['domain'], isNotNull);
         expect(item['component'], isNotNull);
-        expect(item['analysisKeys'], isNotNull);
+        expect(item['analysisKeys'] ?? item['errorCode'], isNotNull);
+        expect(item['observations'], isNotNull);
+        expect(item['flowSteps'], isNotNull);
         expect(item['knowledgeStatus'], isIn(['VALIDATED', 'REFERENCE_SCENARIO']));
 
         // Unicité des références
@@ -84,7 +86,8 @@ void main() {
           component TEXT,
           analysis_keys TEXT,
           knowledge_status TEXT,
-          is_custom INTEGER DEFAULT 0
+          is_custom INTEGER DEFAULT 0,
+          raw_json TEXT
         )
       ''');
       await db.execute('''
@@ -182,8 +185,8 @@ void main() {
           home: HomeScreen(),
         ),
       );
-      expect(find.text('Payway Incident Hub'), findsOneWidget);
-      expect(find.text('Astreinte & Diagnostic Hors-ligne'), findsOneWidget);
+      expect(find.text('M.OURY'), findsOneWidget);
+      expect(find.text('Incident Hub • Astreinte Monétique'), findsOneWidget);
     });
 
     testWidgets('QA-4.2 : Rendu sans erreur du Décodeur Bitmap', (WidgetTester tester) async {

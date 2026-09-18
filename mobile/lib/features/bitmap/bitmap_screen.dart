@@ -61,7 +61,7 @@ class _BitmapScreenState extends State<BitmapScreen> {
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 13,
-                      color: Color(0xFF94A3B8),
+                      color: AppTheme.textSecondary,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -72,12 +72,12 @@ class _BitmapScreenState extends State<BitmapScreen> {
                       fontFamily: 'monospace',
                       fontWeight: FontWeight.bold,
                       letterSpacing: 1.5,
-                      color: AppTheme.accentCyan,
+                      color: Colors.white,
                     ),
                     decoration: InputDecoration(
                       hintText: 'Ex: 7238248108C08000',
                       suffixIcon: IconButton(
-                        icon: const Icon(Icons.clear, color: Color(0xFF64748B)),
+                        icon: const Icon(Icons.clear, color: AppTheme.textMuted),
                         onPressed: () {
                           _hexCtrl.clear();
                           _decode();
@@ -88,7 +88,7 @@ class _BitmapScreenState extends State<BitmapScreen> {
                   const SizedBox(height: 12),
                   const Text(
                     'Exemples types :',
-                    style: TextStyle(fontSize: 11, color: Color(0xFF64748B)),
+                    style: TextStyle(fontSize: 11, color: AppTheme.textMuted),
                   ),
                   const SizedBox(height: 6),
                   Wrap(
@@ -137,7 +137,7 @@ class _BitmapScreenState extends State<BitmapScreen> {
                     _buildStatCol(
                       'Champs Actifs',
                       '${_result!.activeElements.length}',
-                      color: AppTheme.primaryBlue,
+                      color: AppTheme.sgRed,
                     ),
                   ],
                 ),
@@ -172,13 +172,14 @@ class _BitmapScreenState extends State<BitmapScreen> {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
-                              color: AppTheme.primaryBlue.withValues(alpha: 0.15),
+                              color: AppTheme.sgRed.withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(6),
+                              border: Border.all(color: AppTheme.sgRed.withValues(alpha: 0.3)),
                             ),
                             child: Text(
                               'DE ${de.number}',
                               style: const TextStyle(
-                                color: AppTheme.primaryBlue,
+                                color: AppTheme.sgRed,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 13,
                                 fontFamily: 'monospace',
@@ -206,7 +207,7 @@ class _BitmapScreenState extends State<BitmapScreen> {
                                     Text(
                                       de.format,
                                       style: const TextStyle(
-                                        color: AppTheme.accentCyan,
+                                        color: AppTheme.textSecondary,
                                         fontSize: 11,
                                         fontFamily: 'monospace',
                                       ),
@@ -217,7 +218,7 @@ class _BitmapScreenState extends State<BitmapScreen> {
                                 Text(
                                   de.description,
                                   style: const TextStyle(
-                                    color: Color(0xFF94A3B8),
+                                    color: AppTheme.textSecondary,
                                     fontSize: 12,
                                   ),
                                 ),
@@ -252,7 +253,7 @@ class _BitmapScreenState extends State<BitmapScreen> {
         Text(
           label,
           style: const TextStyle(
-            color: Color(0xFF64748B),
+            color: AppTheme.textMuted,
             fontSize: 11,
           ),
         ),

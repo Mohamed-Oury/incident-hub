@@ -9,16 +9,16 @@ void main() async {
   // Initialize Database in background (seeds data if first start)
   AppDatabase.instance.database;
 
-  runApp(const PaywayIncidentHubApp());
+  runApp(const MOurIncidentHubApp());
 }
 
-class PaywayIncidentHubApp extends StatelessWidget {
-  const PaywayIncidentHubApp({super.key});
+class MOurIncidentHubApp extends StatelessWidget {
+  const MOurIncidentHubApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Payway Incident Hub',
+      title: 'M.OURY Incident Hub',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.darkTheme,
       home: const HomeScreen(),

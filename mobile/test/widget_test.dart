@@ -8,8 +8,8 @@ void main() {
     databaseFactory = databaseFactoryFfi;
   });
 
-  testWidgets('Payway Incident Hub App Smoke Test', (WidgetTester tester) async {
-    await tester.pumpWidget(const PaywayIncidentHubApp());
-    expect(find.text('Payway Incident Hub'), findsOneWidget);
+  testWidgets('M.OURY Incident Hub App Smoke Test', (WidgetTester tester) async {
+    await tester.pumpWidget(const MOurIncidentHubApp());
+    expect(find.text('M.OURY'), findsOneWidget);
   });
 }

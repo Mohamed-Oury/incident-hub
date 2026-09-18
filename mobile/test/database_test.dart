@@ -22,7 +22,8 @@ void main() {
           component TEXT,
           analysis_keys TEXT,
           knowledge_status TEXT,
-          is_custom INTEGER DEFAULT 0
+          is_custom INTEGER DEFAULT 0,
+          raw_json TEXT
         )
       ''');
       await db.execute('''

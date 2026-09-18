@@ -1,25 +1,33 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
-  static const Color darkBg = Color(0xFF0B0F19);
-  static const Color darkSurface = Color(0xFF151C2C);
-  static const Color darkCard = Color(0xFF1E293B);
-  static const Color borderDark = Color(0xFF334155);
+  // Charte Officielle GROUPE SOCIÉTÉ GÉNÉRALE : Rouge SG (#E60028), Noir profond (#111827 / #1A1A1A), Blanc
+  static const Color sgRed = Color(0xFFE60028);        // Rouge officiel Société Générale
+  static const Color sgRedDark = Color(0xFFCC0024);
+  static const Color sgRedSubtle = Color(0x33E60028);  // 20% alpha
 
-  static const Color primaryBlue = Color(0xFF3B82F6);
-  static const Color accentCyan = Color(0xFF06B6D4);
+  static const Color darkBg = Color(0xFF111827);       // Noir profond officiel SG
+  static const Color darkSurface = Color(0xFF1A1A1A);  // Noir secondaire SG
+  static const Color darkCard = Color(0xFF1F2937);     // Ardoise sombre pour cartes
+  static const Color borderDark = Color(0xFF374151);   // Bordures
+
+  static const Color textPrimary = Colors.white;
+  static const Color textSecondary = Color(0xFF9CA3AF);
+  static const Color textMuted = Color(0xFF6B7280);
+
+  // Status colors
   static const Color successGreen = Color(0xFF10B981);
   static const Color warningOrange = Color(0xFFF59E0B);
-  static const Color errorRed = Color(0xFFEF4444);
+  static const Color errorRed = Color(0xFFE60028);
 
   static ThemeData get darkTheme {
     return ThemeData(
       brightness: Brightness.dark,
       scaffoldBackgroundColor: darkBg,
-      primaryColor: primaryBlue,
+      primaryColor: sgRed,
       colorScheme: const ColorScheme.dark(
-        primary: primaryBlue,
-        secondary: accentCyan,
+        primary: sgRed,
+        secondary: sgRedDark,
         surface: darkSurface,
         error: errorRed,
       ),
@@ -39,6 +47,7 @@ class AppTheme {
           color: Colors.white,
           fontSize: 18,
           fontWeight: FontWeight.w700,
+          letterSpacing: 0.3,
         ),
         iconTheme: IconThemeData(color: Colors.white),
       ),
@@ -55,9 +64,9 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: primaryBlue, width: 1.5),
+          borderSide: const BorderSide(color: sgRed, width: 1.5),
         ),
-        hintStyle: const TextStyle(color: Color(0xFF64748B), fontSize: 14),
+        hintStyle: const TextStyle(color: textMuted, fontSize: 14),
       ),
       chipTheme: ChipThemeData(
         backgroundColor: darkSurface,
