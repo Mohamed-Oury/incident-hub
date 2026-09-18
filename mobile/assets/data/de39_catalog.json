@@ -1,0 +1,322 @@
+[
+  {
+    "code": "00",
+    "label": "Approved / Honoré",
+    "category": "APPROBATION",
+    "meaning": "Transaction approuvée avec succès par l'Émetteur (Issuer).",
+    "impactIncident": "Comportement nominal. Si l'incident porte sur une absence de cash ou de ticket, le problème se situe en aval (mécanique automate ou capteur de distribution).",
+    "recommendedAction": "Vérifier les capteurs mécaniques du GAB ou l'imprimante TPE. Consulter les messages de reversal 0400/0420."
+  },
+  {
+    "code": "08",
+    "label": "Honor with Identification",
+    "category": "APPROBATION",
+    "meaning": "Transaction approuvée sous réserve d'identification physique du porteur.",
+    "impactIncident": "Rare sur GAB, survient en TPE lors de contrôles aléatoires ou suspicion de fraude modérée.",
+    "recommendedAction": "Vérifier la configuration du terminal marchand pour la gestion des demandes de signature ou de pièce d'identité."
+  },
+  {
+    "code": "10",
+    "label": "Partial Approval",
+    "category": "APPROBATION",
+    "meaning": "Approbation partielle d'un montant inférieur au montant demandé dans le DE4.",
+    "impactIncident": "Peut provoquer un litige client si le terminal ne gère pas le multi-règlement (split tender) et tente d'extourner la transaction.",
+    "recommendedAction": "S'assurer que le paramètre Partial Approval (DE54/DE6) est bien activé sur le TPE et compris par le middleware commerçant."
+  },
+  {
+    "code": "85",
+    "label": "No reason to decline",
+    "category": "APPROBATION",
+    "meaning": "Pas de motif de rejet (requête de vérification de carte ou de compte sans prélèvement).",
+    "impactIncident": "Utilisé lors des pré-autorisations ou des tests de validité de compte e-commerce / VAD.",
+    "recommendedAction": "Ne pas comptabiliser de flux financier. S'assurer de la conformité du processing code DE3 (ex: 300000)."
+  },
+  {
+    "code": "01",
+    "label": "Refer to Card Issuer",
+    "category": "METIER_PORTEUR",
+    "meaning": "Demande de contact avec la banque émettrice pour accord manuel.",
+    "impactIncident": "Blocage de la transaction automatique. Souvent lié à des règles de sécurité bancaires spécifiques.",
+    "recommendedAction": "Inviter le porteur à contacter son agence ou le service d'autorisation de sa banque."
+  },
+  {
+    "code": "02",
+    "label": "Refer to Card Issuer (Special Condition)",
+    "category": "METIER_PORTEUR",
+    "meaning": "Consigne d'appel à l'émetteur sous condition particulière (ex: suspicion de fraude ou compte sous tutelle).",
+    "impactIncident": "Rejet strict sur automate bancaire.",
+    "recommendedAction": "Vérifier l'état du compte dans le Core Banking émetteur."
+  },
+  {
+    "code": "04",
+    "label": "Pick-up Card (Hold-call)",
+    "category": "METIER_PORTEUR",
+    "meaning": "Ordre formel de confiscation de la carte bancaire par l'automate sans motif pénal déclaré.",
+    "impactIncident": "L'automate avale la carte immédiatement sans délivrance de cash.",
+    "recommendedAction": "Vérifier si une décision commerciale de clôture de compte a été ordonnée par l'agence bancaire."
+  },
+  {
+    "code": "05",
+    "label": "Do Not Honor (Ne pas honorer)",
+    "category": "METIER_PORTEUR",
+    "meaning": "Refus générique de l'Émetteur sans précision du motif (règles de risque, compte inactif, suspicion).",
+    "impactIncident": "Très fréquent. Peut être individuel (porteur) ou massif (si une règle de scoring fraude globale a été modifiée).",
+    "recommendedAction": "Isoler si le rejet est concentré sur un BIN, un marchand ou une plage horaire. Analyser le moteur de scoring fraude."
+  },
+  {
+    "code": "12",
+    "label": "Invalid Transaction",
+    "category": "METIER_PORTEUR",
+    "meaning": "Transaction invalide pour cette carte ou ce terminal.",
+    "impactIncident": "Tentative d'opération non supportée par le contrat porteur (ex: retrait sur compte épargne non lié, paiement e-commerce avec carte locale).",
+    "recommendedAction": "Vérifier le Processing Code (DE3) et le type de produit carte dans le Core Banking."
+  },
+  {
+    "code": "13",
+    "label": "Invalid Amount",
+    "category": "METIER_PORTEUR",
+    "meaning": "Montant invalide dans le champ DE4.",
+    "impactIncident": "Montant nul (0), négatif, dépassant les capacités de coupures du GAB ou avec un pas non multiple des billets disponibles.",
+    "recommendedAction": "Vérifier la table de coupures de l'automate (bill mix) et le cadrage du champ DE4 (format numérique 12 caractères)."
+  },
+  {
+    "code": "14",
+    "label": "Invalid Card Number (No Such Card)",
+    "category": "METIER_PORTEUR",
+    "meaning": "Numéro de carte inexistant dans la base émettrice ou erreur de clé de contrôle (Luhn).",
+    "impactIncident": "Tentative de fraude (brute-force de PAN) ou piste magnétique corrompue transmettant un numéro erroné.",
+    "recommendedAction": "Contrôler la validité de l'algorithme de Luhn sur le PAN et vérifier l'état d'enrôlement du BIN chez l'émetteur."
+  },
+  {
+    "code": "15",
+    "label": "No Such Issuer",
+    "category": "METIER_PORTEUR",
+    "meaning": "Émetteur introuvable dans la table de routage du switch acquéreur.",
+    "impactIncident": "Le BIN de la carte n'est rattaché à aucun contrat de routage ou accord d'interbancarité.",
+    "recommendedAction": "Mettre à jour les tables de routage BIN du switch et vérifier les accords d'interopérabilité (GIMAC, VISA, etc.)."
+  },
+  {
+    "code": "33",
+    "label": "Expired Card - Pick-up",
+    "category": "METIER_PORTEUR",
+    "meaning": "Carte échue avec consigne de rétention par l'automate.",
+    "impactIncident": "Capture de la carte physique au GAB.",
+    "recommendedAction": "Vérifier la date d'expiration déclarée dans le DE14 par rapport à la date locale du frontal (DE12/DE13)."
+  },
+  {
+    "code": "41",
+    "label": "Lost Card - Pick-up",
+    "category": "METIER_PORTEUR",
+    "meaning": "Carte déclarée perdue par le titulaire.",
+    "impactIncident": "Capture immédiate de la carte. Alerte au service surveillance monétique.",
+    "recommendedAction": "Consigner l'automate et archiver le journal électronique pour traçabilité de capture."
+  },
+  {
+    "code": "43",
+    "label": "Stolen Card - Pick-up",
+    "category": "METIER_PORTEUR",
+    "meaning": "Carte déclarée volée avec ordre de confiscation immédiate.",
+    "impactIncident": "Opposition pour vol active. Déclenchement potentiel d'une capture photo/vidéo sur l'automate.",
+    "recommendedAction": "Alerter le département de sécurité bancaire et isoler les traces d'horodatage."
+  },
+  {
+    "code": "51",
+    "label": "Insufficient Funds (Provision insuffisante)",
+    "category": "METIER_PORTEUR",
+    "meaning": "Solde disponible insuffisant pour couvrir le montant de la transaction et les commissions éventuelles.",
+    "impactIncident": "Refus normal porteur. Attention aux anomalies si le solde réel est positif (blocage sur réserve d'autorisation en attente).",
+    "recommendedAction": "Vérifier le solde comptable vs solde disponible, et les éventuels gels de provisions temporaires sur le CBS."
+  },
+  {
+    "code": "54",
+    "label": "Expired Card (Carte expirée)",
+    "category": "METIER_PORTEUR",
+    "meaning": "Date de validité de la carte dépassée.",
+    "impactIncident": "Transaction rejetée sans capture de la carte.",
+    "recommendedAction": "Vérifier si le client a reçu sa carte de renouvellement et si l'horloge du frontal n'a pas dérivé."
+  },
+  {
+    "code": "57",
+    "label": "Transaction Not Permitted to Cardholder",
+    "category": "METIER_PORTEUR",
+    "meaning": "Opération non autorisée selon le contrat du porteur.",
+    "impactIncident": "Carte de retrait exclusif utilisée sur un terminal de paiement ou carte à usage domestique tentée à l'international.",
+    "recommendedAction": "Contrôler le profil du produit carte et les habilitations de canaux dans le système de gestion des cartes (CMS)."
+  },
+  {
+    "code": "61",
+    "label": "Exceeds Withdrawal Amount Limit",
+    "category": "METIER_PORTEUR",
+    "meaning": "Dépassement du plafond de retrait autorisé (journalier ou hebdomadaire glissant).",
+    "impactIncident": "Le client a atteint son plafond de dépenses ou de retraits paramétré sur son compte.",
+    "recommendedAction": "Vérifier l'historique des autorisations cumulées sur la période glissante dans le CMS."
+  },
+  {
+    "code": "62",
+    "label": "Restricted Card (Carte restreinte)",
+    "category": "METIER_PORTEUR",
+    "meaning": "Carte soumise à des restrictions de sécurité (pays, type de commerçant MCC, canal internet désactivé).",
+    "impactIncident": "Rejet ciblé lors de transactions transfrontalières ou sur des marchands spécifiques.",
+    "recommendedAction": "Consulter la matrice de filtrage géographique (Geo-blocking) et le code activité marchand (DE18/DE42)."
+  },
+  {
+    "code": "65",
+    "label": "Exceeds Withdrawal Frequency Limit",
+    "category": "METIER_PORTEUR",
+    "meaning": "Dépassement du nombre maximal d'opérations autorisées par période.",
+    "impactIncident": "Règle de vélocité atteinte (ex: plus de 3 retraits dans la même journée).",
+    "recommendedAction": "Vérifier le compteur de fréquence de retrait du porteur dans le Core Banking."
+  },
+  {
+    "code": "75",
+    "label": "Allowable PIN Tries Exceeded",
+    "category": "METIER_PORTEUR",
+    "meaning": "Nombre maximal de tentatives de code confidentiel erroné dépassé (généralement 3 essais consécutifs).",
+    "impactIncident": "Blocage de l'application PIN sur la puce EMV ou sur le serveur d'autorisation.",
+    "recommendedAction": "Déblocage du compteur PIN par le porteur en agence ou via l'application bancaire (commande de déblocage PIN)."
+  },
+  {
+    "code": "55",
+    "label": "Incorrect PIN",
+    "category": "SECURITE_CRYPTO",
+    "meaning": "Code PIN saisi erroné lors de la vérification par le HSM de l'Émetteur.",
+    "impactIncident": "Erreur de saisie client ou désynchronisation du bloc de vérification de PIN (PVV / IBM 3624).",
+    "recommendedAction": "Si l'erreur est massive, suspecter un problème de clé de zone ZPK ou une mauvaise table de dérivation décimale sur le HSM."
+  },
+  {
+    "code": "82",
+    "label": "Incorrect CVV / iCVV",
+    "category": "SECURITE_CRYPTO",
+    "meaning": "Cryptogramme de sécurité visuel (CVV2/CVC2) ou cryptogramme de piste (iCVV) invalide.",
+    "impactIncident": "Rejet fréquent sur transactions e-commerce (VAD) ou tentative de clonage de piste magnétique.",
+    "recommendedAction": "Vérifier l'intégrité de la formule de calcul CVV (clé CVK sur le HSM) et la concordance de la date d'expiration."
+  },
+  {
+    "code": "88",
+    "label": "Cryptographic Failure",
+    "category": "SECURITE_CRYPTO",
+    "meaning": "Échec général de calcul ou de dérivation cryptographique sur le HSM.",
+    "impactIncident": "Indisponibilité d'une clé maîtresse (LMK/ZMK), désynchronisation de compteur DUKPT (KSN) ou firmware HSM en incident.",
+    "recommendedAction": "Consulter les logs d'alertes du HSM (Thales PayShield, Atos, etc.) et vérifier la table des clés de session."
+  },
+  {
+    "code": "89",
+    "label": "Invalid PIN Block",
+    "category": "SECURITE_CRYPTO",
+    "meaning": "Format de bloc de PIN (DE52) non reconnu ou corrompu lors de la traduction cryptographique.",
+    "impactIncident": "Incompatibilité de format entre l'EPP du terminal (ex: Format ISO-1) et le switch récepteur (attendant Format ISO-0).",
+    "recommendedAction": "Standardiser le paramétrage du format de PIN block sur l'ensemble des contrôleurs de terminaux marchands et automates."
+  },
+  {
+    "code": "93",
+    "label": "Violation / EMV Cryptogram Failure",
+    "category": "SECURITE_CRYPTO",
+    "meaning": "Cryptogramme de transaction EMV (ARQC dans le DE55) déclaré invalide par le serveur d'autorisation.",
+    "impactIncident": "La carte puce et l'émetteur ne calculent pas le même résultat cryptographique (ATC désynchronisé ou clé IMK-AC invalide).",
+    "recommendedAction": "Vérifier le compteur d'application de transaction (ATC) et la clé de dérivation émetteur sur le serveur d'autorisation."
+  },
+  {
+    "code": "19",
+    "label": "Re-enter Transaction",
+    "category": "TECHNIQUE_RESEAU",
+    "meaning": "Demande de réintroduction de la transaction suite à une anomalie temporaire.",
+    "impactIncident": "Échec temporaire de communication entre le concentrateur et le frontal Payway.",
+    "recommendedAction": "Le porteur peut réitérer immédiatement. Vérifier la stabilité du réseau de collecte."
+  },
+  {
+    "code": "25",
+    "label": "Unable to Locate Record on File",
+    "category": "TECHNIQUE_RESEAU",
+    "meaning": "Enregistrement d'origine introuvable pour une opération de suivi (annulation 0400 ou confirmation 0220).",
+    "impactIncident": "Le message d'annulation ou de reversal ne parvient pas à matcher avec la transaction initiale (STAN ou DE90 incohérent).",
+    "recommendedAction": "Vérifier la concordance des données de référence originale dans le champ DE90 (MTI original, STAN, date et heure)."
+  },
+  {
+    "code": "30",
+    "label": "Format Error",
+    "category": "TECHNIQUE_RESEAU",
+    "meaning": "Erreur de syntaxe ou de conformité dans le message ISO 8583.",
+    "impactIncident": "Champ de longueur variable (LLVAR/LLLVAR) mal encodé, caractère interdit dans un champ numérique, ou champ obligatoire absent.",
+    "recommendedAction": "Capturer la trame brute avec un analyseur réseau, décoder le bitmap et identifier le premier Data Element en anomalie."
+  },
+  {
+    "code": "58",
+    "label": "Transaction Not Permitted to Terminal",
+    "category": "TECHNIQUE_RESEAU",
+    "meaning": "Opération non autorisée pour ce Terminal ID (DE41).",
+    "impactIncident": "Le terminal n'est pas habilité pour ce type d'opération (ex: demande de cashback sur un terminal non certifié).",
+    "recommendedAction": "Vérifier la table des profils terminaux dans le système TMS et les habilitations de flux sur le frontal."
+  },
+  {
+    "code": "68",
+    "label": "Response Received Too Late",
+    "category": "TECHNIQUE_RESEAU",
+    "meaning": "La réponse de l'Host est parvenue après expiration du timer d'attente du switch ou du frontal.",
+    "impactIncident": "Le client a déjà abandonné ou l'automate a généré un abandon. Le compte peut être débité à tort sans remise d'espèces.",
+    "recommendedAction": "Augmenter le timer de timeout du switch ou optimiser les temps de traitement de l'Host émetteur."
+  },
+  {
+    "code": "76",
+    "label": "Key Synchronization Error",
+    "category": "TECHNIQUE_RESEAU",
+    "meaning": "Désynchronisation des clés de sécurité de liaison interbancaire.",
+    "impactIncident": "Rejet en bloc de toutes les transactions passant par une liaison spécifique.",
+    "recommendedAction": "Forcer un échange de clés de session (Key Exchange via message réseau 0800/0820)."
+  },
+  {
+    "code": "90",
+    "label": "System Cutover in Progress",
+    "category": "TECHNIQUE_RESEAU",
+    "meaning": "Arrêté comptable et bascule de journée en cours sur le Core Banking ou le Switch.",
+    "impactIncident": "Interruption temporaire des autorisations pendant l'exécution des procédures d'arrêté comptable (Cut-off).",
+    "recommendedAction": "Activer le mode Stand-In local ou différer les opérations non critiques pendant la fenêtre de maintenance."
+  },
+  {
+    "code": "91",
+    "label": "Issuer or Switch Inoperative (Timeout)",
+    "category": "TECHNIQUE_RESEAU",
+    "meaning": "L'Émetteur distant, le Switch ou la passerelle intermédiaire ne répond pas dans le délai imparti.",
+    "impactIncident": "L'incident monétique d'exploitation le plus critique. Indique une panne réseau WAN, un crash du Core Banking, ou une saturation de sockets.",
+    "recommendedAction": "Vérifier les flux réseau (Echo test 0800), contrôler les pools de connexions et les files d'attente sur le frontal Payway."
+  },
+  {
+    "code": "92",
+    "label": "Destination Unreachable",
+    "category": "TECHNIQUE_RESEAU",
+    "meaning": "Nœud de routage ou switch intermédiaire impossible à contacter sur le réseau.",
+    "impactIncident": "Rupture de liaison télécom dédiée, panne de routeur BGP ou pare-feu bloquant le port TCP monétique.",
+    "recommendedAction": "Vérifier la connectivité IP, basculer sur le lien télécom redondant (VPN/Fibre secondaire) et sonder le switch partenaire."
+  },
+  {
+    "code": "94",
+    "label": "Duplicate Transmission",
+    "category": "TECHNIQUE_RESEAU",
+    "meaning": "Message identifié comme un doublon exact d'une transaction déjà enregistrée.",
+    "impactIncident": "Un terminal ou un switch rejoue un message déjà acquitté suite à une perte d'accusé de réception réseau.",
+    "recommendedAction": "Contrôler l'unicité du couple (STAN, RRN, Horodatage) et rejeter la seconde transmission pour éviter le double débit."
+  },
+  {
+    "code": "96",
+    "label": "System Malfunction",
+    "category": "TECHNIQUE_RESEAU",
+    "meaning": "Défaillance logicielle, système ou base de données sur le frontal ou le Host.",
+    "impactIncident": "Panne interne majeure (NullPointerException, base de données inaccessible, partition disque pleine, crash du démon Payway).",
+    "recommendedAction": "Consulter immédiatement les journaux d'erreurs (error.log), relancer le service d'autorisation et vérifier les ressources serveur (CPU/RAM/Disque)."
+  },
+  {
+    "code": "98",
+    "label": "MAC Error (Message Authentication Code)",
+    "category": "GESTION_RESEAU",
+    "meaning": "Échec de vérification du code d'authentification de message (champ DE64 ou DE128).",
+    "impactIncident": "Soupçon d'altération de message sur le réseau ou désynchronisation de la clé d'intégrité MAC (TAK).",
+    "recommendedAction": "Renouveler immédiatement la clé de signature MAC (TAK) via une séquence d'échange de clés 0800."
+  },
+  {
+    "code": "99",
+    "label": "PIN Block Translation Failure",
+    "category": "GESTION_RESEAU",
+    "meaning": "Erreur fatale lors du transchiffrement de bloc PIN par le switch intermédiaire.",
+    "impactIncident": "Blocage total des opérations nécessitant la saisie du code PIN sur le canal interbancaire.",
+    "recommendedAction": "Vérifier les paires de clés de zone entre les switches participants et réinitialiser la liaison cryptographique."
+  }
+]
