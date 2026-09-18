@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import '../../core/database/app_database.dart';
+import '../../core/database/gamification_service.dart';
 import '../../core/models/incident.dart';
 import '../../core/theme/app_theme.dart';
 import '../incidents/incident_list_screen.dart';
 import '../incidents/incident_detail_screen.dart';
 import '../de39/de39_screen.dart';
 import '../bitmap/bitmap_screen.dart';
+import '../academy/academy_screen.dart';
+import '../sandbox/sandbox_screen.dart';
+import '../boss_fight/boss_fight_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -18,6 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Map<String, int> _stats = {'total': 0, 'validated': 0, 'de39': 0};
   List<IncidentModel> _topIncidents = [];
   bool _isLoading = true;
+  UserProfile? _userProfile;
 
   @override
   void initState() {
@@ -29,11 +34,13 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() => _isLoading = true);
     final stats = await AppDatabase.instance.getStats();
     final top = await AppDatabase.instance.searchIncidents(limit: 5);
+    final profile = await GamificationService.instance.getProfile();
 
     if (mounted) {
       setState(() {
         _stats = stats;
         _topIncidents = top;
+        _userProfile = profile;
         _isLoading = false;
       });
     }
@@ -100,6 +107,175 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // PayQuest Profile / XP Banner
+                    if (_userProfile != null) ...[
+                      InkWell(
+                        onTap: () async {
+                          await Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => const AcademyScreen()),
+                          );
+                          _loadDashboard();
+                        },
+                        borderRadius: BorderRadius.circular(12),
+                        child: Container(
+                          padding: const EdgeInsets.all(14),
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFF1E2638), Color(0xFF111827)],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: AppTheme.sgRed.withValues(alpha: 0.5)),
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: AppTheme.sgRed.withValues(alpha: 0.2),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(Icons.military_tech, color: AppTheme.sgRed, size: 28),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          _userProfile!.rankTitle,
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 13,
+                                          ),
+                                        ),
+                                        Text(
+                                          '${_userProfile!.xp} XP',
+                                          style: const TextStyle(
+                                            color: Colors.amber,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 13,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 6),
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(4),
+                                      child: LinearProgressIndicator(
+                                        value: _userProfile!.rankProgress,
+                                        minHeight: 6,
+                                        backgroundColor: const Color(0xFF374151),
+                                        valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.sgRed),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          'Niveau ${_userProfile!.level}',
+                                          style: const TextStyle(color: Colors.white70, fontSize: 11),
+                                        ),
+                                        Text(
+                                          '🔥 ${_userProfile!.streakDays}j • ⚡ ${_userProfile!.energy}/100',
+                                          style: const TextStyle(color: Colors.white70, fontSize: 11),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              const Icon(Icons.chevron_right, color: Colors.white54, size: 18),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+
+                    // PayQuest Modules Header
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Mode PayQuest (Cahier des Charges)',
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: AppTheme.sgRed.withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: const Text(
+                            'NOUVEAU',
+                            style: TextStyle(color: AppTheme.sgRed, fontSize: 9, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+
+                    // PayQuest Action Grid
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildPayQuestTile(
+                            title: 'Academy',
+                            subtitle: 'QCM & Quiz XP',
+                            icon: Icons.school,
+                            color: const Color(0xFF3B82F6),
+                            onTap: () async {
+                              await Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (_) => const AcademyScreen()),
+                              );
+                              _loadDashboard();
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: _buildPayQuestTile(
+                            title: 'Sandbox',
+                            subtitle: 'DE55 & CLI ISO',
+                            icon: Icons.terminal,
+                            color: const Color(0xFF10B981),
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => const SandboxScreen()),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: _buildPayQuestTile(
+                            title: 'Boss Fight',
+                            subtitle: 'Crises P0/P1',
+                            icon: Icons.flash_on,
+                            color: AppTheme.sgRed,
+                            onTap: () async {
+                              await Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (_) => const BossFightScreen()),
+                              );
+                              _loadDashboard();
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 20),
+
                     // Stats Row - Société Générale Style (Noir & Rouge)
                     Container(
                       padding: const EdgeInsets.all(16),
@@ -170,13 +346,13 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                         _buildNavCard(
-                          title: 'Urgences DE39',
-                          desc: 'Recherche directe 91, 51, 55...',
-                          icon: Icons.bolt,
+                          title: 'Sandbox DE55',
+                          desc: 'Décodeur TLV EMV & Switch CLI',
+                          icon: Icons.developer_mode,
                           color: AppTheme.sgRedDark,
                           onTap: () => Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (_) => const DE39Screen()),
+                            MaterialPageRoute(builder: (_) => const SandboxScreen()),
                           ),
                         ),
                       ],
@@ -252,6 +428,44 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
+    );
+  }
+
+  Widget _buildPayQuestTile({
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(10),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+        decoration: BoxDecoration(
+          color: AppTheme.darkCard,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: color.withValues(alpha: 0.4)),
+        ),
+        child: Column(
+          children: [
+            Icon(icon, color: color, size: 24),
+            const SizedBox(height: 6),
+            Text(
+              title,
+              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              subtitle,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(color: AppTheme.textSecondary, fontSize: 9),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
