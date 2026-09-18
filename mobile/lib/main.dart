@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'core/database/app_database.dart';
 import 'core/theme/app_theme.dart';
-import 'features/home/home_screen.dart';
+import 'features/main_navigation_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,7 +21,7 @@ class MOurIncidentHubApp extends StatelessWidget {
       title: 'M.OURY Incident Hub',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.darkTheme,
-      home: const HomeScreen(),
+      home: const MainNavigationScreen(),
     );
   }
 }
