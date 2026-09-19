@@ -12,7 +12,9 @@ import '../sandbox/sandbox_screen.dart';
 import '../boss_fight/boss_fight_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final VoidCallback? onLogout;
+
+  const HomeScreen({super.key, this.onLogout});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -95,6 +97,37 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
+        actions: [
+          if (widget.onLogout != null)
+            IconButton(
+              icon: const Icon(Icons.logout, color: Colors.white70, size: 20),
+              tooltip: 'Déconnexion',
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (ctx) => AlertDialog(
+                    backgroundColor: AppTheme.darkCard,
+                    title: const Text('Déconnexion', style: TextStyle(color: Colors.white)),
+                    content: const Text('Voulez-vous fermer votre session d\'astreinte ?', style: TextStyle(color: AppTheme.textSecondary)),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx),
+                        child: const Text('Annuler', style: TextStyle(color: Colors.white70)),
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(backgroundColor: AppTheme.sgRed),
+                        onPressed: () {
+                          Navigator.pop(ctx);
+                          widget.onLogout!();
+                        },
+                        child: const Text('Déconnexion', style: TextStyle(color: Colors.white)),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+        ],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator(color: AppTheme.sgRed))

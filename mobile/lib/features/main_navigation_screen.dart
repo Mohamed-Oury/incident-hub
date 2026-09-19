@@ -7,7 +7,9 @@ import 'sandbox/sandbox_screen.dart';
 import 'boss_fight/boss_fight_screen.dart';
 
 class MainNavigationScreen extends StatefulWidget {
-  const MainNavigationScreen({super.key});
+  final VoidCallback? onLogout;
+
+  const MainNavigationScreen({super.key, this.onLogout});
 
   @override
   State<MainNavigationScreen> createState() => _MainNavigationScreenState();
@@ -16,13 +18,19 @@ class MainNavigationScreen extends StatefulWidget {
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
   int _currentIndex = 0;
 
-  final List<Widget> _screens = const [
-    HomeScreen(),
-    IncidentListScreen(),
-    AcademyScreen(),
-    SandboxScreen(),
-    BossFightScreen(),
-  ];
+  late final List<Widget> _screens;
+
+  @override
+  void initState() {
+    super.initState();
+    _screens = [
+      HomeScreen(onLogout: widget.onLogout),
+      const IncidentListScreen(),
+      const AcademyScreen(),
+      const SandboxScreen(),
+      const BossFightScreen(),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
