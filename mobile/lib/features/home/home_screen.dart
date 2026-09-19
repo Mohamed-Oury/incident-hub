@@ -10,6 +10,9 @@ import '../bitmap/bitmap_screen.dart';
 import '../academy/academy_screen.dart';
 import '../sandbox/sandbox_screen.dart';
 import '../boss_fight/boss_fight_screen.dart';
+import '../tools/iso_raw_parser_screen.dart';
+import '../tools/crypto_toolbox_screen.dart';
+import '../tools/on_call_report_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final VoidCallback? onLogout;
@@ -386,6 +389,36 @@ class _HomeScreenState extends State<HomeScreen> {
                           onTap: () => Navigator.push(
                             context,
                             MaterialPageRoute(builder: (_) => const SandboxScreen()),
+                          ),
+                        ),
+                        _buildNavCard(
+                          title: 'Trame ISO Brute',
+                          desc: 'Découpage complet MTI, Bitmaps & DEs',
+                          icon: Icons.data_object,
+                          color: const Color(0xFF38BDF8),
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => const IsoRawParserScreen()),
+                          ),
+                        ),
+                        _buildNavCard(
+                          title: 'Crypto Toolbox',
+                          desc: 'KCV, Luhn, Service Code, PIN Block',
+                          icon: Icons.enhanced_encryption,
+                          color: const Color(0xFFA855F7),
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => const CryptoToolboxScreen()),
+                          ),
+                        ),
+                        _buildNavCard(
+                          title: 'Flash Astreinte',
+                          desc: 'Générateur de rapport incident P0/P1',
+                          icon: Icons.notifications_active,
+                          color: AppTheme.warningOrange,
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => const OnCallReportScreen()),
                           ),
                         ),
                       ],
