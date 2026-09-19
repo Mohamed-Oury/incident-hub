@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'core/database/app_database.dart';
 import 'core/database/auth_service.dart';
 import 'core/theme/app_theme.dart';
+import 'features/universe_selection_screen.dart';
 import 'features/main_navigation_screen.dart';
+import 'features/cbs/cbs_navigation_screen.dart';
 import 'features/auth/login_screen.dart';
 
 void main() async {
@@ -12,6 +14,12 @@ void main() async {
   AppDatabase.instance.database;
 
   runApp(const MOurIncidentHubApp());
+}
+
+enum AppUniverse {
+  none,
+  monetique,
+  cbs,
 }
 
 class MOurIncidentHubApp extends StatefulWidget {
@@ -24,6 +32,7 @@ class MOurIncidentHubApp extends StatefulWidget {
 class _MOurIncidentHubAppState extends State<MOurIncidentHubApp> {
   bool _isLoading = true;
   bool _isAuthenticated = false;
+  AppUniverse _selectedUniverse = AppUniverse.none;
 
   @override
   void initState() {
@@ -44,6 +53,7 @@ class _MOurIncidentHubAppState extends State<MOurIncidentHubApp> {
   void _onLoginSuccess() {
     setState(() {
       _isAuthenticated = true;
+      _selectedUniverse = AppUniverse.none; // Afficher le choix d'univers après login
     });
   }
 
@@ -52,23 +62,62 @@ class _MOurIncidentHubAppState extends State<MOurIncidentHubApp> {
     if (mounted) {
       setState(() {
         _isAuthenticated = false;
+        _selectedUniverse = AppUniverse.none;
       });
     }
   }
 
+  void _switchToUniverse(AppUniverse universe) {
+    setState(() {
+      _selectedUniverse = universe;
+    });
+  }
+
+  void _backToUniverseSelection() {
+    setState(() {
+      _selectedUniverse = AppUniverse.none;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    Widget currentScreen;
+
+    if (_isLoading) {
+      currentScreen = const Scaffold(
+        body: Center(child: CircularProgressIndicator(color: AppTheme.sgRed)),
+      );
+    } else if (!_isAuthenticated) {
+      currentScreen = LoginScreen(onLoginSuccess: _onLoginSuccess);
+    } else {
+      switch (_selectedUniverse) {
+        case AppUniverse.monetique:
+          currentScreen = MainNavigationScreen(
+            onSwitchUniverse: _backToUniverseSelection,
+            onLogout: _onLogout,
+          );
+          break;
+        case AppUniverse.cbs:
+          currentScreen = CbsNavigationScreen(
+            onSwitchUniverse: _backToUniverseSelection,
+            onLogout: _onLogout,
+          );
+          break;
+        case AppUniverse.none:
+          currentScreen = UniverseSelectionScreen(
+            onSelectMonetique: () => _switchToUniverse(AppUniverse.monetique),
+            onSelectCbs: () => _switchToUniverse(AppUniverse.cbs),
+            onLogout: _onLogout,
+          );
+          break;
+      }
+    }
+
     return MaterialApp(
       title: 'M.OURY Incident Hub',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.darkTheme,
-      home: _isLoading
-          ? const Scaffold(
-              body: Center(child: CircularProgressIndicator(color: AppTheme.sgRed)),
-            )
-          : _isAuthenticated
-              ? MainNavigationScreen(onLogout: _onLogout)
-              : LoginScreen(onLoginSuccess: _onLoginSuccess),
+      home: currentScreen,
     );
   }
 }

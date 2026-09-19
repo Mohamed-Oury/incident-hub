@@ -24,10 +24,10 @@ export const ROLE_DEFAULT_PAGES: Record<UserRole, string> = {
 // Liste des routes autorisées pour chaque rôle
 export const ROLE_ALLOWED_ROUTES: Record<UserRole, string[]> = {
   ADMIN: ["*"], // Tout est autorisé
-  ROLE_EXPLOITATION: ["/", "/knowledge", "/diagnostic", "/incidents"],
-  ROLE_DECODEURS: ["/parser", "/bitmap", "/emv", "/atm-ej"],
-  ROLE_REFERENTIELS: ["/mti", "/de39", "/audit"],
-  ROLE_EXPERTISE: ["/crypto-hsm", "/timeout-matrix", "/post-mortem"],
+  ROLE_EXPLOITATION: ["/", "/knowledge", "/diagnostic", "/incidents", "/cbs"],
+  ROLE_DECODEURS: ["/parser", "/bitmap", "/emv", "/atm-ej", "/cbs"],
+  ROLE_REFERENTIELS: ["/mti", "/de39", "/audit", "/cbs"],
+  ROLE_EXPERTISE: ["/crypto-hsm", "/timeout-matrix", "/post-mortem", "/cbs"],
 };
 
 export const ROLE_LABELS: Record<UserRole, string> = {

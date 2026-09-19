@@ -15,9 +15,14 @@ import '../tools/crypto_toolbox_screen.dart';
 import '../tools/on_call_report_screen.dart';
 
 class HomeScreen extends StatefulWidget {
+  final VoidCallback? onSwitchUniverse;
   final VoidCallback? onLogout;
 
-  const HomeScreen({super.key, this.onLogout});
+  const HomeScreen({
+    super.key,
+    this.onSwitchUniverse,
+    this.onLogout,
+  });
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -101,6 +106,12 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
         actions: [
+          if (widget.onSwitchUniverse != null)
+            IconButton(
+              icon: const Icon(Icons.swap_horiz_rounded, color: Colors.blueAccent),
+              tooltip: 'Changer d\'univers (CBS / Monétique)',
+              onPressed: widget.onSwitchUniverse,
+            ),
           if (widget.onLogout != null)
             IconButton(
               icon: const Icon(Icons.logout, color: Colors.white70, size: 20),

@@ -1,26 +1,26 @@
 import 'package:flutter/material.dart';
-import '../core/theme/app_theme.dart';
-import 'home/home_screen.dart';
-import 'incidents/incident_list_screen.dart';
-import 'academy/academy_screen.dart';
-import 'sandbox/sandbox_screen.dart';
-import 'boss_fight/boss_fight_screen.dart';
+import '../../core/theme/app_theme.dart';
+import 'screens/cbs_home_screen.dart';
+import 'screens/cbs_domains_screen.dart';
+import 'screens/cbs_batch_eod_screen.dart';
+import 'screens/cbs_database_screen.dart';
+import 'screens/cbs_incidents_screen.dart';
 
-class MainNavigationScreen extends StatefulWidget {
+class CbsNavigationScreen extends StatefulWidget {
   final VoidCallback? onSwitchUniverse;
   final VoidCallback? onLogout;
 
-  const MainNavigationScreen({
+  const CbsNavigationScreen({
     super.key,
     this.onSwitchUniverse,
     this.onLogout,
   });
 
   @override
-  State<MainNavigationScreen> createState() => _MainNavigationScreenState();
+  State<CbsNavigationScreen> createState() => _CbsNavigationScreenState();
 }
 
-class _MainNavigationScreenState extends State<MainNavigationScreen> {
+class _CbsNavigationScreenState extends State<CbsNavigationScreen> {
   int _currentIndex = 0;
 
   late final List<Widget> _screens;
@@ -29,14 +29,14 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   void initState() {
     super.initState();
     _screens = [
-      HomeScreen(
+      CbsHomeScreen(
         onSwitchUniverse: widget.onSwitchUniverse,
         onLogout: widget.onLogout,
       ),
-      const IncidentListScreen(),
-      const AcademyScreen(),
-      const SandboxScreen(),
-      const BossFightScreen(),
+      const CbsDomainsScreen(),
+      const CbsBatchEodScreen(),
+      const CbsDatabaseScreen(),
+      const CbsIncidentsScreen(),
     ];
   }
 
@@ -58,7 +58,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           onTap: (index) => setState(() => _currentIndex = index),
           type: BottomNavigationBarType.fixed,
           backgroundColor: AppTheme.darkSurface,
-          selectedItemColor: AppTheme.sgRed,
+          selectedItemColor: Colors.blueAccent,
           unselectedItemColor: AppTheme.textSecondary,
           selectedFontSize: 11,
           unselectedFontSize: 11,
@@ -66,27 +66,27 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             BottomNavigationBarItem(
               icon: Icon(Icons.dashboard_outlined),
               activeIcon: Icon(Icons.dashboard),
-              label: 'Accueil',
+              label: 'Accueil CBS',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.warning_amber_rounded),
-              activeIcon: Icon(Icons.warning_rounded),
+              icon: Icon(Icons.account_balance_outlined),
+              activeIcon: Icon(Icons.account_balance),
+              label: 'Domaines',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.timelapse_outlined),
+              activeIcon: Icon(Icons.timelapse),
+              label: 'EOD Batch',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.storage_outlined),
+              activeIcon: Icon(Icons.storage),
+              label: 'Oracle/DB',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.crisis_alert_outlined),
+              activeIcon: Icon(Icons.crisis_alert),
               label: 'Incidents',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.school_outlined),
-              activeIcon: Icon(Icons.school),
-              label: 'Academy',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.terminal_outlined),
-              activeIcon: Icon(Icons.terminal),
-              label: 'Sandbox',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.flash_on_outlined),
-              activeIcon: Icon(Icons.flash_on),
-              label: 'Boss Fight',
             ),
           ],
         ),

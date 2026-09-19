@@ -40,20 +40,24 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
 
   const userRole: UserRole = currentUser?.role || initialUser?.role || "ADMIN";
 
+  const isCbsUniverse = pathname.startsWith("/cbs");
+
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({
     exploitation: true,
     decoders: true,
     referentials: true,
     advanced: true,
-    admin: true,
+    cbs_core: true,
+    cbs_ops: true,
+    cbs_academy: true,
   });
 
   const toggleGroup = (groupKey: string) => {
     setOpenGroups((prev) => ({ ...prev, [groupKey]: !prev[groupKey] }));
   };
 
-  // Liste complète des sections avec contrôle d'accès RBAC
-  const allNavSections = [
+  // Sections Monétique
+  const monetiqueNavSections = [
     {
       key: "exploitation",
       title: "EXPLOITATION",
@@ -88,30 +92,58 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
         { href: "/audit", label: "Piste d'audit", icon: "🛡️" },
       ],
     },
-    // {
-    //   key: "advanced",
-    //   title: "EXPERTISE & OUTILS",
-    //   icon: "🛠️",
-    //   roleRequired: "ROLE_EXPERTISE",
-    //   items: [
-    //     { href: "/crypto-hsm", label: "Diagnostic Clés HSM", icon: "🔐" },
-    //     { href: "/timeout-matrix", label: "Matrice Time-Outs", icon: "⏱️" },
-    //     { href: "/post-mortem", label: "Générateur Rapport", icon: "📑" },
-    //   ],
-    // },
-    // {
-    //   key: "admin",
-    //   title: "ADMINISTRATION",
-    //   icon: "👑",
-    //   roleRequired: "ADMIN",
-    //   items: [
-    //     { href: "/admin/users", label: "Utilisateurs & Rôles", icon: "👥" },
-    //   ],
-    // },
+    {
+      key: "advanced",
+      title: "EXPERTISE & OUTILS",
+      icon: "🛠️",
+      roleRequired: "ROLE_EXPERTISE",
+      items: [
+        { href: "/crypto-hsm", label: "Diagnostic Clés HSM", icon: "🔐" },
+        { href: "/timeout-matrix", label: "Matrice Time-Outs", icon: "⏱️" },
+        { href: "/post-mortem", label: "Générateur Rapport", icon: "📑" },
+      ],
+    },
   ];
 
+  // Sections CBS Amplitude & IT Banking
+  const cbsNavSections = [
+    {
+      key: "cbs_core",
+      title: "CORE BANKING",
+      icon: "🏦",
+      roleRequired: "ROLE_EXPLOITATION",
+      items: [
+        { href: "/cbs", label: "Tableau de bord CBS", icon: "⊞" },
+        { href: "/cbs/domains", label: "8 Domaines Métier", icon: "📑" },
+        { href: "/cbs/batch", label: "Run & Batch EOD / BOD", icon: "⚙️" },
+      ],
+    },
+    {
+      key: "cbs_ops",
+      title: "IT BANKING OPS",
+      icon: "🖥️",
+      roleRequired: "ROLE_EXPERTISE",
+      items: [
+        { href: "/cbs/databases", label: "SGBD Oracle & Informix", icon: "🗄️" },
+        { href: "/cbs/unix", label: "120 Commandes AIX/Unix", icon: "💻" },
+        { href: "/cbs/incidents", label: "200 Incidents RCA & Run", icon: "🚨" },
+      ],
+    },
+    {
+      key: "cbs_academy",
+      title: "FORMATION & CERTIF",
+      icon: "🎓",
+      roleRequired: "ROLE_REFERENTIELS",
+      items: [
+        { href: "/cbs/academy", label: "CBS Academy (240 QCM)", icon: "🎯" },
+      ],
+    },
+  ];
+
+  const currentNavSections = isCbsUniverse ? cbsNavSections : monetiqueNavSections;
+
   // Filtrage strict : Seul ADMIN voit TOUT. Les autres ne voient QUE leur section respective.
-  const authorizedSections = allNavSections.filter((section) => {
+  const authorizedSections = currentNavSections.filter((section) => {
     if (userRole === "ADMIN") return true;
     return section.roleRequired === userRole;
   });
@@ -138,7 +170,7 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
           />
           <div className="brand-text">
             M.OURY
-            <b>MONÉTIQUE HUB</b>
+            <b>{isCbsUniverse ? "CBS AMPLITUDE" : "MONÉTIQUE HUB"}</b>
           </div>
           <button
             type="button"
@@ -149,6 +181,62 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
             {collapsed ? "»" : "«"}
           </button>
         </div>
+
+        {/* Universe Switcher Widget in Sidebar */}
+        {!collapsed && (
+          <div style={{ padding: "0.6rem 0.85rem", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: "4px",
+                background: "rgba(0,0,0,0.4)",
+                padding: "3px",
+                borderRadius: "8px",
+                border: "1px solid rgba(255,255,255,0.08)",
+              }}
+            >
+              <Link
+                href="/"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "5px",
+                  fontSize: "0.72rem",
+                  fontWeight: !isCbsUniverse ? 700 : 500,
+                  padding: "6px 8px",
+                  borderRadius: "6px",
+                  textDecoration: "none",
+                  color: !isCbsUniverse ? "#ffffff" : "#94a3b8",
+                  background: !isCbsUniverse ? "var(--sg-red-600, #e60028)" : "transparent",
+                  transition: "all 0.2s",
+                }}
+              >
+                <span>💳</span> Monétique
+              </Link>
+              <Link
+                href="/cbs"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "5px",
+                  fontSize: "0.72rem",
+                  fontWeight: isCbsUniverse ? 700 : 500,
+                  padding: "6px 8px",
+                  borderRadius: "6px",
+                  textDecoration: "none",
+                  color: isCbsUniverse ? "#ffffff" : "#94a3b8",
+                  background: isCbsUniverse ? "#0284c7" : "transparent",
+                  transition: "all 0.2s",
+                }}
+              >
+                <span>🏦</span> CBS Core
+              </Link>
+            </div>
+          </div>
+        )}
 
         <nav className="nav-menu" aria-label="Navigation principale">
           {authorizedSections.map((section) => {
@@ -230,16 +318,57 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
             <h1 className="page-title">{pageTitle}</h1>
           </div>
 
-          <div style={{ display: "flex", alignItems: "center", gap: "1.25rem" }}>
-            {/* {userRole === "ADMIN" && (
-              <Link href="/admin/users" className="btn-secondary" style={{ padding: "0.5rem 0.85rem", fontSize: "0.82rem" }}>
-                👥 Utilisateurs
+          <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                background: "rgba(0,0,0,0.35)",
+                border: "1px solid var(--border-light)",
+                borderRadius: "20px",
+                padding: "2px 4px",
+                gap: "2px",
+              }}
+            >
+              <Link
+                href="/"
+                style={{
+                  fontSize: "0.75rem",
+                  fontWeight: !isCbsUniverse ? 700 : 500,
+                  color: !isCbsUniverse ? "#ffffff" : "var(--text-muted)",
+                  background: !isCbsUniverse ? "var(--sg-red-600)" : "transparent",
+                  padding: "4px 10px",
+                  borderRadius: "16px",
+                  textDecoration: "none",
+                  transition: "all 0.15s ease",
+                }}
+              >
+                💳 Monétique
               </Link>
-            )} */}
+              <Link
+                href="/cbs"
+                style={{
+                  fontSize: "0.75rem",
+                  fontWeight: isCbsUniverse ? 700 : 500,
+                  color: isCbsUniverse ? "#ffffff" : "var(--text-muted)",
+                  background: isCbsUniverse ? "#0284c7" : "transparent",
+                  padding: "4px 10px",
+                  borderRadius: "16px",
+                  textDecoration: "none",
+                  transition: "all 0.15s ease",
+                }}
+              >
+                🏦 CBS Amplitude
+              </Link>
+            </div>
 
             {userRole === "ADMIN" || userRole === "ROLE_EXPLOITATION" ? (
-              <Link href="/incidents/new" className="btn-emerald" style={{ padding: "0.5rem 1rem", fontSize: "0.85rem" }}>
-                + Déclarer incident
+              <Link
+                href={isCbsUniverse ? "/cbs/incidents" : "/incidents/new"}
+                className={isCbsUniverse ? "btn-secondary" : "btn-emerald"}
+                style={{ padding: "0.5rem 1rem", fontSize: "0.82rem" }}
+              >
+                {isCbsUniverse ? "🚨 Incidents CBS" : "+ Déclarer incident"}
               </Link>
             ) : null}
 
