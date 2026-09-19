@@ -27,9 +27,14 @@ class _QuizScreenState extends State<QuizScreen> {
   @override
   void initState() {
     super.initState();
-    _questions = QuizQuestionsCatalog.getQuestionsByCategory(widget.category);
+    final allAvailable = List<QuizQuestion>.from(
+      QuizQuestionsCatalog.getQuestionsByCategory(widget.category),
+    );
+    allAvailable.shuffle();
+    // Limite chaque session d'entraînement à 10 questions aléatoires pour un rythme de gaming dynamique
+    _questions = allAvailable.take(10).toList();
     if (_questions.isEmpty) {
-      _questions = QuizQuestionsCatalog.allQuestions;
+      _questions = QuizQuestionsCatalog.allQuestions.take(10).toList();
     }
     _startTimer();
   }

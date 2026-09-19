@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/database/gamification_service.dart';
+import 'quiz_questions.dart';
 import 'quiz_screen.dart';
 
 class AcademyScreen extends StatefulWidget {
@@ -77,7 +78,7 @@ class _AcademyScreenState extends State<AcademyScreen> {
                                       style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.white),
                                     ),
                                     Text(
-                                      '${_profile!.xp} XP accumulés',
+                                      '${_profile!.xp} XP accumulés • Niveau ${_profile!.level}',
                                       style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12),
                                     ),
                                   ],
@@ -109,7 +110,7 @@ class _AcademyScreenState extends State<AcademyScreen> {
                                   child: Row(
                                     children: [
                                       const Icon(Icons.bolt, color: AppTheme.warningOrange, size: 14),
-                                      Text('${_profile!.energy}/5', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
+                                      Text('${_profile!.energy}/100', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
                                     ],
                                   ),
                                 ),
@@ -139,16 +140,33 @@ class _AcademyScreenState extends State<AcademyScreen> {
 
                   const SizedBox(height: 20),
 
-                  // Modules de Micro-Learning
-                  const Text(
-                    'Parcours Thématiques & Sessions QCM',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                  // Header Statistiques Questions
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Parcours Thématiques (160 Questions)',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: AppTheme.sgRed.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(color: AppTheme.sgRed.withValues(alpha: 0.4)),
+                        ),
+                        child: Text(
+                          '${QuizQuestionsCatalog.allQuestions.length} QCM',
+                          style: const TextStyle(color: AppTheme.sgRed, fontSize: 11, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 12),
 
                   _buildModuleTile(
                     title: '1. ISO 8583 & Messages MTI',
-                    subtitle: 'Requêtes 0200, Reversals 0420, STAN & Bitmaps',
+                    subtitle: '35 QCM : Requêtes 0200, Reversals 0420, STAN, RRN & Bitmaps',
                     icon: Icons.sync_alt,
                     color: AppTheme.sgRed,
                     xp: '30 XP / rep.',
@@ -157,7 +175,7 @@ class _AcademyScreenState extends State<AcademyScreen> {
                   const SizedBox(height: 10),
                   _buildModuleTile(
                     title: '2. Référentiel des Codes DE39',
-                    subtitle: 'Reconnaissance instinctive des rejets 51, 91, 55, 96...',
+                    subtitle: '35 QCM : Diagnostics réflexes rejets 51, 91, 55, 63, 75, 96...',
                     icon: Icons.error_outline,
                     color: AppTheme.warningOrange,
                     xp: '30 XP / rep.',
@@ -166,7 +184,7 @@ class _AcademyScreenState extends State<AcademyScreen> {
                   const SizedBox(height: 10),
                   _buildModuleTile(
                     title: '3. Cryptographie EMV & Tags DE55',
-                    subtitle: 'Cryptogramme ARQC, masques TVR, TSI et cartes à puce',
+                    subtitle: '35 QCM : Cryptogrammes ARQC/TC, CID, TVR 95, TSI 9B, CDA',
                     icon: Icons.credit_card,
                     color: AppTheme.successGreen,
                     xp: '40 XP / rep.',
@@ -175,7 +193,7 @@ class _AcademyScreenState extends State<AcademyScreen> {
                   const SizedBox(height: 10),
                   _buildModuleTile(
                     title: '4. Sécurité HSM & Gestion des Clés',
-                    subtitle: 'Chiffrement PIN Block, clés ZPK, LMK et DUKPT',
+                    subtitle: '30 QCM : LMK, ZMK, ZPK, DUKPT, KSN, PIN Blocks Format 0/1',
                     icon: Icons.security,
                     color: const Color(0xFFA855F7),
                     xp: '40 XP / rep.',
@@ -183,10 +201,19 @@ class _AcademyScreenState extends State<AcademyScreen> {
                   ),
                   const SizedBox(height: 10),
                   _buildModuleTile(
-                    title: '5. Grand Examen Monétique',
-                    subtitle: 'Évaluation générale multi-domaines chronométrée',
+                    title: '5. Compensation & Normes Bancaires',
+                    subtitle: '25 QCM : Clearing, Settlement RTGS, MIF, Chargebacks, STIP',
+                    icon: Icons.account_balance,
+                    color: const Color(0xFF38BDF8),
+                    xp: '35 XP / rep.',
+                    onTap: () => _openQuiz('Compensation & Normes'),
+                  ),
+                  const SizedBox(height: 10),
+                  _buildModuleTile(
+                    title: '6. Grand Examen Monétique (Multi-Domaines)',
+                    subtitle: 'Session panachée aléatoire sur l\'ensemble des 160 questions',
                     icon: Icons.emoji_events,
-                    color: Colors.white,
+                    color: Colors.amber,
                     xp: '50 XP / rep.',
                     onTap: () => _openQuiz('TOUS'),
                   ),

@@ -57,7 +57,7 @@ void main() {
   group('PayQuest - Academy Questions Catalog', () {
     test('Contains questions across all required payment domains', () {
       final list = QuizQuestionsCatalog.allQuestions;
-      expect(list.length, greaterThanOrEqualTo(8));
+      expect(list.length, greaterThanOrEqualTo(150));
       final categories = list.map((q) => q.category).toSet();
       expect(categories.any((c) => c.contains('ISO 8583')), isTrue);
       expect(categories.any((c) => c.contains('EMV')), isTrue);
