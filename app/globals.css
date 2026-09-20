@@ -92,10 +92,10 @@ textarea {
   top: 0;
   left: 0;
   bottom: 0;
-  width: 280px;
+  width: 320px;
   background: var(--slate-darkest);
   color: var(--text-inverse);
-  padding: 1.5rem 1rem;
+  padding: 1.5rem 1.15rem;
   display: flex;
   flex-direction: column;
   border-right: 1px solid var(--slate-border);
@@ -112,7 +112,7 @@ textarea {
 
 /* Ajustement du contenu principal pour compenser la sidebar figée */
 .content {
-  margin-left: 280px;
+  margin-left: 320px;
   flex: 1;
   display: flex;
   flex-direction: column;
