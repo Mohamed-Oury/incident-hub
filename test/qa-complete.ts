@@ -61,10 +61,10 @@ function runQaAll() {
   assert("TEST 15 - Réconciliation & Compensation Monétique ↔ CBS", CBS_RECONCILIATION_DATA.length >= 4, `${CBS_RECONCILIATION_DATA.length} cas de clearing validés`);
   assert("TEST 16 - Moteur de Décodage de Logs Amplitude", CBS_LOG_RULES.length >= 5, `${CBS_LOG_RULES.length} signatures de logs reconnues`);
   assert("TEST 17 - Dictionnaire de Schéma Tables Amplitude", CBS_SCHEMA_TABLES.length >= 55, `${CBS_SCHEMA_TABLES.length} tables centrales documentées`);
-  assert("TEST 18 - Échelle des 5 Grades 4GL Core Banking", CBS_4GL_GRADES.length === 5, `${CBS_4GL_GRADES.length} niveaux de certification`);
-  assert("TEST 19 - Modules de Cours Informix 4GL Détaillés", CBS_4GL_LESSONS.length >= 5, `${CBS_4GL_LESSONS.length} chapitres de formation approfondis`);
-  assert("TEST 20 - Banque d'Examens de Passage de Grade", CBS_4GL_EXAMS.length >= 10, `${CBS_4GL_EXAMS.length} questions d'examens officielles`);
-  assert("TEST 21 - Fiche Mémento Mots-Clés Informix 4GL", CBS_4GL_KEYWORDS_CHEAT_SHEET.length >= 10, `${CBS_4GL_KEYWORDS_CHEAT_SHEET.length} cartes de révision détaillées`);
+  assert("TEST 18 - Échelle des 5 Grades 4GL Core Banking", CBS_4GL_GRADES.length === 5 && CBS_4GL_GRADES.every(g => g.recommendedResources && g.recommendedResources.length >= 3), `${CBS_4GL_GRADES.length} niveaux de certification avec ressources documentaires`);
+  assert("TEST 19 - Modules de Cours Informix 4GL Détaillés", CBS_4GL_LESSONS.length >= 18, `${CBS_4GL_LESSONS.length} chapitres de formation approfondis`);
+  assert("TEST 20 - Banque d'Examens de Passage de Grade (15+ par niveau)", CBS_4GL_EXAMS.length >= 75 && [1, 2, 3, 4, 5].every(lvl => CBS_4GL_EXAMS.filter(q => q.gradeLevel === lvl).length >= 15), `${CBS_4GL_EXAMS.length} questions officielles (au moins 15 questions par grade)`);
+  assert("TEST 21 - Fiche Mémento Mots-Clés Informix 4GL", CBS_4GL_KEYWORDS_CHEAT_SHEET.length >= 200, `${CBS_4GL_KEYWORDS_CHEAT_SHEET.length} cartes de révision détaillées`);
 
   console.log("\n=================================================");
   console.log(`📊 RÉSULTAT QA TEST : ${passed} RÉUSSIS / ${failed} ÉCHECS`);

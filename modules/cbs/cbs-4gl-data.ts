@@ -1,5 +1,13 @@
 // modules/cbs/cbs-4gl-data.ts
 import { CBS_4GL_EXTENDED_LESSONS } from "./cbs-4gl-extended-lessons";
+import { CBS_4GL_ALL_EXAMS } from "./cbs-4gl-exams-data";
+
+export interface Cbs4GlResource {
+  title: string;
+  type: "DOC_OFFICIELLE" | "MANUEL_INFORMIX" | "NORMES_BANCAIRES" | "GUIDE_TECHNIQUE" | "AIX_SCRIPT";
+  urlOrRef: string;
+  description: string;
+}
 
 export interface Cbs4GlGrade {
   level: number;
@@ -9,6 +17,7 @@ export interface Cbs4GlGrade {
   color: string;
   minPassScorePct: number;
   objective: string;
+  recommendedResources?: Cbs4GlResource[];
 }
 
 export interface Cbs4GlLesson {
@@ -23,6 +32,7 @@ export interface Cbs4GlLesson {
   explanation: string;
   goldenRules: string[];
   pitfallsToAvoid: string[];
+  resources?: Cbs4GlResource[];
 }
 
 export interface Cbs4GlExamQuestion {
@@ -46,7 +56,27 @@ export const CBS_4GL_GRADES: Cbs4GlGrade[] = [
     badge: "🟢 Apprenti",
     color: "#22c55e",
     minPassScorePct: 80,
-    objective: "Maîtriser la grammaire 4GL, la déclaration des types scalaires, les structures de contrôle et l'organisation modulaire MAIN / FUNCTION."
+    objective: "Maîtriser la grammaire 4GL, la déclaration des types scalaires, les structures de contrôle et l'organisation modulaire MAIN / FUNCTION.",
+    recommendedResources: [
+      {
+        title: "IBM Informix 4GL Reference Manual (Volume 1 & 2)",
+        type: "MANUEL_INFORMIX",
+        urlOrRef: "IBM Pubs: G251-0268-00",
+        description: "Manuel de référence officiel de la syntaxe du langage 4GL procédural et grammaire des instructions."
+      },
+      {
+        title: "Standard de Développement Bancaire Amplitude (Nomenclature)",
+        type: "NORMES_BANCAIRES",
+        urlOrRef: "CBS-STD-NAMING-V4",
+        description: "Règles de nommage strictes : préfixes variables (g_, l_, p_), indentations et commentaires obligatoires."
+      },
+      {
+        title: "Guide de Démarrage Rapide Compilateur c4gl sous AIX",
+        type: "GUIDE_TECHNIQUE",
+        urlOrRef: "AIX-C4GL-BUILD-101",
+        description: "Variables d'environnement indispensables : $INFORMIXDIR, $INFORMIXSERVER, $PATH et options de compilation -c / -o."
+      }
+    ]
   },
   {
     level: 2,
@@ -55,7 +85,27 @@ export const CBS_4GL_GRADES: Cbs4GlGrade[] = [
     badge: "🔵 Junior",
     color: "#3b82f6",
     minPassScorePct: 80,
-    objective: "Intégrer le SQL embarqué (SELECT INTO), lier les variables au schéma de la base (RECORD LIKE) et gérer les codes retours système (status, NOTFOUND)."
+    objective: "Intégrer le SQL embarqué (SELECT INTO), lier les variables au schéma de la base (RECORD LIKE) et gérer les codes retours système (status, NOTFOUND).",
+    recommendedResources: [
+      {
+        title: "Guide d'Intégration SQL dans Informix 4GL (Embedded SQL)",
+        type: "MANUEL_INFORMIX",
+        urlOrRef: "IBM-4GL-ESQL-GUIDE",
+        description: "Interaction entre les types de données 4GL et les colonnes SQL relationnelles, directives LIKE et status."
+      },
+      {
+        title: "Dictionnaire du Modèle de Données CBS Amplitude (Comptes & Mouvements)",
+        type: "NORMES_BANCAIRES",
+        urlOrRef: "AMPLITUDE-DICT-CPT-TRA",
+        description: "Schéma relationnel des tables BKCPT, BKCOM, BKTRA, BKAUD et règles de cohérence des soldes."
+      },
+      {
+        title: "Manuel des Codes d'Erreurs SQL et Moteur ISAM",
+        type: "GUIDE_TECHNIQUE",
+        urlOrRef: "INFORMIX-ERROR-MESSAGES",
+        description: "Guide exhaustif d'analyse de la zone sqlca.sqlcode et des erreurs du moteur ISAM sqlca.sqlerrd[1]."
+      }
+    ]
   },
   {
     level: 3,
@@ -64,7 +114,27 @@ export const CBS_4GL_GRADES: Cbs4GlGrade[] = [
     badge: "🟡 Confirmé",
     color: "#eab308",
     minPassScorePct: 85,
-    objective: "Manipuler les curseurs séquentiels (DECLARE/FOREACH), optimiser les lectures massives (DIRTY READ) et concevoir des formulaires guichet interactifs (.per / INPUT)."
+    objective: "Manipuler les curseurs séquentiels (DECLARE/FOREACH), optimiser les lectures massives (DIRTY READ) et concevoir des formulaires guichet interactifs (.per / INPUT).",
+    recommendedResources: [
+      {
+        title: "Manuel des Formulaires Écran Informix Form-4GL (.per / form4gl)",
+        type: "MANUEL_INFORMIX",
+        urlOrRef: "IBM-FORM4GL-SPEC",
+        description: "Conception des masques écrans guichet, sections SCREEN, TABLES, ATTRIBUTES et INSTRUCTIONS."
+      },
+      {
+        title: "Guide de Gestion des Curseurs & Niveaux d'Isolation SQL",
+        type: "GUIDE_TECHNIQUE",
+        urlOrRef: "4GL-CURSORS-ISOLATION-V3",
+        description: "Curseurs séquentiels, curseurs FOR UPDATE, SCROLL CURSOR et gestion du verrouillage DIRTY READ."
+      },
+      {
+        title: "Procédures de Guichet & Validation d'Événements Agence",
+        type: "NORMES_BANCAIRES",
+        urlOrRef: "CBS-FRONT-OFFICE-EVENT-GUIDE",
+        description: "Patterns événementiels BEFORE/AFTER FIELD et contrôles temps réel de découvert bancaire."
+      }
+    ]
   },
   {
     level: 4,
@@ -73,7 +143,27 @@ export const CBS_4GL_GRADES: Cbs4GlGrade[] = [
     badge: "🟠 Senior",
     color: "#f97316",
     minPassScorePct: 85,
-    objective: "Garantir l'atomicité stricte des opérations bancaires (partie double, BEGIN/COMMIT/ROLLBACK), maîtriser les niveaux de verrouillage ligne et résoudre les deadlocks (-244, -107)."
+    objective: "Garantir l'atomicité stricte des opérations bancaires (partie double, BEGIN/COMMIT/ROLLBACK), maîtriser les niveaux de verrouillage ligne et résoudre les deadlocks (-244, -107).",
+    recommendedResources: [
+      {
+        title: "Architecture des Transactions Bancaires ACID & Partie Double",
+        type: "NORMES_BANCAIRES",
+        urlOrRef: "BANK-ACID-DOUBLE-ENTRY",
+        description: "Normes comptables bancaires : intégrité débit/crédit, persistance et traçabilité réglementaire."
+      },
+      {
+        title: "Guide de Résolution des Conflits de Concurrence & Deadlocks",
+        type: "GUIDE_TECHNIQUE",
+        urlOrRef: "INFORMIX-LOCKING-DEADLOCK-RCA",
+        description: "Prévention des blocages croisés par ordonnancement séquentiel, SET LOCK MODE TO WAIT et diagnostic des sessions."
+      },
+      {
+        title: "Manuel d'Audit & Journalisation des Flux Monétiques",
+        type: "DOC_OFFICIELLE",
+        urlOrRef: "AUDIT-TRAIL-PCI-DSS",
+        description: "Sécurisation des opérations sensibles sur BKAUD et exigences de conformité réglementaire."
+      }
+    ]
   },
   {
     level: 5,
@@ -82,7 +172,27 @@ export const CBS_4GL_GRADES: Cbs4GlGrade[] = [
     badge: "🔴 Expert",
     color: "#ef4444",
     minPassScorePct: 90,
-    objective: "Concevoir des traitements batch haute vélocité pour la chaîne EOD, optimiser les I/O disque via INSERT CURSOR / PUT / FLUSH, et maîtriser le SQL dynamique préparé (PREPARE/EXECUTE)."
+    objective: "Concevoir des traitements batch haute vélocité pour la chaîne EOD, optimiser les I/O disque via INSERT CURSOR / PUT / FLUSH, et maîtriser le SQL dynamique préparé (PREPARE/EXECUTE).",
+    recommendedResources: [
+      {
+        title: "Informix Performance Tuning & Batch Optimization Guide",
+        type: "MANUEL_INFORMIX",
+        urlOrRef: "IBM-IDS-PERF-TUNING",
+        description: "Optimisation du Buffer Pool, gestion des Logical Logs (-454), UPDATE STATISTICS et plans d'exécution SET EXPLAIN."
+      },
+      {
+        title: "Spécifications de la Chaîne Batch EOD/BOD Amplitude Haute Performance",
+        type: "DOC_OFFICIELLE",
+        urlOrRef: "AMPLITUDE-EOD-ARCH-V8",
+        description: "Techniques de chunking de transactions (1 000-2 000 lignes), parallélisation AIX et fenêtres de cut-off."
+      },
+      {
+        title: "Guide d'Ingénierie INSERT CURSOR / PUT / FLUSH & SQL Dynamique",
+        type: "GUIDE_TECHNIQUE",
+        urlOrRef: "4GL-HIGH-VELOCITY-IO",
+        description: "Architecture de flux en écriture tamponnée et réduction des allers-retours client-serveur SGBD."
+      }
+    ]
   }
 ];
 
@@ -499,169 +609,7 @@ END FUNCTION`,
 ];
 
 // ----------------------------------------------------
-// 3. BANQUES DE QUESTIONS D'EXAMEN DE PASSAGE DE GRADE
+// 3. BANQUES DE QUESTIONS D'EXAMEN DE PASSAGE DE GRADE (15 PAR NIVEAU, 75 AU TOTAL)
 // ----------------------------------------------------
-export const CBS_4GL_EXAMS: Cbs4GlExamQuestion[] = [
-  // EXAMEN NIVEAU 1 -> 2
-  {
-    id: "ex_n1_01",
-    gradeLevel: 1,
-    question: "Quelle est la clause obligatoire en tête de chaque programme Informix 4GL pour spécifier la base de données ?",
-    options: ["USE amplitude", "DATABASE amplitude", "CONNECT TO amplitude", "SET DATABASE amplitude"],
-    correctIndex: 1,
-    explanation: "La syntaxe 4GL requiert la clause DATABASE <nom_base> au tout début du fichier source.",
-    trapWarning: "USE est utilisé en MySQL, pas en 4GL."
-  },
-  {
-    id: "ex_n1_02",
-    gradeLevel: 1,
-    question: "Pourquoi est-il formellement interdit d'utiliser les types FLOAT ou SMALLFLOAT pour stocker des montants bancaires en 4GL ?",
-    options: [
-      "Ils consomment trop de mémoire vive",
-      "Leur représentation binaire entraîne des erreurs d'arrondi sur les centimes",
-      "Le SGBD Informix ne les supporte pas dans la clause SELECT",
-      "Les compilateurs c4gl refusent de compiler ces types"
-    ],
-    correctIndex: 1,
-    explanation: "Les nombres à virgule flottante ne peuvent pas représenter exactement certaines fractions décimales, provoquant des écarts au centime interdits en banque. On utilise DECIMAL(p,s).",
-    trapWarning: "Les calculs financiers exigent une arithmétique décimale exacte."
-  },
-  {
-    id: "ex_n1_03",
-    gradeLevel: 1,
-    question: "En 4GL, quel est le résultat de l'évaluation de l'expression : LET x = 100 + NULL ?",
-    options: ["x vaut 100", "x vaut 0", "x vaut NULL", "Le compilateur lève une exception arithmétique"],
-    correctIndex: 2,
-    explanation: "En 4GL comme en SQL standard, toute opération avec la valeur NULL produit NULL. D'où la nécessité d'utiliser la fonction NVL().",
-    trapWarning: "Ne confondez pas avec d'autres langages où NULL est casté en 0."
-  },
+export const CBS_4GL_EXAMS: Cbs4GlExamQuestion[] = CBS_4GL_ALL_EXAMS;
 
-  // EXAMEN NIVEAU 2 -> 3
-  {
-    id: "ex_n2_01",
-    gradeLevel: 2,
-    question: "Quelle valeur prend la variable système 'status' lorsqu'une requête 'SELECT ... INTO' ne trouve aucun enregistrement dans la base ?",
-    options: ["status = 0", "status = NOTFOUND (code 100)", "status = -1", "status = -284"],
-    correctIndex: 1,
-    explanation: "Le runtime positionne status à la constante NOTFOUND (100) en cas d'absence de ligne.",
-    trapWarning: "0 signifie succès, -284 signifie que la sous-requête a renvoyé plus d'une ligne."
-  },
-  {
-    id: "ex_n2_02",
-    gradeLevel: 2,
-    question: "Comment obtenir avec certitude le nombre de lignes modifiées par le dernier ordre 'UPDATE bkcpt' ?",
-    options: [
-      "En lisant la variable sqlca.sqlerrd[2]",
-      "En vérifiant la valeur de status",
-      "En effectuant un COUNT(*) immédiat après l'UPDATE",
-      "La valeur est stockée dans sqlca.sqlcode"
-    ],
-    correctIndex: 0,
-    explanation: "sqlca.sqlerrd[2] contient le décompte exact des lignes affectées par le dernier ordre DML.",
-    trapWarning: "status vaut 0 même si 0 ligne n'a été modifiée par l'UPDATE."
-  },
-  {
-    id: "ex_n2_03",
-    gradeLevel: 2,
-    question: "Quel est l'avantage décisif de déclarer une variable avec 'RECORD LIKE bkcpt.*' ?",
-    options: [
-      "Elle crypte automatiquement les données en mémoire vive",
-      "Elle hérite de la structure exacte des colonnes et s'adapte sans modifier le code en cas d'évolution du schéma",
-      "Elle verrouille automatiquement la table en mode exclusif",
-      "Elle empêche la saisie de valeurs négatives"
-    ],
-    correctIndex: 1,
-    explanation: "La directive LIKE permet une synchronisation transparente avec le dictionnaire de tables du CBS.",
-    trapWarning: "Elle ne pose aucun verrou : c'est uniquement une définition de structure en mémoire."
-  },
-
-  // EXAMEN NIVEAU 3 -> 4
-  {
-    id: "ex_n3_01",
-    gradeLevel: 3,
-    question: "À quoi sert l'instruction 'SET ISOLATION TO DIRTY READ' dans un traitement d'extraction de fin de journée ?",
-    options: [
-      "À supprimer les index temporaires pour aller plus vite",
-      "À lire les données sans poser de verrous et sans attendre la libération des verrous concurrents",
-      "À forcer l'écriture immédiate des transactions sur le disque dur",
-      "À réparer les blocs de données corrompus sur le tablespace"
-    ],
-    correctIndex: 1,
-    explanation: "DIRTY READ permet aux états de lecture massive de s'exécuter sans gêner ni être gênés par les transactions d'agences.",
-    trapWarning: "DIRTY READ ne doit pas être utilisé pour des écritures comptables, uniquement pour la lecture."
-  },
-  {
-    id: "ex_n3_02",
-    gradeLevel: 3,
-    question: "Dans un masque écran 4GL (formulaire .per), quand le bloc d'instructions 'AFTER FIELD montant' est-il déclenché ?",
-    options: [
-      "Uniquement lorsque le formulaire entier est validé par l'opérateur",
-      "Dès que le curseur de saisie quitte le champ 'montant' pour passer au suivant",
-      "Avant même que l'utilisateur ne commence à taper",
-      "Uniquement si l'utilisateur appuie sur la touche Échap"
-    ],
-    correctIndex: 1,
-    explanation: "AFTER FIELD est un trigger événementiel exécuté à la sortie du champ, idéal pour valider les montants et plafonds.",
-    trapWarning: "BEFORE FIELD est déclenché avant l'entrée dans le champ."
-  },
-
-  // EXAMEN NIVEAU 4 -> 5
-  {
-    id: "ex_n4_01",
-    gradeLevel: 4,
-    question: "Pourquoi est-il proscrit d'inclure une saisie utilisateur (PROMPT ou INPUT) au sein d'un bloc BEGIN WORK / COMMIT ?",
-    options: [
-      "Le système 4GL génère une erreur de syntaxe",
-      "Les verrous exclusifs restent actifs tant que l'utilisateur n'a pas validé, risquant de paralyser la banque entière",
-      "La base de données désactive la table journal des logs",
-      "La session se déconnecte automatiquement au bout de 3 secondes"
-    ],
-    correctIndex: 1,
-    explanation: "Une transaction bancaire doit s'exécuter en quelques millisecondes. Attendre une action humaine maintient les locks et provoque des deadlocks.",
-    trapWarning: "Les verrous en base sont libérés uniquement au COMMIT ou ROLLBACK."
-  },
-  {
-    id: "ex_n4_02",
-    gradeLevel: 4,
-    question: "Comment éviter de provoquer un interblocage (Deadlock / -244) entre deux processus qui mettent à jour simultanément deux comptes bancaires A et B ?",
-    options: [
-      "En augmentant la vitesse du processeur du serveur AIX",
-      "En imposant un ordre de verrouillage strict et uniforme (ex: toujours trier les comptes par ordre croissant de numéro de compte)",
-      "En utilisant uniquement des connexions non sécurisées",
-      "En désactivant le fichier de log transactionnel"
-    ],
-    correctIndex: 1,
-    explanation: "Si deux transactions accèdent toujours aux ressources dans le même ordre séquentiel, une situation de blocage croisé est mathématiquement impossible.",
-    trapWarning: "La vitesse du processeur ne résout pas les blocages de concurrence logique."
-  },
-
-  // EXAMEN NIVEAU 5 -> CERTIFICATION EXPERT
-  {
-    id: "ex_n5_01",
-    gradeLevel: 5,
-    question: "Lors de l'utilisation d'un 'INSERT CURSOR' haute performance avec 'PUT', que se passe-t-il si le programmeur omet d'appeler 'FLUSH' avant le COMMIT final ?",
-    options: [
-      "Le compilateur 4GL déclenche une erreur à l'exécution",
-      "Toutes les lignes de la table sont automatiquement effacées",
-      "Les dernières lignes accumulées dans le tampon mémoire réseau sont perdues sans aucun message d'alerte",
-      "Le SGBD effectue une sauvegarde complète automatique"
-    ],
-    correctIndex: 2,
-    explanation: "PUT écrit dans un buffer local. Tant que le buffer n'est pas plein, rien n'est envoyé à la base. Sans FLUSH, la fin du lot est perdue.",
-    trapWarning: "C'est l'un des bugs les plus redoutables et discrets en exploitation bancaire !"
-  },
-  {
-    id: "ex_n5_02",
-    gradeLevel: 5,
-    question: "Pourquoi est-il recommandé de découper les batchs volumineux de fin de journée en tranches de commit (chunking de 1 000 lignes) ?",
-    options: [
-      "Pour éviter de saturer les Logical Logs Informix (erreur -454 Long Transaction Aborted) et réduire le temps de reprise sur panne",
-      "Parce que le 4GL ne sait pas compter au-delà de 1 000",
-      "Pour permettre aux agences d'ouvrir plus tôt",
-      "Pour réinitialiser l'horloge système du serveur"
-    ],
-    correctIndex: 0,
-    explanation: "Une transaction trop longue sature l'espace des logs de transaction du SGBD et force le moteur à un rollback complet très coûteux.",
-    trapWarning: "Les journaux logiques sont en espace disque limité."
-  }
-];

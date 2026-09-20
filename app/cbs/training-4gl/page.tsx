@@ -347,7 +347,7 @@ export default function Cbs4GlTrainingPage() {
               </div>
 
               {/* RÈGLES D'OR ET PIÈGES */}
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px", marginBottom: "18px" }}>
                 <div style={{ background: "rgba(34, 197, 94, 0.1)", border: "1px solid #22c55e", borderRadius: "8px", padding: "14px" }}>
                   <div style={{ fontSize: "12px", fontWeight: 700, color: "#4ade80", marginBottom: "6px" }}>
                     ⭐ Règles d&apos;Or de Développement :
@@ -370,6 +370,69 @@ export default function Cbs4GlTrainingPage() {
                   </ul>
                 </div>
               </div>
+
+              {/* RESSOURCES OFFICIELLES & GUIDES DU NIVEAU */}
+              {currentGrade.recommendedResources && currentGrade.recommendedResources.length > 0 && (
+                <div style={{
+                  background: "#090d16",
+                  border: "1px solid #334155",
+                  borderRadius: "10px",
+                  padding: "16px"
+                }}>
+                  <div style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    fontSize: "13px",
+                    fontWeight: 700,
+                    color: "#f8fafc",
+                    marginBottom: "12px"
+                  }}>
+                    <span>📚</span>
+                    <span>Ressources Documentaires & Normes Recommandées pour le {currentGrade.name} :</span>
+                  </div>
+
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "10px" }}>
+                    {currentGrade.recommendedResources.map((res, idx) => (
+                      <div
+                        key={idx}
+                        style={{
+                          background: "#1e293b",
+                          border: "1px solid #334155",
+                          borderRadius: "8px",
+                          padding: "12px 14px",
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: "4px"
+                        }}
+                      >
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                          <span style={{ fontSize: "13px", fontWeight: 700, color: "#38bdf8" }}>
+                            {res.title}
+                          </span>
+                          <span style={{
+                            fontSize: "10px",
+                            fontWeight: 700,
+                            padding: "2px 6px",
+                            borderRadius: "4px",
+                            background: "#0f172a",
+                            color: "#94a3b8",
+                            border: "1px solid #334155"
+                          }}>
+                            {res.type}
+                          </span>
+                        </div>
+                        <p style={{ fontSize: "12px", color: "#cbd5e1", margin: 0 }}>
+                          {res.description}
+                        </p>
+                        <div style={{ fontSize: "11px", color: "#64748b", fontFamily: "monospace" }}>
+                          Réf. interne : {res.urlOrRef}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
             </div>
 
