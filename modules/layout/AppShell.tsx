@@ -114,8 +114,10 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
       roleRequired: "ROLE_EXPLOITATION",
       items: [
         { href: "/cbs", label: "Tableau de bord CBS", icon: "⊞" },
-        { href: "/cbs/domains", label: "8 Domaines Métier", icon: "📑" },
+        { href: "/cbs/domains", label: "Domaines Métier", icon: "📑" },
         { href: "/cbs/batch", label: "Run & Batch EOD / BOD", icon: "⚙️" },
+        { href: "/cbs/batch-diagnostic", label: "Diagnostic Blocage EOD", icon: "🎛️" },
+        { href: "/cbs/schema", label: "Dictionnaire de Données", icon: "🔍" },
       ],
     },
     {
@@ -125,8 +127,12 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
       roleRequired: "ROLE_EXPERTISE",
       items: [
         { href: "/cbs/databases", label: "SGBD Oracle & Informix", icon: "🗄️" },
-        { href: "/cbs/unix", label: "120 Commandes AIX/Unix", icon: "💻" },
-        { href: "/cbs/incidents", label: "200 Incidents RCA & Run", icon: "🚨" },
+        { href: "/cbs/sql-playbooks", label: "Requêtes & Playbooks SQL", icon: "⚡" },
+        { href: "/cbs/reconciliation", label: "Réconciliation Monétique ↔ CBS", icon: "🌉" },
+        { href: "/cbs/log-analyzer", label: "Analyseur de Logs & Traces", icon: "📜" },
+        { href: "/cbs/handover", label: "Handover & Checklist BOD", icon: "🛡️" },
+        { href: "/cbs/unix", label: "Commandes AIX/Unix", icon: "💻" },
+        { href: "/cbs/incidents", label: "Incidents RCA & Run", icon: "🚨" },
       ],
     },
     {
@@ -136,6 +142,7 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
       roleRequired: "ROLE_REFERENTIELS",
       items: [
         { href: "/cbs/academy", label: "CBS Academy (240 QCM)", icon: "🎯" },
+        { href: "/cbs/training-4gl", label: "Formation Informix 4GL", icon: "👨‍💻" },
       ],
     },
   ];
@@ -358,29 +365,14 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
                   transition: "all 0.15s ease",
                 }}
               >
-                🏦 CBS Amplitude
+                🏦 Amplitude
               </Link>
             </div>
-
-            {userRole === "ADMIN" || userRole === "ROLE_EXPLOITATION" ? (
-              <Link
-                href={isCbsUniverse ? "/cbs/incidents" : "/incidents/new"}
-                className={isCbsUniverse ? "btn-secondary" : "btn-emerald"}
-                style={{ padding: "0.5rem 1rem", fontSize: "0.82rem" }}
-              >
-                {isCbsUniverse ? "🚨 Incidents CBS" : "+ Déclarer incident"}
-              </Link>
-            ) : null}
 
             {/* Header épuré : rôle et déconnexion */}
             <div className="user-badge">
               <div className="user-avatar">
                 {currentUser?.name ? currentUser.name.slice(0, 2).toUpperCase() : initialUser?.name ? initialUser.name.slice(0, 2).toUpperCase() : "AD"}
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", fontSize: "0.82rem" }}>
-                <span style={{ color: "var(--sg-red-600)", fontWeight: 700, fontSize: "0.75rem" }}>
-                  {userRole}
-                </span>
               </div>
               <button
                 type="button"
