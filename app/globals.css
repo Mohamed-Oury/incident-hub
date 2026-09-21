@@ -738,3 +738,81 @@ tr:hover td {
   font-weight: 800;
   margin: 0.25rem 0;
 }
+
+/* ========================================================
+   Styles d'Impression Haute Définition pour Certificat
+   ======================================================== */
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 5mm;
+  }
+
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #090d16 !important;
+    color: #f8fafc !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  /* Masquer tous les éléments de l'application hors certificat */
+  .sidebar,
+  .topbar,
+  footer,
+  .no-print,
+  .print-hide,
+  button,
+  .btn-toggle-sidebar,
+  .user-badge,
+  .eyebrow,
+  .page-title {
+    display: none !important;
+  }
+
+  .shell {
+    display: block !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: transparent !important;
+  }
+
+  .content {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    min-height: auto !important;
+  }
+
+  .view-container {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+  }
+
+  /* Affichage pleine page du diplôme certifié */
+  .certificate-print-wrapper {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 100% !important;
+    min-height: 98vh !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    page-break-inside: avoid !important;
+    page-break-after: avoid !important;
+  }
+
+  .printable-certificate {
+    box-shadow: none !important;
+    width: 100% !important;
+    max-width: 960px !important;
+    margin: auto !important;
+    page-break-inside: avoid !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}

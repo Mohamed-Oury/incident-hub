@@ -15,15 +15,28 @@ import {
 } from "@/modules/cbs/cbs-4gl-cheat-sheet";
 
 export default function Cbs4GlTrainingPage() {
-  // Progression et déblocage des grades (Persistance persistante BDD + LocalStorage)
   const [unlockedLevel, setUnlockedLevel] = useState<number>(1);
   const [selectedGradeLevel, setSelectedGradeLevel] = useState<number>(1);
   const [activeTab, setActiveTab] = useState<"cours" | "simulateur" | "examen" | "fiche" | "certificat">("cours");
   const [cheatSheetCategory, setCheatSheetCategory] = useState<string>("ALL");
   const [cheatSheetSearch, setCheatSheetSearch] = useState<string>("");
+  const [currentUserName, setCurrentUserName] = useState<string>("Mohamed Oury BARRY");
+
+  // Chargement de l'utilisateur connecté
+  useEffect(() => {
+    fetch("/api/auth/me")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data && data.user && data.user.name) {
+          setCurrentUserName(data.user.name);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   // Chargement de la progression persistée au démarrage
   useEffect(() => {
+
     // 1. Chargement instantané depuis localStorage
     try {
       const savedLevel = localStorage.getItem("cbs_4gl_unlocked_level");
@@ -34,7 +47,7 @@ export default function Cbs4GlTrainingPage() {
           setSelectedGradeLevel(lvl);
         }
       }
-    } catch (_) {}
+    } catch (_) { }
 
     // 2. Synchronisation avec le serveur/base de données
     fetch("/api/training/progress")
@@ -46,20 +59,20 @@ export default function Cbs4GlTrainingPage() {
             const finalLvl = Math.max(prev, serverLvl);
             try {
               localStorage.setItem("cbs_4gl_unlocked_level", finalLvl.toString());
-            } catch (_) {}
+            } catch (_) { }
             return finalLvl;
           });
           setSelectedGradeLevel((prev) => Math.max(prev, serverLvl));
         }
       })
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   // Fonction de sauvegarde robuste
   const saveProgress = async (newLevel: number, scoreInfo?: any) => {
     try {
       localStorage.setItem("cbs_4gl_unlocked_level", newLevel.toString());
-    } catch (_) {}
+    } catch (_) { }
 
     try {
       await fetch("/api/training/progress", {
@@ -71,7 +84,7 @@ export default function Cbs4GlTrainingPage() {
           scoreData: scoreInfo,
         }),
       });
-    } catch (_) {}
+    } catch (_) { }
   };
 
   // Cours sélectionné
@@ -185,7 +198,7 @@ export default function Cbs4GlTrainingPage() {
       eyebrow="AMPLITUDE IT BANKING"
     >
       <div style={{ display: "flex", flexDirection: "column", gap: "24px", maxWidth: "1200px", margin: "0 auto" }}>
-        
+
         {/* EN-TÊTE : PROGRESSION ET PALMARÈS DES GRADES */}
         <div style={{
           background: "linear-gradient(135deg, #0f172a, #1e1b4b)",
@@ -351,7 +364,7 @@ export default function Cbs4GlTrainingPage() {
         {/* CONTENU ONGLET 1 : COURS ET RESSOURCES DU NIVEAU */}
         {activeTab === "cours" && (
           <div style={{ display: "grid", gridTemplateColumns: "1.1fr 2fr", gap: "24px", alignItems: "start" }}>
-            
+
             {/* LISTE DES COURS DU GRADE */}
             <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
               {lessonsForCurrentGrade.map((lesson) => (
@@ -734,7 +747,7 @@ export default function Cbs4GlTrainingPage() {
         {/* CONTENU ONGLET 4 : FICHE DE RÉVISION & MÉMENTO DES MOTS-CLÉS 4GL */}
         {activeTab === "fiche" && (
           <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-            
+
             {/* BANDEAU RECHERCHE ET FILTRES */}
             <div style={{
               background: "#1e293b",
@@ -854,11 +867,11 @@ export default function Cbs4GlTrainingPage() {
                     const matchCat = cheatSheetCategory === "ALL" || card.category === cheatSheetCategory;
                     const query = cheatSheetSearch.trim().toLowerCase();
                     const matchSearch = !query ||
-                                        card.keyword.toLowerCase().includes(query) ||
-                                        card.summary.toLowerCase().includes(query) ||
-                                        card.bankingContext.toLowerCase().includes(query) ||
-                                        card.syntax.toLowerCase().includes(query) ||
-                                        card.concreteExample.toLowerCase().includes(query);
+                      card.keyword.toLowerCase().includes(query) ||
+                      card.summary.toLowerCase().includes(query) ||
+                      card.bankingContext.toLowerCase().includes(query) ||
+                      card.syntax.toLowerCase().includes(query) ||
+                      card.concreteExample.toLowerCase().includes(query);
                     return matchCat && matchSearch;
                   }).length} concept(s) trouvé(s)
                 </div>
@@ -871,11 +884,11 @@ export default function Cbs4GlTrainingPage() {
                 const matchCat = cheatSheetCategory === "ALL" || card.category === cheatSheetCategory;
                 const query = cheatSheetSearch.trim().toLowerCase();
                 const matchSearch = !query ||
-                                    card.keyword.toLowerCase().includes(query) ||
-                                    card.summary.toLowerCase().includes(query) ||
-                                    card.bankingContext.toLowerCase().includes(query) ||
-                                    card.syntax.toLowerCase().includes(query) ||
-                                    card.concreteExample.toLowerCase().includes(query);
+                  card.keyword.toLowerCase().includes(query) ||
+                  card.summary.toLowerCase().includes(query) ||
+                  card.bankingContext.toLowerCase().includes(query) ||
+                  card.syntax.toLowerCase().includes(query) ||
+                  card.concreteExample.toLowerCase().includes(query);
                 return matchCat && matchSearch;
               }).map((card, idx) => (
                 <div
@@ -993,113 +1006,164 @@ export default function Cbs4GlTrainingPage() {
                 </div>
               </div>
             ) : (
-              <div style={{ width: "100%", maxWidth: "860px", display: "flex", flexDirection: "column", alignItems: "center", gap: "20px" }}>
-                
-                {/* CERTIFICAT DIPLÔME OFFICIEL STYLE LUXE */}
-                <div style={{
-                  width: "100%",
-                  background: "radial-gradient(circle at center, #1e1b4b 0%, #090d16 100%)",
-                  border: "8px double #eab308",
-                  borderRadius: "16px",
-                  padding: "48px 40px",
-                  boxShadow: "0 0 35px rgba(234, 179, 8, 0.25)",
-                  textAlign: "center",
-                  position: "relative",
-                  color: "#f8fafc"
-                }}>
+              <div className="certificate-print-wrapper" style={{ width: "100%", maxWidth: "920px", display: "flex", flexDirection: "column", alignItems: "center", gap: "20px" }}>
+
+                {/* CERTIFICAT DIPLÔME OFFICIEL CHARTE SOCIÉTÉ GÉNÉRALE */}
+                <div
+                  id="cbs-certificate-diploma"
+                  className="printable-certificate"
+                  style={{
+                    width: "100%",
+                    background: "radial-gradient(circle at center, #1a1a1a 0%, #111827 100%)",
+                    border: "8px double #e60028",
+                    borderRadius: "16px",
+                    padding: "48px 44px",
+                    boxShadow: "0 0 35px rgba(230, 0, 40, 0.3)",
+                    textAlign: "center",
+                    position: "relative",
+                    color: "#f8fafc"
+                  }}
+                >
+                  {/* Filigrane discret Société Générale en arrière-plan */}
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
-                    <div style={{ fontSize: "12px", fontWeight: 700, letterSpacing: "2px", color: "#ca8a04", textTransform: "uppercase" }}>
-                      BANQUE DE L&apos;HABITAT DU SÉNÉGAL &amp; ACADEMY
+                    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                      {/* Logo carré Société Générale : Moitié Rouge SG / Moitié Noir */}
+                      <div style={{
+                        width: "32px",
+                        height: "32px",
+                        background: "linear-gradient(to bottom, #e60028 0%, #e60028 50%, #111827 50%, #111827 100%)",
+                        borderRadius: "4px",
+                        border: "1px solid #ffffff",
+                        boxShadow: "0 2px 8px rgba(230,0,40,0.4)"
+                      }} />
+                      <div style={{ fontSize: "12px", fontWeight: 800, letterSpacing: "2px", color: "#f87171", textTransform: "uppercase", textAlign: "left" }}>
+                        GROUPE SOCIÉTÉ GÉNÉRALE • IT BANKING ACADEMY
+                      </div>
                     </div>
                     <div style={{
-                      background: "#ca8a04",
-                      color: "#090d16",
+                      background: "#e60028",
+                      color: "#ffffff",
                       fontWeight: 900,
                       fontSize: "11px",
-                      padding: "3px 10px",
-                      borderRadius: "4px"
+                      padding: "4px 12px",
+                      borderRadius: "4px",
+                      letterSpacing: "1px"
                     }}>
-                      RÉFÉRENCE : CBS-4GL-EXP-2026
+                      RÉFÉRENCE : SG-CBS-4GL-2026
                     </div>
                   </div>
 
-                  <div style={{ fontSize: "38px", marginBottom: "8px" }}>🏆</div>
-                  
+                  <div style={{ fontSize: "40px", marginBottom: "8px" }}>🏛️</div>
+
                   <h2 style={{
-                    fontFamily: "serif",
-                    fontSize: "28px",
-                    fontWeight: 800,
-                    color: "#facc15",
-                    letterSpacing: "1px",
-                    margin: "0 0 8px 0"
+                    fontFamily: "Georgia, serif",
+                    fontSize: "30px",
+                    fontWeight: 900,
+                    color: "#ffffff",
+                    letterSpacing: "1.5px",
+                    margin: "0 0 8px 0",
+                    textTransform: "uppercase"
                   }}>
                     CERTIFICAT DE QUALIFICATION EXPERT
                   </h2>
 
-                  <div style={{ fontSize: "13px", color: "#94a3b8", textTransform: "uppercase", letterSpacing: "3px", marginBottom: "24px" }}>
+                  <div style={{ fontSize: "13px", color: "#fca5a5", textTransform: "uppercase", letterSpacing: "3px", marginBottom: "26px", fontWeight: 700 }}>
                     Informix 4GL &amp; Architecture Core Banking Amplitude
                   </div>
 
                   <p style={{ fontSize: "15px", color: "#cbd5e1", fontStyle: "italic", margin: "0 0 16px 0" }}>
-                    Il est officiellement certifié que
+                    Il est officiellement décerné et certifié que
                   </p>
 
                   <div style={{
-                    fontSize: "26px",
+                    fontSize: "28px",
                     fontWeight: 900,
                     color: "#ffffff",
-                    borderBottom: "2px solid #ca8a04",
+                    borderBottom: "3px solid #e60028",
                     display: "inline-block",
                     paddingBottom: "6px",
                     marginBottom: "20px",
                     letterSpacing: "1px"
                   }}>
-                    M. Mohamed Oury BARRY
+                    {currentUserName || "Mohamed Oury BARRY"}
                   </div>
 
-                  <p style={{ fontSize: "14px", color: "#94a3b8", maxWidth: "620px", margin: "0 auto 28px auto", lineHeight: "1.6" }}>
-                    a accompli avec distinction l&apos;intégralité du cursus certifiant, démontrant une maîtrise approfondie de la syntaxe procédurale Informix 4GL, de l&apos;optimisation haute vélocité des batchs EOD (INSERT CURSOR, PUT, FLUSH), de l&apos;atomicité stricte des transactions bancaires et de la résolution des conflits de verrous.
+                  <p style={{ fontSize: "14px", color: "#94a3b8", maxWidth: "680px", margin: "0 auto 28px auto", lineHeight: "1.7" }}>
+                    a accompli avec distinction l&apos;intégralité du cursus certifiant Société Générale, démontrant une maîtrise éprouvée de la syntaxe procédurale Informix 4GL, de l&apos;optimisation haute vélocité des batchs EOD (INSERT CURSOR, PUT, FLUSH), de l&apos;atomicité stricte des transactions bancaires en partie double et de la résolution des conflits de verrous SGBD.
                   </p>
 
                   <div style={{
                     display: "grid",
                     gridTemplateColumns: "1fr 1fr 1fr",
                     gap: "16px",
-                    borderTop: "1px solid #334155",
+                    borderTop: "1px solid #374151",
                     paddingTop: "24px",
                     textAlign: "center"
                   }}>
                     <div>
-                      <div style={{ fontSize: "11px", color: "#64748b", textTransform: "uppercase" }}>Mention</div>
-                      <div style={{ fontSize: "14px", fontWeight: 700, color: "#22c55e" }}>Excellence (95%)</div>
+                      <div style={{ fontSize: "11px", color: "#9ca3af", textTransform: "uppercase", letterSpacing: "1px" }}>Mention</div>
+                      <div style={{ fontSize: "15px", fontWeight: 800, color: "#22c55e", marginTop: "4px" }}>Excellence (95%)</div>
                     </div>
                     <div>
-                      <div style={{ fontSize: "11px", color: "#64748b", textTransform: "uppercase" }}>Grade Atteint</div>
-                      <div style={{ fontSize: "14px", fontWeight: 700, color: "#eab308" }}>Niveau 5 - Architecte Lead</div>
+                      <div style={{ fontSize: "11px", color: "#9ca3af", textTransform: "uppercase", letterSpacing: "1px" }}>Grade Accrédité</div>
+                      <div style={{ fontSize: "15px", fontWeight: 800, color: "#f87171", marginTop: "4px" }}>Niveau 5 - Architecte Lead</div>
                     </div>
                     <div>
-                      <div style={{ fontSize: "11px", color: "#64748b", textTransform: "uppercase" }}>Délivré le</div>
-                      <div style={{ fontSize: "14px", fontWeight: 700, color: "#cbd5e1" }}>21 Septembre 2026</div>
+                      <div style={{ fontSize: "11px", color: "#9ca3af", textTransform: "uppercase", letterSpacing: "1px" }}>Délivré le</div>
+                      <div style={{ fontSize: "15px", fontWeight: 800, color: "#ffffff", marginTop: "4px" }}>
+                        {new Date().toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style={{
+                    marginTop: "30px",
+                    paddingTop: "20px",
+                    borderTop: "1px dashed rgba(255,255,255,0.15)",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center"
+                  }}>
+                    <div style={{ textAlign: "left" }}>
+                      <div style={{ fontSize: "10px", color: "#9ca3af", textTransform: "uppercase" }}>Direction IT Banking &amp; Monétique</div>
+                      <div style={{ fontSize: "12px", color: "#e60028", fontWeight: 700 }}>Groupe Société Générale</div>
+                    </div>
+                    <div style={{
+                      padding: "6px 14px",
+                      border: "2px solid #22c55e",
+                      borderRadius: "6px",
+                      color: "#22c55e",
+                      fontWeight: 800,
+                      fontSize: "11px",
+                      textTransform: "uppercase",
+                      letterSpacing: "1px"
+                    }}>
+                      ✓ SCEAU OFFICIEL AUTHENTIFIÉ
                     </div>
                   </div>
                 </div>
 
-                {/* BOUTON D'IMPRESSION */}
+                {/* BOUTON D'IMPRESSION (Masqué à l'impression) */}
                 <button
                   onClick={() => window.print()}
+                  className="no-print"
                   style={{
-                    background: "linear-gradient(135deg, #ca8a04, #a16207)",
+                    background: "linear-gradient(135deg, #e60028, #99001b)",
                     color: "#ffffff",
                     border: "none",
                     borderRadius: "8px",
-                    padding: "12px 28px",
-                    fontSize: "14px",
-                    fontWeight: 700,
+                    padding: "14px 32px",
+                    fontSize: "15px",
+                    fontWeight: 800,
                     cursor: "pointer",
-                    boxShadow: "0 4px 14px rgba(202, 138, 4, 0.4)"
+                    boxShadow: "0 4px 16px rgba(230, 0, 40, 0.4)",
+                    transition: "transform 0.15s ease",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "8px"
                   }}
                 >
-                  🖨️ Imprimer / Télécharger le Certificat Officiel (PDF)
+                  <span>🖨️</span> Imprimer / Télécharger le Certificat Officiel Société Générale (PDF)
                 </button>
               </div>
             )}

@@ -18,9 +18,20 @@ export default function TrainingMonetiquePage() {
   const [unlockedLevel, setUnlockedLevel] = useState<MonetiqueGradeLevel>(1);
   const [selectedGradeLevel, setSelectedGradeLevel] = useState<MonetiqueGradeLevel>(1);
   const [activeTab, setActiveTab] = useState<"cours" | "simulateur" | "examen" | "certificat">("cours");
+  const [currentUserName, setCurrentUserName] = useState<string>("");
 
-  // Chargement de la progression persistée au démarrage
+  // Chargement de la progression persistée et de l'utilisateur au démarrage
   useEffect(() => {
+    // 0. Récupération du profil utilisateur connecté pour le certificat
+    fetch("/api/auth/me")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.user?.name) {
+          setCurrentUserName(data.user.name);
+        }
+      })
+      .catch(() => {});
+
     // 1. Chargement instantané depuis localStorage
     try {
       const savedLevel = localStorage.getItem("monetique_unlocked_level");
@@ -741,113 +752,158 @@ export default function TrainingMonetiquePage() {
                 </div>
               </div>
             ) : (
-              <div style={{ width: "100%", maxWidth: "860px", display: "flex", flexDirection: "column", alignItems: "center", gap: "20px" }}>
+              <div className="certificate-print-wrapper" style={{ width: "100%", maxWidth: "880px", display: "flex", flexDirection: "column", alignItems: "center", gap: "24px" }}>
                 
-                {/* DIPLÔME OFFICIEL MONÉTIQUE */}
-                <div style={{
+                {/* DIPLÔME OFFICIEL SOCIÉTÉ GÉNÉRALE - MONÉTIQUE */}
+                <div className="printable-certificate" style={{
                   width: "100%",
-                  background: "radial-gradient(circle at center, #064e3b 0%, #090d16 100%)",
-                  border: "8px double #10b981",
+                  background: "linear-gradient(145deg, #111827 0%, #030712 100%)",
+                  border: "4px solid #e60028",
+                  outline: "2px solid #ffffff",
+                  outlineOffset: "-8px",
                   borderRadius: "16px",
-                  padding: "48px 40px",
-                  boxShadow: "0 0 35px rgba(16, 185, 129, 0.25)",
+                  padding: "44px 40px",
+                  boxShadow: "0 0 45px rgba(230, 0, 40, 0.25)",
                   textAlign: "center",
                   position: "relative",
                   color: "#f8fafc"
                 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
-                    <div style={{ fontSize: "12px", fontWeight: 700, letterSpacing: "2px", color: "#34d399", textTransform: "uppercase" }}>
-                      INSTITUT MONÉTIQUE &amp; SYSTÈMES DE PAIEMENT INTERBANCAIRE
+                  {/* BANDEAU HAUT BRANDING SOCIÉTÉ GÉNÉRALE */}
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "16px" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                      {/* Logo Carré Rouge & Noir SG */}
+                      <div style={{ width: "32px", height: "32px", borderRadius: "4px", overflow: "hidden", display: "flex", flexDirection: "column", border: "1px solid #ffffff", flexShrink: 0 }}>
+                        <div style={{ flex: 1, background: "#e60028" }} />
+                        <div style={{ flex: 1, background: "#111827" }} />
+                      </div>
+                      <div style={{ fontSize: "13px", fontWeight: 800, letterSpacing: "2px", color: "#f8fafc", textTransform: "uppercase" }}>
+                        GROUPE SOCIÉTÉ GÉNÉRALE • MONÉTIQUE &amp; PAYMENT SYSTEMS
+                      </div>
                     </div>
                     <div style={{
-                      background: "#10b981",
-                      color: "#090d16",
+                      background: "#e60028",
+                      color: "#ffffff",
                       fontWeight: 900,
                       fontSize: "11px",
-                      padding: "3px 10px",
-                      borderRadius: "4px"
+                      padding: "4px 12px",
+                      borderRadius: "4px",
+                      letterSpacing: "1px"
                     }}>
-                      RÉFÉRENCE : MON-ING-EXP-2026
+                      RÉFÉRENCE : SG-MON-ING-2026
                     </div>
                   </div>
 
-                  <div style={{ fontSize: "38px", marginBottom: "8px" }}>💳</div>
+                  <div style={{ fontSize: "40px", marginBottom: "8px" }}>💳</div>
                   
                   <h2 style={{
-                    fontFamily: "serif",
-                    fontSize: "28px",
-                    fontWeight: 800,
-                    color: "#34d399",
-                    letterSpacing: "1px",
-                    margin: "0 0 8px 0"
+                    fontFamily: "Georgia, serif",
+                    fontSize: "30px",
+                    fontWeight: 900,
+                    color: "#ffffff",
+                    letterSpacing: "1.5px",
+                    margin: "0 0 8px 0",
+                    textTransform: "uppercase"
                   }}>
                     CERTIFICAT DE QUALIFICATION EXPERT
                   </h2>
 
-                  <div style={{ fontSize: "13px", color: "#94a3b8", textTransform: "uppercase", letterSpacing: "3px", marginBottom: "24px" }}>
+                  <div style={{ fontSize: "13px", color: "#fca5a5", textTransform: "uppercase", letterSpacing: "3px", marginBottom: "26px", fontWeight: 700 }}>
                     Ingénierie Monétique, Protocoles ISO 8583, EMV &amp; Compensation
                   </div>
 
                   <p style={{ fontSize: "15px", color: "#cbd5e1", fontStyle: "italic", margin: "0 0 16px 0" }}>
-                    Il est officiellement certifié que
+                    Il est officiellement décerné et certifié que
                   </p>
 
                   <div style={{
-                    fontSize: "26px",
+                    fontSize: "28px",
                     fontWeight: 900,
                     color: "#ffffff",
-                    borderBottom: "2px solid #10b981",
+                    borderBottom: "3px solid #e60028",
                     display: "inline-block",
                     paddingBottom: "6px",
                     marginBottom: "20px",
                     letterSpacing: "1px"
                   }}>
-                    M. Mohamed Oury BARRY
+                    {currentUserName || "Mohamed Oury BARRY"}
                   </div>
 
-                  <p style={{ fontSize: "14px", color: "#94a3b8", maxWidth: "620px", margin: "0 auto 28px auto", lineHeight: "1.6" }}>
-                    a accompli avec brio l&apos;intégralité du cursus certifiant avec validation des 150 exercices pratiques, attestant d&apos;une expertise de haut niveau sur les spécifications ISO 8583, le décodage forensique EMV TLV/TVR, la cryptographie matérielle HSM (3DES/AES, PIN Block ISO-0), les journaux GAB NDC/DDC et les cycles de clearing Visa / Mastercard / GIM-UEMOA.
+                  <p style={{ fontSize: "14px", color: "#94a3b8", maxWidth: "680px", margin: "0 auto 28px auto", lineHeight: "1.7" }}>
+                    a accompli avec brio l&apos;intégralité du cursus certifiant avec validation des 150 exercices pratiques d&apos;expertise, attestant d&apos;une maîtrise opérationnelle des spécifications ISO 8583 (0100/0200), du décodage EMV TLV/TVR, de la cryptographie matérielle HSM (3DES/AES, PIN Block ISO-0), de la supervision GAB NDC/DDC et des flux de compensation interbancaire Visa, Mastercard &amp; GIM-UEMOA.
                   </p>
 
                   <div style={{
                     display: "grid",
                     gridTemplateColumns: "1fr 1fr 1fr",
                     gap: "16px",
-                    borderTop: "1px solid #334155",
+                    borderTop: "1px solid #374151",
                     paddingTop: "24px",
                     textAlign: "center"
                   }}>
                     <div>
-                      <div style={{ fontSize: "11px", color: "#64748b", textTransform: "uppercase" }}>Mention</div>
-                      <div style={{ fontSize: "14px", fontWeight: 700, color: "#34d399" }}>Très Honorable (96%)</div>
+                      <div style={{ fontSize: "11px", color: "#9ca3af", textTransform: "uppercase", letterSpacing: "1px" }}>Mention</div>
+                      <div style={{ fontSize: "15px", fontWeight: 800, color: "#22c55e", marginTop: "4px" }}>Très Honorable (96%)</div>
                     </div>
                     <div>
-                      <div style={{ fontSize: "11px", color: "#64748b", textTransform: "uppercase" }}>Grade Certifié</div>
-                      <div style={{ fontSize: "14px", fontWeight: 700, color: "#10b981" }}>Niveau 5 - Expert Monétique</div>
+                      <div style={{ fontSize: "11px", color: "#9ca3af", textTransform: "uppercase", letterSpacing: "1px" }}>Grade Certifié</div>
+                      <div style={{ fontSize: "15px", fontWeight: 800, color: "#f87171", marginTop: "4px" }}>Niveau 5 - Expert Monétique</div>
                     </div>
                     <div>
-                      <div style={{ fontSize: "11px", color: "#64748b", textTransform: "uppercase" }}>Date d&apos;Émission</div>
-                      <div style={{ fontSize: "14px", fontWeight: 700, color: "#cbd5e1" }}>21 Septembre 2026</div>
+                      <div style={{ fontSize: "11px", color: "#9ca3af", textTransform: "uppercase", letterSpacing: "1px" }}>Délivré le</div>
+                      <div style={{ fontSize: "15px", fontWeight: 800, color: "#ffffff", marginTop: "4px" }}>
+                        {new Date().toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style={{
+                    marginTop: "30px",
+                    paddingTop: "20px",
+                    borderTop: "1px dashed rgba(255,255,255,0.15)",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center"
+                  }}>
+                    <div style={{ textAlign: "left" }}>
+                      <div style={{ fontSize: "10px", color: "#9ca3af", textTransform: "uppercase" }}>Direction IT Banking &amp; Monétique</div>
+                      <div style={{ fontSize: "12px", color: "#e60028", fontWeight: 700 }}>Groupe Société Générale</div>
+                    </div>
+                    <div style={{
+                      padding: "6px 14px",
+                      border: "2px solid #22c55e",
+                      borderRadius: "6px",
+                      color: "#22c55e",
+                      fontWeight: 800,
+                      fontSize: "11px",
+                      textTransform: "uppercase",
+                      letterSpacing: "1px"
+                    }}>
+                      ✓ SCEAU OFFICIEL AUTHENTIFIÉ
                     </div>
                   </div>
                 </div>
 
-                {/* BOUTON IMPRIMER */}
+                {/* BOUTON IMPRIMER (Masqué à l'impression) */}
                 <button
                   onClick={() => window.print()}
+                  className="no-print"
                   style={{
-                    background: "linear-gradient(135deg, #059669, #047857)",
+                    background: "linear-gradient(135deg, #e60028, #99001b)",
                     color: "#ffffff",
                     border: "none",
                     borderRadius: "8px",
-                    padding: "12px 28px",
-                    fontSize: "14px",
-                    fontWeight: 700,
+                    padding: "14px 32px",
+                    fontSize: "15px",
+                    fontWeight: 800,
                     cursor: "pointer",
-                    boxShadow: "0 4px 14px rgba(5, 150, 105, 0.4)"
+                    boxShadow: "0 4px 16px rgba(230, 0, 40, 0.4)",
+                    transition: "transform 0.15s ease",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "8px"
                   }}
                 >
-                  🖨️ Imprimer / Sauvegarder le Certificat Monétique (PDF)
+                  <span>🖨️</span> Imprimer / Télécharger le Certificat Officiel Société Générale (PDF)
                 </button>
               </div>
             )}
