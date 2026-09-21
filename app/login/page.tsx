@@ -69,10 +69,10 @@ export default function LoginPage() {
           />
           <h1 style={{ fontSize: "1.4rem", fontWeight: 800, color: "#111827", letterSpacing: "0.02em" }}>M.OURY</h1>
           <p style={{ fontSize: "0.8rem", fontWeight: 700, letterSpacing: "0.06em", color: "#e60028", textTransform: "uppercase" }}>
-            MONÉTIQUE HUB
+            CBS & MONÉTIQUE HUB
           </p>
           <p style={{ fontSize: "0.8rem", color: "#6b7280", marginTop: "0.15rem" }}>
-            Plateforme d&apos;exploitation et diagnostic d&apos;incidents monétiques
+            Plateforme d&apos;exploitation et diagnostic d&apos;incidents monétiques & CBS
           </p>
         </div>
 
@@ -177,7 +177,7 @@ export default function LoginPage() {
 
         {/* Signature & Copyright */}
         <div style={{ marginTop: "1rem", textAlign: "center", fontSize: "0.72rem", color: "#6b7280", borderTop: "1px solid #f3f4f6", paddingTop: "0.75rem" }}>
-          © {new Date().getFullYear() - 1} <strong>M.Oury</strong> • <span style={{ color: "#e60028", fontWeight: 600 }}>Ingénieur IT BANKING &amp; Expert Monétique - CBS</span>
+          © {new Date().getFullYear()} <strong>M.Oury</strong> • <span style={{ color: "#e60028", fontWeight: 600 }}>Ingénieur IT BANKING &amp; Expert Monétique - CBS</span>
         </div>
       </div>
     </div>

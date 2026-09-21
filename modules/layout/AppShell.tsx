@@ -83,10 +83,11 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
     },
     {
       key: "referentials",
-      title: "RÉFÉRENTIELS",
-      icon: "📖",
+      title: "FORMATION & CERTIF",
+      icon: "🎓",
       roleRequired: "ROLE_REFERENTIELS",
       items: [
+        { href: "/training-monetique", label: "Formation Monétique & Certif", icon: "💳" },
         { href: "/mti", label: "Référentiel MTI", icon: "📬" },
         { href: "/de39", label: "Référentiel DE39", icon: "🏷️" },
         { href: "/audit", label: "Piste d'audit", icon: "🛡️" },
@@ -350,7 +351,7 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
                   transition: "all 0.15s ease",
                 }}
               >
-                💳 Monétique
+                💳
               </Link>
               <Link
                 href="/cbs"
@@ -365,7 +366,7 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
                   transition: "all 0.15s ease",
                 }}
               >
-                🏦 Amplitude
+                🏦
               </Link>
             </div>
 
@@ -416,7 +417,7 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
               </span>
             </div>
             <div style={{ textAlign: "right" }}>
-              © {new Date().getFullYear() - 1} <strong style={{ color: "var(--text-primary)" }}>M.Oury</strong> —{" "}
+              © {new Date().getFullYear()} <strong style={{ color: "var(--text-primary)" }}>M.Oury</strong> —{" "}
               <span style={{ color: "var(--sg-red-600)", fontWeight: 600 }}>
                 Ingénieur IT BANKING &amp; Expert Monétique - CBS
               </span>

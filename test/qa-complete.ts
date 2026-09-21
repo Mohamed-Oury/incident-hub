@@ -9,6 +9,9 @@ import { parseAtmElectronicJournal } from "../modules/knowledge-base/data/atm-ej
 import { CBS_4GL_GRADES, CBS_4GL_LESSONS, CBS_4GL_EXAMS } from "../modules/cbs/cbs-4gl-data";
 import { CBS_4GL_KEYWORDS_CHEAT_SHEET } from "../modules/cbs/cbs-4gl-cheat-sheet";
 
+import { MONETIQUE_GRADES, MONETIQUE_LESSONS } from "../modules/training-monetique/data";
+import { MONETIQUE_EXAMS } from "../modules/training-monetique/exams-data";
+
 function runQaAll() {
   console.log("=================================================");
   console.log("🚀 QA TEST GLOBAL (MONÉTIQUE & CBS AMPLITUDE WEB)");
@@ -63,8 +66,16 @@ function runQaAll() {
   assert("TEST 17 - Dictionnaire de Schéma Tables Amplitude", CBS_SCHEMA_TABLES.length >= 55, `${CBS_SCHEMA_TABLES.length} tables centrales documentées`);
   assert("TEST 18 - Échelle des 5 Grades 4GL Core Banking", CBS_4GL_GRADES.length === 5 && CBS_4GL_GRADES.every(g => g.recommendedResources && g.recommendedResources.length >= 3), `${CBS_4GL_GRADES.length} niveaux de certification avec ressources documentaires`);
   assert("TEST 19 - Modules de Cours Informix 4GL Détaillés", CBS_4GL_LESSONS.length >= 18, `${CBS_4GL_LESSONS.length} chapitres de formation approfondis`);
-  assert("TEST 20 - Banque d'Examens de Passage de Grade (15+ par niveau)", CBS_4GL_EXAMS.length >= 75 && [1, 2, 3, 4, 5].every(lvl => CBS_4GL_EXAMS.filter(q => q.gradeLevel === lvl).length >= 15), `${CBS_4GL_EXAMS.length} questions officielles (au moins 15 questions par grade)`);
+  assert("TEST 20 - Banque d'Examens de Passage de Grade CBS 4GL", CBS_4GL_EXAMS.length >= 75 && [1, 2, 3, 4, 5].every(lvl => CBS_4GL_EXAMS.filter(q => q.gradeLevel === lvl).length >= 15), `${CBS_4GL_EXAMS.length} questions officielles (au moins 15 questions par grade)`);
   assert("TEST 21 - Fiche Mémento Mots-Clés Informix 4GL", CBS_4GL_KEYWORDS_CHEAT_SHEET.length >= 200, `${CBS_4GL_KEYWORDS_CHEAT_SHEET.length} cartes de révision détaillées`);
+
+  // --- NOUVEAU CURSUS FORMATION & CERTIFICATION MONÉTIQUE (150 EXAMENS) ---
+  assert("TEST 22 - Cursus Monétique 5 Niveaux de Qualification", MONETIQUE_GRADES.length === 5 && MONETIQUE_GRADES.every(g => g.recommendedResources && g.recommendedResources.length >= 3), `${MONETIQUE_GRADES.length} grades monétique avec normes & specs`);
+  assert("TEST 23 - Leçons Techniques Approfondies Monétique", MONETIQUE_LESSONS.length >= 8, `${MONETIQUE_LESSONS.length} leçons de haut niveau`);
+  assert("TEST 24 - Banque d'Exercices Monétique (150 examens au total, 30/grade)", 
+    MONETIQUE_EXAMS.length === 150 && [1, 2, 3, 4, 5].every(lvl => MONETIQUE_EXAMS.filter(q => q.gradeLevel === lvl).length === 30),
+    `${MONETIQUE_EXAMS.length} questions réparties en exactement 30 questions par grade (1 à 5)`
+  );
 
   console.log("\n=================================================");
   console.log(`📊 RÉSULTAT QA TEST : ${passed} RÉUSSIS / ${failed} ÉCHECS`);
@@ -76,3 +87,4 @@ function runQaAll() {
 }
 
 runQaAll();
+

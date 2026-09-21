@@ -1,0 +1,2105 @@
+// modules/training-monetique/exams-data.ts
+import { MonetiqueExamQuestion } from "./types";
+
+export const MONETIQUE_EXAMS: MonetiqueExamQuestion[] = [
+  {
+    "id": "m_ex_n1_01",
+    "gradeLevel": 1,
+    "question": "Dans le modèle des 4 coins du paiement par carte, qui tient le compte du porteur et valide la provision ?",
+    "options": [
+      "L'Acquéreur",
+      "L'Émetteur (Issuer)",
+      "Le Switch / Scheme",
+      "Le Commerçant"
+    ],
+    "correctIndex": 1,
+    "explanation": "L'émetteur tient le compte du porteur et valide l'autorisation de débit.",
+    "trapWarning": "Ne confondez pas avec l'acquéreur qui gère le terminal commerçant."
+  },
+  {
+    "id": "m_ex_n1_02",
+    "gradeLevel": 1,
+    "question": "Que signifie l'acronyme MTI dans la norme internationale ISO 8583 ?",
+    "options": [
+      "Master Transaction Index",
+      "Message Type Identifier",
+      "Monetary Transfer Instruction",
+      "Multiple Terminal Interface"
+    ],
+    "correctIndex": 1,
+    "explanation": "Le MTI identifie la classe, la fonction et l'origine du message financier.",
+    "trapWarning": "C'est l'identifiant de message à 4 chiffres en tête de chaque trame."
+  },
+  {
+    "id": "m_ex_n1_03",
+    "gradeLevel": 1,
+    "question": "Dans un MTI 0200, que signifie le premier chiffre '0' ?",
+    "options": [
+      "Version ISO 8583:1987",
+      "Transaction rejetée",
+      "Message émis par un GAB",
+      "Priorité réseau haute"
+    ],
+    "correctIndex": 0,
+    "explanation": "Le chiffre 0 indique la version originelle ISO 8583:1987. 1 désigne la version 1993 et 2 la version 2003.",
+    "trapWarning": "Ce n'est pas un code de statut mais le numéro de version de la norme."
+  },
+  {
+    "id": "m_ex_n1_04",
+    "gradeLevel": 1,
+    "question": "Dans un MTI 0200, que signifie le deuxième chiffre '2' ?",
+    "options": [
+      "Message de réconciliation",
+      "Message financier d'autorisation de débit",
+      "Message de gestion de clé HSM",
+      "Message de reversal"
+    ],
+    "correctIndex": 1,
+    "explanation": "La classe 2 désigne les messages financiers (Financial Transaction) avec engagement immédiat de fonds.",
+    "trapWarning": "La classe 1 désigne les autorisations pures d'engagement différé."
+  },
+  {
+    "id": "m_ex_n1_05",
+    "gradeLevel": 1,
+    "question": "Dans un MTI 0210, que signifie le troisième chiffre '1' ?",
+    "options": [
+      "Demande initiale",
+      "Réponse à une demande",
+      "Avis d'information (Advice)",
+      "Accusé de réception réseau"
+    ],
+    "correctIndex": 1,
+    "explanation": "La fonction 0 correspond à une Demande (Request) et la fonction 1 à une Réponse (Response).",
+    "trapWarning": "0210 est la réponse émetteur à la demande financière 0200."
+  },
+  {
+    "id": "m_ex_n1_06",
+    "gradeLevel": 1,
+    "question": "Comment détecte-t-on la présence d'un Bitmap secondaire (champs 65 à 128) dans une trame ISO ?",
+    "options": [
+      "Le MTI se termine par 2",
+      "Le premier bit du Bitmap primaire est positionné à 1",
+      "Le champ DE1 est renseigné avec FF",
+      "Le switch envoie une seconde trame"
+    ],
+    "correctIndex": 1,
+    "explanation": "Le bit 1 du bitmap primaire est le drapeau d'extension indiquant la présence du champ 1 (Bitmap secondaire).",
+    "trapWarning": "Si le bit 1 est à 0, seuls les champs 2 à 64 peuvent exister."
+  },
+  {
+    "id": "m_ex_n1_07",
+    "gradeLevel": 1,
+    "question": "Combien de champs au maximum un Bitmap primaire seul peut-il indexer ?",
+    "options": [
+      "32 champs",
+      "64 champs",
+      "128 champs",
+      "192 champs"
+    ],
+    "correctIndex": 1,
+    "explanation": "Le bitmap primaire comporte 64 bits (16 caractères hexadécimaux), indexant les champs de 1 à 64.",
+    "trapWarning": "Sans bitmap secondaire, le champ 65 et au-delà ne peuvent pas être encodés."
+  },
+  {
+    "id": "m_ex_n1_08",
+    "gradeLevel": 1,
+    "question": "Quel est le rôle du champ DE2 dans la norme ISO 8583 ?",
+    "options": [
+      "Code devise",
+      "Numéro de compte principal de la carte (PAN)",
+      "Montant de la transaction",
+      "Code réponse DE39"
+    ],
+    "correctIndex": 1,
+    "explanation": "DE2 contient le PAN (Primary Account Number) du porteur de la carte.",
+    "trapWarning": "DE2 est un champ de longueur variable de type LLVAR."
+  },
+  {
+    "id": "m_ex_n1_09",
+    "gradeLevel": 1,
+    "question": "Que signifie le type de format LLVAR pour un champ de données ISO 8583 ?",
+    "options": [
+      "Longueur fixe de 2 chiffres",
+      "Champ variable précédé de 2 chiffres indiquant sa longueur exacte",
+      "Champ chiffré sur 2 octets",
+      "Champ réservé à l'acquisition locale"
+    ],
+    "correctIndex": 1,
+    "explanation": "LLVAR indique que les 2 premiers caractères définissent la taille de la valeur qui suit (ex: 16 pour un PAN de 16 chiffres).",
+    "trapWarning": "LLLVAR utilise 3 chiffres d'en-tête pour les champs longs comme DE55."
+  },
+  {
+    "id": "m_ex_n1_10",
+    "gradeLevel": 1,
+    "question": "Quelle donnée fondamentale est transportée dans le champ DE4 ?",
+    "options": [
+      "Date d'expiration",
+      "Montant de la transaction en centimes",
+      "Numéro de terminal TID",
+      "STAN de l'opération"
+    ],
+    "correctIndex": 1,
+    "explanation": "DE4 transporte le montant financier de la transaction (Amount, Transaction) codé en 12 chiffres.",
+    "trapWarning": "Le montant est exprimé en unités minimales (centimes) sans séparateur décimal."
+  },
+  {
+    "id": "m_ex_n1_11",
+    "gradeLevel": 1,
+    "question": "Dans quel format le champ DE4 exprime-t-il un montant de 25 000 FCFA ?",
+    "options": [
+      "25000",
+      "000002500000",
+      "250.00",
+      "25000XOF"
+    ],
+    "correctIndex": 1,
+    "explanation": "DE4 est un numérique fixe n12 complété par des zéros à gauche (000002500000 pour 25 000.00).",
+    "trapWarning": "Ne mettez jamais de virgule ou de point dans un champ n12."
+  },
+  {
+    "id": "m_ex_n1_12",
+    "gradeLevel": 1,
+    "question": "Quel champ ISO 8583 contient le STAN (Systems Trace Audit Number) ?",
+    "options": [
+      "DE3",
+      "DE11",
+      "DE37",
+      "DE41"
+    ],
+    "correctIndex": 1,
+    "explanation": "DE11 est le STAN, un numéro de séquence à 6 chiffres unique par terminal et par jour.",
+    "trapWarning": "Ne confondez pas le STAN (DE11, 6 chiffres) avec le RRN (DE37, 12 caractères)."
+  },
+  {
+    "id": "m_ex_n1_13",
+    "gradeLevel": 1,
+    "question": "Quelle est la différence fondamentale entre le STAN (DE11) et le RRN (DE37) ?",
+    "options": [
+      "Le STAN est généré par le commerçant et le RRN par le porteur",
+      "Le STAN est un compteur court local (6 chiffres) alors que le RRN est la référence globale unique de bout en bout (12 caractères)",
+      "Le RRN est réservé aux cartes de crédit",
+      "Il n'y a aucune différence"
+    ],
+    "correctIndex": 1,
+    "explanation": "Le STAN identifie la transaction au niveau du terminal, le RRN (Retrieval Reference Number) sert au rapprochement sur tout le réseau.",
+    "trapWarning": "Le RRN est souvent construit à partir de la date julienne et du STAN."
+  },
+  {
+    "id": "m_ex_n1_14",
+    "gradeLevel": 1,
+    "question": "Quel code réponse DE39 signale une transaction approuvée avec succès ?",
+    "options": [
+      "01",
+      "00",
+      "99",
+      "OK"
+    ],
+    "correctIndex": 1,
+    "explanation": "Le code 00 est le standard universel de l'approbation en monétique.",
+    "trapWarning": "Tout code différent de 00 (ou 08/10 selon les schemes) constitue un rejet."
+  },
+  {
+    "id": "m_ex_n1_15",
+    "gradeLevel": 1,
+    "question": "Que signifie le code rejet DE39 = 51 émis par la banque émettrice ?",
+    "options": [
+      "Code PIN erroné",
+      "Provision ou solde insuffisant",
+      "Carte déclarée perdue ou volée",
+      "Émetteur non disponible"
+    ],
+    "correctIndex": 1,
+    "explanation": "Le code 51 (Insufficient funds) indique que le compte du client ne dispose pas des fonds nécessaires.",
+    "trapWarning": "Le code 55 indique un problème de code PIN."
+  },
+  {
+    "id": "m_ex_n1_16",
+    "gradeLevel": 1,
+    "question": "Quel code DE39 signale qu'un client a composé un faux code secret au clavier ?",
+    "options": [
+      "DE39 = 51",
+      "DE39 = 55",
+      "DE39 = 75",
+      "DE39 = 54"
+    ],
+    "correctIndex": 1,
+    "explanation": "Le code 55 (Incorrect PIN) est retourné lorsque le cryptogramme de PIN ne correspond pas.",
+    "trapWarning": "Le code 75 est renvoyé lorsque le plafond d'essais de PIN (3 fois) est dépassé."
+  },
+  {
+    "id": "m_ex_n1_17",
+    "gradeLevel": 1,
+    "question": "Quel code DE39 indique que la date d'expiration de la carte est dépassée ?",
+    "options": [
+      "DE39 = 54",
+      "DE39 = 33",
+      "DE39 = 41",
+      "DE39 = 57"
+    ],
+    "correctIndex": 0,
+    "explanation": "Le code 54 (Expired card) est retourné lorsque la date du jour est postérieure au champ DE14.",
+    "trapWarning": "Le code 41 correspond à une carte volée déclarée en opposition."
+  },
+  {
+    "id": "m_ex_n1_18",
+    "gradeLevel": 1,
+    "question": "Que signale un pic soudain de rejets DE39 = 91 sur la console de supervision monétique ?",
+    "options": [
+      "Une vague soudaine de fraudes par cartes perdues",
+      "L'indisponibilité technique ou coupure de liaison avec le serveur émetteur",
+      "Une panne mécanique des imprimantes GAB",
+      "Une saturation de l'espace disque du TPE"
+    ],
+    "correctIndex": 1,
+    "explanation": "Le code 91 (Issuer or switch inoperative) traduit une rupture de connectivité ou un crash du serveur émetteur.",
+    "trapWarning": "C'est une alerte technique P1 d'infrastructure, pas un rejet commercial client."
+  },
+  {
+    "id": "m_ex_n1_19",
+    "gradeLevel": 1,
+    "question": "Quel champ ISO 8583 transporte le code devise de la transaction (ex: 952 pour XOF) ?",
+    "options": [
+      "DE48",
+      "DE49",
+      "DE52",
+      "DE4"
+    ],
+    "correctIndex": 1,
+    "explanation": "DE49 (Currency Code, Transaction) définit la devise selon la norme ISO 4217 (3 chiffres).",
+    "trapWarning": "DE50 peut transporter la devise de compensation (Settlement)."
+  },
+  {
+    "id": "m_ex_n1_20",
+    "gradeLevel": 1,
+    "question": "Dans une trame ISO, quel champ contient le Terminal ID (TID) à 8 caractères ?",
+    "options": [
+      "DE32",
+      "DE41",
+      "DE42",
+      "DE43"
+    ],
+    "correctIndex": 1,
+    "explanation": "DE41 identifie le terminal physique (Card Acceptor Terminal Identification).",
+    "trapWarning": "DE42 est l'identifiant du commerçant (Merchant ID / Acceptor ID)."
+  },
+  {
+    "id": "m_ex_n1_21",
+    "gradeLevel": 1,
+    "question": "Quel champ ISO transporte le Merchant ID (MID) ou identifiant commerçant ?",
+    "options": [
+      "DE41",
+      "DE42",
+      "DE43",
+      "DE25"
+    ],
+    "correctIndex": 1,
+    "explanation": "DE42 (Card Acceptor Identification Code) identifie le contrat commerçant auprès de l'acquéreur.",
+    "trapWarning": "DE43 contient le nom et la ville de l'enseigne commerciale."
+  },
+  {
+    "id": "m_ex_n1_22",
+    "gradeLevel": 1,
+    "question": "Que contient le champ DE3 (Processing Code) d'une trame ISO 8583 ?",
+    "options": [
+      "Le numéro de licence du switch",
+      "Un code à 6 chiffres précisant le type d'opération et les types de comptes débités/crédités",
+      "Le numéro de série de la puce",
+      "Le code postal du porteur"
+    ],
+    "correctIndex": 1,
+    "explanation": "Le Processing Code (ex: 000000 pour Achat, 010000 pour Retrait) structure le type d'opération.",
+    "trapWarning": "Les 2 premiers chiffres donnent l'opération, les 2 suivants le compte débité, les 2 derniers le compte crédité."
+  },
+  {
+    "id": "m_ex_n1_23",
+    "gradeLevel": 1,
+    "question": "Quel Processing Code (DE3) correspond typiquement à un retrait d'espèces sur compte courant au GAB ?",
+    "options": [
+      "000000",
+      "010000 (ou 011000)",
+      "200000",
+      "310000"
+    ],
+    "correctIndex": 1,
+    "explanation": "01 désigne un Cash Withdrawal (retrait). 00 désigne un Goods and Services (achat).",
+    "trapWarning": "31 désigne généralement une demande de solde (Balance Inquiry)."
+  },
+  {
+    "id": "m_ex_n1_24",
+    "gradeLevel": 1,
+    "question": "Quel Processing Code (DE3) est couramment affecté à une consultation de solde au distributeur ?",
+    "options": [
+      "000000",
+      "300000 ou 310000",
+      "010000",
+      "200000"
+    ],
+    "correctIndex": 1,
+    "explanation": "Les codes commençant par 30 ou 31 sont réservés aux demandes d'information de compte sans débit.",
+    "trapWarning": "Une consultation de solde ne modifie pas le solde comptable du porteur."
+  },
+  {
+    "id": "m_ex_n1_25",
+    "gradeLevel": 1,
+    "question": "Quelle est la fonction d'un message de classe MTI 0800 / 0810 ?",
+    "options": [
+      "Annuler un débit client",
+      "Gérer la liaison réseau et tester l'écho (Network Management / Echo Test)",
+      "Transférer un fichier de clearing",
+      "Émettre un virement interbancaire"
+    ],
+    "correctIndex": 1,
+    "explanation": "La classe 8 (0800/0810) gère la signalisation réseau : Heartbeat (Echo Test), Logon, Logoff et échange de clés.",
+    "trapWarning": "Aucun mouvement financier client ne transite dans un message 0800."
+  },
+  {
+    "id": "m_ex_n1_26",
+    "gradeLevel": 1,
+    "question": "Pourquoi une trame d'Echo Test 0800 est-elle transmise périodiquement entre le switch et la banque ?",
+    "options": [
+      "Pour vérifier que le canal télécom est actif et prévenir la fermeture des sockets TCP",
+      "Pour synchroniser les taux de change du jour",
+      "Pour archiver les journaux comptables",
+      "Pour redémarrer les terminaux TPE"
+    ],
+    "correctIndex": 0,
+    "explanation": "L'Echo Test (généralement toutes les 60 secondes) garantit la détection immédiate d'une coupure de lien.",
+    "trapWarning": "L'absence de réponse 0810 après 3 envois consécutifs déclare le lien INACTIF."
+  },
+  {
+    "id": "m_ex_n1_27",
+    "gradeLevel": 1,
+    "question": "Quel code réseau (DE70) identifie un Echo Test standard ?",
+    "options": [
+      "001",
+      "301",
+      "101",
+      "201"
+    ],
+    "correctIndex": 1,
+    "explanation": "Le code 301 dans le champ DE70 signale universellement un Echo Test.",
+    "trapWarning": "Le code 001 désigne généralement un Logon et 002 un Logoff."
+  },
+  {
+    "id": "m_ex_n1_28",
+    "gradeLevel": 1,
+    "question": "Que contiennent les champs DE12 et DE13 dans une trame d'autorisation ?",
+    "options": [
+      "Le code confidentiel PIN chiffré",
+      "L'heure locale (DE12: hhmmss) et la date locale (DE13: MMDD) de la transaction sur le terminal",
+      "Le solde restant du client",
+      "Le numéro de téléphone du porteur"
+    ],
+    "correctIndex": 1,
+    "explanation": "DE12 transporte Time, Local (6 chiffres) et DE13 Date, Local (4 chiffres).",
+    "trapWarning": "DE7 transporte quant à lui la date et l'heure de transmission UTC."
+  },
+  {
+    "id": "m_ex_n1_29",
+    "gradeLevel": 1,
+    "question": "Quelle formule mathématique permet de valider la conformité d'un numéro de carte PAN ?",
+    "options": [
+      "L'algorithme de Diffie-Hellman",
+      "L'algorithme de Luhn (formule Modulo 10)",
+      "Le hachage SHA-256",
+      "Le chiffrement RSA"
+    ],
+    "correctIndex": 1,
+    "explanation": "La formule de Luhn (doublement alterné des chiffres et somme modulo 10) contrôle la validité du PAN.",
+    "trapWarning": "Le dernier chiffre du PAN est la clé de contrôle de Luhn."
+  },
+  {
+    "id": "m_ex_n1_30",
+    "gradeLevel": 1,
+    "question": "Pourquoi le stockage du cryptogramme CVV2 / CVC2 est-il strictement interdit après autorisation par PCI-DSS ?",
+    "options": [
+      "Pour économiser de la place sur les disques durs",
+      "Pour empêcher qu'une fuite de base de données ne permette d'effectuer des achats frauduleux sur Internet",
+      "Parce que le CVV2 change toutes les 10 minutes",
+      "Parce que le SGBD ne supporte pas les champs à 3 chiffres"
+    ],
+    "correctIndex": 1,
+    "explanation": "Le CVV2 au dos de la carte sert de preuve de possession physique : s'il était stocké en base, tout vol de données permettrait la fraude en ligne.",
+    "trapWarning": "C'est une exigence absolue de sécurité mondiale (PCI-DSS Requirement 3.2)."
+  },
+  {
+    "id": "m_ex_n2_01",
+    "gradeLevel": 2,
+    "question": "Quel protocole est très largement utilisé pour piloter la couche applicative des distributeurs NCR ?",
+    "options": [
+      "NDC+ (NCR Direct Connect)",
+      "HTTP/REST",
+      "Modbus",
+      "SNMP v3"
+    ],
+    "correctIndex": 0,
+    "explanation": "NDC+ et DDC sont les deux protocoles maîtres de communication entre les GAB et le serveur concentrateur.",
+    "trapWarning": "Ces protocoles définissent les états de cassettes, les séquences d'affichage et les ordres de distribution."
+  },
+  {
+    "id": "m_ex_n2_02",
+    "gradeLevel": 2,
+    "question": "Dans un GAB, quel composant mécanique prélève physiquement les billets dans les cassettes de stockage ?",
+    "options": [
+      "Le Card Reader",
+      "Le Pick Module (Pick mechanism)",
+      "Le Thermal Printer",
+      "L'Encrypting PIN Pad (EPP)"
+    ],
+    "correctIndex": 1,
+    "explanation": "Le module de prise (Pick) aspire ou saisit les coupures une par une pour les empiler dans le stacker.",
+    "trapWarning": "L'EPP sert uniquement à la saisie sécurisée du code PIN."
+  },
+  {
+    "id": "m_ex_n2_03",
+    "gradeLevel": 2,
+    "question": "À quoi sert le capteur de double épaisseur (Double Detect / Thickness Sensor) dans un distributeur de billets ?",
+    "options": [
+      "À compter le nombre de personnes devant le GAB",
+      "À détecter si deux billets sont collés afin de les rejeter dans le bac de purge (Diverter Cassette)",
+      "À mesurer le poids du coffre-fort",
+      "À vérifier l'authenticité de la puce"
+    ],
+    "correctIndex": 1,
+    "explanation": "Si deux billets sont collés, le capteur les déroute immédiatement vers la cassette de rejet sans les donner au client.",
+    "trapWarning": "Cela évite de distribuer le double du montant demandé par le porteur."
+  },
+  {
+    "id": "m_ex_n2_04",
+    "gradeLevel": 2,
+    "question": "Que signifie l'état 'SHUTTER CLOSED' dans le journal électronique (ATM EJ) après un incident matériel ?",
+    "options": [
+      "L'automate a fermé l'agence bancaire",
+      "Le volet mécanique de distribution est resté fermé, prouvant que les billets n'ont pas été présentés à l'extérieur",
+      "La caméra de surveillance s'est éteinte",
+      "Le clavier PIN pad est désactivé"
+    ],
+    "correctIndex": 1,
+    "explanation": "SHUTTER CLOSED est la preuve juridique formelle que les billets n'ont jamais franchi la façade de l'automate.",
+    "trapWarning": "C'est l'élément déterminant pour statuer en faveur d'un recrédit porteur."
+  },
+  {
+    "id": "m_ex_n2_05",
+    "gradeLevel": 2,
+    "question": "Quel MTI ISO 8583 identifie un avis d'annulation (Reversal Advice) généré automatiquement par un automate ?",
+    "options": [
+      "0100",
+      "0420",
+      "0210",
+      "0800"
+    ],
+    "correctIndex": 1,
+    "explanation": "0420 est le message d'avis d'annulation envoyé lorsque le terminal n'a pas pu achever la transaction approuvée.",
+    "trapWarning": "0400 est la demande d'annulation, 0420 l'avis avec mécanisme de répétition SAF."
+  },
+  {
+    "id": "m_ex_n2_06",
+    "gradeLevel": 2,
+    "question": "Pourquoi un Reversal (0420) doit-il impérativement transporter le champ DE90 ?",
+    "options": [
+      "Pour indiquer le numéro de téléphone de l'agence",
+      "Pour contenir les données d'origine de la transaction à annuler (MTI originel, STAN, Date, Acquirer ID)",
+      "Pour chiffrer à nouveau le code PIN",
+      "Pour imprimer un coupon promotionnel"
+    ],
+    "correctIndex": 1,
+    "explanation": "Le champ DE90 (Original Data Elements) permet à l'émetteur de retrouver avec certitude l'autorisation d'origine à contrepasser.",
+    "trapWarning": "Sans DE90 valide, le système émetteur rejette l'annulation avec le code 25 (Unable to locate record)."
+  },
+  {
+    "id": "m_ex_n2_07",
+    "gradeLevel": 2,
+    "question": "Combien de temps dure généralement le time-out d'attente d'autorisation sur un TPE ou GAB ?",
+    "options": [
+      "2 secondes",
+      "25 à 30 secondes",
+      "5 minutes",
+      "24 heures"
+    ],
+    "correctIndex": 1,
+    "explanation": "Le standard de l'industrie bancaire fixe le time-out acquéreur entre 25 et 30 secondes maximum.",
+    "trapWarning": "Au-delà de ce délai, le client ne peut pas rester bloqué et le terminal bascule en time-out."
+  },
+  {
+    "id": "m_ex_n2_08",
+    "gradeLevel": 2,
+    "question": "Si la banque émettrice répond avec succès (DE39=00) au bout de 40 secondes, que fait le terminal ?",
+    "options": [
+      "Il distribue quand même l'argent",
+      "Il a déjà expiré son time-out, refuse l'opération et émet un Reversal 0420",
+      "Il crédite le compte du commerçant deux fois",
+      "Il capture la carte bancaire"
+    ],
+    "correctIndex": 1,
+    "explanation": "Le terminal ayant coupé l'attente à 30 secondes, la réponse tardive est ignorée et un 0420 est généré pour annuler le débit émetteur.",
+    "trapWarning": "C'est un cas classique de Late Response."
+  },
+  {
+    "id": "m_ex_n2_09",
+    "gradeLevel": 2,
+    "question": "Qu'est-ce qu'un débit fantôme (Ghost Debit) dans l'expérience d'un porteur de carte ?",
+    "options": [
+      "Un débit effectué par un automate situé dans un cimetière",
+      "Un débit débité sur le compte client alors que le distributeur ou le commerçant n'a pas remis les fonds ou la marchandise",
+      "Une transaction effectuée avec une carte dont le titulaire est décédé",
+      "Une taxe prélevée par la banque centrale"
+    ],
+    "correctIndex": 1,
+    "explanation": "Le débit fantôme survient lorsque l'émetteur a validé le débit mais que la confirmation finale ou la distribution a échoué sans Reversal.",
+    "trapWarning": "Le client voit son solde amputé alors qu'il n'a rien reçu."
+  },
+  {
+    "id": "m_ex_n2_10",
+    "gradeLevel": 2,
+    "question": "Quel mécanisme réseau garantit qu'une trame d'annulation 0420 finira par être reçue même si la liaison tombe momentanément ?",
+    "options": [
+      "Le Store and Forward (SAF)",
+      "Le protocole DHCP",
+      "Le chiffrement RSA",
+      "Le câble coaxial"
+    ],
+    "correctIndex": 0,
+    "explanation": "Le SAF stocke la trame d'annulation en file d'attente locale et la renvoie en boucle dès le rétablissement de la connexion.",
+    "trapWarning": "Le SAF évite toute perte de Reversal due aux coupures intermittentes."
+  },
+  {
+    "id": "m_ex_n2_11",
+    "gradeLevel": 2,
+    "question": "Dans un journal de GAB (ATM EJ), que signifie la mention 'NOTES TAKEN BY CUSTOMER' ?",
+    "options": [
+      "Le client a refusé les billets",
+      "Les capteurs optiques du volet ont validé le retrait effectif des billets par la main du client",
+      "Le convoyeur de fonds a rechargé le coffre",
+      "L'automate a avalé les coupures abîmées"
+    ],
+    "correctIndex": 1,
+    "explanation": "NOTES TAKEN atteste de la prise en main physique des billets par le client.",
+    "trapWarning": "Si un client prétend ne rien avoir reçu alors que l'EJ indique NOTES TAKEN, la réclamation est contestée."
+  },
+  {
+    "id": "m_ex_n2_12",
+    "gradeLevel": 2,
+    "question": "Dans un terminal de paiement électronique (TPE/POS), que désigne la procédure de 'Télécollecte' de fin de journée ?",
+    "options": [
+      "La mise à jour de l'antivirus du terminal",
+      "L'envoi groupé de toutes les transactions de la journée vers le serveur acquéreur pour déclencher le crédit du compte commerçant",
+      "La vérification de l'imprimante ticket",
+      "Le changement du code PIN du commerçant"
+    ],
+    "correctIndex": 1,
+    "explanation": "La télécollecte vide la mémoire du TPE et génère les écritures de crédit commerçant.",
+    "trapWarning": "Sans télécollecte, les fonds restent bloqués et ne sont pas versés au commerçant."
+  },
+  {
+    "id": "m_ex_n2_13",
+    "gradeLevel": 2,
+    "question": "Quel protocole international de messagerie POS standardise les échanges entre terminaux de paiement et serveurs acquéreurs ?",
+    "options": [
+      "Protocole CB2A / Nexo Fast / AS 2805",
+      "FTP",
+      "POP3",
+      "Telnet"
+    ],
+    "correctIndex": 0,
+    "explanation": "Nexo (basé sur ISO 20022) et CB2A sont les standards modernes d'acquisition commerçant.",
+    "trapWarning": "Ils remplacent les protocoles propriétaires par des messages XML/JSON ou ISO normalisés."
+  },
+  {
+    "id": "m_ex_n2_14",
+    "gradeLevel": 2,
+    "question": "Comment appelle-t-on le clavier ultra-sécurisé d'un distributeur ou TPE certifié pour la saisie du PIN ?",
+    "options": [
+      "EPP (Encrypting PIN Pad)",
+      "Keyboard QWERTY",
+      "Touch screen standard",
+      "Virtual keypad"
+    ],
+    "correctIndex": 0,
+    "explanation": "L'EPP est un boîtier blindé doté de micro-rupteurs qui détruisent les clés cryptographiques si quelqu'un tente de l'ouvrir.",
+    "trapWarning": "La norme PCI-PTS régit les spécifications physiques de l'EPP."
+  },
+  {
+    "id": "m_ex_n2_15",
+    "gradeLevel": 2,
+    "question": "Que se passe-t-il si un fraudeur tente de percer physiquement la coque d'un EPP certifié PCI-PTS ?",
+    "options": [
+      "L'EPP prend une photo du voleur",
+      "Les circuits de détection d'intrusion déclenchent l'effacement immédiat et irréversible de toutes les clés de sécurité en mémoire (Zeroization)",
+      "L'EPP envoie un SMS à la police",
+      "L'écran affiche une sirène rouge"
+    ],
+    "correctIndex": 1,
+    "explanation": "Le mécanisme de Zeroization efface les clés maîtresses en une fraction de milliseconde.",
+    "trapWarning": "Le HSM ou l'EPP devient alors totalement inutilisable (brique électronique)."
+  },
+  {
+    "id": "m_ex_n2_16",
+    "gradeLevel": 2,
+    "question": "Dans un GAB, quelle est la fonction de la cassette de purge (Diverter / Purge Bin) ?",
+    "options": [
+      "Stocker les billets neufs avant distribution",
+      "Recueillir les billets jugés suspects, froissés, collés ou oubliés par le client dans le volet",
+      "Garder les tickets de reçu non imprimés",
+      "Collecter les cartes bancaires expirées"
+    ],
+    "correctIndex": 1,
+    "explanation": "La cassette Diverter accueille tous les billets qui n'ont pas pu être distribués dans des conditions parfaites.",
+    "trapWarning": "Son audit lors de la balance contradictoire de caisse permet de retrouver les billets manquants."
+  },
+  {
+    "id": "m_ex_n2_17",
+    "gradeLevel": 2,
+    "question": "Si un client met plus de 30 secondes à retirer ses billets présentés dans le volet du GAB, que fait l'automate ?",
+    "options": [
+      "Il fait sonner une alarme sonore",
+      "Il rétracte les billets dans la cassette de purge pour des raisons de sécurité publique (Retract)",
+      "Il les brûle",
+      "Il les donne au passant suivant"
+    ],
+    "correctIndex": 1,
+    "explanation": "Le mécanisme de Retract protège les fonds si le client a fait un malaise ou est parti en oubliant l'argent.",
+    "trapWarning": "L'événement est consigné dans l'EJ : BILLS RETRACTED TO PURGE BIN."
+  },
+  {
+    "id": "m_ex_n2_18",
+    "gradeLevel": 2,
+    "question": "Quelle est la différence entre une transaction en ligne (Online) et une transaction hors-ligne (Offline) sur un TPE ?",
+    "options": [
+      "La transaction en ligne utilise le réseau mobile 4G et l'autre le Wi-Fi",
+      "La transaction en ligne interroge en temps réel le serveur de la banque pour autorisation, alors que la transaction hors-ligne est approuvée par la puce de la carte seule",
+      "La transaction hors-ligne n'utilise pas d'électricité",
+      "La transaction en ligne ne demande jamais de code PIN"
+    ],
+    "correctIndex": 1,
+    "explanation": "En Offline, le TPE et la carte décident de la transaction sans connexion télécom (très utilisé dans les péages et transports).",
+    "trapWarning": "Le commerçant transmettra la transaction plus tard lors de la télécollecte."
+  },
+  {
+    "id": "m_ex_n2_19",
+    "gradeLevel": 2,
+    "question": "Sur quel critère principal un TPE décide-t-il d'envoyer une transaction en ligne plutôt que de l'approuver hors-ligne ?",
+    "options": [
+      "La météo",
+      "Le dépassement du plafond d'autorisation hors-ligne commerçant (Floor Limit) et les drapeaux de la puce carte",
+      "L'heure de la journée uniquement",
+      "La marque de l'écran du TPE"
+    ],
+    "correctIndex": 1,
+    "explanation": "Le Floor Limit est le montant maximum au-delà duquel toute transaction doit impérativement être vérifiée auprès de la banque.",
+    "trapWarning": "Si le montant > Floor Limit, le terminal force un appel en ligne."
+  },
+  {
+    "id": "m_ex_n2_20",
+    "gradeLevel": 2,
+    "question": "Quel MTI identifie un message d'avis financier (Financial Advice) confirmant une transaction déjà effectuée hors-ligne ?",
+    "options": [
+      "0200",
+      "0220",
+      "0110",
+      "0800"
+    ],
+    "correctIndex": 1,
+    "explanation": "Le MTI 0220 informe la banque d'une transaction qui a déjà eu lieu (Advice) et exige sa prise en compte comptable.",
+    "trapWarning": "La banque ne peut pas refuser un 0220, elle doit l'enregistrer."
+  },
+  {
+    "id": "m_ex_n2_21",
+    "gradeLevel": 2,
+    "question": "Que contient le champ DE38 dans une réponse d'autorisation approuvée (DE39=00) ?",
+    "options": [
+      "Le numéro de compte IBAN du commerçant",
+      "Le code d'autorisation (Approval Code / Auth Code) à 6 caractères alphanumériques",
+      "Le montant des agios prélevés",
+      "Le solde restant du client"
+    ],
+    "correctIndex": 1,
+    "explanation": "DE38 est le numéro d'autorisation officiel qui sera imprimé sur le ticket de caisse et figurera sur le relevé.",
+    "trapWarning": "Il certifie la réservation de la provision par la banque."
+  },
+  {
+    "id": "m_ex_n2_22",
+    "gradeLevel": 2,
+    "question": "Pourquoi les reçus commerçants masquent-ils obligatoirement une partie du PAN (ex: 4970 10** **** 7890) ?",
+    "options": [
+      "Pour économiser l'encre de l'imprimante thermique",
+      "Pour respecter la règle de masquage (PAN Truncation / Masking) imposée par PCI-DSS afin de protéger le porteur contre le vol de données",
+      "Parce que les rouleaux de papier sont trop étroits",
+      "Pour masquer la nationalité du client"
+    ],
+    "correctIndex": 1,
+    "explanation": "La règle de troncature n'autorise l'affichage que des 6 premiers chiffres (BIN) et des 4 derniers chiffres.",
+    "trapWarning": "Elle empêche les employés indélicats de collecter les numéros de carte sur les tickets abandonnés."
+  },
+  {
+    "id": "m_ex_n2_23",
+    "gradeLevel": 2,
+    "question": "Dans une liaison monétique, qu'est-ce que le protocole de couche basse AS 2805 ?",
+    "options": [
+      "Une norme australienne dérivée de l'ISO 8583 très utilisée pour les liaisons directes TPE/GAB avec chiffrement point-à-point",
+      "Un câble réseau en fibre de verre",
+      "Un algorithme de hachage de mot de passe",
+      "Un format de fichier de tableur"
+    ],
+    "correctIndex": 0,
+    "explanation": "AS 2805 est la norme de fait pour de nombreux réseaux de switch avec intégration native du chiffrement des champs sensibles.",
+    "trapWarning": "Elle s'apparente étroitement à l'ISO 8583 mais standardise le chiffrement de bout en bout."
+  },
+  {
+    "id": "m_ex_n2_24",
+    "gradeLevel": 2,
+    "question": "Que désigne l'acronyme POS dans le jargon monétique international ?",
+    "options": [
+      "Point of Sale (Terminal de Paiement Électronique / TPE)",
+      "Payment Operating System",
+      "Private Online Server",
+      "Postal Ordering Service"
+    ],
+    "correctIndex": 0,
+    "explanation": "POS (Point of Sale) désigne tout terminal de paiement électronique chez un marchand (physique ou mPOS).",
+    "trapWarning": "En français, on parle indifféremment de TPE ou de POS."
+  },
+  {
+    "id": "m_ex_n2_25",
+    "gradeLevel": 2,
+    "question": "Quelle action effectue un GAB lorsque le porteur oublie sa carte dans le lecteur pendant plus de 20 secondes après la restitution ?",
+    "options": [
+      "Il l'éjecte sur le trottoir",
+      "Il capture et avale physiquement la carte dans un bac dédié pour éviter qu'un tiers ne s'en empare",
+      "Il annule toutes les opérations du mois",
+      "Il imprime le code secret sur un ticket"
+    ],
+    "correctIndex": 1,
+    "explanation": "La capture de carte par temporisation protège le porteur contre le vol opportuniste.",
+    "trapWarning": "L'incident est noté dans l'EJ : 'CARD CAPTURED - RETENTION TIMEOUT'."
+  },
+  {
+    "id": "m_ex_n2_26",
+    "gradeLevel": 2,
+    "question": "Comment la banque acquéreuse détecte-t-elle qu'un GAB est victime d'une attaque par Cash Trapping (piège à billets) ?",
+    "options": [
+      "Par l'augmentation soudaine de la température du coffre",
+      "Par une succession anormale d'alertes de volet bloqué (Shutter Jam) sur des montants ronds et des réclamations clients concordantes",
+      "Par la coupure du câble d'alimentation électrique",
+      "Par la baisse du cours de la devise"
+    ],
+    "correctIndex": 1,
+    "explanation": "Le Cash Trapping consiste à coller une réglette adhésive sur le volet pour intercepter les billets.",
+    "trapWarning": "L'automate signale des anomalies mécaniques répétées sur le module Shutter."
+  },
+  {
+    "id": "m_ex_n2_27",
+    "gradeLevel": 2,
+    "question": "Qu'est-ce qu'une attaque de type 'Black Box' sur un automate bancaire GAB ?",
+    "options": [
+      "Peindre le distributeur en noir pour masquer la caméra",
+      "Connecter un appareil pirate directement sur le câble interne du distributeur de billets pour lui ordonner de vider les cassettes sans passer par le PC du GAB",
+      "Voler le coffre-fort avec un camion bélier",
+      "Introduire un faux billet dans le lecteur"
+    ],
+    "correctIndex": 1,
+    "explanation": "L'attaque Black Box pirate la liaison USB/Série entre le PC de l'automate et le coffre distributeur.",
+    "trapWarning": "Elle est neutralisée par le chiffrement fort des communications internes (TMD Security / Chiffrement bus XFS)."
+  },
+  {
+    "id": "m_ex_n2_28",
+    "gradeLevel": 2,
+    "question": "Dans l'architecture logicielle d'un GAB, que désigne le standard CEN/XFS (Extensions for Financial Services) ?",
+    "options": [
+      "Un système de ventilation pour le coffre-fort",
+      "Une couche logicielle d'abstraction middleware standardisée permettant à une application bancaire de piloter n'importe quel matériel GAB (NCR, Diebold, Wincor)",
+      "Un format de carte bancaire rectangulaire",
+      "Un diplôme d'agent de sécurité"
+    ],
+    "correctIndex": 1,
+    "explanation": "XFS permet de développer un logiciel monétique unique compatible avec tous les constructeurs mondiaux d'automates.",
+    "trapWarning": "Le logiciel interagit avec des XFS Service Providers matériels."
+  },
+  {
+    "id": "m_ex_n2_29",
+    "gradeLevel": 2,
+    "question": "Lors d'une panne d'alimentation électrique brutale pendant la distribution de billets, que garantit la batterie de secours (onduleur UPS) du GAB ?",
+    "options": [
+      "De continuer à faire fonctionner le distributeur pendant 24 heures",
+      "D'achever proprement la séquence mécanique en cours, d'écrire le statut dans l'EJ et d'émettre la trame d'annulation ou de confirmation avant l'arrêt complet",
+      "D'éclairer la rue",
+      "De recharger les téléphones des clients"
+    ],
+    "correctIndex": 1,
+    "explanation": "L'onduleur donne les 2 minutes nécessaires pour garantir l'intégrité des écritures comptables et éviter les états mécaniques indéterminés.",
+    "trapWarning": "Sans onduleur, les coupures de courant génèrent des litiges de caisse insolubles."
+  },
+  {
+    "id": "m_ex_n2_30",
+    "gradeLevel": 2,
+    "question": "Que contient le champ DE18 d'une trame ISO 8583 (Merchant Category Code - MCC) ?",
+    "options": [
+      "L'âge du commerçant",
+      "Un code à 4 chiffres classifiant l'activité commerciale du point de vente (ex: 6011 pour GAB, 5411 pour Supermarchés)",
+      "Le numéro de compte bancaire du commerçant",
+      "Le code postal du siège social"
+    ],
+    "correctIndex": 1,
+    "explanation": "Le MCC (ex: 6011 GAB, 5812 Restaurants, 5541 Stations-service) sert au calcul des plafonds, à la détection de fraude et au barème d'interchange.",
+    "trapWarning": "Les banques émettrices bloquent certains MCC à risque (jeux en ligne, cryptomonnaies) selon leur politique."
+  },
+  {
+    "id": "m_ex_n3_01",
+    "gradeLevel": 3,
+    "question": "Dans une trame ISO 8583, quel champ transporte l'ensemble des données de la puce EMV au format TLV ?",
+    "options": [
+      "DE48",
+      "DE52",
+      "DE55",
+      "DE120"
+    ],
+    "correctIndex": 2,
+    "explanation": "DE55 (Integrated Circuit Card Related Data) contient les tags EMV générés par la carte et le terminal.",
+    "trapWarning": "C'est un champ variable de type LLLVAR codé en hexadécimal."
+  },
+  {
+    "id": "m_ex_n3_02",
+    "gradeLevel": 3,
+    "question": "Que signifie la structure BER-TLV utilisée par la norme EMVCo ?",
+    "options": [
+      "Binary Encrypted Routing - Terminal Link Verification",
+      "Tag - Length - Value (Balise, Longueur, Valeur)",
+      "Total Limit Volume",
+      "Transaction Log Variable"
+    ],
+    "correctIndex": 1,
+    "explanation": "Le format TLV séquence les informations : le Tag identifie la donnée, la Longueur donne sa taille, la Valeur contient les octets utiles.",
+    "trapWarning": "Ce format permet d'ajouter des tags facultatifs sans casser la compatibilité descendante."
+  },
+  {
+    "id": "m_ex_n3_03",
+    "gradeLevel": 3,
+    "question": "Quel tag EMV correspond au cryptogramme applicatif (Application Cryptogram) généré par la puce ?",
+    "options": [
+      "Tag 95",
+      "Tag 9F26",
+      "Tag 9F36",
+      "Tag 82"
+    ],
+    "correctIndex": 1,
+    "explanation": "Le Tag 9F26 (8 octets) contient le cryptogramme de transaction (ARQC, TC ou AAC).",
+    "trapWarning": "Ce cryptogramme est validé en ligne par le HSM émetteur."
+  },
+  {
+    "id": "m_ex_n3_04",
+    "gradeLevel": 3,
+    "question": "Quel type de cryptogramme EMV est généré par la carte lorsqu'une autorisation en ligne est requise ?",
+    "options": [
+      "TC (Transaction Certificate)",
+      "ARQC (Authorization Request Cryptogram)",
+      "AAC (Application Authentication Cryptogram)",
+      "AAR (Application Authorization Referral)"
+    ],
+    "correctIndex": 1,
+    "explanation": "L'ARQC est envoyé à la banque pour demander son accord en ligne. Sa valeur est indiquée par le Tag 9F27 = 80.",
+    "trapWarning": "Si la banque approuve, elle renvoie un ARPC pour que la carte génère un TC."
+  },
+  {
+    "id": "m_ex_n3_05",
+    "gradeLevel": 3,
+    "question": "Quel cryptogramme EMV atteste que la transaction a été approuvée définitivement (hors-ligne ou après réponse positive) ?",
+    "options": [
+      "TC (Transaction Certificate)",
+      "ARQC",
+      "AAC",
+      "PIN"
+    ],
+    "correctIndex": 0,
+    "explanation": "Le TC (Transaction Certificate) est la preuve cryptographique irréfutable que la carte a validé le débit.",
+    "trapWarning": "Le TC sera transmis au clearing pour le règlement financier."
+  },
+  {
+    "id": "m_ex_n3_06",
+    "gradeLevel": 3,
+    "question": "Quel cryptogramme EMV est généré par la carte en cas de refus catégorique de la transaction ?",
+    "options": [
+      "AAC (Application Authentication Cryptogram)",
+      "ARQC",
+      "TC",
+      "CAP"
+    ],
+    "correctIndex": 0,
+    "explanation": "L'AAC prouve que la carte a rejeté l'opération (ex: PIN bloqué, plafond hors-ligne dépassé et refus de passer en ligne).",
+    "trapWarning": "L'AAC empêche le commerçant de forcer le paiement."
+  },
+  {
+    "id": "m_ex_n3_07",
+    "gradeLevel": 3,
+    "question": "Quel tag EMV contient le registre TVR (Terminal Verification Results) codé sur 5 octets ?",
+    "options": [
+      "Tag 9F26",
+      "Tag 95",
+      "Tag 9B",
+      "Tag 84"
+    ],
+    "correctIndex": 1,
+    "explanation": "Le Tag 95 contient le TVR, qui recense bit-à-bit tous les contrôles de sécurité exécutés par le terminal.",
+    "trapWarning": "Le Tag 9B contient le TSI (Transaction Status Information)."
+  },
+  {
+    "id": "m_ex_n3_08",
+    "gradeLevel": 3,
+    "question": "Que contient le Tag 9F36 dans le bloc EMV DE55 ?",
+    "options": [
+      "Le code secret en clair",
+      "L'ATC (Application Transaction Counter), un compteur séquentiel incrémenté à chaque opération",
+      "L'adresse IP du terminal",
+      "Le montant en devise locale"
+    ],
+    "correctIndex": 1,
+    "explanation": "L'ATC est un compteur matériel interne à la puce qui ne peut jamais reculer.",
+    "trapWarning": "Il permet au HSM de dériver la clé de session unique de la transaction."
+  },
+  {
+    "id": "m_ex_n3_09",
+    "gradeLevel": 3,
+    "question": "Pourquoi le terminal génère-t-il un nombre aléatoire (Unpredictable Number - Tag 9F37) pour la puce ?",
+    "options": [
+      "Pour amuser le porteur",
+      "Pour injecter de l'aléa dans le calcul de l'ARQC et empêcher toute attaque par rejeu d'un ancien cryptogramme copié",
+      "Pour choisir la langue du reçu",
+      "Pour tester la vitesse du processeur"
+    ],
+    "correctIndex": 1,
+    "explanation": "L'Unpredictable Number garantit qu'un pirate ayant enregistré une transaction ne pourra jamais la réutiliser.",
+    "trapWarning": "C'est un pilier de la sécurité anti-clonage EMV."
+  },
+  {
+    "id": "m_ex_n3_10",
+    "gradeLevel": 3,
+    "question": "Dans le registre TVR (Tag 95), quel octet contient les résultats de la vérification du titulaire (CVM) ?",
+    "options": [
+      "Octet 1",
+      "Octet 2",
+      "Octet 3",
+      "Octet 5"
+    ],
+    "correctIndex": 1,
+    "explanation": "L'octet 2 du TVR recense les événements du CVM (ex: échec du PIN, PIN try limit exceeded).",
+    "trapWarning": "L'octet 1 est dédié à l'authentification des données hors-ligne (SDA/DDA/CDA)."
+  },
+  {
+    "id": "m_ex_n3_11",
+    "gradeLevel": 3,
+    "question": "Si le bit 6 de l'octet 2 du TVR est à 1 (valeur hexadécimale '00 40 00 00 00'), quelle situation est survenue ?",
+    "options": [
+      "La carte est périmée",
+      "Le nombre maximum de tentatives de saisie de code PIN a été dépassé (PIN Try Limit Exceeded)",
+      "Le commerçant est inconnu",
+      "La batterie du terminal est faible"
+    ],
+    "correctIndex": 1,
+    "explanation": "Ce bit signale que le compteur de faux PIN a atteint son seuil d'épuisement (généralement 3 essais).",
+    "trapWarning": "La carte refuse désormais toute saisie de code PIN."
+  },
+  {
+    "id": "m_ex_n3_12",
+    "gradeLevel": 3,
+    "question": "Que signifie l'acronyme AID dans l'univers de la carte à puce EMV ?",
+    "options": [
+      "Automatic Identification Device",
+      "Application Identifier (Identifiant d'application sur la puce, ex: Visa A0000000031010)",
+      "Account In Dispute",
+      "Authorized Issuer Directory"
+    ],
+    "correctIndex": 1,
+    "explanation": "L'AID identifie l'application bancaire hébergée dans la puce (Visa Credit/Debit, Mastercard, GIM).",
+    "trapWarning": "Le terminal compare l'AID de la carte avec sa liste d'applications acceptées."
+  },
+  {
+    "id": "m_ex_n3_13",
+    "gradeLevel": 3,
+    "question": "Quelle méthode d'authentification de la puce repose sur une signature asymétrique RSA dynamique calculée à chaque transaction ?",
+    "options": [
+      "SDA (Static Data Authentication)",
+      "DDA (Dynamic Data Authentication)",
+      "Piste 1 magnétique",
+      "Code CVC"
+    ],
+    "correctIndex": 1,
+    "explanation": "La DDA utilise une paire de clés RSA interne à la puce pour signer dynamiquement les données, rendant le clonage impossible.",
+    "trapWarning": "La SDA plus ancienne ne protégeait pas contre le clonage parfait de puce."
+  },
+  {
+    "id": "m_ex_n3_14",
+    "gradeLevel": 3,
+    "question": "Qu'apporte la technologie CDA (Combined DDA/Application Cryptogram Generation) par rapport à la DDA classique ?",
+    "options": [
+      "Elle permet de payer en bitcoins",
+      "Elle combine la génération de l'ARQC/TC et la signature DDA en une seule commande APDU ultra-rapide",
+      "Elle supprime le besoin de code PIN",
+      "Elle double la limite de retrait"
+    ],
+    "correctIndex": 1,
+    "explanation": "La CDA accélère le paiement et protège contre les attaques de type 'Man-in-the-Middle' sur le bus de la puce.",
+    "trapWarning": "Elle est devenue obligatoire pour les cartes EMV sans contact (Contactless)."
+  },
+  {
+    "id": "m_ex_n3_15",
+    "gradeLevel": 3,
+    "question": "Dans une transaction avec saisie du code PIN, qu'est-ce que le mode 'Offline PIN' ?",
+    "options": [
+      "Le terminal envoie le PIN par SMS",
+      "Le code PIN tapé au clavier est transmis directement à la puce de la carte qui le valide localement sans appel réseau",
+      "Le commerçant note le PIN sur un calepin",
+      "Le PIN est vérifié par satellite"
+    ],
+    "correctIndex": 1,
+    "explanation": "En Offline PIN (très répandu en Europe et sur les péages), la puce compare le code tapé avec sa valeur sécurisée interne.",
+    "trapWarning": "Si le code est bon, la puce répond '90 00' (Success)."
+  },
+  {
+    "id": "m_ex_n3_16",
+    "gradeLevel": 3,
+    "question": "Qu'est-ce que le mode 'Online PIN' très utilisé dans les pays d'Afrique (GIM-UEMOA) et aux USA ?",
+    "options": [
+      "Le porteur valide son achat sur son smartphone",
+      "Le code PIN est chiffré dans l'EPP et transmis dans le champ DE52 de la trame ISO pour validation par le HSM émetteur",
+      "Le commerçant appelle la banque au téléphone",
+      "Le PIN n'est pas vérifié"
+    ],
+    "correctIndex": 1,
+    "explanation": "En Online PIN, la puce ne connaît pas le PIN : c'est le serveur bancaire central qui compare le PIN Block reçu.",
+    "trapWarning": "Le champ DE52 transporte le PIN Block chiffré sous ZPK."
+  },
+  {
+    "id": "m_ex_n3_17",
+    "gradeLevel": 3,
+    "question": "Que contient le Tag 82 dans le profil de la carte EMV ?",
+    "options": [
+      "L'AIP (Application Interchange Profile), indiquant les capacités cryptographiques supportées par la carte",
+      "Le solde bancaire en devises",
+      "Le nom du porteur",
+      "Le code guichet de l'agence"
+    ],
+    "correctIndex": 0,
+    "explanation": "L'AIP indique au terminal si la carte supporte la DDA, la CDA, l'Offline PIN ou la gestion des risques émetteur.",
+    "trapWarning": "Le terminal adapte son scénario en fonction des bits de l'AIP."
+  },
+  {
+    "id": "m_ex_n3_18",
+    "gradeLevel": 3,
+    "question": "Quelle réponse APDU ISO 7816 émise par la puce signale le succès d'une commande ?",
+    "options": [
+      "00 00",
+      "90 00",
+      "FF FF",
+      "OK 01"
+    ],
+    "correctIndex": 1,
+    "explanation": "Le statut '90 00' (SW1=90, SW2=00) est le code universel de succès des cartes à puce intelligentes.",
+    "trapWarning": "'6A 82' signifie fichier non trouvé, '69 84' données invalides."
+  },
+  {
+    "id": "m_ex_n3_19",
+    "gradeLevel": 3,
+    "question": "Quel cryptogramme la banque émettrice retourne-t-elle dans le Tag 91 de sa réponse 0210 pour prouver son authenticité à la carte ?",
+    "options": [
+      "ARQC",
+      "ARPC (Authorization Response Cryptogram)",
+      "CVV2",
+      "PIN Block"
+    ],
+    "correctIndex": 1,
+    "explanation": "L'ARPC prouve à la puce que la réponse vient bien de sa vraie banque émettrice et non d'un faux switch pirate.",
+    "trapWarning": "La puce vérifie l'ARPC avant de délivrer le TC final."
+  },
+  {
+    "id": "m_ex_n3_20",
+    "gradeLevel": 3,
+    "question": "Que permet le mécanisme de 'Script Processing' (Tags 71 et 72) renvoyé par la banque dans la réponse 0210 ?",
+    "options": [
+      "Changer la couleur de l'écran du terminal",
+      "Mettre à jour à distance la mémoire de la puce (débloquer un PIN, modifier les plafonds hors-ligne, bloquer l'application)",
+      "Envoyer un e-mail au client",
+      "Télécharger une sonnerie sur le TPE"
+    ],
+    "correctIndex": 1,
+    "explanation": "Les scripts émetteurs permettent d'administrer la carte en temps réel lors d'un paiement en ligne.",
+    "trapWarning": "C'est ainsi qu'un client débloque son code secret au distributeur après l'avoir réinitialisé en agence."
+  },
+  {
+    "id": "m_ex_n3_21",
+    "gradeLevel": 3,
+    "question": "Pourquoi la norme EMVCo a-t-elle introduit le mécanisme de 'Liability Shift' (Transfert de responsabilité) ?",
+    "options": [
+      "Pour exonérer les banques de toute taxe",
+      "Pour imposer financièrement le coût de la fraude à la partie (commerçant ou banque) qui n'a pas migré vers la puce EMV",
+      "Pour transférer les dettes des clients à la banque centrale",
+      "Pour supprimer les cartes magnétiques en une seule nuit"
+    ],
+    "correctIndex": 1,
+    "explanation": "Si un commerçant utilise encore la piste magnétique alors que la carte a une puce, il supporte 100% de la fraude.",
+    "trapWarning": "Ce principe a incité tous les commerçants de la planète à s'équiper de lecteurs de puce."
+  },
+  {
+    "id": "m_ex_n3_22",
+    "gradeLevel": 3,
+    "question": "Qu'est-ce qu'une transaction de repli (Fallback) en monétique EMV ?",
+    "options": [
+      "Un paiement annulé par le client",
+      "Une transaction où la puce étant illisible ou défectueuse, le terminal bascule sur la lecture de la piste magnétique",
+      "Un achat payé en espèces",
+      "Un virement différé"
+    ],
+    "correctIndex": 1,
+    "explanation": "Le Fallback dépanne un client dont la puce est rayée en lisant la piste magnétique.",
+    "trapWarning": "Les transactions en Fallback sont très surveillées car les fraudeurs rayent volontairement de fausses puces pour forcer la piste."
+  },
+  {
+    "id": "m_ex_n3_23",
+    "gradeLevel": 3,
+    "question": "Quel code dans le champ DE22 (Point of Service Entry Mode) signale une transaction réalisée par puce EMV sans contact (Contactless) ?",
+    "options": [
+      "012",
+      "071 ou 072",
+      "021",
+      "901"
+    ],
+    "correctIndex": 1,
+    "explanation": "Les valeurs '07' indiquent une lecture sans contact (NFC / Contactless). '05' indique une puce avec contact.",
+    "trapWarning": "'02' indique une lecture par piste magnétique."
+  },
+  {
+    "id": "m_ex_n3_24",
+    "gradeLevel": 3,
+    "question": "Dans une transaction sans contact, que signifie le mode 'EMV Contactless' par rapport au mode 'Magstripe Mode Contactless' ?",
+    "options": [
+      "Le mode Magstripe simule une piste magnétique par ondes radio, tandis que le mode EMV génère un véritable cryptogramme ARQC dynamique",
+      "Le mode Magstripe nécessite d'insérer la carte dans une fente",
+      "Le mode EMV ne fonctionne qu'avec les téléphones Apple",
+      "Il n'y a aucune différence technique"
+    ],
+    "correctIndex": 0,
+    "explanation": "Le mode Magstripe historique envoyait des données statiques peu sûres ; l'EMV sans contact moderne produit un cryptogramme dynamique complet.",
+    "trapWarning": "Tous les terminaux modernes exigent désormais le mode EMV sans contact."
+  },
+  {
+    "id": "m_ex_n3_25",
+    "gradeLevel": 3,
+    "question": "Que contient le Tag 5F24 dans les données de l'application de la carte ?",
+    "options": [
+      "Le code postal de l'émetteur",
+      "La date d'expiration de l'application (Application Expiration Date, format AAMMJJ)",
+      "Le numéro de téléphone du service client",
+      "Le solde autorisé du mois"
+    ],
+    "correctIndex": 1,
+    "explanation": "Le Tag 5F24 est comparé avec la date du jour du terminal (Tag 9A). Si 9A > 5F24, le bit 'Expired Application' est armé dans le TVR.",
+    "trapWarning": "Le terminal refuse l'opération ou force un appel en ligne."
+  },
+  {
+    "id": "m_ex_n3_26",
+    "gradeLevel": 3,
+    "question": "Dans le Tag 9F10 (Issuer Application Data), que trouve-t-on habituellement ?",
+    "options": [
+      "Le nom des enfants du porteur",
+      "Des données propriétaires de l'émetteur incluant le format de dérivation de clé, l'index de clé et les compteurs de fraude",
+      "L'adresse de l'agence bancaire",
+      "Le numéro de TVA du commerçant"
+    ],
+    "correctIndex": 1,
+    "explanation": "Le Tag 9F10 permet au système émetteur de savoir quelle clé maîtresse a servi à personnaliser la carte.",
+    "trapWarning": "Le HSM hôte l'utilise pour recalculer l'ARQC."
+  },
+  {
+    "id": "m_ex_n3_27",
+    "gradeLevel": 3,
+    "question": "Qu'est-ce que le CVM List (Cardholder Verification Method List - Tag 8E) d'une carte bancaire ?",
+    "options": [
+      "La liste des magasins où la carte est interdite",
+      "La liste ordonnée des méthodes de vérification d'identité acceptées par la carte (ex: 1. Offline PIN, 2. Online PIN, 3. Signature)",
+      "La liste des pays où la carte fonctionne",
+      "La liste des virements du mois"
+    ],
+    "correctIndex": 1,
+    "explanation": "La puce déroule sa CVM List pour négocier avec le terminal la méthode de validation la plus sûre possible.",
+    "trapWarning": "Si le terminal n'a pas de PIN pad, la puce passe à la méthode suivante (ex: signature papier)."
+  },
+  {
+    "id": "m_ex_n3_28",
+    "gradeLevel": 3,
+    "question": "Dans le registre TSI (Transaction Status Information - Tag 9B sur 2 octets), que signifie le bit 8 de l'octet 1 à 1 ?",
+    "options": [
+      "Le terminal a effectué l'authentification des données hors-ligne (Offline Data Authentication was performed)",
+      "La carte a été volée",
+      "Le reçu a été imprimé",
+      "Le commerçant a refusé le paiement"
+    ],
+    "correctIndex": 0,
+    "explanation": "Le TSI documente quelles fonctions ont été réellement exécutées durant la transaction.",
+    "trapWarning": "Il complète le TVR qui documente les anomalies constatées."
+  },
+  {
+    "id": "m_ex_n3_29",
+    "gradeLevel": 3,
+    "question": "Pourquoi une carte bancaire EMV refuse-t-elle d'effectuer une transaction si le compteur de dérivation ATC saute de 1 000 numéros d'un coup ?",
+    "options": [
+      "Elle pense que le porteur a changé de pays",
+      "Elle suspecte une tentative d'attaque par clonage ou d'épuisement de compteurs et force une synchronisation en ligne",
+      "Elle s'autodétruit",
+      "Elle remet son solde à zéro"
+    ],
+    "correctIndex": 1,
+    "explanation": "Un saut d'ATC anormal est un indice fort d'attaque par sondage de puce ou d'utilisation d'un clone partiel.",
+    "trapWarning": "L'émetteur bloque immédiatement la carte."
+  },
+  {
+    "id": "m_ex_n3_30",
+    "gradeLevel": 3,
+    "question": "Quel tag EMV correspond au PAN Sequence Number (PSN) distinguant deux cartes ayant le même numéro de compte ?",
+    "options": [
+      "Tag 5A",
+      "Tag 5F34",
+      "Tag 9F02",
+      "Tag 84"
+    ],
+    "correctIndex": 1,
+    "explanation": "Le Tag 5F34 (PSN sur 1 octet, ex: 01, 02) différencie une carte réémise après perte de la carte précédente.",
+    "trapWarning": "Le PSN fait partie intégrante du calcul de dérivation de clé cryptographique dans le HSM."
+  },
+  {
+    "id": "m_ex_n4_01",
+    "gradeLevel": 4,
+    "question": "Quel est le rôle principal d'un boîtier HSM (Hardware Security Module) dans un système monétique ?",
+    "options": [
+      "Accélérer l'affichage des pages web",
+      "Sécuriser, stocker et manipuler les clés cryptographiques et les codes PIN dans un environnement matériel inviolable",
+      "Sauvegarder les relevés de compte sur bande magnétique",
+      "Remplacer le routeur Cisco"
+    ],
+    "correctIndex": 1,
+    "explanation": "Le HSM garantit qu'aucune clé de chiffrement maîtresse et aucun code PIN n'apparaît jamais en clair dans la mémoire du serveur.",
+    "trapWarning": "C'est le coffre-fort cryptographique de la banque."
+  },
+  {
+    "id": "m_ex_n4_02",
+    "gradeLevel": 4,
+    "question": "Que signifie l'acronyme LMK dans la terminologie des HSM bancaires (Thales / Atalla) ?",
+    "options": [
+      "Local Master Key",
+      "Limited Management Kernel",
+      "Line Monitoring Key",
+      "Low Memory Key"
+    ],
+    "correctIndex": 0,
+    "explanation": "La LMK est la clé maîtresse locale au HSM. Toutes les autres clés stockées dans les bases de données hôtes sont chiffrées sous la LMK.",
+    "trapWarning": "Si la LMK est perdue ou effacée, toutes les clés de la banque deviennent irrécupérables."
+  },
+  {
+    "id": "m_ex_n4_03",
+    "gradeLevel": 4,
+    "question": "À quoi sert une clé ZMK (Zone Master Key) échangée entre deux partenaires bancaires ?",
+    "options": [
+      "À chiffrer les e-mails des directeurs",
+      "À transporter en toute sécurité d'autres clés de travail (comme la ZPK) lors des échanges réseau",
+      "À calculer le solde des comptes",
+      "À payer les pénalités d'interchange"
+    ],
+    "correctIndex": 1,
+    "explanation": "La ZMK ne chiffre jamais de données directes : elle chiffre uniquement d'autres clés de chiffrement de session.",
+    "trapWarning": "Elle est saisie sous forme de composantes séparées par des officiers de sécurité."
+  },
+  {
+    "id": "m_ex_n4_04",
+    "gradeLevel": 4,
+    "question": "Quelle clé cryptographique est utilisée pour chiffrer le PIN Block dans les trames d'autorisation entre le terminal et le switch ?",
+    "options": [
+      "La LMK",
+      "La ZPK (Zone PIN Key)",
+      "La CVK",
+      "La clé Wi-Fi"
+    ],
+    "correctIndex": 1,
+    "explanation": "La ZPK (Zone PIN Key) est la clé symétrique de travail partagée pour protéger les codes confidentiels en transit.",
+    "trapWarning": "Chaque liaison interbancaire dispose de sa propre ZPK."
+  },
+  {
+    "id": "m_ex_n4_05",
+    "gradeLevel": 4,
+    "question": "Quel est le rôle de la clé PVK (PIN Verification Key) détenue par la banque émettrice ?",
+    "options": [
+      "Ouvrir la porte blindée de l'agence",
+      "Calculer et vérifier la légitimité du PIN du porteur (via l'Offset de PIN ou l'algorithme IBM 3624)",
+      "Chiffrer le montant de la transaction",
+      "Imprimer le logo sur la carte"
+    ],
+    "correctIndex": 1,
+    "explanation": "La PVK sert au HSM émetteur à vérifier que le PIN entré par le porteur correspond bien au compte sans avoir à stocker le PIN en clair.",
+    "trapWarning": "L'Offset de PIN est la différence arithmétique entre le PIN naturel et le PIN choisi par le client."
+  },
+  {
+    "id": "m_ex_n4_06",
+    "gradeLevel": 4,
+    "question": "Quelle clé est utilisée pour calculer les codes de contrôle CVV1 (piste) et CVV2 (e-commerce) ?",
+    "options": [
+      "La ZMK",
+      "La CVK (Card Verification Key)",
+      "La ZPK",
+      "La LMK"
+    ],
+    "correctIndex": 1,
+    "explanation": "La paire de clés CVK (généralement 3DES) génère les 3 chiffres de contrôle à partir du PAN et de la date d'expiration.",
+    "trapWarning": "La vérification du CVV2 se fait par commande HSM dédiée (ex: commande Thales CY)."
+  },
+  {
+    "id": "m_ex_n4_07",
+    "gradeLevel": 4,
+    "question": "Quelle opération mathématique logique est au cœur du format de PIN Block ISO Format 0 (ANSI X9.8) ?",
+    "options": [
+      "L'addition avec retenue",
+      "Le OU Exclusif (XOR bit-à-bit entre le bloc PIN et le bloc PAN)",
+      "La multiplication matricielle",
+      "La division euclidienne"
+    ],
+    "correctIndex": 1,
+    "explanation": "Le XOR fusionne le PIN en clair et les 12 chiffres utiles du PAN pour produire un bloc uniforme.",
+    "trapWarning": "Cela rend le PIN chiffré dépendant du numéro de carte."
+  },
+  {
+    "id": "m_ex_n4_08",
+    "gradeLevel": 4,
+    "question": "Dans un PIN Block ISO Format 0, combien de chiffres de droite du PAN (hors clé de contrôle de Luhn) utilise-t-on pour le masque XOR ?",
+    "options": [
+      "4 chiffres",
+      "12 chiffres",
+      "16 chiffres",
+      "8 chiffres"
+    ],
+    "correctIndex": 1,
+    "explanation": "Le masque prend les 12 chiffres situés immédiatement à gauche du dernier chiffre du PAN.",
+    "trapWarning": "Les 4 premiers chiffres du masque sont toujours positionnés à '0000'."
+  },
+  {
+    "id": "m_ex_n4_09",
+    "gradeLevel": 4,
+    "question": "Qu'est-ce que l'opération de 'Translation de PIN' réalisée par un switch bancaire dans son HSM ?",
+    "options": [
+      "Traduire le code PIN en anglais",
+      "Déchiffrer le PIN Block sous la ZPK entrante (Acquéreur) et le rechiffrer immédiatement sous la ZPK sortante (Émetteur) à l'intérieur du HSM",
+      "Remplacer le code secret par un mot de passe",
+      "Envoyer le PIN au commissariat"
+    ],
+    "correctIndex": 1,
+    "explanation": "La translation permet de relayer un paiement sans jamais exposer le PIN en clair sur le serveur applicatif du switch.",
+    "trapWarning": "La commande Thales correspondante est la commande 'CA' ou 'CC'."
+  },
+  {
+    "id": "m_ex_n4_10",
+    "gradeLevel": 4,
+    "question": "Pourquoi la norme PCI-PIN exige-t-elle le principe de 'Dual Custody / Split Knowledge' pour la saisie des clés maîtresses ?",
+    "options": [
+      "Pour aller deux fois plus vite",
+      "Pour garantir qu'aucun individu isolé ne puisse connaître ou reconstituer seul une clé maîtresse complète",
+      "Pour que le directeur signe deux feuilles de papier",
+      "Pour faire une copie sur clé USB"
+    ],
+    "correctIndex": 1,
+    "explanation": "Chaque dépositaire détient une composante mathématique distincte (ex: 2 ou 3 morceaux combinés par XOR).",
+    "trapWarning": "Même sous la menace, un employé ne peut pas divulguer la clé complète."
+  },
+  {
+    "id": "m_ex_n4_11",
+    "gradeLevel": 4,
+    "question": "Quel algorithme de chiffrement symétrique historique est traditionnellement utilisé pour les clés ZPK et CVK en monétique ?",
+    "options": [
+      "RC4",
+      "Triple-DES (3DES / TDEA à double ou triple longueur)",
+      "MD5",
+      "Blowfish"
+    ],
+    "correctIndex": 1,
+    "explanation": "Le Triple-DES (clé de 112 bits ou 168 bits) est le standard historique de référence des HSM bancaires.",
+    "trapWarning": "Il est progressivement complété ou remplacé par l'AES (128/256 bits)."
+  },
+  {
+    "id": "m_ex_n4_12",
+    "gradeLevel": 4,
+    "question": "Quelle taille minimale de clé AES est recommandée par le PCI Security Standards Council pour les nouvelles infrastructures de PIN ?",
+    "options": [
+      "64 bits",
+      "128 bits (ou 256 bits)",
+      "32 bits",
+      "1024 bits"
+    ],
+    "correctIndex": 1,
+    "explanation": "L'AES-128 ou AES-256 offre une résistance cryptographique bien supérieure au 3DES contre les attaques par force brute.",
+    "trapWarning": "La norme PCI-PIN encourage la migration active vers l'AES."
+  },
+  {
+    "id": "m_ex_n4_13",
+    "gradeLevel": 4,
+    "question": "Dans une commande Thales payShield, que réalise la commande hôte 'A0' ?",
+    "options": [
+      "Redémarrer le HSM",
+      "Générer une nouvelle clé aléatoire (ZPK, ZMK ou CVK) chiffrée sous LMK ou ZMK",
+      "Effacer le disque dur",
+      "Imprimer un rapport financier"
+    ],
+    "correctIndex": 1,
+    "explanation": "La commande 'A0' (Generate Key) demande au générateur matériel de bruit quantique du HSM de créer une nouvelle clé.",
+    "trapWarning": "La clé générée n'est renvoyée à l'hôte que sous forme de cryptogramme chiffré."
+  },
+  {
+    "id": "m_ex_n4_14",
+    "gradeLevel": 4,
+    "question": "Que réalise la commande Thales 'CW' ou 'KQ' lors de la réception d'une transaction EMV ?",
+    "options": [
+      "Formater la carte bancaire",
+      "Vérifier la validité de l'ARQC émis par la puce en recalculant le cryptogramme à partir de la clé de dérivation de l'émetteur",
+      "Changer le code postal du client",
+      "Augmenter le solde du compte"
+    ],
+    "correctIndex": 1,
+    "explanation": "La commande vérifie que l'ARQC correspond mathématiquement aux données du Tag DE55.",
+    "trapWarning": "Si la vérification réussit, elle génère l'ARPC pour la réponse."
+  },
+  {
+    "id": "m_ex_n4_15",
+    "gradeLevel": 4,
+    "question": "Qu'est-ce qu'un KCV (Key Check Value) dans la gestion des clés monétiques ?",
+    "options": [
+      "Le prix d'achat du HSM",
+      "Une valeur de contrôle de 6 caractères hexadécimaux obtenue en chiffrant un bloc de zéros avec la clé",
+      "La date de fin de contrat de support",
+      "Le mot de passe de l'administrateur"
+    ],
+    "correctIndex": 1,
+    "explanation": "Le KCV permet aux ingénieurs de vérifier qu'ils manipulent la même clé sans jamais dévoiler la clé elle-même.",
+    "trapWarning": "Si deux banques ont le même KCV (ex: A1B2C3), elles sont certaines d'avoir la même ZMK."
+  },
+  {
+    "id": "m_ex_n4_16",
+    "gradeLevel": 4,
+    "question": "Dans une attaque par force brute sur un code PIN à 4 chiffres (0000 à 9999), combien de combinaisons existent au total ?",
+    "options": [
+      "256 combinaisons",
+      "10 000 combinaisons",
+      "1 000 000 combinaisons",
+      "65 536 combinaisons"
+    ],
+    "correctIndex": 1,
+    "explanation": "Un PIN à 4 chiffres compte exactement 10^4 = 10 000 possibilités.",
+    "trapWarning": "C'est pourquoi la puce bloque impérativement la carte après 3 faux essais consécutifs."
+  },
+  {
+    "id": "m_ex_n4_17",
+    "gradeLevel": 4,
+    "question": "Pourquoi est-il interdit d'utiliser l'algorithme DES simple (56 bits) en production bancaire ?",
+    "options": [
+      "Parce qu'il consomme trop de batterie",
+      "Parce qu'une clé 56 bits peut être cassée par force brute en quelques minutes avec du matériel informatique moderne",
+      "Parce que le gouvernement l'a breveté",
+      "Parce qu'il ne supporte pas les cartes Visa"
+    ],
+    "correctIndex": 1,
+    "explanation": "Le DES simple a été cassé dès la fin des années 1990. La norme bancaire impose au minimum le 3DES à double longueur (112 bits effectifs).",
+    "trapWarning": "Toute utilisation de DES simple constitue une non-conformité PCI critique."
+  },
+  {
+    "id": "m_ex_n4_18",
+    "gradeLevel": 4,
+    "question": "Quelle certification de sécurité matérielle internationale est exigée pour les HSM bancaires par PCI-DSS ?",
+    "options": [
+      "ISO 9001",
+      "FIPS 140-2 Level 3 (ou Level 4)",
+      "CE Mark",
+      "ENERGY STAR"
+    ],
+    "correctIndex": 1,
+    "explanation": "Le standard FIPS 140-2 Level 3 garantit une résistance physique éprouvée contre le piratage mécanique, thermique et laser.",
+    "trapWarning": "Les HSM bancaires (Thales, Entrust, Utimaco) sont tous certifiés FIPS 140-2 Level 3."
+  },
+  {
+    "id": "m_ex_n4_19",
+    "gradeLevel": 4,
+    "question": "Dans le protocole IBM 3624, qu'est-ce que la 'Decimalization Table' utilisée pour le calcul du PIN naturel ?",
+    "options": [
+      "Une table de conversion qui transforme les caractères hexadécimaux (A-F) issus du chiffrement en chiffres décimaux (0-9)",
+      "La liste des prix des cartes bancaires",
+      "La table de conversion de devises",
+      "Le barème fiscal de la banque"
+    ],
+    "correctIndex": 0,
+    "explanation": "La table de décimalisation (ex: 0123456789012345) permet d'extraire des chiffres décimaux pour composer un code PIN à 4 chiffres.",
+    "trapWarning": "Une mauvaise table de décimalisation sur le HSM provoque des erreurs de PIN à 100% sur les cartes d'une série."
+  },
+  {
+    "id": "m_ex_n4_20",
+    "gradeLevel": 4,
+    "question": "Quelle attaque cryptographique célèbre ciblait historiquement les tables de décimalisation des HSM mal configurés ?",
+    "options": [
+      "L'attaque par rebond satellite",
+      "L'attaque par décimalisation (Decimalization Attack)",
+      "L'attaque DDOS",
+      "L'attaque par phishing"
+    ],
+    "correctIndex": 1,
+    "explanation": "L'attaque par décimalisation permettait à un attaquant ayant un accès partiel aux commandes de deviner le PIN en modifiant la table chiffre par chiffre.",
+    "trapWarning": "Elle a été neutralisée par le durcissement des commandes HSM et l'interdiction des tables arbitraires."
+  },
+  {
+    "id": "m_ex_n4_21",
+    "gradeLevel": 4,
+    "question": "Pourquoi la norme PCI-DSS interdit-elle formellement l'utilisation du protocole SSL v3 et TLS 1.0/1.1 pour les flux monétiques ?",
+    "options": [
+      "Ils sont trop rapides",
+      "Ils comportent des vulnérabilités cryptographiques majeures (POODLE, BEAST) permettant d'intercepter les données en transit",
+      "Ils ne fonctionnent pas sur les ordinateurs portables",
+      "Leur nom est trop court"
+    ],
+    "correctIndex": 1,
+    "explanation": "Seuls TLS 1.2 et TLS 1.3 avec des suites de chiffrement robustes (Cipher Suites) sont autorisés pour transporter des trames monétiques.",
+    "trapWarning": "L'usage de TLS obsolète est un motif de suspension d'agrément bancaire."
+  },
+  {
+    "id": "m_ex_n4_22",
+    "gradeLevel": 4,
+    "question": "Qu'est-ce qu'une clé d'injection de terminal (TMK - Terminal Master Key) ?",
+    "options": [
+      "La clé physique pour ouvrir le tiroir caisse",
+      "La clé maîtresse locale injectée dans le TPE pour lui permettre de déchiffrer ses clés de session de travail",
+      "Le numéro de série de l'écran",
+      "Le code postal du magasin"
+    ],
+    "correctIndex": 1,
+    "explanation": "La TMK est chargée dans le TPE lors de sa phase d'initialisation en atelier sécurisé.",
+    "trapWarning": "Elle permet de télécharger à distance les clés d'acquisition de manière chiffrée."
+  },
+  {
+    "id": "m_ex_n4_23",
+    "gradeLevel": 4,
+    "question": "Quel organisme mondial édicte les normes de sécurité physiques et logiques des terminaux de paiement (clavier, lecteur de carte) ?",
+    "options": [
+      "L'ONU",
+      "PCI Security Standards Council (norme PCI-PTS)",
+      "L'Union Postale Universelle",
+      "L'IEEE"
+    ],
+    "correctIndex": 1,
+    "explanation": "Le consortium PCI SSC (fondé par Visa, Mastercard, Amex, Discover, JCB) gouverne les normes PCI-PTS (PIN Transaction Security).",
+    "trapWarning": "Un terminal non agréé PCI-PTS ne peut pas être déployé dans le réseau bancaire."
+  },
+  {
+    "id": "m_ex_n4_24",
+    "gradeLevel": 4,
+    "question": "Qu'est-ce qu'un PIN Block de format ISO-1 ?",
+    "options": [
+      "Un format où le PIN est chiffré sans utiliser le PAN (utilisé lorsque le PAN n'est pas encore connu ou pour les cartes de fidélité)",
+      "Un format réservé aux téléphones Android",
+      "Un format pour les chèques bancaires",
+      "Un format à 8 chiffres obligatoires"
+    ],
+    "correctIndex": 0,
+    "explanation": "L'ISO Format 1 utilise un horodatage ou un numéro de transaction aléatoire à la place du PAN.",
+    "trapWarning": "Il est utilisé dans certains environnements de porte-monnaie électronique."
+  },
+  {
+    "id": "m_ex_n4_25",
+    "gradeLevel": 4,
+    "question": "Dans un schéma de tokenisation bancaire (Apple Pay, Google Pay), que remplace le 'Token' émis par le réseau ?",
+    "options": [
+      "Le nom du propriétaire de l'iPhone",
+      "Le véritable numéro de carte PAN à 16 chiffres par un identifiant virtuel révocable sans changer la carte physique",
+      "Le code guichet de la banque",
+      "Le mot de passe de messagerie"
+    ],
+    "correctIndex": 1,
+    "explanation": "La tokenisation protège le PAN : si le marchand se fait pirater sa base, les voleurs ne récupèrent que des tokens inutilisables en dehors du terminal enregistré.",
+    "trapWarning": "Le Token Service Provider (TSP) gère la table de correspondance Token <-> PAN."
+  },
+  {
+    "id": "m_ex_n4_26",
+    "gradeLevel": 4,
+    "question": "Quel est le principe de l'algorithme 3DES en mode EDE (Encrypt-Decrypt-Encrypt) ?",
+    "options": [
+      "Chiffrer le message trois fois avec la même clé",
+      "Chiffrer avec la clé K1, déchiffrer avec la clé K2, puis chiffrer avec la clé K1 (ou K3)",
+      "Inverser l'ordre des lettres",
+      "Compresser le fichier avant envoi"
+    ],
+    "correctIndex": 1,
+    "explanation": "Le mode EDE permet la compatibilité descendante avec le DES simple (si K1=K2=K3) tout en offrant une sécurité de 112 bits avec deux clés différentes.",
+    "trapWarning": "C'est la forme standard du 3DES bancaire."
+  },
+  {
+    "id": "m_ex_n4_27",
+    "gradeLevel": 4,
+    "question": "Dans un HSM Thales, quel paramètre contrôle la politique de séparation stricte des fonctions et des rôles d'administration ?",
+    "options": [
+      "USER_LIMIT",
+      "HSM Security Policy (Authorized State / Normal State)",
+      "SPEED_MODE",
+      "DEBUG_FLAG"
+    ],
+    "correctIndex": 1,
+    "explanation": "En état normal (Normal State), les commandes d'administration sensible sont bloquées.",
+    "trapWarning": "Seul le passage en état autorisé (Authorized State) avec les clés physiques de sécurité permet de manipuler les LMK."
+  },
+  {
+    "id": "m_ex_n4_28",
+    "gradeLevel": 4,
+    "question": "Pourquoi un journal d'audit de HSM doit-il obligatoirement être horodaté et envoyé en temps réel vers un serveur SIEM sécurisé ?",
+    "options": [
+      "Pour remplir les disques durs",
+      "Pour détecter immédiatement toute tentative d'exécution de commandes non autorisées ou d'attaques par force brute sur les clés",
+      "Pour mesurer la facture d'électricité",
+      "Pour surveiller les horaires de pause du personnel"
+    ],
+    "correctIndex": 1,
+    "explanation": "L'auditabilité continue est une exigence PCI-DSS pour garantir la non-répudiation des opérations sur les clés.",
+    "trapWarning": "Toute anomalie sur le HSM doit déclencher une alerte de sécurité SOC immédiate."
+  },
+  {
+    "id": "m_ex_n4_29",
+    "gradeLevel": 4,
+    "question": "Qu'est-ce qu'une clé DUKPT (Derived Unique Key Per Transaction) largement utilisée sur les TPE mobiles (mPOS) ?",
+    "options": [
+      "Une clé qui ne change jamais pendant 10 ans",
+      "Un système où chaque transaction est chiffrée avec une clé dérivée unique qui s'autodétruit immédiatement après usage",
+      "Une clé partagée par tous les commerçants du pays",
+      "Un mot de passe envoyé par email"
+    ],
+    "correctIndex": 1,
+    "explanation": "DUKPT empêche qu'une clé dérobée dans un TPE ne permette de déchiffrer les transactions passées ou futures.",
+    "trapWarning": "Le terminal calcule la clé suivante à partir d'un registre matériel et efface la clé précédente."
+  },
+  {
+    "id": "m_ex_n4_30",
+    "gradeLevel": 4,
+    "question": "Que se passe-t-il si un capteur de température interne d'un HSM détecte une tentative d'attaque par congélation (Cold Boot Attack) ?",
+    "options": [
+      "Il allume un radiateur",
+      "Il déclenche immédiatement l'effacement de secours des clés maîtresses (Zeroize keys)",
+      "Il met le serveur en veille",
+      "Il envoie un message d'excuse au switch"
+    ],
+    "correctIndex": 1,
+    "explanation": "Les attaquants tentent de refroidir les puces à l'azote liquide pour figer la mémoire RAM et lire les clés en clair.",
+    "trapWarning": "Les HSM intègrent des capteurs thermiques qui détruisent la mémoire dès que la température chute anormalement."
+  },
+  {
+    "id": "m_ex_n5_01",
+    "gradeLevel": 5,
+    "question": "Quelle est la différence fondamentale entre l'Autorisation (Online) et la Compensation (Clearing) ?",
+    "options": [
+      "L'autorisation est en français et le clearing en anglais",
+      "L'autorisation réserve la provision en temps réel sans transfert d'argent, alors que la compensation calcule les dettes nettes réciproques pour le règlement financier effectif",
+      "L'autorisation est payante et le clearing gratuit",
+      "Le clearing ne concerne que les retraits d'espèces"
+    ],
+    "correctIndex": 1,
+    "explanation": "L'autorisation n'est qu'un engagement technique. Le clearing (compensation) est l'échange comptable formel qui déclenche les virements interbancaires.",
+    "trapWarning": "Tant que le clearing n'a pas eu lieu, aucune devise n'a quitté la banque."
+  },
+  {
+    "id": "m_ex_n5_02",
+    "gradeLevel": 5,
+    "question": "Quel nom porte le système mondial de compensation et de règlement par lots (batch) de Visa ?",
+    "options": [
+      "Visa Direct",
+      "Visa Base II",
+      "Visa Net Instant",
+      "Visa Cash"
+    ],
+    "correctIndex": 1,
+    "explanation": "Visa Base II est le moteur historique et mondial de clearing par lots qui traite des centaines de millions de transactions chaque nuit.",
+    "trapWarning": "Il structure les flux sous forme d'enregistrements TCE (Transaction Code Enforcement)."
+  },
+  {
+    "id": "m_ex_n5_03",
+    "gradeLevel": 5,
+    "question": "Quel format de fichier propriétaire Mastercard est le standard international des échanges de clearing ?",
+    "options": [
+      "Format PDF",
+      "Format IPM (Integrated Processing Management)",
+      "Format CSV",
+      "Format Excel XLS"
+    ],
+    "correctIndex": 1,
+    "explanation": "Les fichiers Mastercard IPM (messages 1240 / 1442) contiennent l'intégralité des flux de présentation financière et d'impayés.",
+    "trapWarning": "Ils sont traités quotidiennement par les modules de back-office monétique."
+  },
+  {
+    "id": "m_ex_n5_04",
+    "gradeLevel": 5,
+    "question": "Dans le système de compensation interbancaire régional GIM-UEMOA, quelle institution assure le règlement final des positions nettes ?",
+    "options": [
+      "La Banque Mondiale",
+      "La Banque Centrale des États de l'Afrique de l'Ouest (BCEAO)",
+      "Le Fonds Monétaire International",
+      "Le Trésor Public français"
+    ],
+    "correctIndex": 1,
+    "explanation": "Le GIM-UEMOA calcule la balance de compensation multilatérale, et la BCEAO exécute les virements de règlement brut sur les comptes de réserve des banques.",
+    "trapWarning": "C'est le principe de la monnaie de banque centrale (Settlement in Central Bank Money)."
+  },
+  {
+    "id": "m_ex_n5_05",
+    "gradeLevel": 5,
+    "question": "Qu'est-ce que la commission d'interchange (Interchange Fee) dans une transaction par carte de paiement ?",
+    "options": [
+      "Une amende payée par le client",
+      "Une commission financière versée par la banque acquéreuse à la banque émettrice pour rémunérer le risque de crédit et la gestion du compte porteur",
+      "Une taxe sur la valeur ajoutée",
+      "Le coût de location du terminal"
+    ],
+    "correctIndex": 1,
+    "explanation": "L'interchange est prélevée lors de la compensation : l'acquéreur reçoit le montant net de la part de l'émetteur.",
+    "trapWarning": "Elle compense les coûts de garantie de paiement assumés par l'émetteur."
+  },
+  {
+    "id": "m_ex_n5_06",
+    "gradeLevel": 5,
+    "question": "Quelle écriture comptable est passée dans le Core Banking (CBS) lors de l'intégration d'un fichier de clearing de retrait GAB externe pour un client de la banque ?",
+    "options": [
+      "Débit du compte client / Crédit du compte de compensation Scheme (Nostro Visa/GIM)",
+      "Crédit du compte client / Débit de la caisse agence",
+      "Débit des capitaux propres / Crédit des impôts",
+      "Aucune écriture"
+    ],
+    "correctIndex": 0,
+    "explanation": "La banque débite définitivement son client et crédite le compte miroir du switch qui a avancé les fonds.",
+    "trapWarning": "Cette écriture matérialise le dénouement financier de l'opération."
+  },
+  {
+    "id": "m_ex_n5_07",
+    "gradeLevel": 5,
+    "question": "Dans la procédure de litige monétique, qu'est-ce qu'un 'First Chargeback' émis par la banque émettrice ?",
+    "options": [
+      "Un compliment envoyé au commerçant",
+      "La contestation formelle et le débit d'office de l'acquéreur pour rembourser le porteur victime d'une anomalie ou d'une fraude",
+      "Une demande de relevé bancaire",
+      "Une annulation de carte de crédit"
+    ],
+    "correctIndex": 1,
+    "explanation": "Le First Chargeback transfère la charge financière du litige de l'émetteur vers l'acquéreur via le switch.",
+    "trapWarning": "L'acquéreur dispose d'un délai réglementaire pour contester ou accepter."
+  },
+  {
+    "id": "m_ex_n5_08",
+    "gradeLevel": 5,
+    "question": "Dans quel délai calendaire maximal (selon les règles de Visa et Mastercard) un porteur peut-il généralement contester un débit frauduleux ?",
+    "options": [
+      "24 heures",
+      "120 jours calendaires à compter de la date de transaction ou de livraison promise",
+      "10 ans",
+      "3 jours ouvrés"
+    ],
+    "correctIndex": 1,
+    "explanation": "Le délai standard mondial de recevabilité d'un litige client est de 120 jours.",
+    "trapWarning": "Passé ce délai, la banque émettrice perd tout droit de recours auprès du switch."
+  },
+  {
+    "id": "m_ex_n5_09",
+    "gradeLevel": 5,
+    "question": "Comment appelle-t-on la réponse formelle de la banque acquéreuse qui fournit les preuves que la transaction était légitime ?",
+    "options": [
+      "Le Pardon",
+      "La Représentation (Re-presentment / Second Presentment)",
+      "L'Amnistie",
+      "Le Quitus"
+    ],
+    "correctIndex": 1,
+    "explanation": "La Représentation permet à l'acquéreur de redébiter l'émetteur en joignant les justificatifs irréfutables (bon de livraison, ticket EMV signé, log GAB).",
+    "trapWarning": "Si l'émetteur est convaincu, le dossier est clos."
+  },
+  {
+    "id": "m_ex_n5_10",
+    "gradeLevel": 5,
+    "question": "Si l'émetteur refuse la Représentation et que l'acquéreur maintient sa position, quelle étape ultime tranche le dossier ?",
+    "options": [
+      "Le tribunal de commerce local",
+      "La commission d'arbitrage officielle du Scheme (Visa / Mastercard Dispute Resolution)",
+      "Le tirage au sort",
+      "Le vote des internautes"
+    ],
+    "correctIndex": 1,
+    "explanation": "Les juristes de Visa ou Mastercard étudient les preuves techniques et rendent un verdict sans appel.",
+    "trapWarning": "La partie perdante supporte les fonds plus 500 $ de frais de dossier."
+  },
+  {
+    "id": "m_ex_n5_11",
+    "gradeLevel": 5,
+    "question": "Quel Reason Code Visa identifie couramment une contestation pour transaction frauduleuse par carte contrefaite ?",
+    "options": [
+      "Reason Code 10.4 (Other Fraud - Card-Absent / Counterfeit)",
+      "Reason Code 00.1",
+      "Reason Code 99.9",
+      "Reason Code 13.1"
+    ],
+    "correctIndex": 0,
+    "explanation": "Le code 10.4 est le motif maître utilisé en cas d'utilisation frauduleuse de données de carte clonées.",
+    "trapWarning": "L'acquéreur doit prouver la présence d'une puce EMV valide pour s'en défendre."
+  },
+  {
+    "id": "m_ex_n5_12",
+    "gradeLevel": 5,
+    "question": "Quel Reason Code Mastercard correspond à la non-délivrance des marchandises ou services achetés ?",
+    "options": [
+      "Reason Code 4853 (Cardholder Dispute - Defective/Not as Described/Services Not Rendered)",
+      "Reason Code 4808",
+      "Reason Code 4837",
+      "Reason Code 4849"
+    ],
+    "correctIndex": 0,
+    "explanation": "Le code 4853 régit les litiges où le commerçant n'a pas livré le bien ou fait faillite avant prestation.",
+    "trapWarning": "Le porteur doit prouver qu'il a tenté de résoudre le litige à l'amiable avec le marchand."
+  },
+  {
+    "id": "m_ex_n5_13",
+    "gradeLevel": 5,
+    "question": "Pourquoi le cryptogramme TC (Transaction Certificate) constitue-t-il la meilleure défense d'un acquéreur face à un chargeback de fraude ?",
+    "options": [
+      "Parce qu'il prouve que le client est riche",
+      "Parce qu'il démontre mathématiquement que la véritable puce physique de la carte a généré le cryptogramme sur un terminal sécurisé",
+      "Parce qu'il contient l'empreinte digitale du client",
+      "Parce qu'il est imprimé en lettres d'or"
+    ],
+    "correctIndex": 1,
+    "explanation": "Le TC prouve qu'il n'y a pas eu de clonage sur piste magnétique : la responsabilité de la fraude bascule sur l'émetteur (Liability Shift).",
+    "trapWarning": "Un dossier de défense sans TC en environnement puce est quasi systématiquement perdu."
+  },
+  {
+    "id": "m_ex_n5_14",
+    "gradeLevel": 5,
+    "question": "Qu'est-ce qu'un compte Nostro dans la comptabilité des opérations de compensation internationale ?",
+    "options": [
+      "Le compte de notre banque ouvert dans les livres d'une banque correspondante ou du switch de compensation",
+      "Le compte d'épargne du directeur",
+      "La caisse des menues dépenses",
+      "Le compte des salaires du personnel"
+    ],
+    "correctIndex": 0,
+    "explanation": "Nostro ('Notre compte chez vous') retrace les avoirs de la banque auprès de Visa, Mastercard ou de la banque centrale pour dénouer les flux.",
+    "trapWarning": "Vostro ('Votre compte chez nous') retrace l'inverse."
+  },
+  {
+    "id": "m_ex_n5_15",
+    "gradeLevel": 5,
+    "question": "Que désigne l'écart de rapprochement (Reconciliation Break) entre les autorisations temps réel et les fichiers de clearing ?",
+    "options": [
+      "Une pause café prise par l'opérateur",
+      "Une divergence de montants, de devises ou une transaction autorisée qui n'apparaît jamais dans le fichier de compensation après plusieurs jours",
+      "Une panne de souris d'ordinateur",
+      "Un changement de mot de passe"
+    ],
+    "correctIndex": 1,
+    "explanation": "Les suspens monétiques doivent être lettrés au centime près chaque matin pour éviter les fuites de trésorerie.",
+    "trapWarning": "Une transaction non présentée expire au bout de 7 à 10 jours et la provision réservée doit être restituée au client."
+  },
+  {
+    "id": "m_ex_n5_16",
+    "gradeLevel": 5,
+    "question": "Dans un flux de compensation multi-devises (ex: paiement en USD par une carte libellée en FCFA), qui applique le taux de change de conversion ?",
+    "options": [
+      "Le chauffeur de taxi",
+      "Le Scheme international (Visa ou Mastercard) selon son cours de gros du jour de traitement de clearing",
+      "Le commerçant sur sa calculatrice",
+      "Le consulat"
+    ],
+    "correctIndex": 1,
+    "explanation": "Le switch convertit le montant de transaction en devise de compensation (Settlement Currency) et facture des frais de conversion de change.",
+    "trapWarning": "L'émetteur convertit ensuite le montant de règlement dans la devise du compte porteur."
+  },
+  {
+    "id": "m_ex_n5_17",
+    "gradeLevel": 5,
+    "question": "Pourquoi les batchs de clearing monétique doivent-ils être injectés dans le Core Banking avant l'heure limite du Cut-Off comptable ?",
+    "options": [
+      "Pour que les employés partent plus tôt",
+      "Pour que les positions nettes soient intégrées dans l'arrêté journalier (EOD) et que les soldes des comptes soient certifiés conformes pour l'ouverture du lendemain",
+      "Pour économiser du papier",
+      "Pour libérer les lignes téléphoniques"
+    ],
+    "correctIndex": 1,
+    "explanation": "Tout retard d'injection du clearing bloque la chaîne batch EOD de la banque et retarde l'ouverture des agences au public à 07h30.",
+    "trapWarning": "C'est un engagement de service (SLA) critique sous astreinte."
+  },
+  {
+    "id": "m_ex_n5_18",
+    "gradeLevel": 5,
+    "question": "Qu'est-ce que la procédure de 'Pre-Arbitration' dans le règlement des litiges Visa/Mastercard ?",
+    "options": [
+      "Un match amical de football",
+      "Une ultime phase de négociation amiable encadrée par le portail du switch avant de soumettre formellement le dossier aux juristes de l'arbitrage",
+      "Une demande de prêt bancaire",
+      "Un formulaire fiscal"
+    ],
+    "correctIndex": 1,
+    "explanation": "Le pré-arbitrage évite les frais de pénalité de 500 $ en donnant une dernière chance à la banque adverse d'accepter le litige à la vue de nouveaux éléments.",
+    "trapWarning": "90% des dossiers se règlent durant cette phase."
+  },
+  {
+    "id": "m_ex_n5_19",
+    "gradeLevel": 5,
+    "question": "Dans le cadre de la réconciliation monétique ATM, que signifie un solde comptable de caisse 'Excédentaire' (Cash Over) ?",
+    "options": [
+      "Il manque de l'argent dans le coffre",
+      "Le montant physique de billets compté dans le coffre est supérieur au solde théorique calculé par les débits du système",
+      "Tous les billets ont été volés",
+      "Le distributeur a refusé de démarrer"
+    ],
+    "correctIndex": 1,
+    "explanation": "L'excédent (Over) arrive souvent lorsqu'un client a vu sa transaction échouer mécaniquement après le débit ou en cas de billets non retirés.",
+    "trapWarning": "Cet excédent sert à rembourser les réclamations porteurs légitimes enregistrées sur cet automate."
+  },
+  {
+    "id": "m_ex_n5_20",
+    "gradeLevel": 5,
+    "question": "Que signifie à l'inverse un solde de caisse GAB 'Déficitaire' (Cash Short) ?",
+    "options": [
+      "Le coffre contient moins de billets que ce que prévoyaient les écritures comptables",
+      "Le coffre est rempli de faux billets",
+      "La banque a doublé ses bénéfices",
+      "Le client a rendu de l'argent"
+    ],
+    "correctIndex": 0,
+    "explanation": "Le déficit (Short) traduit une anomalie mécanique où l'automate a délivré plus de billets que comptabilisé, ou un problème lors du chargement des fonds par les convoyeurs.",
+    "trapWarning": "Il donne lieu à une enquête contradictoire d'audit interne."
+  },
+  {
+    "id": "m_ex_n5_21",
+    "gradeLevel": 5,
+    "question": "Quel enregistrement dans un fichier Visa Base II contient les détails de la transaction financière d'un achat porteur ?",
+    "options": [
+      "L'enregistrement TCR 0 (Transaction Component Record 0 / Transaction Code 05)",
+      "L'enregistrement de fin de fichier EOF",
+      "L'en-tête de bande magnétique",
+      "Le mot de passe de session"
+    ],
+    "correctIndex": 0,
+    "explanation": "Le TCR 0 porte le PAN, le montant, la devise, le code autorisation et la date de transaction.",
+    "trapWarning": "Des TCR supplémentaires (TCR 1, 5, 7) apportent les données de devise et les tags EMV."
+  },
+  {
+    "id": "m_ex_n5_22",
+    "gradeLevel": 5,
+    "question": "Comment appelle-t-on le compte comptable d'attente servant à équilibrer les écritures en attendant le lettrage définitif du fichier de clearing ?",
+    "options": [
+      "Le compte de résultat net",
+      "Le compte de suspense monétique (ou compte de passerelle de compensation)",
+      "Le compte de réserve légale",
+      "Le compte courant d'associé"
+    ],
+    "correctIndex": 1,
+    "explanation": "Le compte de suspense permet d'enregistrer l'autorisation immédiatement et d'attendre la ligne de compensation pour solder l'écart.",
+    "trapWarning": "Un solde de suspense anormalement élevé alerte sur un dysfonctionnement de clearing."
+  },
+  {
+    "id": "m_ex_n5_23",
+    "gradeLevel": 5,
+    "question": "Dans un litige monétique e-commerce, pourquoi le protocole 3D-Secure (3DS / OTP SMS / App biométrique) protège-t-il le commerçant contre le chargeback de fraude ?",
+    "options": [
+      "Il oblige le commerçant à livrer gratuitement",
+      "L'authentification forte réussie du porteur opère un transfert de responsabilité (Liability Shift) vers la banque émettrice qui a authentifié son client",
+      "Il supprime la TVA",
+      "Il rend le paiement instantané"
+    ],
+    "correctIndex": 1,
+    "explanation": "Grâce à 3DS (Verified by Visa / Mastercard Identity Check), le commerçant est garanti d'être payé même si le porteur prétend ne pas avoir fait l'achat.",
+    "trapWarning": "La banque émettrice assume le risque de fraude si elle a mal validé l'OTP."
+  },
+  {
+    "id": "m_ex_n5_24",
+    "gradeLevel": 5,
+    "question": "Qu'est-ce qu'une transaction 'Draft Clearing' (présentation tardive de clearing) reçue 25 jours après l'achat ?",
+    "options": [
+      "Une transaction refusée par le client",
+      "Une transaction commerciale transmise tardivement par l'acquéreur au switch alors que l'empreinte d'autorisation temps réel a déjà expiré",
+      "Une transaction sur un compte fermé",
+      "Un chèque en bois"
+    ],
+    "correctIndex": 1,
+    "explanation": "Même si l'autorisation a expiré sur le compte du client, le commerçant a légalement le droit de réclamer son dû pendant plusieurs semaines.",
+    "trapWarning": "La banque émettrice doit débiter le compte client même si le solde est devenu négatif."
+  },
+  {
+    "id": "m_ex_n5_25",
+    "gradeLevel": 5,
+    "question": "Que se passe-t-il si un compte client n'a plus les fonds nécessaires lors de l'arrivée du fichier de clearing d'une transaction préalablement autorisée avec succès ?",
+    "options": [
+      "Le switch annule la transaction",
+      "La banque émettrice débite le compte client d'office, le plaçant en découvert non autorisé (solde débiteur forcé), car elle a déjà engagé sa responsabilité irrévocable lors de l'autorisation",
+      "Le commerçant doit rembourser la banque",
+      "La police est prévenue"
+    ],
+    "correctIndex": 1,
+    "explanation": "L'autorisation initiale engage irrévocablement la banque à payer le commerçant.",
+    "trapWarning": "La banque supporte le risque de recouvrement auprès de son client."
+  },
+  {
+    "id": "m_ex_n5_26",
+    "gradeLevel": 5,
+    "question": "Dans la norme ISO 20022 appelée à moderniser les flux de compensation mondiaux, quel est le format syntaxique des messages financiers ?",
+    "options": [
+      "Fichiers texte à colonnes fixes",
+      "Messages structurés en XML (balises) ou JSON avec validation par schéma XSD",
+      "Poinçons sur cartes carton",
+      "Signaux sonores en code Morse"
+    ],
+    "correctIndex": 1,
+    "explanation": "ISO 20022 remplace la syntaxe compacte ISO 8583 par des messages XML riches (ex: pain, pacs, camt) permettant une traçabilité documentaire sans faille.",
+    "trapWarning": "C'est la norme moderne adoptée par SWIFT et les banques centrales."
+  },
+  {
+    "id": "m_ex_n5_27",
+    "gradeLevel": 5,
+    "question": "Dans un fichier de compensation Mastercard IPM, quelle valeur de MTI identifie un message de présentation financière initiale (First Presentment) ?",
+    "options": [
+      "MTI 1240",
+      "MTI 0200",
+      "MTI 0800",
+      "MTI 1442"
+    ],
+    "correctIndex": 0,
+    "explanation": "Le message 1240 dans l'IPM est le format standard de présentation de débit d'un achat commerçant.",
+    "trapWarning": "Le message 1442 identifie les messages de chargeback et de litige."
+  },
+  {
+    "id": "m_ex_n5_28",
+    "gradeLevel": 5,
+    "question": "À quoi sert le numéro ARN (Acquirer Reference Number) à 23 chiffres attribué à chaque transaction lors de la compensation ?",
+    "options": [
+      "À joindre le porteur au téléphone",
+      "À identifier et tracer de manière absolument unique et universelle l'opération dans les bases mondiales de Visa/Mastercard pour les litiges",
+      "À crypter le code secret",
+      "À calculer la distance géographique"
+    ],
+    "correctIndex": 1,
+    "explanation": "L'ARN est le numéro d'immatriculation juridique de la transaction dans le clearing international.",
+    "trapWarning": "C'est la référence que les banques se transmettent obligatoirement lors de l'ouverture d'un chargeback."
+  },
+  {
+    "id": "m_ex_n5_29",
+    "gradeLevel": 5,
+    "question": "Qu'est-ce qu'une opération de 'Cash-Back' chez un commerçant (autorisée dans certains réseaux monétiques) ?",
+    "options": [
+      "Un remboursement en cas de marchandise cassée",
+      "La possibilité pour le client de payer son achat par carte et de demander au commerçant de lui remettre en plus une somme d'argent liquide prélevée sur son compte",
+      "Un programme de fidélité avec des points",
+      "Une taxe sur les paiements par carte"
+    ],
+    "correctIndex": 1,
+    "explanation": "Le Cash-Back permet à une épicerie de jouer le rôle de point de retrait d'espèces de proximité.",
+    "trapWarning": "Le message ISO associe un montant d'achat (DE4) et un montant de retrait d'espèces (DE54)."
+  },
+  {
+    "id": "m_ex_n5_30",
+    "gradeLevel": 5,
+    "question": "Quelle règle prudentielle bancaire de la BCEAO / COBAC régit la couverture des soldes débiteurs nés des opérations monétiques ?",
+    "options": [
+      "L'obligation de provisionner à 100% les découverts non autorisés non régularisés au-delà de 90 jours",
+      "L'interdiction formelle de prêter de l'argent aux commerçants",
+      "L'obligation d'avoir des guichets ouverts le dimanche",
+      "La fermeture automatique du compte au premier rejet"
+    ],
+    "correctIndex": 0,
+    "explanation": "Les découverts créés par les compensations monétiques non couvertes deviennent des créances douteuses soumises à provisionnement prudentiel strict.",
+    "trapWarning": "Cela impose un recouvrement amiable ou contentieux immédiat par les équipes du Core Banking."
+  }
+];

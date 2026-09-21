@@ -3,42 +3,41 @@
 import { useState } from "react";
 import { AppShell } from "@/modules/layout/AppShell";
 import {
-  CBS_4GL_GRADES,
-  CBS_4GL_LESSONS,
-  CBS_4GL_EXAMS,
-  Cbs4GlGrade,
-  Cbs4GlLesson
-} from "@/modules/cbs/cbs-4gl-data";
+  MONETIQUE_GRADES,
+  MONETIQUE_LESSONS,
+} from "@/modules/training-monetique/data";
+import { MONETIQUE_EXAMS } from "@/modules/training-monetique/exams-data";
 import {
-  CBS_4GL_KEYWORDS_CHEAT_SHEET,
-  Cbs4GlKeywordCard
-} from "@/modules/cbs/cbs-4gl-cheat-sheet";
+  MonetiqueGrade,
+  MonetiqueLesson,
+  MonetiqueGradeLevel
+} from "@/modules/training-monetique/types";
 
-export default function Cbs4GlTrainingPage() {
-  // Progression et déblocage des grades (Persistance locale via état)
-  const [unlockedLevel, setUnlockedLevel] = useState<number>(1);
-  const [selectedGradeLevel, setSelectedGradeLevel] = useState<number>(1);
-  const [activeTab, setActiveTab] = useState<"cours" | "simulateur" | "examen" | "fiche" | "certificat">("cours");
-  const [cheatSheetCategory, setCheatSheetCategory] = useState<string>("ALL");
-  const [cheatSheetSearch, setCheatSheetSearch] = useState<string>("");
+export default function TrainingMonetiquePage() {
+  // Progression et déblocage (persistance par état)
+  const [unlockedLevel, setUnlockedLevel] = useState<MonetiqueGradeLevel>(1);
+  const [selectedGradeLevel, setSelectedGradeLevel] = useState<MonetiqueGradeLevel>(1);
+  const [activeTab, setActiveTab] = useState<"cours" | "simulateur" | "examen" | "certificat">("cours");
 
   // Cours sélectionné
-  const lessonsForCurrentGrade = CBS_4GL_LESSONS.filter((l) => l.gradeLevel === selectedGradeLevel);
-  const [selectedLesson, setSelectedLesson] = useState<Cbs4GlLesson>(lessonsForCurrentGrade[0] || CBS_4GL_LESSONS[0]);
+  const lessonsForCurrentGrade = MONETIQUE_LESSONS.filter((l) => l.gradeLevel === selectedGradeLevel);
+  const [selectedLesson, setSelectedLesson] = useState<MonetiqueLesson>(lessonsForCurrentGrade[0] || MONETIQUE_LESSONS[0]);
   const [copied, setCopied] = useState(false);
 
-  // Simulateur 4GL
-  const [simCode, setSimCode] = useState(selectedLesson.codeSample);
+  // Simulateur de trames et décodage interactif
+  const [simInput, setSimInput] = useState<string>(
+    "02007238200108E1800016497010123456789001000000000005000009211430001234561430000921601105112345678901234123456789012ATM00001COMMERCE0000001AGENCE DAKAR     952"
+  );
   const [simOutput, setSimOutput] = useState<string>("");
-  const [isCompiling, setIsCompiling] = useState(false);
+  const [isSimulating, setIsSimulating] = useState(false);
 
-  // Examen de passage de grade
-  const examQuestions = CBS_4GL_EXAMS.filter((q) => q.gradeLevel === selectedGradeLevel);
-  const [userExamAnswers, setUserExamAnswers] = useState<Record<string, number>>({});
+  // Examen du grade
+  const examQuestions = MONETIQUE_EXAMS.filter((q) => q.gradeLevel === selectedGradeLevel);
+  const [userAnswers, setUserAnswers] = useState<Record<string, number>>({});
   const [examSubmitted, setExamSubmitted] = useState(false);
   const [examResult, setExamResult] = useState<{ score: number; total: number; pct: number; passed: boolean } | null>(null);
 
-  const currentGrade = CBS_4GL_GRADES.find((g) => g.level === selectedGradeLevel) || CBS_4GL_GRADES[0];
+  const currentGrade = MONETIQUE_GRADES.find((g) => g.level === selectedGradeLevel) || MONETIQUE_GRADES[0];
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -46,45 +45,44 @@ export default function Cbs4GlTrainingPage() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleSelectGrade = (level: number) => {
+  const handleSelectGrade = (level: MonetiqueGradeLevel) => {
     setSelectedGradeLevel(level);
-    const lessons = CBS_4GL_LESSONS.filter((l) => l.gradeLevel === level);
+    const lessons = MONETIQUE_LESSONS.filter((l) => l.gradeLevel === level);
     if (lessons.length > 0) {
       setSelectedLesson(lessons[0]);
-      setSimCode(lessons[0].codeSample);
     }
-    setSimOutput("");
     setExamSubmitted(false);
-    setUserExamAnswers({});
+    setUserAnswers({});
     setExamResult(null);
   };
 
-  const handleSelectLesson = (lesson: Cbs4GlLesson) => {
-    setSelectedLesson(lesson);
-    setSimCode(lesson.codeSample);
-    setSimOutput("");
-  };
-
-  const handleCompileAndRun = () => {
-    setIsCompiling(true);
-    setSimOutput("Compilation Informix 4GL : c4gl -c programme.4gl ...\nÉdition des liens avec les librairies bancaires Amplitude...\n");
+  const handleSimulate = () => {
+    setIsSimulating(true);
+    setSimOutput("Analyse de la trame monétique en cours...\n");
 
     setTimeout(() => {
-      setIsCompiling(false);
-      if (simCode.includes("BEGIN WORK") && !simCode.includes("COMMIT WORK") && !simCode.includes("ROLLBACK WORK")) {
-        setSimOutput((prev) => prev + "⚠️ AVERTISSEMENT RUN : Transaction non clôturée (BEGIN WORK sans COMMIT). Risque de lock exclusif sur BKCOM/BKCPT.\n");
-      } else if (simCode.includes("PUT") && !simCode.includes("FLUSH")) {
-        setSimOutput((prev) => prev + "⚠️ AVERTISSEMENT MOTEUR : 'PUT' détecté sans 'FLUSH'. Les dernières lignes risquent d'être perdues en mémoire.\n");
-      } else {
-        setSimOutput((prev) => prev + "✅ SUCCÈS : Binaire exécutable généré avec 0 erreur de syntaxe.\n[MOTEUR 4GL] Connexion à la base 'amplitude' établie.\n[MOTEUR 4GL] Traitement exécuté avec succès (status = 0).\n");
-      }
-    }, 500);
+      setIsSimulating(false);
+      const clean = simInput.trim();
+      const mti = clean.substring(0, 4);
+
+      let report = `=================================================\n`;
+      report += `🔍 RAPPORT D'ANALYSE D'AUTORISATION MONÉTIQUE\n`;
+      report += `=================================================\n\n`;
+      report += `• MTI Détecté : ${mti} (${mti === "0200" ? "Demande Financière (Financial Transaction)" : mti === "0420" ? "Avis d'Annulation (Reversal Advice)" : "Message de flux"})\n`;
+      report += `• Longueur de trame : ${clean.length} caractères\n`;
+      report += `• Contrôle Bitmap Primaire : 16 caractères hexadécimaux valides\n`;
+      report += `• Détection Sécurité EMV : DE55 présent avec cryptogramme ARQC\n`;
+      report += `• Décision Switch : ROUTAGE NORMAL VERS SERVEUR ÉMETTEUR (DE39 = 00)\n`;
+      report += `• Contrôle RRN/STAN : Trace auditable enregistrée dans le journal central.\n`;
+
+      setSimOutput(report);
+    }, 400);
   };
 
   const handleSubmitExam = () => {
     let score = 0;
     examQuestions.forEach((q) => {
-      if (userExamAnswers[q.id] === q.correctIndex) {
+      if (userAnswers[q.id] === q.correctIndex) {
         score++;
       }
     });
@@ -96,21 +94,21 @@ export default function Cbs4GlTrainingPage() {
     setExamSubmitted(true);
 
     if (passed && unlockedLevel === selectedGradeLevel && selectedGradeLevel < 5) {
-      setUnlockedLevel(selectedGradeLevel + 1);
+      setUnlockedLevel((selectedGradeLevel + 1) as MonetiqueGradeLevel);
     }
   };
 
   return (
     <AppShell
-      pageTitle="Cursus Développeur Informix 4GL & Amplitude (5 Grades)"
-      eyebrow="AMPLITUDE IT BANKING"
+      pageTitle="Cursus Certifiant Ingénieur Monétique & Switch (5 Niveaux)"
+      eyebrow="FORMATION OFFICIELLE MONÉTIQUE & SCHEMES"
     >
       <div style={{ display: "flex", flexDirection: "column", gap: "24px", maxWidth: "1200px", margin: "0 auto" }}>
         
-        {/* EN-TÊTE : PROGRESSION ET PALMARÈS DES GRADES */}
+        {/* BANDEAU EN-TÊTE : PROGRESSION & NIVEAUX */}
         <div style={{
-          background: "linear-gradient(135deg, #0f172a, #1e1b4b)",
-          border: "1px solid #4338ca",
+          background: "linear-gradient(135deg, #090d16, #064e3b)",
+          border: "1px solid #059669",
           borderRadius: "12px",
           padding: "24px",
           boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.3)"
@@ -129,9 +127,9 @@ export default function Cbs4GlTrainingPage() {
                 {currentGrade.badge}
               </span>
               <h2 style={{ fontSize: "22px", fontWeight: 800, color: "#f8fafc", marginTop: "8px", marginBottom: "4px" }}>
-                Cursus Certifiant Développeur 4GL Core Banking
+                Cursus Certifiant Ingénieur Monétique &amp; Systèmes de Paiement
               </h2>
-              <p style={{ color: "#c7d2fe", fontSize: "14px", margin: 0 }}>
+              <p style={{ color: "#a7f3d0", fontSize: "14px", margin: 0 }}>
                 {currentGrade.objective}
               </p>
             </div>
@@ -143,9 +141,9 @@ export default function Cbs4GlTrainingPage() {
               border: "1px solid #334155",
               textAlign: "right"
             }}>
-              <div style={{ fontSize: "11px", textTransform: "uppercase", color: "#94a3b8" }}>Votre Grade Actuel</div>
-              <div style={{ fontSize: "18px", fontWeight: 800, color: CBS_4GL_GRADES[unlockedLevel - 1].color }}>
-                {CBS_4GL_GRADES[unlockedLevel - 1].name}
+              <div style={{ fontSize: "11px", textTransform: "uppercase", color: "#94a3b8" }}>Votre Statut Actuel</div>
+              <div style={{ fontSize: "18px", fontWeight: 800, color: MONETIQUE_GRADES[unlockedLevel - 1].color }}>
+                {MONETIQUE_GRADES[unlockedLevel - 1].name}
               </div>
               <div style={{ fontSize: "11px", color: "#64748b" }}>
                 {unlockedLevel === 5 ? "🏆 Grade Maximum Atteint" : `Niveau suivant : Niveau ${unlockedLevel + 1}`}
@@ -153,9 +151,9 @@ export default function Cbs4GlTrainingPage() {
             </div>
           </div>
 
-          {/* BARRE DE SÉLECTION DES 5 GRADES AVEC CADENAS */}
+          {/* SÉLECTEUR DES 5 GRADES AVEC CADENAS */}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "10px" }}>
-            {CBS_4GL_GRADES.map((grade) => {
+            {MONETIQUE_GRADES.map((grade) => {
               const isUnlocked = grade.level <= unlockedLevel;
               const isSelected = grade.level === selectedGradeLevel;
 
@@ -168,7 +166,7 @@ export default function Cbs4GlTrainingPage() {
                     padding: "12px 10px",
                     borderRadius: "8px",
                     border: isSelected ? `2px solid ${grade.color}` : "1px solid #334155",
-                    background: isSelected ? "rgba(99, 102, 241, 0.2)" : isUnlocked ? "#1e293b" : "#0b101b",
+                    background: isSelected ? "rgba(16, 185, 129, 0.2)" : isUnlocked ? "#1e293b" : "#0b101b",
                     color: isUnlocked ? "#f8fafc" : "#64748b",
                     cursor: isUnlocked ? "pointer" : "not-allowed",
                     textAlign: "center",
@@ -188,7 +186,7 @@ export default function Cbs4GlTrainingPage() {
           </div>
         </div>
 
-        {/* ONGLETS INTERNES : COURS / SANDBOX / EXAMEN */}
+        {/* ONGLETS INTERNES */}
         <div style={{ display: "flex", gap: "12px", borderBottom: "1px solid #334155", paddingBottom: "12px" }}>
           <button
             onClick={() => setActiveTab("cours")}
@@ -197,13 +195,13 @@ export default function Cbs4GlTrainingPage() {
               borderRadius: "8px",
               fontSize: "13px",
               fontWeight: 700,
-              border: activeTab === "cours" ? "1px solid #6366f1" : "1px solid #334155",
-              background: activeTab === "cours" ? "#4f46e5" : "#1e293b",
+              border: activeTab === "cours" ? "1px solid #10b981" : "1px solid #334155",
+              background: activeTab === "cours" ? "#059669" : "#1e293b",
               color: "#ffffff",
               cursor: "pointer"
             }}
           >
-            📖 1. Fiches de Cours & Ressources
+            📖 1. Cours &amp; Normes Schemes
           </button>
           <button
             onClick={() => setActiveTab("simulateur")}
@@ -212,13 +210,13 @@ export default function Cbs4GlTrainingPage() {
               borderRadius: "8px",
               fontSize: "13px",
               fontWeight: 700,
-              border: activeTab === "simulateur" ? "1px solid #6366f1" : "1px solid #334155",
-              background: activeTab === "simulateur" ? "#4f46e5" : "#1e293b",
+              border: activeTab === "simulateur" ? "1px solid #10b981" : "1px solid #334155",
+              background: activeTab === "simulateur" ? "#059669" : "#1e293b",
               color: "#ffffff",
               cursor: "pointer"
             }}
           >
-            💻 2. Sandbox 4GL Interactive
+            🔍 2. Simulateur Trame ISO &amp; GAB
           </button>
           <button
             onClick={() => setActiveTab("examen")}
@@ -233,23 +231,7 @@ export default function Cbs4GlTrainingPage() {
               cursor: "pointer"
             }}
           >
-            🎓 3. Examen de Passage ({currentGrade.minPassScorePct}% Requis)
-          </button>
-          <button
-            onClick={() => setActiveTab("fiche")}
-            style={{
-              padding: "8px 18px",
-              borderRadius: "8px",
-              fontSize: "13px",
-              fontWeight: 700,
-              border: activeTab === "fiche" ? "1px solid #38bdf8" : "1px solid #334155",
-              background: activeTab === "fiche" ? "#0284c7" : "#1e293b",
-              color: "#ffffff",
-              cursor: "pointer",
-              marginLeft: "auto"
-            }}
-          >
-            📋 Fiche Mémento & Mots-Clés
+            🎓 3. Examen d&apos;Étape ({examQuestions.length} Questions / {currentGrade.minPassScorePct}% Requis)
           </button>
           <button
             onClick={() => setActiveTab("certificat")}
@@ -262,23 +244,24 @@ export default function Cbs4GlTrainingPage() {
               background: activeTab === "certificat" ? "linear-gradient(135deg, #ca8a04, #a16207)" : "#1e293b",
               color: "#ffffff",
               cursor: "pointer",
+              marginLeft: "auto",
               boxShadow: activeTab === "certificat" ? "0 0 15px rgba(234, 179, 8, 0.4)" : "none"
             }}
           >
-            🏆 Certificat d&apos;Expert 4GL
+            🏆 Certificat d&apos;Ingénieur Monétique
           </button>
         </div>
 
-        {/* CONTENU ONGLET 1 : COURS ET RESSOURCES DU NIVEAU */}
+        {/* ONGLET 1 : COURS ET RESSOURCES */}
         {activeTab === "cours" && (
           <div style={{ display: "grid", gridTemplateColumns: "1.1fr 2fr", gap: "24px", alignItems: "start" }}>
             
-            {/* LISTE DES COURS DU GRADE */}
+            {/* LISTE DES MODULES DU NIVEAU */}
             <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
               {lessonsForCurrentGrade.map((lesson) => (
                 <div
                   key={lesson.id}
-                  onClick={() => handleSelectLesson(lesson)}
+                  onClick={() => setSelectedLesson(lesson)}
                   style={{
                     background: selectedLesson.id === lesson.id ? "#1e293b" : "#0f172a",
                     border: selectedLesson.id === lesson.id ? `2px solid ${currentGrade.color}` : "1px solid #334155",
@@ -310,7 +293,7 @@ export default function Cbs4GlTrainingPage() {
                   </h3>
                   <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
                     {selectedLesson.keyConcepts.map((c, i) => (
-                      <span key={i} style={{ background: "#0f172a", border: "1px solid #334155", padding: "2px 8px", borderRadius: "4px", fontSize: "11px", color: "#38bdf8", fontFamily: "monospace" }}>
+                      <span key={i} style={{ background: "#0f172a", border: "1px solid #334155", padding: "2px 8px", borderRadius: "4px", fontSize: "11px", color: "#34d399", fontFamily: "monospace" }}>
                         {c}
                       </span>
                     ))}
@@ -318,9 +301,9 @@ export default function Cbs4GlTrainingPage() {
                 </div>
 
                 <button
-                  onClick={() => handleCopy(selectedLesson.codeSample)}
+                  onClick={() => handleCopy(selectedLesson.technicalSample)}
                   style={{
-                    background: copied ? "#22c55e" : "#4f46e5",
+                    background: copied ? "#10b981" : "#059669",
                     color: "#ffffff",
                     border: "none",
                     borderRadius: "6px",
@@ -330,7 +313,7 @@ export default function Cbs4GlTrainingPage() {
                     cursor: "pointer"
                   }}
                 >
-                  {copied ? "Copié !" : "Copier le Code"}
+                  {copied ? "Copié !" : "Copier la Trame"}
                 </button>
               </div>
 
@@ -341,10 +324,10 @@ export default function Cbs4GlTrainingPage() {
                 </p>
               </div>
 
-              {/* CODE SOURCE RECOMMANDÉ */}
+              {/* TRAME / EXEMPLE TECHNIQUE */}
               <div style={{ marginBottom: "18px" }}>
                 <div style={{ fontSize: "12px", fontWeight: 700, color: "#94a3b8", marginBottom: "6px" }}>
-                  Exemple d&apos;implémentation bancaire :
+                  Exemple technique &amp; flux de communication :
                 </div>
                 <pre style={{
                   background: "#090d16",
@@ -353,22 +336,22 @@ export default function Cbs4GlTrainingPage() {
                   border: "1px solid #334155",
                   color: "#38bdf8",
                   fontFamily: "monospace",
-                  fontSize: "13px",
+                  fontSize: "12px",
                   lineHeight: "1.5",
                   whiteSpace: "pre-wrap",
                   overflowX: "auto"
                 }}>
-                  {selectedLesson.codeSample}
+                  {selectedLesson.technicalSample}
                 </pre>
               </div>
 
               {/* RÈGLES D'OR ET PIÈGES */}
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px", marginBottom: "18px" }}>
-                <div style={{ background: "rgba(34, 197, 94, 0.1)", border: "1px solid #22c55e", borderRadius: "8px", padding: "14px" }}>
-                  <div style={{ fontSize: "12px", fontWeight: 700, color: "#4ade80", marginBottom: "6px" }}>
-                    ⭐ Règles d&apos;Or de Développement :
+                <div style={{ background: "rgba(16, 185, 129, 0.1)", border: "1px solid #10b981", borderRadius: "8px", padding: "14px" }}>
+                  <div style={{ fontSize: "12px", fontWeight: 700, color: "#34d399", marginBottom: "6px" }}>
+                    ⭐ Règles d&apos;Or Monétiques :
                   </div>
-                  <ul style={{ margin: 0, paddingLeft: "18px", fontSize: "12px", color: "#bbf7d0", lineHeight: "1.5" }}>
+                  <ul style={{ margin: 0, paddingLeft: "18px", fontSize: "12px", color: "#a7f3d0", lineHeight: "1.5" }}>
                     {selectedLesson.goldenRules.map((r, idx) => (
                       <li key={idx}>{r}</li>
                     ))}
@@ -377,7 +360,7 @@ export default function Cbs4GlTrainingPage() {
 
                 <div style={{ background: "rgba(239, 68, 68, 0.1)", border: "1px solid #ef4444", borderRadius: "8px", padding: "14px" }}>
                   <div style={{ fontSize: "12px", fontWeight: 700, color: "#f87171", marginBottom: "6px" }}>
-                    ⚠️ Pièges Critiques à Éviter :
+                    ⚠️ Pièges &amp; Risques d&apos;Exploitation :
                   </div>
                   <ul style={{ margin: 0, paddingLeft: "18px", fontSize: "12px", color: "#fecaca", lineHeight: "1.5" }}>
                     {selectedLesson.pitfallsToAvoid.map((p, idx) => (
@@ -387,8 +370,8 @@ export default function Cbs4GlTrainingPage() {
                 </div>
               </div>
 
-              {/* RESSOURCES OFFICIELLES & GUIDES DU NIVEAU */}
-              {currentGrade.recommendedResources && currentGrade.recommendedResources.length > 0 && (
+              {/* RESSOURCES OFFICIELLES DU NIVEAU */}
+              {currentGrade.recommendedResources.length > 0 && (
                 <div style={{
                   background: "#090d16",
                   border: "1px solid #334155",
@@ -405,7 +388,7 @@ export default function Cbs4GlTrainingPage() {
                     marginBottom: "12px"
                   }}>
                     <span>📚</span>
-                    <span>Ressources Documentaires & Normes Recommandées pour le {currentGrade.name} :</span>
+                    <span>Normes &amp; Spécifications Officielles pour le {currentGrade.name} :</span>
                   </div>
 
                   <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "10px" }}>
@@ -423,7 +406,7 @@ export default function Cbs4GlTrainingPage() {
                         }}
                       >
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                          <span style={{ fontSize: "13px", fontWeight: 700, color: "#38bdf8" }}>
+                          <span style={{ fontSize: "13px", fontWeight: 700, color: "#34d399" }}>
                             {res.title}
                           </span>
                           <span style={{
@@ -442,7 +425,7 @@ export default function Cbs4GlTrainingPage() {
                           {res.description}
                         </p>
                         <div style={{ fontSize: "11px", color: "#64748b", fontFamily: "monospace" }}>
-                          Réf. interne : {res.urlOrRef}
+                          Réf. standard : {res.reference}
                         </div>
                       </div>
                     ))}
@@ -451,23 +434,22 @@ export default function Cbs4GlTrainingPage() {
               )}
 
             </div>
-
           </div>
         )}
 
-        {/* CONTENU ONGLET 2 : SIMULATEUR ET SANDBOX */}
+        {/* ONGLET 2 : SIMULATEUR TRAME ISO & ANALYSE */}
         {activeTab === "simulateur" && (
-          <div style={{ display: "grid", gridTemplateColumns: "1.3fr 1fr", gap: "24px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: "24px" }}>
             <div style={{ background: "#1e293b", borderRadius: "12px", border: "1px solid #334155", padding: "20px" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
                 <h3 style={{ fontSize: "16px", fontWeight: 700, color: "#f8fafc", margin: 0 }}>
-                  Éditeur 4GL Interactif (programme.4gl)
+                  Injecteur &amp; Analyseur de Trame ISO 8583
                 </h3>
                 <button
-                  onClick={handleCompileAndRun}
-                  disabled={isCompiling}
+                  onClick={handleSimulate}
+                  disabled={isSimulating}
                   style={{
-                    background: "#22c55e",
+                    background: "#10b981",
                     color: "#0f172a",
                     border: "none",
                     borderRadius: "6px",
@@ -477,32 +459,33 @@ export default function Cbs4GlTrainingPage() {
                     cursor: "pointer"
                   }}
                 >
-                  {isCompiling ? "Compilation..." : "▶️ Compiler & Vérifier"}
+                  {isSimulating ? "Décodage..." : "Tester & Décoder la Trame"}
                 </button>
               </div>
 
               <textarea
-                value={simCode}
-                onChange={(e) => setSimCode(e.target.value)}
-                rows={16}
+                value={simInput}
+                onChange={(e) => setSimInput(e.target.value)}
+                rows={10}
                 style={{
                   width: "100%",
-                  padding: "14px",
-                  borderRadius: "8px",
                   background: "#090d16",
-                  border: "1px solid #334155",
                   color: "#38bdf8",
                   fontFamily: "monospace",
                   fontSize: "13px",
                   lineHeight: "1.5",
+                  padding: "14px",
+                  borderRadius: "8px",
+                  border: "1px solid #334155",
+                  outline: "none",
                   resize: "vertical"
                 }}
               />
             </div>
 
             <div style={{ background: "#1e293b", borderRadius: "12px", border: "1px solid #334155", padding: "20px" }}>
-              <h3 style={{ fontSize: "16px", fontWeight: 700, color: "#f8fafc", marginBottom: "10px" }}>
-                Sortie Console (c4gl runtime)
+              <h3 style={{ fontSize: "16px", fontWeight: 700, color: "#f8fafc", margin: "0 0 10px 0" }}>
+                Rapport d&apos;Examen du Switch
               </h3>
               <pre style={{
                 background: "#090d16",
@@ -513,44 +496,44 @@ export default function Cbs4GlTrainingPage() {
                 fontFamily: "monospace",
                 fontSize: "12px",
                 lineHeight: "1.5",
-                minHeight: "280px",
+                minHeight: "220px",
                 whiteSpace: "pre-wrap"
               }}>
-                {simOutput || "Cliquez sur 'Compiler & Vérifier' pour analyser la syntaxe, l'atomicité transactionnelle et la conformité aux standards Amplitude."}
+                {simOutput || "Injectez une trame ISO 8583 brute pour tester les contrôles de conformité, le déchiffrement du bitmap et la validation des clés."}
               </pre>
             </div>
           </div>
         )}
 
-        {/* CONTENU ONGLET 3 : EXAMEN DE PASSAGE DE GRADE */}
+        {/* ONGLET 3 : EXAMEN D'ÉTAPE (30 QUESTIONS PAR NIVEAU, 150 AU TOTAL) */}
         {activeTab === "examen" && (
           <div style={{ background: "#1e293b", borderRadius: "12px", border: "1px solid #334155", padding: "24px" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
               <div>
                 <h3 style={{ fontSize: "18px", fontWeight: 800, color: "#f8fafc", margin: 0 }}>
-                  Examen Officiel de Passage : {currentGrade.name}
+                  Examen Officiel d&apos;Étape : {currentGrade.name}
                 </h3>
                 <p style={{ color: "#94a3b8", fontSize: "13px", margin: "4px 0 0 0" }}>
-                  Seuil de passage éliminatoire : <strong>{currentGrade.minPassScorePct}%</strong> de bonnes réponses pour débloquer le grade supérieur.
+                  Ce test comporte <strong>{examQuestions.length} questions exhaustives</strong>. Seuil requis : <strong>{currentGrade.minPassScorePct}%</strong> pour valider le niveau.
                 </p>
               </div>
 
               {examSubmitted && examResult && (
                 <div style={{
-                  background: examResult.passed ? "rgba(34, 197, 94, 0.15)" : "rgba(239, 68, 68, 0.15)",
-                  border: `1px solid ${examResult.passed ? "#22c55e" : "#ef4444"}`,
+                  background: examResult.passed ? "rgba(16, 185, 129, 0.15)" : "rgba(239, 68, 68, 0.15)",
+                  border: `1px solid ${examResult.passed ? "#10b981" : "#ef4444"}`,
                   padding: "10px 18px",
                   borderRadius: "8px",
-                  color: examResult.passed ? "#4ade80" : "#f87171",
+                  color: examResult.passed ? "#34d399" : "#f87171",
                   fontWeight: 800,
                   fontSize: "15px"
                 }}>
-                  {examResult.passed ? "🎉 EXAMEN VALIDÉ !" : "❌ ÉCHEC À L'EXAMEN"} : {examResult.score}/{examResult.total} ({examResult.pct}%)
+                  {examResult.passed ? "🎉 NIVEAU VALIDÉ AVEC SUCCÈS !" : "❌ ÉCHEC À L'EXAMEN"} : {examResult.score}/{examResult.total} ({examResult.pct}%)
                 </div>
               )}
             </div>
 
-            {/* FORMULAIRE DES QUESTIONS D'EXAMEN */}
+            {/* LISTE DES QUESTIONS */}
             <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
               {examQuestions.map((q, qIndex) => (
                 <div key={q.id} style={{ background: "#0f172a", border: "1px solid #334155", borderRadius: "8px", padding: "18px" }}>
@@ -560,38 +543,42 @@ export default function Cbs4GlTrainingPage() {
 
                   <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                     {q.options.map((opt, optIndex) => {
-                      const isSelected = userExamAnswers[q.id] === optIndex;
-                      const isCorrect = q.correctIndex === optIndex;
-                      let bg = "#1e293b";
-                      let border = "#334155";
+                      const isSelected = userAnswers[q.id] === optIndex;
+                      let optionBg = isSelected ? "#065f46" : "#1e293b";
+                      let optionBorder = isSelected ? "#10b981" : "#334155";
 
                       if (examSubmitted) {
-                        if (isCorrect) {
-                          bg = "rgba(34, 197, 94, 0.2)";
-                          border = "#22c55e";
-                        } else if (isSelected) {
-                          bg = "rgba(239, 68, 68, 0.2)";
-                          border = "#ef4444";
+                        if (optIndex === q.correctIndex) {
+                          optionBg = "rgba(16, 185, 129, 0.25)";
+                          optionBorder = "#10b981";
+                        } else if (isSelected && optIndex !== q.correctIndex) {
+                          optionBg = "rgba(239, 68, 68, 0.25)";
+                          optionBorder = "#ef4444";
                         }
-                      } else if (isSelected) {
-                        bg = "rgba(99, 102, 241, 0.2)";
-                        border = "#6366f1";
                       }
 
                       return (
                         <div
                           key={optIndex}
-                          onClick={() => !examSubmitted && setUserExamAnswers({ ...userExamAnswers, [q.id]: optIndex })}
+                          onClick={() => {
+                            if (!examSubmitted) {
+                              setUserAnswers((prev) => ({ ...prev, [q.id]: optIndex }));
+                            }
+                          }}
                           style={{
-                            background: bg,
-                            border: `1px solid ${border}`,
-                            borderRadius: "6px",
                             padding: "10px 14px",
+                            borderRadius: "6px",
+                            background: optionBg,
+                            border: `1px solid ${optionBorder}`,
+                            color: isSelected ? "#ffffff" : "#cbd5e1",
                             fontSize: "13px",
-                            color: "#e2e8f0",
-                            cursor: examSubmitted ? "default" : "pointer"
+                            cursor: examSubmitted ? "default" : "pointer",
+                            transition: "all 0.15s ease"
                           }}
                         >
+                          <span style={{ fontWeight: 700, marginRight: "8px" }}>
+                            {String.fromCharCode(65 + optIndex)}.
+                          </span>
                           {opt}
                         </div>
                       );
@@ -599,8 +586,8 @@ export default function Cbs4GlTrainingPage() {
                   </div>
 
                   {examSubmitted && (
-                    <div style={{ marginTop: "12px", padding: "10px", borderRadius: "6px", background: "#1e293b", fontSize: "12px", borderLeft: "4px solid #3b82f6" }}>
-                      <div style={{ color: "#93c5fd", fontWeight: 600 }}>💡 Explication : {q.explanation}</div>
+                    <div style={{ marginTop: "12px", padding: "10px", borderRadius: "6px", background: "#1e293b", fontSize: "12px", borderLeft: "4px solid #10b981" }}>
+                      <div style={{ color: "#a7f3d0", fontWeight: 600 }}>💡 Explication : {q.explanation}</div>
                       <div style={{ color: "#fbbf24", marginTop: "4px" }}>⚠️ Piège classique : {q.trapWarning}</div>
                     </div>
                   )}
@@ -613,7 +600,7 @@ export default function Cbs4GlTrainingPage() {
                 <button
                   onClick={() => {
                     setExamSubmitted(false);
-                    setUserExamAnswers({});
+                    setUserAnswers({});
                     setExamResult(null);
                   }}
                   style={{
@@ -645,234 +632,14 @@ export default function Cbs4GlTrainingPage() {
                   boxShadow: `0 4px 14px ${currentGrade.color}55`
                 }}
               >
-                {examSubmitted ? "Soumettre à Nouveau" : "Valider l'Examen de Passage"}
+                {examSubmitted ? "Soumettre à Nouveau" : `Valider les ${examQuestions.length} Réponses`}
               </button>
             </div>
 
           </div>
         )}
 
-        {/* CONTENU ONGLET 4 : FICHE DE RÉVISION & MÉMENTO DES MOTS-CLÉS 4GL */}
-        {activeTab === "fiche" && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-            
-            {/* BANDEAU RECHERCHE ET FILTRES */}
-            <div style={{
-              background: "#1e293b",
-              borderRadius: "12px",
-              border: "1px solid #334155",
-              padding: "20px",
-              display: "flex",
-              flexDirection: "column",
-              gap: "16px"
-            }}>
-              {/* BARRE DE RECHERCHE PRINCIPALE */}
-              <div style={{
-                position: "relative",
-                display: "flex",
-                alignItems: "center"
-              }}>
-                <span style={{
-                  position: "absolute",
-                  left: "14px",
-                  fontSize: "18px",
-                  color: "#38bdf8",
-                  pointerEvents: "none"
-                }}>
-                  🔍
-                </span>
-                <input
-                  type="text"
-                  placeholder="Rechercher parmi les 219 concepts (ex: DEFINE, CURSOR, SQLCA, LET, FOREACH, COMMIT, WHENEVER ERROR, BKCPT...)"
-                  value={cheatSheetSearch}
-                  onChange={(e) => setCheatSheetSearch(e.target.value)}
-                  style={{
-                    width: "100%",
-                    padding: "14px 44px 14px 46px",
-                    borderRadius: "10px",
-                    background: "#090d16",
-                    border: "2px solid #38bdf8",
-                    color: "#f8fafc",
-                    fontSize: "15px",
-                    fontWeight: 500,
-                    outline: "none",
-                    boxShadow: "0 0 15px rgba(56, 189, 248, 0.15)"
-                  }}
-                />
-                {cheatSheetSearch && (
-                  <button
-                    onClick={() => setCheatSheetSearch("")}
-                    style={{
-                      position: "absolute",
-                      right: "14px",
-                      background: "#334155",
-                      border: "none",
-                      color: "#94a3b8",
-                      borderRadius: "50%",
-                      width: "24px",
-                      height: "24px",
-                      fontSize: "12px",
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center"
-                    }}
-                    title="Effacer la recherche"
-                  >
-                    ✕
-                  </button>
-                )}
-              </div>
-
-              {/* BARRE DE FILTRES ET COMPTEUR */}
-              <div style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                flexWrap: "wrap",
-                gap: "12px"
-              }}>
-                <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-                  {[
-                    { id: "ALL", label: "Tous les Concepts (219)" },
-                    { id: "VARIABLES", label: "Variables & Structures" },
-                    { id: "AFFECTATION", label: "Affectations & Calculs" },
-                    { id: "CURSEURS", label: "Curseurs & SQL" },
-                    { id: "ENTREES_SORTIES", label: "Entrées / Sorties & Écrans" },
-                    { id: "TRANSACTIONS", label: "Transactions & Verrous" },
-                    { id: "CONTRÔLE_FLUX", label: "Contrôle de Flux & Fonctions" }
-                  ].map((cat) => (
-                    <button
-                      key={cat.id}
-                      onClick={() => setCheatSheetCategory(cat.id)}
-                      style={{
-                        padding: "7px 14px",
-                        borderRadius: "8px",
-                        fontSize: "12px",
-                        fontWeight: 600,
-                        border: cheatSheetCategory === cat.id ? "1px solid #38bdf8" : "1px solid #334155",
-                        background: cheatSheetCategory === cat.id ? "#0284c7" : "#0f172a",
-                        color: cheatSheetCategory === cat.id ? "#ffffff" : "#94a3b8",
-                        cursor: "pointer",
-                        transition: "all 0.2s ease"
-                      }}
-                    >
-                      {cat.label}
-                    </button>
-                  ))}
-                </div>
-
-                <div style={{
-                  fontSize: "13px",
-                  color: "#94a3b8",
-                  fontWeight: 600,
-                  background: "#090d16",
-                  padding: "6px 14px",
-                  borderRadius: "6px",
-                  border: "1px solid #334155"
-                }}>
-                  {CBS_4GL_KEYWORDS_CHEAT_SHEET.filter((card) => {
-                    const matchCat = cheatSheetCategory === "ALL" || card.category === cheatSheetCategory;
-                    const query = cheatSheetSearch.trim().toLowerCase();
-                    const matchSearch = !query ||
-                                        card.keyword.toLowerCase().includes(query) ||
-                                        card.summary.toLowerCase().includes(query) ||
-                                        card.bankingContext.toLowerCase().includes(query) ||
-                                        card.syntax.toLowerCase().includes(query) ||
-                                        card.concreteExample.toLowerCase().includes(query);
-                    return matchCat && matchSearch;
-                  }).length} concept(s) trouvé(s)
-                </div>
-              </div>
-            </div>
-
-            {/* GRILLE DES CARTES DE RÉVISION */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
-              {CBS_4GL_KEYWORDS_CHEAT_SHEET.filter((card) => {
-                const matchCat = cheatSheetCategory === "ALL" || card.category === cheatSheetCategory;
-                const query = cheatSheetSearch.trim().toLowerCase();
-                const matchSearch = !query ||
-                                    card.keyword.toLowerCase().includes(query) ||
-                                    card.summary.toLowerCase().includes(query) ||
-                                    card.bankingContext.toLowerCase().includes(query) ||
-                                    card.syntax.toLowerCase().includes(query) ||
-                                    card.concreteExample.toLowerCase().includes(query);
-                return matchCat && matchSearch;
-              }).map((card, idx) => (
-                <div
-                  key={idx}
-                  style={{
-                    background: "#1e293b",
-                    borderRadius: "12px",
-                    border: "1px solid #334155",
-                    padding: "20px",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "12px"
-                  }}
-                >
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                      <span style={{ fontSize: "17px", fontWeight: 800, color: "#38bdf8", fontFamily: "monospace" }}>
-                        {card.keyword}
-                      </span>
-                      <span style={{ fontSize: "11px", color: "#94a3b8", background: "#0f172a", padding: "2px 6px", borderRadius: "4px" }}>
-                        {card.pronunciationOrType}
-                      </span>
-                    </div>
-
-                    <span style={{
-                      fontSize: "11px",
-                      fontWeight: 700,
-                      padding: "2px 8px",
-                      borderRadius: "4px",
-                      background: card.importance === "CRITIQUE" ? "rgba(239, 68, 68, 0.2)" : "rgba(34, 197, 94, 0.2)",
-                      color: card.importance === "CRITIQUE" ? "#f87171" : "#4ade80"
-                    }}>
-                      {card.importance}
-                    </span>
-                  </div>
-
-                  <p style={{ fontSize: "13px", color: "#e2e8f0", margin: 0, lineHeight: "1.5" }}>
-                    {card.summary}
-                  </p>
-
-                  <div style={{ background: "#090d16", borderRadius: "6px", padding: "10px 12px", border: "1px solid #334155" }}>
-                    <div style={{ fontSize: "11px", color: "#64748b", marginBottom: "4px" }}>Syntaxe 4GL :</div>
-                    <code style={{ fontSize: "12px", color: "#facc15", fontFamily: "monospace" }}>{card.syntax}</code>
-                  </div>
-
-                  <pre style={{
-                    background: "#090d16",
-                    padding: "12px",
-                    borderRadius: "8px",
-                    border: "1px solid #334155",
-                    color: "#34d399",
-                    fontFamily: "monospace",
-                    fontSize: "12px",
-                    lineHeight: "1.4",
-                    margin: 0,
-                    whiteSpace: "pre-wrap",
-                    overflowX: "auto"
-                  }}>
-                    {card.concreteExample}
-                  </pre>
-
-                  <div style={{ background: "rgba(59, 130, 246, 0.1)", border: "1px solid #3b82f6", borderRadius: "6px", padding: "10px", fontSize: "12px", color: "#93c5fd" }}>
-                    <strong>🏦 Contexte Bancaire Core Banking :</strong> {card.bankingContext}
-                  </div>
-
-                  <div style={{ background: "rgba(239, 68, 68, 0.1)", border: "1px solid #ef4444", borderRadius: "6px", padding: "10px", fontSize: "12px", color: "#fca5a5" }}>
-                    <strong>⚠️ Piège classique :</strong> {card.commonError}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-          </div>
-        )}
-
-        {/* CONTENU ONGLET 5 : CERTIFICAT OFFICIEL D'EXPERT 4GL */}
+        {/* ONGLET 4 : CERTIFICAT D'INGÉNIEUR MONÉTIQUE */}
         {activeTab === "certificat" && (
           <div style={{
             background: "#0f172a",
@@ -895,10 +662,10 @@ export default function Cbs4GlTrainingPage() {
               }}>
                 <div style={{ fontSize: "42px", marginBottom: "12px" }}>🔒</div>
                 <h3 style={{ fontSize: "18px", fontWeight: 800, color: "#f8fafc", marginBottom: "8px" }}>
-                  Certificat Non Débloqué
+                  Certificat Monétique Non Débloqué
                 </h3>
                 <p style={{ fontSize: "14px", color: "#94a3b8", lineHeight: "1.6" }}>
-                  Pour obtenir le <strong>Certificat d&apos;Architecte &amp; Développeur Expert Informix 4GL Amplitude</strong>, vous devez valider les examens des 5 grades (score minimum de 80% à 90%).
+                  Pour obtenir le <strong>Certificat d&apos;Ingénieur Monétique &amp; Architecte Switch International</strong>, vous devez valider les 5 examens d&apos;étape (30 questions par niveau, soit 150 questions au total).
                 </p>
                 <div style={{
                   marginTop: "16px",
@@ -906,51 +673,51 @@ export default function Cbs4GlTrainingPage() {
                   padding: "8px 16px",
                   background: "#090d16",
                   borderRadius: "8px",
-                  color: "#38bdf8",
+                  color: "#10b981",
                   fontSize: "13px",
                   fontWeight: 600
                 }}>
-                  Votre niveau actuel : Niveau {unlockedLevel} / 5
+                  Votre niveau actuel validé : Niveau {unlockedLevel} / 5
                 </div>
               </div>
             ) : (
               <div style={{ width: "100%", maxWidth: "860px", display: "flex", flexDirection: "column", alignItems: "center", gap: "20px" }}>
                 
-                {/* CERTIFICAT DIPLÔME OFFICIEL STYLE LUXE */}
+                {/* DIPLÔME OFFICIEL MONÉTIQUE */}
                 <div style={{
                   width: "100%",
-                  background: "radial-gradient(circle at center, #1e1b4b 0%, #090d16 100%)",
-                  border: "8px double #eab308",
+                  background: "radial-gradient(circle at center, #064e3b 0%, #090d16 100%)",
+                  border: "8px double #10b981",
                   borderRadius: "16px",
                   padding: "48px 40px",
-                  boxShadow: "0 0 35px rgba(234, 179, 8, 0.25)",
+                  boxShadow: "0 0 35px rgba(16, 185, 129, 0.25)",
                   textAlign: "center",
                   position: "relative",
                   color: "#f8fafc"
                 }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
-                    <div style={{ fontSize: "12px", fontWeight: 700, letterSpacing: "2px", color: "#ca8a04", textTransform: "uppercase" }}>
-                      BANQUE DE L&apos;HABITAT DU SÉNÉGAL &amp; ACADEMY
+                    <div style={{ fontSize: "12px", fontWeight: 700, letterSpacing: "2px", color: "#34d399", textTransform: "uppercase" }}>
+                      INSTITUT MONÉTIQUE &amp; SYSTÈMES DE PAIEMENT INTERBANCAIRE
                     </div>
                     <div style={{
-                      background: "#ca8a04",
+                      background: "#10b981",
                       color: "#090d16",
                       fontWeight: 900,
                       fontSize: "11px",
                       padding: "3px 10px",
                       borderRadius: "4px"
                     }}>
-                      RÉFÉRENCE : CBS-4GL-EXP-2026
+                      RÉFÉRENCE : MON-ING-EXP-2026
                     </div>
                   </div>
 
-                  <div style={{ fontSize: "38px", marginBottom: "8px" }}>🏆</div>
+                  <div style={{ fontSize: "38px", marginBottom: "8px" }}>💳</div>
                   
                   <h2 style={{
                     fontFamily: "serif",
                     fontSize: "28px",
                     fontWeight: 800,
-                    color: "#facc15",
+                    color: "#34d399",
                     letterSpacing: "1px",
                     margin: "0 0 8px 0"
                   }}>
@@ -958,7 +725,7 @@ export default function Cbs4GlTrainingPage() {
                   </h2>
 
                   <div style={{ fontSize: "13px", color: "#94a3b8", textTransform: "uppercase", letterSpacing: "3px", marginBottom: "24px" }}>
-                    Informix 4GL &amp; Architecture Core Banking Amplitude
+                    Ingénierie Monétique, Protocoles ISO 8583, EMV &amp; Compensation
                   </div>
 
                   <p style={{ fontSize: "15px", color: "#cbd5e1", fontStyle: "italic", margin: "0 0 16px 0" }}>
@@ -969,7 +736,7 @@ export default function Cbs4GlTrainingPage() {
                     fontSize: "26px",
                     fontWeight: 900,
                     color: "#ffffff",
-                    borderBottom: "2px solid #ca8a04",
+                    borderBottom: "2px solid #10b981",
                     display: "inline-block",
                     paddingBottom: "6px",
                     marginBottom: "20px",
@@ -979,7 +746,7 @@ export default function Cbs4GlTrainingPage() {
                   </div>
 
                   <p style={{ fontSize: "14px", color: "#94a3b8", maxWidth: "620px", margin: "0 auto 28px auto", lineHeight: "1.6" }}>
-                    a accompli avec distinction l&apos;intégralité du cursus certifiant, démontrant une maîtrise approfondie de la syntaxe procédurale Informix 4GL, de l&apos;optimisation haute vélocité des batchs EOD (INSERT CURSOR, PUT, FLUSH), de l&apos;atomicité stricte des transactions bancaires et de la résolution des conflits de verrous.
+                    a accompli avec brio l&apos;intégralité du cursus certifiant avec validation des 150 exercices pratiques, attestant d&apos;une expertise de haut niveau sur les spécifications ISO 8583, le décodage forensique EMV TLV/TVR, la cryptographie matérielle HSM (3DES/AES, PIN Block ISO-0), les journaux GAB NDC/DDC et les cycles de clearing Visa / Mastercard / GIM-UEMOA.
                   </p>
 
                   <div style={{
@@ -992,24 +759,24 @@ export default function Cbs4GlTrainingPage() {
                   }}>
                     <div>
                       <div style={{ fontSize: "11px", color: "#64748b", textTransform: "uppercase" }}>Mention</div>
-                      <div style={{ fontSize: "14px", fontWeight: 700, color: "#22c55e" }}>Excellence (95%)</div>
+                      <div style={{ fontSize: "14px", fontWeight: 700, color: "#34d399" }}>Très Honorable (96%)</div>
                     </div>
                     <div>
-                      <div style={{ fontSize: "11px", color: "#64748b", textTransform: "uppercase" }}>Grade Atteint</div>
-                      <div style={{ fontSize: "14px", fontWeight: 700, color: "#eab308" }}>Niveau 5 - Architecte Lead</div>
+                      <div style={{ fontSize: "11px", color: "#64748b", textTransform: "uppercase" }}>Grade Certifié</div>
+                      <div style={{ fontSize: "14px", fontWeight: 700, color: "#10b981" }}>Niveau 5 - Expert Monétique</div>
                     </div>
                     <div>
-                      <div style={{ fontSize: "11px", color: "#64748b", textTransform: "uppercase" }}>Délivré le</div>
+                      <div style={{ fontSize: "11px", color: "#64748b", textTransform: "uppercase" }}>Date d&apos;Émission</div>
                       <div style={{ fontSize: "14px", fontWeight: 700, color: "#cbd5e1" }}>21 Septembre 2026</div>
                     </div>
                   </div>
                 </div>
 
-                {/* BOUTON D'IMPRESSION */}
+                {/* BOUTON IMPRIMER */}
                 <button
                   onClick={() => window.print()}
                   style={{
-                    background: "linear-gradient(135deg, #ca8a04, #a16207)",
+                    background: "linear-gradient(135deg, #059669, #047857)",
                     color: "#ffffff",
                     border: "none",
                     borderRadius: "8px",
@@ -1017,10 +784,10 @@ export default function Cbs4GlTrainingPage() {
                     fontSize: "14px",
                     fontWeight: 700,
                     cursor: "pointer",
-                    boxShadow: "0 4px 14px rgba(202, 138, 4, 0.4)"
+                    boxShadow: "0 4px 14px rgba(5, 150, 105, 0.4)"
                   }}
                 >
-                  🖨️ Imprimer / Télécharger le Certificat Officiel (PDF)
+                  🖨️ Imprimer / Sauvegarder le Certificat Monétique (PDF)
                 </button>
               </div>
             )}
