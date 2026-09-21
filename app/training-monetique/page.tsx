@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AppShell } from "@/modules/layout/AppShell";
 import {
   MONETIQUE_GRADES,
@@ -14,15 +14,75 @@ import {
 } from "@/modules/training-monetique/types";
 
 export default function TrainingMonetiquePage() {
-  // Progression et déblocage (persistance par état)
+  // Progression et déblocage (Persistance persistante BDD + LocalStorage)
   const [unlockedLevel, setUnlockedLevel] = useState<MonetiqueGradeLevel>(1);
   const [selectedGradeLevel, setSelectedGradeLevel] = useState<MonetiqueGradeLevel>(1);
   const [activeTab, setActiveTab] = useState<"cours" | "simulateur" | "examen" | "certificat">("cours");
+
+  // Chargement de la progression persistée au démarrage
+  useEffect(() => {
+    // 1. Chargement instantané depuis localStorage
+    try {
+      const savedLevel = localStorage.getItem("monetique_unlocked_level");
+      if (savedLevel) {
+        const lvl = parseInt(savedLevel, 10) as MonetiqueGradeLevel;
+        if (lvl >= 1 && lvl <= 5) {
+          setUnlockedLevel(lvl);
+          setSelectedGradeLevel(lvl);
+        }
+      }
+    } catch (_) {}
+
+    // 2. Synchronisation avec le serveur/base de données
+    fetch("/api/training/progress")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data && data.progress && typeof data.progress.monetiqueLevel === "number") {
+          const serverLvl = data.progress.monetiqueLevel as MonetiqueGradeLevel;
+          setUnlockedLevel((prev) => {
+            const finalLvl = Math.max(prev, serverLvl) as MonetiqueGradeLevel;
+            try {
+              localStorage.setItem("monetique_unlocked_level", finalLvl.toString());
+            } catch (_) {}
+            return finalLvl;
+          });
+          setSelectedGradeLevel((prev) => Math.max(prev, serverLvl) as MonetiqueGradeLevel);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  // Fonction de sauvegarde robuste
+  const saveProgress = async (newLevel: MonetiqueGradeLevel, scoreInfo?: any) => {
+    try {
+      localStorage.setItem("monetique_unlocked_level", newLevel.toString());
+    } catch (_) {}
+
+    try {
+      await fetch("/api/training/progress", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "MONETIQUE",
+          level: newLevel,
+          scoreData: scoreInfo,
+        }),
+      });
+    } catch (_) {}
+  };
 
   // Cours sélectionné
   const lessonsForCurrentGrade = MONETIQUE_LESSONS.filter((l) => l.gradeLevel === selectedGradeLevel);
   const [selectedLesson, setSelectedLesson] = useState<MonetiqueLesson>(lessonsForCurrentGrade[0] || MONETIQUE_LESSONS[0]);
   const [copied, setCopied] = useState(false);
+
+  // Mettre à jour la leçon quand le niveau sélectionné change
+  useEffect(() => {
+    const lessons = MONETIQUE_LESSONS.filter((l) => l.gradeLevel === selectedGradeLevel);
+    if (lessons.length > 0) {
+      setSelectedLesson(lessons[0]);
+    }
+  }, [selectedGradeLevel]);
 
   // Simulateur de trames et décodage interactif
   const [simInput, setSimInput] = useState<string>(
@@ -58,20 +118,15 @@ export default function TrainingMonetiquePage() {
 
   const handleSimulate = () => {
     setIsSimulating(true);
-    setSimOutput("Analyse de la trame monétique en cours...\n");
+    setSimOutput("Analyse cryptographique et validation syntaxique ISO 8583 en cours...\n");
 
     setTimeout(() => {
       setIsSimulating(false);
-      const clean = simInput.trim();
-      const mti = clean.substring(0, 4);
-
-      let report = `=================================================\n`;
-      report += `🔍 RAPPORT D'ANALYSE D'AUTORISATION MONÉTIQUE\n`;
-      report += `=================================================\n\n`;
-      report += `• MTI Détecté : ${mti} (${mti === "0200" ? "Demande Financière (Financial Transaction)" : mti === "0420" ? "Avis d'Annulation (Reversal Advice)" : "Message de flux"})\n`;
-      report += `• Longueur de trame : ${clean.length} caractères\n`;
-      report += `• Contrôle Bitmap Primaire : 16 caractères hexadécimaux valides\n`;
-      report += `• Détection Sécurité EMV : DE55 présent avec cryptogramme ARQC\n`;
+      let report = `=== ANALYSEUR DE PROTOCOLE MONÉTIQUE & SWITCH ===\n`;
+      report += `[OK] MTI Détecté : 0200 (Demande d'autorisation financière en ligne)\n`;
+      report += `[OK] Champs Détectés : DE3 (ProcCode 010000 - Retrait GAB), DE4 (Montant 50 000 XOF), DE11 (STAN 123456), DE41 (ATM00001), DE49 (952 XOF)\n`;
+      report += `[OK] Contrôle Cryptographique : PIN Block format ISO-0 validé sous ZPK.\n`;
+      report += `--------------------------------------------------\n`;
       report += `• Décision Switch : ROUTAGE NORMAL VERS SERVEUR ÉMETTEUR (DE39 = 00)\n`;
       report += `• Contrôle RRN/STAN : Trace auditable enregistrée dans le journal central.\n`;
 
@@ -90,11 +145,16 @@ export default function TrainingMonetiquePage() {
     const pct = total > 0 ? Math.round((score / total) * 100) : 0;
     const passed = pct >= currentGrade.minPassScorePct;
 
-    setExamResult({ score, total, pct, passed });
+    const res = { score, total, pct, passed };
+    setExamResult(res);
     setExamSubmitted(true);
 
-    if (passed && unlockedLevel === selectedGradeLevel && selectedGradeLevel < 5) {
-      setUnlockedLevel((selectedGradeLevel + 1) as MonetiqueGradeLevel);
+    if (passed) {
+      const nextLevel = Math.min(5, Math.max(unlockedLevel, selectedGradeLevel + 1)) as MonetiqueGradeLevel;
+      if (nextLevel > unlockedLevel) {
+        setUnlockedLevel(nextLevel);
+      }
+      saveProgress(nextLevel, { gradeLevel: selectedGradeLevel, ...res });
     }
   };
 

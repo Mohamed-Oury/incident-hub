@@ -1,0 +1,1624 @@
+{
+  "grades": [
+    {
+      "level": 1,
+      "gradeCode": "APPRENTI",
+      "name": "Niveau 1 : Apprenti Développeur 4GL",
+      "badge": "🟢 Apprenti",
+      "color": "#22c55e",
+      "minPassScorePct": 80,
+      "objective": "Maîtriser la grammaire 4GL, la déclaration des types scalaires, les structures de contrôle et l'organisation modulaire MAIN / FUNCTION.",
+      "recommendedResources": [
+        {
+          "title": "IBM Informix 4GL Reference Manual (Volume 1 & 2)",
+          "type": "MANUEL_INFORMIX",
+          "urlOrRef": "IBM Pubs: G251-0268-00",
+          "description": "Manuel de référence officiel de la syntaxe du langage 4GL procédural et grammaire des instructions."
+        },
+        {
+          "title": "Standard de Développement Bancaire Amplitude (Nomenclature)",
+          "type": "NORMES_BANCAIRES",
+          "urlOrRef": "CBS-STD-NAMING-V4",
+          "description": "Règles de nommage strictes : préfixes variables (g_, l_, p_), indentations et commentaires obligatoires."
+        },
+        {
+          "title": "Guide de Démarrage Rapide Compilateur c4gl sous AIX",
+          "type": "GUIDE_TECHNIQUE",
+          "urlOrRef": "AIX-C4GL-BUILD-101",
+          "description": "Variables d'environnement indispensables : $INFORMIXDIR, $INFORMIXSERVER, $PATH et options de compilation -c / -o."
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "gradeCode": "JUNIOR",
+      "name": "Niveau 2 : Développeur Junior 4GL",
+      "badge": "🔵 Junior",
+      "color": "#3b82f6",
+      "minPassScorePct": 80,
+      "objective": "Intégrer le SQL embarqué (SELECT INTO), lier les variables au schéma de la base (RECORD LIKE) et gérer les codes retours système (status, NOTFOUND).",
+      "recommendedResources": [
+        {
+          "title": "Guide d'Intégration SQL dans Informix 4GL (Embedded SQL)",
+          "type": "MANUEL_INFORMIX",
+          "urlOrRef": "IBM-4GL-ESQL-GUIDE",
+          "description": "Interaction entre les types de données 4GL et les colonnes SQL relationnelles, directives LIKE et status."
+        },
+        {
+          "title": "Dictionnaire du Modèle de Données CBS Amplitude (Comptes & Mouvements)",
+          "type": "NORMES_BANCAIRES",
+          "urlOrRef": "AMPLITUDE-DICT-CPT-TRA",
+          "description": "Schéma relationnel des tables BKCPT, BKCOM, BKTRA, BKAUD et règles de cohérence des soldes."
+        },
+        {
+          "title": "Manuel des Codes d'Erreurs SQL et Moteur ISAM",
+          "type": "GUIDE_TECHNIQUE",
+          "urlOrRef": "INFORMIX-ERROR-MESSAGES",
+          "description": "Guide exhaustif d'analyse de la zone sqlca.sqlcode et des erreurs du moteur ISAM sqlca.sqlerrd[1]."
+        }
+      ]
+    },
+    {
+      "level": 3,
+      "gradeCode": "CONFIRME",
+      "name": "Niveau 3 : Développeur Confirmé 4GL",
+      "badge": "🟡 Confirmé",
+      "color": "#eab308",
+      "minPassScorePct": 85,
+      "objective": "Manipuler les curseurs séquentiels (DECLARE/FOREACH), optimiser les lectures massives (DIRTY READ) et concevoir des formulaires guichet interactifs (.per / INPUT).",
+      "recommendedResources": [
+        {
+          "title": "Manuel des Formulaires Écran Informix Form-4GL (.per / form4gl)",
+          "type": "MANUEL_INFORMIX",
+          "urlOrRef": "IBM-FORM4GL-SPEC",
+          "description": "Conception des masques écrans guichet, sections SCREEN, TABLES, ATTRIBUTES et INSTRUCTIONS."
+        },
+        {
+          "title": "Guide de Gestion des Curseurs & Niveaux d'Isolation SQL",
+          "type": "GUIDE_TECHNIQUE",
+          "urlOrRef": "4GL-CURSORS-ISOLATION-V3",
+          "description": "Curseurs séquentiels, curseurs FOR UPDATE, SCROLL CURSOR et gestion du verrouillage DIRTY READ."
+        },
+        {
+          "title": "Procédures de Guichet & Validation d'Événements Agence",
+          "type": "NORMES_BANCAIRES",
+          "urlOrRef": "CBS-FRONT-OFFICE-EVENT-GUIDE",
+          "description": "Patterns événementiels BEFORE/AFTER FIELD et contrôles temps réel de découvert bancaire."
+        }
+      ]
+    },
+    {
+      "level": 4,
+      "gradeCode": "SENIOR",
+      "name": "Niveau 4 : Développeur Senior 4GL",
+      "badge": "🟠 Senior",
+      "color": "#f97316",
+      "minPassScorePct": 85,
+      "objective": "Garantir l'atomicité stricte des opérations bancaires (partie double, BEGIN/COMMIT/ROLLBACK), maîtriser les niveaux de verrouillage ligne et résoudre les deadlocks (-244, -107).",
+      "recommendedResources": [
+        {
+          "title": "Architecture des Transactions Bancaires ACID & Partie Double",
+          "type": "NORMES_BANCAIRES",
+          "urlOrRef": "BANK-ACID-DOUBLE-ENTRY",
+          "description": "Normes comptables bancaires : intégrité débit/crédit, persistance et traçabilité réglementaire."
+        },
+        {
+          "title": "Guide de Résolution des Conflits de Concurrence & Deadlocks",
+          "type": "GUIDE_TECHNIQUE",
+          "urlOrRef": "INFORMIX-LOCKING-DEADLOCK-RCA",
+          "description": "Prévention des blocages croisés par ordonnancement séquentiel, SET LOCK MODE TO WAIT et diagnostic des sessions."
+        },
+        {
+          "title": "Manuel d'Audit & Journalisation des Flux Monétiques",
+          "type": "DOC_OFFICIELLE",
+          "urlOrRef": "AUDIT-TRAIL-PCI-DSS",
+          "description": "Sécurisation des opérations sensibles sur BKAUD et exigences de conformité réglementaire."
+        }
+      ]
+    },
+    {
+      "level": 5,
+      "gradeCode": "EXPERT",
+      "name": "Niveau 5 : Lead Architecte & Expert 4GL",
+      "badge": "🔴 Expert",
+      "color": "#ef4444",
+      "minPassScorePct": 90,
+      "objective": "Concevoir des traitements batch haute vélocité pour la chaîne EOD, optimiser les I/O disque via INSERT CURSOR / PUT / FLUSH, et maîtriser le SQL dynamique préparé (PREPARE/EXECUTE).",
+      "recommendedResources": [
+        {
+          "title": "Informix Performance Tuning & Batch Optimization Guide",
+          "type": "MANUEL_INFORMIX",
+          "urlOrRef": "IBM-IDS-PERF-TUNING",
+          "description": "Optimisation du Buffer Pool, gestion des Logical Logs (-454), UPDATE STATISTICS et plans d'exécution SET EXPLAIN."
+        },
+        {
+          "title": "Spécifications de la Chaîne Batch EOD/BOD Amplitude Haute Performance",
+          "type": "DOC_OFFICIELLE",
+          "urlOrRef": "AMPLITUDE-EOD-ARCH-V8",
+          "description": "Techniques de chunking de transactions (1 000-2 000 lignes), parallélisation AIX et fenêtres de cut-off."
+        },
+        {
+          "title": "Guide d'Ingénierie INSERT CURSOR / PUT / FLUSH & SQL Dynamique",
+          "type": "GUIDE_TECHNIQUE",
+          "urlOrRef": "4GL-HIGH-VELOCITY-IO",
+          "description": "Architecture de flux en écriture tamponnée et réduction des allers-retours client-serveur SGBD."
+        }
+      ]
+    }
+  ],
+  "lessons": [
+    {
+      "id": "l1_01",
+      "gradeLevel": 1,
+      "category": "SYNTAXE",
+      "title": "1.1 Anatomie d'un Module 4GL & Structure MAIN",
+      "summary": "Découvrez le cycle de vie d'un exécutable 4GL dans l'écosystème bancaire Amplitude.",
+      "keyConcepts": [
+        "DATABASE amplitude",
+        "GLOBALS",
+        "MAIN ... END MAIN",
+        "CALL",
+        "EXIT PROGRAM"
+      ],
+      "detailedContent": "En Informix 4GL, chaque programme autonome démarre impérativement par la clause 'DATABASE' qui définit le schéma cible. Le bloc 'MAIN' est le point d'entrée unique de l'exécutable.\nLes variables peuvent être globales (accessibles à tous les fichiers sources du projet via le bloc GLOBALS) ou locales (visibles uniquement à l'intérieur d'une FUNCTION ou du bloc MAIN).\n\nLe compilateur c4gl traduit d'abord le source 4GL en code C intermédiaire ANSI avant de générer le binaire machine natif lié aux librairies clientes du SGBD.",
+      "codeSample": "{ Programme minimal : initialisation et affichage }\nDATABASE amplitude\n\nGLOBALS\n    DEFINE g_banque_code CHAR(5),\n           g_dco_jour DATE\nEND GLOBALS\n\nMAIN\n    DEFINE l_message VARCHAR(80)\n\n    LET g_banque_code = \"01001\"\n    LET g_dco_jour = TODAY\n    LET l_message = \"Démarrage du sous-système 4GL Amplitude...\"\n\n    DISPLAY l_message AT 2, 5\n    CALL afficher_entete(g_banque_code, g_dco_jour)\n\n    EXIT PROGRAM (0)\nEND MAIN\n\nFUNCTION afficher_entete(p_code, p_date)\n    DEFINE p_code CHAR(5),\n           p_date DATE\n\n    DISPLAY \"Banque : \", p_code, \" | Date d'arrêté : \", p_date AT 4, 5\nEND FUNCTION",
+      "explanation": "Ce programme établit la connexion au catalogue 'amplitude', charge la date système 'TODAY' et transmet les paramètres à la sous-fonction.",
+      "goldenRules": [
+        "Toujours spécifier le code retour avec EXIT PROGRAM (0 pour succès, >0 pour anomalie).",
+        "Nommer les variables avec des préfixes explicites : g_ pour Globales, l_ pour Locales, p_ pour Paramètres."
+      ],
+      "pitfallsToAvoid": [
+        "Ne pas déclarer les variables locales au tout début du bloc FUNCTION provoque une erreur de compilation.",
+        "Ne jamais appeler DATABASE à l'intérieur d'une FUNCTION : cela doit se faire en tête de fichier."
+      ]
+    },
+    {
+      "id": "l1_02",
+      "gradeLevel": 1,
+      "category": "SYNTAXE",
+      "title": "1.2 Types de Données Métier & Calculs Décimaux Précis",
+      "summary": "Apprenez à manipuler les montants financiers sans aucune perte d'arrondi (DECIMAL vs FLOAT).",
+      "keyConcepts": [
+        "DECIMAL(19,4)",
+        "CHAR vs VARCHAR",
+        "DATE",
+        "NVL()",
+        "USING '###,###,##&.&&'"
+      ],
+      "detailedContent": "Dans une application bancaire, l'utilisation de types à virgule flottante binaire (FLOAT ou SMALLFLOAT) est STRICTEMENT PROSCRITE car ils introduisent des imprécisions d'arrondi intolérables en comptabilité (ex: 0.1 + 0.2 != 0.3).\nOn utilise exclusivement le type 'DECIMAL(p,s)' ou 'MONEY(p,s)'.\n- Pour les soldes bancaires : DECIMAL(19,4) permet de gérer des montants jusqu'aux centaines de milliards avec 4 décimales pour les calculs de change et d'intérêts au prorata temporis.",
+      "codeSample": "FUNCTION calculer_agio(p_solde_deb, p_taux, p_jours)\n    DEFINE p_solde_deb DECIMAL(19,4),\n           p_taux      DECIMAL(7,4),\n           p_jours     INTEGER,\n           l_agio      DECIMAL(19,4)\n\n    -- Si le solde est NULL, forcer à 0 pour éviter une propagation de NULL\n    LET p_solde_deb = NVL(p_solde_deb, 0)\n\n    IF p_solde_deb <= 0 THEN\n        RETURN 0.0000\n    END IF\n\n    -- Formule bancaire : (Montant * Taux * Nombre de jours) / (360 * 100)\n    LET l_agio = (p_solde_deb * p_taux * p_jours) / 36000.0000\n\n    RETURN l_agio\nEND FUNCTION",
+      "explanation": "La fonction utilise le type DECIMAL et la fonction système NVL() pour sécuriser le calcul d'intérêts sur base de l'année bancaire (360 jours).",
+      "goldenRules": [
+        "Systématiquement encapsuler les variables numériques pouvant être NULL dans un NVL(valeur, 0).",
+        "Formater les sorties comptables avec la clause USING pour afficher les séparateurs de milliers."
+      ],
+      "pitfallsToAvoid": [
+        "En 4GL, toute opération mathématique impliquant une variable à valeur NULL renvoie NULL sans générer d'erreur apparente."
+      ]
+    },
+    {
+      "id": "l2_01",
+      "gradeLevel": 2,
+      "category": "SQL_EMBARQUE",
+      "title": "2.1 SELECT INTO & Liaison Schéma (RECORD LIKE)",
+      "summary": "Liez dynamiquement vos structures mémoires aux tables Amplitude et lisez un compte en base.",
+      "keyConcepts": [
+        "RECORD LIKE bkcpt.*",
+        "SELECT * INTO",
+        "status = 0",
+        "status = NOTFOUND (100)"
+      ],
+      "detailedContent": "La puissance d'Informix 4GL réside dans sa fusion naturelle avec le dictionnaire de données du SGBD.\nLa directive 'RECORD LIKE bkcpt.*' inspecte le catalogue système et dimensionne exactement en mémoire toutes les variables correspondant aux colonnes de la table BKCPT.\nSi une colonne de BKCPT change de type (ex: passage d'un code agence de 3 à 5 caractères), une simple recompilation du programme réajuste instantanément la structure sans modifier le code source.",
+      "codeSample": "FUNCTION lire_compte_client(p_age, p_ncp)\n    DEFINE p_age CHAR(5),\n           p_ncp CHAR(11),\n           l_cpt RECORD LIKE bkcpt.*\n\n    SELECT * INTO l_cpt.*\n      FROM bkcpt\n     WHERE age = p_age\n       AND ncp = p_ncp\n\n    CASE\n        WHEN status = 0\n            DISPLAY \"Compte trouvé : \", l_cpt.ncp, \" | Solde : \", l_cpt.sol USING \"---,---,---,##&.&&\"\n            RETURN TRUE, l_cpt.*\n        WHEN status = NOTFOUND\n            DISPLAY \"ATTENTION : Le compte n'existe pas en agence \", p_age\n            RETURN FALSE, l_cpt.*\n        OTHERWISE\n            DISPLAY \"ERREUR SQL CRITIQUE : Code status = \", status\n            CALL journaliser_erreur(\"SELECT_BKCPT\", status)\n            RETURN FALSE, l_cpt.*\n    END CASE\nEND FUNCTION",
+      "explanation": "L'instruction vérifie la variable globale 'status'. 0 correspond à une lecture réussie, NOTFOUND (100) signale l'absence de ligne.",
+      "goldenRules": [
+        "Toujours tester status immédiatement après chaque ordre SELECT.",
+        "Ne jamais supposer qu'un compte existe en base : toujours traiter explicitement le cas NOTFOUND."
+      ],
+      "pitfallsToAvoid": [
+        "Si la requête SELECT renvoie PLUS d'une ligne, status prend la valeur -284 (A subquery has returned not exactly one row) et le programme plante."
+      ]
+    },
+    {
+      "id": "l2_02",
+      "gradeLevel": 2,
+      "category": "SQL_EMBARQUE",
+      "title": "2.2 Variables Système d'Audit (sqlca & SQLCODE)",
+      "summary": "Interprétez les codes de diagnostic approfondis retournés par le moteur SGBD.",
+      "keyConcepts": [
+        "sqlca.sqlcode",
+        "sqlca.sqlerrd[2]",
+        "sqlca.sqlerrm",
+        "WHENEVER ERROR"
+      ],
+      "detailedContent": "La structure globale 'sqlca' (SQL Communications Area) contient les informations exhaustives sur le dernier ordre SQL exécuté :\n- sqlca.sqlcode : équivalent à 'status' (0 = OK, >0 = Avertissement/NotFound, <0 = Erreur fatale).\n- sqlca.sqlerrd[2] : nombre de lignes insérées, modifiées ou supprimées par le dernier ordre INSERT/UPDATE/DELETE.\n- sqlca.sqlerrd[1] : numéro d'erreur ISAM sous-jacent (précieux pour diagnostiquer une corruption d'index ou un disque plein).",
+      "codeSample": "FUNCTION mettre_a_jour_decouvert(p_ncp, p_nouveau_plafond)\n    DEFINE p_ncp CHAR(11),\n           p_nouveau_plafond DECIMAL(19,4),\n           l_lignes_modifiees INTEGER\n\n    UPDATE bkcpt\n       SET deb = p_nouveau_plafond\n     WHERE ncp = p_ncp\n       AND eta = \"A\"\n\n    LET l_lignes_modifiees = sqlca.sqlerrd[2]\n\n    IF status < 0 THEN\n        DISPLAY \"Échec de l'UPDATE. Code SQL : \", sqlca.sqlcode\n        DISPLAY \"Erreur ISAM moteur : \", sqlca.sqlerrd[1]\n        RETURN FALSE\n    END IF\n\n    IF l_lignes_modifiees = 0 THEN\n        DISPLAY \"Aucun compte actif modifié (compte peut-être clôturé ou bloqué).\"\n        RETURN FALSE\n    END IF\n\n    DISPLAY \"Succès : Plafond mis à jour sur \", l_lignes_modifiees, \" compte.\"\n    RETURN TRUE\nEND FUNCTION",
+      "explanation": "sqlca.sqlerrd[2] confirme que la ligne a effectivement été mise à jour en base de données.",
+      "goldenRules": [
+        "Consulter sqlca.sqlerrd[2] après un UPDATE pour s'assurer qu'il a bien ciblé la ligne visée.",
+        "Consigner sqlca.sqlerrd[1] dans les logs de production pour faciliter l'analyse par les DBA."
+      ],
+      "pitfallsToAvoid": [
+        "Un UPDATE qui ne trouve aucune ligne ne met PAS status à NOTFOUND, il positionne status = 0 avec sqlca.sqlerrd[2] = 0."
+      ]
+    },
+    {
+      "id": "l3_01",
+      "gradeLevel": 3,
+      "category": "CURSEURS",
+      "title": "3.1 Curseurs Séquentiels FOREACH & Mode DIRTY READ",
+      "summary": "Traitez des millions d'écritures sans verrouiller la base de données en exploitation.",
+      "keyConcepts": [
+        "DECLARE c_cur CURSOR FOR",
+        "FOREACH ... INTO",
+        "SET ISOLATION TO DIRTY READ"
+      ],
+      "detailedContent": "Lorsqu'une requête renvoie un jeu de plusieurs lignes (par exemple tous les mouvements de la journée dans BKTRA), on ne peut pas utiliser un simple SELECT INTO.\nOn déclare un curseur séquentiel. La boucle 'FOREACH c_cur INTO structure.*' gère automatiquement les étapes OPEN, FETCH itératif et CLOSE du curseur.\n\nPour les extractions et éditions de fin de journée, le positionnement de 'SET ISOLATION TO DIRTY READ' indique au moteur Informix de ne poser aucun verrou partagé et de ne pas attendre la levée des verrous des transactions concurrentes.",
+      "codeSample": "FUNCTION extraire_journal_compensations(p_dco)\n    DEFINE p_dco DATE,\n           l_rec RECORD LIKE bktra.*,\n           l_total_debit  DECIMAL(19,4),\n           l_total_credit DECIMAL(19,4),\n           l_count INTEGER\n\n    SET ISOLATION TO DIRTY READ\n\n    DECLARE c_tra CURSOR FOR\n        SELECT * FROM bktra\n         WHERE dco = p_dco\n           AND ope IN (\"MNT\", \"VIR\", \"CHQ\")\n         ORDER BY dco, eve\n\n    LET l_total_debit = 0\n    LET l_total_credit = 0\n    LET l_count = 0\n\n    FOREACH c_tra INTO l_rec.*\n        LET l_count = l_count + 1\n        IF l_rec.sen = \"D\" THEN\n            LET l_total_debit = l_total_debit + l_rec.mon\n        ELSE\n            LET l_total_credit = l_total_credit + l_rec.mon\n        END IF\n    END FOREACH\n\n    DISPLAY \"Total Mouvements traités : \", l_count\n    DISPLAY \"Cumul Débit  : \", l_total_debit USING \"###,###,##&.&&\"\n    DISPLAY \"Cumul Crédit : \", l_total_credit USING \"###,###,##&.&&\"\nEND FUNCTION",
+      "explanation": "Le curseur parcourt tous les flux de compensation en mode lecture sale pour un débit maximal sans verrou.",
+      "goldenRules": [
+        "Toujours trier sur des colonnes indexées dans la clause ORDER BY d'un curseur.",
+        "Revenir à l'isolation par défaut (COMMITTED READ) une fois les gros états terminés."
+      ],
+      "pitfallsToAvoid": [
+        "Ne jamais modifier des données dans la table cible pendant qu'un curseur non verrouillé la parcourt, sous peine de lire deux fois la même ligne déplacée."
+      ]
+    },
+    {
+      "id": "l3_02",
+      "gradeLevel": 3,
+      "category": "IHM_FORMULAIRES",
+      "title": "3.2 Formulaires Écrans Guichet (.per) & Événements INPUT",
+      "summary": "Créez des masques de saisie agences sécurisés avec contrôle de validité immédiat.",
+      "keyConcepts": [
+        "OPEN FORM",
+        "INPUT BY NAME",
+        "BEFORE/AFTER FIELD",
+        "ON KEY(F1...F12)"
+      ],
+      "detailedContent": "Les interfaces guichet et agences d'Amplitude reposent sur des fichiers de formulaires textuels compilés (.per -> .frm).\nL'instruction 'INPUT BY NAME' transfère automatiquement les données saisies sur l'écran vers les variables mémoire de même nom.\nLes sections 'AFTER FIELD' permettent d'intercepter la validation de chaque zone pour appliquer les contrôles de conformité bancaire (vérification de signature, solde, validité de la pièce d'identité) avant même que l'utilisateur ne valide le formulaire entier.",
+      "codeSample": "FUNCTION saisie_remise_cheque()\n    DEFINE l_ncp CHAR(11),\n           l_num_chq CHAR(10),\n           l_montant DECIMAL(19,4),\n           l_valide SMALLINT\n\n    OPEN FORM f_chq FROM \"rem_cheque\"\n    DISPLAY FORM f_chq\n\n    INPUT BY NAME l_ncp, l_num_chq, l_montant\n        BEFORE FIELD l_montant\n            MESSAGE \"Saisie du montant nominal en monnaie légale\"\n\n        AFTER FIELD l_ncp\n            -- Contrôle d'existence et blocage éventuel\n            SELECT count(*) INTO l_valide \n              FROM bkcpt \n             WHERE ncp = l_ncp AND eta = \"A\"\n\n            IF l_valide = 0 THEN\n                ERROR \"Compte introuvable ou sous opposition judiciaire !\"\n                NEXT FIELD l_ncp\n            END IF\n\n        ON KEY (F8)\n            CALL consulter_derniers_mouvements(l_ncp)\n\n        ON KEY (INTERRUPT)\n            MESSAGE \"Opération annulée par le guichetier.\"\n            EXIT INPUT\n    END INPUT\n\n    CLOSE FORM f_chq\nEND FUNCTION",
+      "explanation": "NEXT FIELD renvoie le focus sur le champ en cas d'erreur sans quitter le masque de saisie.",
+      "goldenRules": [
+        "Utiliser ERROR pour les alertes bloquantes et MESSAGE pour les aides à la saisie.",
+        "Gérer systématiquement la touche INTERRUPT (Échap / Ctrl+C) pour libérer les masques proprement."
+      ],
+      "pitfallsToAvoid": [
+        "Ne jamais exécuter de requêtes lentes dans un BEFORE FIELD : cela fige le curseur de l'opérateur de saisie."
+      ]
+    },
+    {
+      "id": "l4_01",
+      "gradeLevel": 4,
+      "category": "TRANSACTIONS",
+      "title": "4.1 Atomicité Bancaire, Partie Double & Gestion des Locks",
+      "summary": "Garantissez l'équilibre parfait Débit/Crédit et gérez les rollbacks sans faille.",
+      "keyConcepts": [
+        "BEGIN WORK",
+        "COMMIT WORK",
+        "ROLLBACK WORK",
+        "Partie Double",
+        "Deadlock -244"
+      ],
+      "detailedContent": "Dans une banque, une transaction n'est jamais unitaire : elle est nécessairement bilatérale (débit d'un compte émetteur, crédit d'un compte récepteur, et éventuellement débit d'une commission et crédit d'une taxe).\nToutes ces écritures doivent réussir ensemble ou être annulées intégralement : c'est le principe d'Atomicité (ACID).\nLe bloc 'BEGIN WORK ... COMMIT WORK' forme une frontière transactionnelle. Si le serveur plante ou si un composant échoue, le 'ROLLBACK WORK' restitue les soldes exactement à leur état initial.",
+      "codeSample": "FUNCTION virement_compte_a_compte(p_age, p_src, p_dst, p_montant)\n    DEFINE p_age CHAR(5),\n           p_src, p_dst CHAR(11),\n           p_montant DECIMAL(19,4),\n           l_solde_src DECIMAL(19,4)\n\n    WHENEVER ERROR CONTINUE\n    BEGIN WORK\n\n    -- 1. Verrouiller et vérifier la provision du compte source\n    SELECT sol - sind + NVL(deb, 0) INTO l_solde_src\n      FROM bkcpt\n     WHERE age = p_age AND ncp = p_src\n       FOR UPDATE\n\n    IF l_solde_src < p_montant THEN\n        ROLLBACK WORK\n        CALL log_rejet(p_src, \"PROVISION_INSUFFISANTE\")\n        RETURN -1\n    END IF\n\n    -- 2. Débit du compte source\n    UPDATE bkcpt SET sol = sol - p_montant WHERE age = p_age AND ncp = p_src\n    IF status != 0 THEN ROLLBACK WORK RETURN -2 END IF\n\n    -- 3. Crédit du compte récepteur\n    UPDATE bkcpt SET sol = sol + p_montant WHERE age = p_age AND ncp = p_dst\n    IF status != 0 THEN ROLLBACK WORK RETURN -3 END IF\n\n    -- 4. Écritures dans le journal comptable\n    INSERT INTO bktra VALUES (p_age, TODAY, TODAY, \"VIR\", p_src, p_montant, \"D\", \"VIREMENT EMIS\", \"AUTO\")\n    IF status != 0 THEN ROLLBACK WORK RETURN -4 END IF\n\n    INSERT INTO bktra VALUES (p_age, TODAY, TODAY, \"VIR\", p_dst, p_montant, \"C\", \"VIREMENT RECU\", \"AUTO\")\n    IF status != 0 THEN ROLLBACK WORK RETURN -5 END IF\n\n    COMMIT WORK\n    WHENEVER ERROR STOP\n    RETURN 0\nEND FUNCTION",
+      "explanation": "La clause FOR UPDATE pose un verrou exclusif sur la ligne du compte pendant la transaction pour empêcher qu'un retrait DAB simultané ne double-dépense les fonds.",
+      "goldenRules": [
+        "Toujours encadrer les mouvements financiers d'un BEGIN WORK / COMMIT WORK.",
+        "Tester le statut après CHAQUE écriture et déclencher immédiatement ROLLBACK WORK au moindre accroc."
+      ],
+      "pitfallsToAvoid": [
+        "Ne jamais poser de verrous dans un ordre aléatoire (ex: Compte A puis Compte B dans un script, et Compte B puis Compte A dans un autre) : cela génère des interblocages mortels (deadlocks)."
+      ]
+    },
+    {
+      "id": "l5_01",
+      "gradeLevel": 5,
+      "category": "OPTIMISATION_EOD",
+      "title": "5.1 Architecture Haute Performance Batch EOD (INSERT CURSOR)",
+      "summary": "Passez de 200 lignes/seconde à plus de 10 000 lignes/seconde pour les arrêtés de nuit.",
+      "keyConcepts": [
+        "INSERT CURSOR",
+        "PUT",
+        "FLUSH",
+        "Chunking de transaction",
+        "PREPARE / EXECUTE"
+      ],
+      "detailedContent": "Lors du batch de clôture journalière EOD (End of Day), Amplitude doit traiter des millions d'écritures comptables en un temps record pour respecter le cut-off agences de 07h00.\nL'instruction unitaire 'INSERT INTO' est trop lente car chaque requête effectue un aller-retour réseau complet (Round-trip) et écrit un bloc journal.\n\nL'utilisation d'un 'INSERT CURSOR' associé à l'instruction 'PUT' permet d'accumuler les données dans un tampon mémoire local côté client 4GL. Dès que le tampon atteint 4 Ko ou 8 Ko, le moteur envoie un paquet réseau unique au moteur de base de données.\nCouplé à un COMMIT WORK par tranche de 1 000 lignes (chunking), cette technique supprime les engorgements de logs sans saturer la mémoire scratch.",
+      "codeSample": "FUNCTION batch_arrete_interets_masse()\n    DEFINE l_rec RECORD LIKE bktra.*,\n           l_nb_lus, l_nb_traites INTEGER\n\n    PREPARE stmt_ins FROM \n        \"INSERT INTO bktra (age, dco, dval, ope, ncp, mon, sen, lib, uti) \" ||\n        \"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)\"\n\n    DECLARE c_ins_rapide INSERT CURSOR FOR stmt_ins\n\n    OPEN c_ins_rapide\n    BEGIN WORK\n\n    LET l_nb_lus = 0\n    LET l_nb_traites = 0\n\n    -- Parcours des calculs préparés\n    FOREACH c_calculs INTO l_rec.*\n        LET l_nb_lus = l_nb_lus + 1\n\n        PUT c_ins_rapide FROM l_rec.*\n        LET l_nb_traites = l_nb_traites + 1\n\n        -- Validation par lots de 1000 pour libérer les logs Informix\n        IF (l_nb_traites MOD 1000) = 0 THEN\n            FLUSH c_ins_rapide\n            COMMIT WORK\n            BEGIN WORK\n        END IF\n    END FOREACH\n\n    -- TRÈS IMPORTANT : Vider les dernières lignes restantes dans le buffer\n    FLUSH c_ins_rapide\n    COMMIT WORK\n\n    CLOSE c_ins_rapide\n    DISPLAY \"Fin du batch EOD : \", l_nb_traites, \" écritures injectées avec succès.\"\nEND FUNCTION",
+      "explanation": "Le couplage de PREPARE, INSERT CURSOR, PUT, FLUSH et du découpage de commit garantit les meilleures performances d'exploitation.",
+      "goldenRules": [
+        "Toujours invoquer FLUSH avant de faire un COMMIT WORK ou avant CLOSE CURSOR.",
+        "Ne pas dépasser 2 000 lignes par bloc de commit pour éviter l'erreur Informix -454 (Long transaction aborted)."
+      ],
+      "pitfallsToAvoid": [
+        "Oublier le FLUSH final avant de fermer le programme : les 200 à 400 dernières lignes restant dans le buffer réseau ne seront jamais enregistrées en base !"
+      ]
+    },
+    {
+      "id": "l1_03",
+      "gradeLevel": 1,
+      "category": "SYNTAXE",
+      "title": "1.3 Structures Conditionnelles Bancaires (IF, CASE & NULL)",
+      "summary": "Prenez des décisions métier rigoureuses : validation de profil client et contrôles d'éligibilité.",
+      "keyConcepts": [
+        "IF ... THEN ... ELSE",
+        "CASE ... WHEN",
+        "IS NULL / IS NOT NULL",
+        "MATCHES",
+        "LIKE"
+      ],
+      "detailedContent": "Dans les applications financières, les structures de branchement conditionnel doivent être strictement exhaustives.\nL'instruction CASE est particulièrement recommandée par rapport aux suites imbriquées de IF car elle oblige le développeur à prévoir la clause 'OTHERWISE', garantissant qu'aucun cas imprévu (ex: code devise inconnu) ne traverse le code sans traitement d'erreur.\n\nLe 4GL supporte l'opérateur 'MATCHES' pour la comparaison avec motifs réguliers :\n- '*' remplace n'importe quelle chaîne de caractères.\n- '?' remplace un seul caractère.\n- '[0-9]' filtre sur une plage de chiffres.",
+      "codeSample": "FUNCTION determiner_profil_frais(p_segment, p_nationalite)\n    DEFINE p_segment CHAR(3),\n           p_nationalite CHAR(3),\n           l_taux_remise DECIMAL(5,2)\n\n    -- Utilisation de CASE pour un routage sans faille\n    CASE\n        WHEN p_segment = \"VIP\" OR p_segment = \"COR\"\n            LET l_taux_remise = 50.00\n        WHEN p_segment = \"ENT\"\n            LET l_taux_remise = 25.00\n        WHEN p_segment = \"PAR\" AND p_nationalite = \"SEN\"\n            LET l_taux_remise = 10.00\n        WHEN p_segment IS NULL\n            CALL journaliser_incident(\"SEGMENT_CLIENT_NULL\")\n            LET l_taux_remise = 0.00\n        OTHERWISE\n            LET l_taux_remise = 0.00\n    END CASE\n\n    RETURN l_taux_remise\nEND FUNCTION",
+      "explanation": "La clause OTHERWISE capture tous les segments inconnus et évite les décisions bancaires non régies.",
+      "goldenRules": [
+        "Toujours inclure la branche OTHERWISE dans chaque instruction CASE.",
+        "Prêter attention aux espaces de fin dans les champs CHAR fixes : 'VIP ' n'est pas égal à 'VIP'."
+      ],
+      "pitfallsToAvoid": [
+        "Tester 'IF variable = NULL' est une erreur classique : en SQL/4GL, l'égalité avec NULL n'est jamais vraie. Il faut impérativement écrire 'IF variable IS NULL'."
+      ]
+    },
+    {
+      "id": "l1_04",
+      "gradeLevel": 1,
+      "category": "SYNTAXE",
+      "title": "1.4 Boucles Itératives & Contrôle de Flux (WHILE, FOR)",
+      "summary": "Itérez de manière sûre sur des listes et tableaux d'échéances sans boucle infinie.",
+      "keyConcepts": [
+        "FOR i = 1 TO N",
+        "WHILE ... END WHILE",
+        "EXIT FOR / EXIT WHILE",
+        "CONTINUE FOR"
+      ],
+      "detailedContent": "Le 4GL propose deux types de boucles :\n1. La boucle 'FOR' avec compteur à pas déterminé (STEP facultatif, par défaut +1). Elle est idéale pour parcourir des tableaux en mémoire (ARRAY) ou des simulations d'échéanciers de crédit.\n2. La boucle 'WHILE' qui continue tant qu'une condition logique est vérifiée. Elle requiert une condition d'arrêt explicite ou un garde-fou (compteur maximum) pour empêcher toute boucle infinie susceptible de saturer un cœur de processeur AIX à 100%.",
+      "codeSample": "FUNCTION simuler_echeancier_pret(p_capital, p_taux_mensuel, p_nb_mois)\n    DEFINE p_capital DECIMAL(19,4),\n           p_taux_mensuel DECIMAL(7,4),\n           p_nb_mois SMALLINT,\n           i SMALLINT,\n           l_part_interet DECIMAL(19,4),\n           l_part_capital DECIMAL(19,4),\n           l_capital_restant DECIMAL(19,4)\n\n    LET l_capital_restant = p_capital\n    DISPLAY \"--- ÉCHÉANCIER PRÉVISIONNEL DU CRÉDIT ---\"\n\n    FOR i = 1 TO p_nb_mois\n        LET l_part_interet = l_capital_restant * p_taux_mensuel\n        LET l_part_capital = (p_capital / p_nb_mois)\n        LET l_capital_restant = l_capital_restant - l_part_capital\n\n        -- Affichage sécurisé de chaque mensualité\n        DISPLAY \"Mois \", i USING \"##&\", \n                \" | Amortissement : \", l_part_capital USING \"##,###,##&.&&\",\n                \" | Intérêts : \", l_part_interet USING \"##,###,##&.&&\",\n                \" | Restant Dû : \", l_capital_restant USING \"##,###,##&.&&\"\n    END FOR\nEND FUNCTION",
+      "explanation": "La boucle FOR assure un parcours borné et déterministe correspondant exactement au nombre de mensualités demandées.",
+      "goldenRules": [
+        "Dans une boucle WHILE, toujours implémenter un compteur de sécurité (timeout) pour éviter le blocage de l'exécutable.",
+        "Ne jamais modifier la variable d'indice à l'intérieur du corps d'une boucle FOR."
+      ],
+      "pitfallsToAvoid": [
+        "Utiliser une boucle WHILE attendant une modification de base par un autre utilisateur sans 'SLEEP' fait exploser la charge CPU du serveur."
+      ]
+    },
+    {
+      "id": "l2_03",
+      "gradeLevel": 2,
+      "category": "SQL_EMBARQUE",
+      "title": "2.3 Jointures Bancaires Complexes & Multi-Tables",
+      "summary": "Reliez en une seule requête le client (BKCLI), son compte (BKCPT) et son agence (BKAGE).",
+      "keyConcepts": [
+        "SELECT ... JOIN",
+        "OUTER JOIN",
+        "ALIAS",
+        "ROWNUM / FIRST N"
+      ],
+      "detailedContent": "Dans le Core Banking, l'information d'un client est distribuée entre plusieurs tables :\n- BKCLI contient les coordonnées et le statut KYC du tiers.\n- BKCPT contient les comptes et soldes comptables.\n- BKAGE contient les informations physiques de l'agence de rattachement.\n\nLe SQL 4GL permet de réaliser des jointures directes vers des variables scalaires ou des enregistrements structurés.\nL'utilisation de la syntaxe Informix 'OUTER table' ou du mot-clé standard 'LEFT JOIN' permet de ramener les clients même s'ils ne disposent pas d'autorisation de découvert formelle dans BKAUT.",
+      "codeSample": "FUNCTION consulter_dossier_complet(p_ncp)\n    DEFINE p_ncp CHAR(11),\n           l_nom CHAR(45),\n           l_solde DECIMAL(19,4),\n           l_nom_agence CHAR(35),\n           l_plafond_deb DECIMAL(19,4)\n\n    SELECT c.nom, a.sol, g.lib, NVL(u.mnt, 0)\n      INTO l_nom, l_solde, l_nom_agence, l_plafond_deb\n      FROM bkcpt a\n      JOIN bkcli c ON a.cli = c.cli\n      JOIN bkage g ON a.age = g.age\n      LEFT JOIN bkaut u ON a.ncp = u.ncp AND a.age = u.age AND u.fin >= TODAY\n     WHERE a.ncp = p_ncp\n\n    IF status = NOTFOUND THEN\n        DISPLAY \"Compte ou informations client introuvables.\"\n        RETURN FALSE\n    END IF\n\n    DISPLAY \"Titulaire   : \", l_nom\n    DISPLAY \"Agence      : \", l_nom_agence\n    DISPLAY \"Solde       : \", l_solde USING \"---,---,---,##&.&&\"\n    DISPLAY \"Découvert   : \", l_plafond_deb USING \"---,---,---,##&.&&\"\n    RETURN TRUE\nEND FUNCTION",
+      "explanation": "La jointure externe (LEFT JOIN) assure la récupération des données du compte même en l'absence d'autorisation de découvert.",
+      "goldenRules": [
+        "Toujours utiliser des alias de table (a, c, g) courts et explicites pour la lisibilité.",
+        "Vérifier que toutes les colonnes de jointure (ON) s'appuient sur des clés primaires ou indexées."
+      ],
+      "pitfallsToAvoid": [
+        "Oublier une condition de jointure produit un produit cartésien qui fige la base de données et génère des millions de lignes inutiles."
+      ]
+    },
+    {
+      "id": "l2_04",
+      "gradeLevel": 2,
+      "category": "SQL_EMBARQUE",
+      "title": "2.4 Gestion Avancée des Exceptions & Traitement des Erreurs SGBD",
+      "summary": "Protégez vos programmes contre les crashs brutaux avec WHENEVER ERROR.",
+      "keyConcepts": [
+        "WHENEVER ERROR STOP",
+        "WHENEVER ERROR CONTINUE",
+        "WHENEVER ERROR CALL",
+        "sqlca.sqlcode"
+      ],
+      "detailedContent": "Par défaut, toute erreur SQL critique (< 0) stoppe immédiatement l'exécution du programme 4GL avec un message système brutal : c'est le comportement de 'WHENEVER ERROR STOP'.\nDans un environnement de production bancaire, ce comportement est proscrit pour les batchs critiques et les écrans guichet.\nOn utilise :\n- 'WHENEVER ERROR CONTINUE' : désactive l'arrêt automatique et permet au développeur de tester manuellement 'status' ou 'sqlca.sqlcode'.\n- 'WHENEVER ERROR CALL routine_alerte' : délègue la capture de l'incident à une procédure centrale de logging et de notification d'astreinte.",
+      "codeSample": "FUNCTION transferer_provision_securisee(p_src, p_dst, p_montant)\n    DEFINE p_src, p_dst CHAR(11),\n           p_montant DECIMAL(19,4)\n\n    -- Dérivation des erreurs vers le gestionnaire applicatif\n    WHENEVER ERROR CONTINUE\n\n    UPDATE bkcpt\n       SET sol = sol - p_montant\n     WHERE ncp = p_src\n\n    IF sqlca.sqlcode < 0 THEN\n        CALL alerte_dba_production(\"UPDATE_SRC_FAILED\", sqlca.sqlcode, sqlca.sqlerrd[1])\n        RETURN FALSE\n    END IF\n\n    UPDATE bkcpt\n       SET sol = sol + p_montant\n     WHERE ncp = p_dst\n\n    IF sqlca.sqlcode < 0 THEN\n        CALL alerte_dba_production(\"UPDATE_DST_FAILED\", sqlca.sqlcode, sqlca.sqlerrd[1])\n        RETURN FALSE\n    END IF\n\n    -- Rétablir le comportement standard en fin de routine\n    WHENEVER ERROR STOP\n    RETURN TRUE\nEND FUNCTION",
+      "explanation": "WHENEVER ERROR CONTINUE permet d'intercepter les erreurs SQL à chaud sans planter le processus.",
+      "goldenRules": [
+        "Toujours rétablir WHENEVER ERROR STOP après un bloc critique pour ne pas masquer involontairement des bugs ultérieurs.",
+        "Enregistrer systématiquement le code SQL (sqlca.sqlcode) et le code ISAM (sqlca.sqlerrd[1]) dans le journal d'audit BKAUD."
+      ],
+      "pitfallsToAvoid": [
+        "Laisser WHENEVER ERROR CONTINUE actif sur tout le fichier : les erreurs SQL passeront inaperçues et propageront des données corrompues."
+      ]
+    },
+    {
+      "id": "l3_03",
+      "gradeLevel": 3,
+      "category": "CURSEURS",
+      "title": "3.3 Curseurs de Mise à Jour Ligne (FOR UPDATE & WHERE CURRENT OF)",
+      "summary": "Modifiez de manière fiable les lignes au fur et à mesure du parcours du curseur.",
+      "keyConcepts": [
+        "DECLARE ... FOR UPDATE",
+        "WHERE CURRENT OF",
+        "Verrouillage ligne",
+        "Pointeur curseur"
+      ],
+      "detailedContent": "Dans un batch de calcul d'agios ou de prélèvement d'échéances de crédit, le programme doit lire une ligne, valider son solde, et la mettre à jour immédiatement.\nLa clause 'FOR UPDATE' posée lors de la déclaration du curseur réserve chaque ligne lors de son FETCH.\nL'instruction 'WHERE CURRENT OF nom_curseur' permet d'exécuter un UPDATE ou DELETE ciblé directement sur la ligne en cours de traitement, sans avoir besoin de réexécuter une recherche sur la clé primaire.",
+      "codeSample": "FUNCTION imputer_frais_tenue_comptes(p_age, p_frais)\n    DEFINE p_age CHAR(5),\n           p_frais DECIMAL(19,4),\n           l_cpt RECORD LIKE bkcpt.*\n\n    -- Déclaration d'un curseur avec réservation de mise à jour\n    DECLARE c_comptes_actifs CURSOR FOR\n        SELECT * FROM bkcpt\n         WHERE age = p_age\n           AND eta = \"A\"\n           AND sol > p_frais\n           FOR UPDATE OF sol, sind\n\n    OPEN c_comptes_actifs\n\n    WHILE TRUE\n        FETCH c_comptes_actifs INTO l_cpt.*\n        IF status = NOTFOUND THEN\n            EXIT WHILE\n        END IF\n\n        -- Débit direct de la ligne sous le curseur\n        UPDATE bkcpt\n           SET sol = sol - p_frais\n         WHERE CURRENT OF c_comptes_actifs\n\n        IF status != 0 THEN\n            CALL journaliser_incident(\"ECHEC_DEBIT_CURRENT_OF\")\n        END IF\n    END WHILE\n\n    CLOSE c_comptes_actifs\nEND FUNCTION",
+      "explanation": "WHERE CURRENT OF garantit que la mise à jour s'applique exactement sur la ligne sur laquelle se trouve le pointeur du curseur.",
+      "goldenRules": [
+        "Toujours nommer explicitement les colonnes impactées dans 'FOR UPDATE OF col1, col2'.",
+        "Fermer impérativement le curseur avec CLOSE dès que la boucle se termine."
+      ],
+      "pitfallsToAvoid": [
+        "Utiliser 'WHERE CURRENT OF' en dehors de la boucle ou après que le curseur a rencontré NOTFOUND provoque l'erreur -263."
+      ]
+    },
+    {
+      "id": "l3_04",
+      "gradeLevel": 3,
+      "category": "IHM_FORMULAIRES",
+      "title": "3.4 Tableaux Écrans Défilants & Menus Interactifs (DISPLAY ARRAY)",
+      "summary": "Affichez et faites défiler des listes de comptes et de transactions bancaires sur terminal VT100/SSH.",
+      "keyConcepts": [
+        "DISPLAY ARRAY",
+        "SCROLL",
+        "ON KEY",
+        "ARR_CURR()",
+        "SCR_LINE()"
+      ],
+      "detailedContent": "Pour les guichetiers et agents de conformité, Amplitude utilise des écrans textuels intégrant des listes défilantes (tableaux de 10 à 20 lignes avec barres de défilement).\nL'instruction 'DISPLAY ARRAY tableau_memoire TO tableau_ecran.*' prend en charge la pagination, le défilement haut/bas avec les flèches du clavier et la sélection de ligne avec la touche Entrée.\nLa fonction système 'ARR_CURR()' renvoie le numéro d'index dans le tableau mémoire correspondant à la ligne actuellement sélectionnée par l'opérateur.",
+      "codeSample": "FUNCTION consulter_liste_comptes_tiers(p_cli)\n    DEFINE p_cli CHAR(15),\n           l_tab ARRAY[50] OF RECORD\n               age CHAR(5),\n               ncp CHAR(11),\n               dev CHAR(3),\n               sol DECIMAL(19,4)\n           END RECORD,\n           i SMALLINT,\n           l_choisi SMALLINT\n\n    -- Chargement du tableau mémoire depuis la base\n    DECLARE c_cpt_cli CURSOR FOR\n        SELECT age, ncp, dev, sol FROM bkcpt WHERE cli = p_cli\n    \n    LET i = 0\n    FOREACH c_cpt_cli INTO l_tab[i+1].*\n        LET i = i + 1\n        IF i = 50 THEN EXIT FOREACH END IF\n    END FOREACH\n\n    OPEN FORM f_lst FROM \"lst_comptes\"\n    DISPLAY FORM f_lst\n\n    -- Affichage de la liste défilante\n    DISPLAY ARRAY l_tab TO s_cpt.*\n        ON KEY (F2)\n            LET l_choisi = ARR_CURR()\n            CALL afficher_historique_mouvements(l_tab[l_choisi].ncp)\n\n        ON KEY (INTERRUPT)\n            EXIT DISPLAY\n    END DISPLAY\n\n    CLOSE FORM f_lst\nEND FUNCTION",
+      "explanation": "ARR_CURR() permet de récupérer instantanément le compte sélectionné par le guichetier pour afficher ses mouvements.",
+      "goldenRules": [
+        "Toujours limiter la taille maximale du tableau (ex: 50 ou 100 lignes) pour ne pas saturer la mémoire du terminal.",
+        "Vérifier le nombre réel de lignes chargées avant d'appeler DISPLAY ARRAY."
+      ],
+      "pitfallsToAvoid": [
+        "Dépasser la borne maximale de l'ARRAY en 4GL provoque une violation de mémoire (Subscript out of range)."
+      ]
+    },
+    {
+      "id": "l4_02",
+      "gradeLevel": 4,
+      "category": "TRANSACTIONS",
+      "title": "4.2 Stratégies Anti-Deadlocks & Niveaux d'Isolation Informix",
+      "summary": "Éradiquez les erreurs de concurrence -244 et -107 sous forte charge en agences.",
+      "keyConcepts": [
+        "SET LOCK MODE TO WAIT",
+        "COMMITTED READ",
+        "Ordre canonique de verrouillage",
+        "Deadlock -244"
+      ],
+      "detailedContent": "En production bancaire, des centaines d'agences et de distributeurs automatiques mettent à jour les mêmes tables simultanément.\nPar défaut, si une table ou ligne est verrouillée, Informix renvoie immédiatement l'erreur -107 (Record is locked).\nPour éviter cela, on exécute au début de chaque session la commande :\n'SET LOCK MODE TO WAIT 15'\nLe programme attend alors jusqu'à 15 secondes que la transaction concurrente libère son verrou avant de lever une exception.\n\nPour éviter les interblocages mortels (Deadlocks / Erreur -244), les développeurs seniors imposent un 'Ordre Canonique' : si une transaction doit impacter deux comptes X et Y, elle doit TOUJOURS verrouiller en premier le compte dont le numéro NCP est le plus petit dans l'ordre alphabétique.",
+      "codeSample": "FUNCTION verrouiller_deux_comptes_sans_deadlock(p_cpt1, p_cpt2)\n    DEFINE p_cpt1, p_cpt2 CHAR(11),\n           l_premier, l_second CHAR(11),\n           l_dummy CHAR(1)\n\n    -- Configuration du temps de tolérance aux verrous (attente 20 secondes)\n    SET LOCK MODE TO WAIT 20\n\n    -- ORDONNANCEMENT CANONIQUE : Toujours verrouiller dans le même sens\n    IF p_cpt1 < p_cpt2 THEN\n        LET l_premier = p_cpt1\n        LET l_second  = p_cpt2\n    ELSE\n        LET l_premier = p_cpt2\n        LET l_second  = p_cpt1\n    END IF\n\n    -- 1. Pose du verrou sur le premier compte\n    SELECT \"X\" INTO l_dummy FROM bkcpt WHERE ncp = l_premier FOR UPDATE\n    IF status != 0 THEN RETURN FALSE END IF\n\n    -- 2. Pose du verrou sur le second compte\n    SELECT \"X\" INTO l_dummy FROM bkcpt WHERE ncp = l_second FOR UPDATE\n    IF status != 0 THEN RETURN FALSE END IF\n\n    -- À ce stade, aucun interblocage croisé n'est possible\n    RETURN TRUE\nEND FUNCTION",
+      "explanation": "Le tri alphabétique des comptes garantit qu'aucun processus concurrent ne pourra tenter de verrouiller ces deux comptes dans l'ordre inverse.",
+      "goldenRules": [
+        "Toujours configurer 'SET LOCK MODE TO WAIT N' en début de session ou de batch.",
+        "Trier systématiquement les identifiants de comptes avant de poser des verrous multiples."
+      ],
+      "pitfallsToAvoid": [
+        "Utiliser 'SET LOCK MODE TO NOT WAIT' dans des transactions d'écriture : cela engendre des rejets massifs d'opérations guichet en heure de pointe."
+      ]
+    },
+    {
+      "id": "l4_03",
+      "gradeLevel": 4,
+      "category": "TRANSACTIONS",
+      "title": "4.3 Rapports Comptables Structurés & Édition d'États (REPORT)",
+      "summary": "Générez les balances réglementaires et journaux d'audit avec sauts de page et totaux.",
+      "keyConcepts": [
+        "REPORT ... END REPORT",
+        "OUTPUT TO PIPE / FILE",
+        "PAGE HEADER / TRAILER",
+        "GROUP BY",
+        "SUM(col)"
+      ],
+      "detailedContent": "Le 4GL intègre un moteur de reporting natif très puissant.\nUn bloc 'REPORT' définit la mise en page d'un document financier :\n- PAGE HEADER : en-tête avec logo, date d'arrêté et numéro de page (PAGENO).\n- ON EVERY ROW : impression des écritures de débit/crédit.\n- BEFORE GROUP / AFTER GROUP : sous-totaux par agence ou par devise.\n- ON LAST ROW : totaux généraux de contrôle avec vérification d'équilibre strict.\nL'émission des états peut être envoyée directement vers un fichier disque, une imprimante réseau ou un tube Unix ('OUTPUT TO PIPE lp').",
+      "codeSample": "REPORT balance_journaliere_report(r_ligne)\n    DEFINE r_ligne RECORD\n               age CHAR(5),\n               cha CHAR(4),\n               dev CHAR(3),\n               debit DECIMAL(19,4),\n               credit DECIMAL(19,4)\n           END RECORD\n\n    OUTPUT\n        PAGE LENGTH 66\n        TOP MARGIN 3\n        BOTTOM MARGIN 3\n\n    FORMAT\n        PAGE HEADER\n            PRINT \"BANQUE CENTRALE AMPLITUDE - ÉTAT D'ARRÊTÉ EOD\"\n            PRINT \"Date : \", TODAY, \" | Page : \", PAGENO USING \"###\"\n            PRINT \"================================================================================\"\n            PRINT \"AGENCE | CHAPITRE | DEVISE | TOTAL DÉBITS       | TOTAL CRÉDITS      \"\n            PRINT \"--------------------------------------------------------------------------------\"\n\n        ON EVERY ROW\n            PRINT r_ligne.age, \"  | \", r_ligne.cha, \"     | \", r_ligne.dev, \"    | \",\n                  r_ligne.debit USING \"---,---,---,##&.&&\", \" | \",\n                  r_ligne.credit USING \"---,---,---,##&.&&\"\n\n        AFTER GROUP OF r_ligne.dev\n            PRINT \"--------------------------------------------------------------------------------\"\n            PRINT \"TOTAL DEVISE \", r_ligne.dev, \" : \",\n                  GROUP SUM(r_ligne.debit) USING \"---,---,---,##&.&&\", \" | \",\n                  GROUP SUM(r_ligne.credit) USING \"---,---,---,##&.&&\"\n\n        ON LAST ROW\n            PRINT \"================================================================================\"\n            PRINT \"DIFFÉRENTIEL GLOBAL D'ÉQUILIBRE : \", \n                  (SUM(r_ligne.debit) - SUM(r_ligne.credit)) USING \"---,---,---,##&.&&\"\nEND REPORT",
+      "explanation": "Le générateur calcule automatiquement les sous-totaux par devise et le total général sans code supplémentaire.",
+      "goldenRules": [
+        "Vérifier que les données transmises au REPORT sont strictement triées selon la hiérarchie des AFTER GROUP.",
+        "Contrôler que le différentiel global en dernière ligne soit rigoureusement égal à 0.00."
+      ],
+      "pitfallsToAvoid": [
+        "Envoyer des données non triées à un REPORT entraîne des ruptures de groupe incohérentes et des totaux erronés."
+      ]
+    },
+    {
+      "id": "l5_02",
+      "gradeLevel": 5,
+      "category": "OPTIMISATION_EOD",
+      "title": "5.2 SQL Dynamique Préparé (PREPARE, EXECUTE & DESCRIBE)",
+      "summary": "Compilez une seule fois vos requêtes SQL et exécutez-les des millions de fois à pleine vitesse.",
+      "keyConcepts": [
+        "PREPARE nom_stmt FROM",
+        "EXECUTE stmt USING",
+        "FREE stmt",
+        "Plan d'exécution mis en cache"
+      ],
+      "detailedContent": "Dans une boucle batch exécutant un million d'itérations, la formulation directe 'INSERT INTO ...' oblige le moteur SGBD à réanalyser la syntaxe (Parsing), vérifier les privilèges et recalculer le plan d'accès pour chaque ligne.\nL'instruction 'PREPARE' résout ce goulot d'étranglement :\n1. Elle transmet la chaîne SQL avec des paramètres variables représentés par des points d'interrogation ('?').\n2. Le moteur SGBD parse, compile et met en cache le plan d'exécution optimisé une fois pour toutes.\n3. L'instruction 'EXECUTE ... USING' transmet ensuite uniquement les valeurs binaires, éliminant 80% du temps CPU.",
+      "codeSample": "FUNCTION batch_generation_agios_haute_vitesse()\n    DEFINE l_sql_query VARCHAR(255),\n           l_cpt CHAR(11),\n           l_montant_agio DECIMAL(19,4),\n           l_dco DATE\n\n    LET l_dco = TODAY\n\n    -- 1. Compilation unique du plan d'exécution côté SGBD\n    LET l_sql_query = \"UPDATE bkcpt SET sol = sol - ? WHERE ncp = ?\"\n    PREPARE p_maj_agio FROM l_sql_query\n\n    IF status != 0 THEN\n        DISPLAY \"Erreur lors du PREPARE : \", status\n        RETURN FALSE\n    END IF\n\n    -- 2. Exécution répétée à pleine vitesse\n    FOREACH c_calculs INTO l_cpt, l_montant_agio\n        EXECUTE p_maj_agio USING l_montant_agio, l_cpt\n        IF status != 0 THEN\n            CALL journaliser_erreur(\"EXECUTE_AGIO_FAILED\", status)\n        END IF\n    END FOREACH\n\n    -- 3. Libération explicite de la mémoire de la requête\n    FREE p_maj_agio\n    RETURN TRUE\nEND FUNCTION",
+      "explanation": "PREPARE élimine le coût de parsing pour chaque itération du batch et accélère considérablement l'arrêté.",
+      "goldenRules": [
+        "Toujours appeler FREE sur l'identifiant du PREPARE en fin de traitement pour libérer la mémoire côté serveur.",
+        "Associer PREPARE à un INSERT CURSOR quand il s'agit d'insertions massives d'écritures."
+      ],
+      "pitfallsToAvoid": [
+        "Exécuter PREPARE à l'intérieur de la boucle FOREACH annule complètement le gain de performance et sature le dictionnaire de curseurs."
+      ]
+    },
+    {
+      "id": "l5_03",
+      "gradeLevel": 5,
+      "category": "OPTIMISATION_EOD",
+      "title": "5.3 Traitement Parallèle, Mémoire Scratch & Profilage AIX",
+      "summary": "Découpez les traitements EOD en flux concurrents équilibrés par agence ou racine de compte.",
+      "keyConcepts": [
+        "Partitionnement horizontal",
+        "Shared Memory Informix",
+        "Purge des tables temporaires",
+        "iostat / vmstat"
+      ],
+      "detailedContent": "Pour les très grands groupes bancaires comptant plus de 5 millions de comptes, un batch séquentiel mono-processus ne peut pas terminer avant 07h00 du matin.\nL'architecture experte consiste à partitionner le traitement en plusieurs instances 4GL indépendantes s'exécutant en parallèle :\n- Instance 1 : Agences 01001 à 01050\n- Instance 2 : Agences 01051 à 01100\n- Instance 3 : Agences 01101 à 01150\n\nChaque processus 4GL opère sur sa plage de données sans conflit de verrous.\nLes tables temporaires ('CREATE TEMP TABLE') doivent être déclarées 'WITH NO LOG' pour éviter toute écriture sur les disques de journaux transactionnels.",
+      "codeSample": "{ Script d'appel batch partitionné par plage d'agences }\nFUNCTION executer_batch_agence_borne(p_age_debut, p_age_fin)\n    DEFINE p_age_debut, p_age_fin CHAR(5),\n           l_rec RECORD LIKE bkcpt.*\n\n    -- Création d'une table temporaire ultra-rapide en mémoire non journalisée\n    CREATE TEMP TABLE tmp_calculs (\n        ncp CHAR(11),\n        agio DECIMAL(19,4)\n    ) WITH NO LOG\n\n    -- Traitement réservé à la tranche d'agences attribuée\n    DECLARE c_tranche CURSOR FOR\n        SELECT * FROM bkcpt\n         WHERE age BETWEEN p_age_debut AND p_age_fin\n           AND eta = \"A\"\n\n    -- Exécution isolée sans interférence avec les autres instances\n    FOREACH c_tranche INTO l_rec.*\n        -- Calculs en mémoire\n    END FOREACH\n\n    DROP TABLE tmp_calculs\nEND FUNCTION",
+      "explanation": "La clause WITH NO LOG sur les tables temporaires divise par 4 les accès disques lors des calculs intermédiaires.",
+      "goldenRules": [
+        "Toujours utiliser 'WITH NO LOG' pour les tables temporaires de calcul batch.",
+        "Équilibrer les tranches de partitionnement par volume réel de mouvements et non simplement par nombre d'agences."
+      ],
+      "pitfallsToAvoid": [
+        "Oublier de supprimer les tables temporaires (DROP TABLE) avant la sortie du programme : elles encombrent l'espace dbspace temporaire."
+      ]
+    }
+  ],
+  "exams": [
+    {
+      "id": "ex_n1_01",
+      "gradeLevel": 1,
+      "question": "Quelle instruction obligatoire doit figurer en toute première ligne non commentée d'un fichier source 4GL ?",
+      "options": [
+        "DATABASE nom_base",
+        "USE DATABASE nom_base",
+        "CONNECT TO nom_base",
+        "OPEN CATALOG nom_base"
+      ],
+      "correctIndex": 0,
+      "explanation": "La clause 'DATABASE' en tête de fichier permet au compilateur c4gl de vérifier les types de colonnes et tables lors de la compilation.",
+      "trapWarning": "USE ou CONNECT sont utilisés dans d'autres langages SQL, mais en 4GL c'est strictement DATABASE."
+    },
+    {
+      "id": "ex_n1_02",
+      "gradeLevel": 1,
+      "question": "Pourquoi est-il interdit d'utiliser FLOAT ou SMALLFLOAT pour manipuler des soldes ou montants bancaires en 4GL ?",
+      "options": [
+        "Ils consomment trop de mémoire vive",
+        "Leur représentation binaire flottante IEEE provoque des imprécisions d'arrondi sur les centimes",
+        "Le SGBD Informix refuse les opérations arithmétiques sur FLOAT",
+        "Ils ne supportent pas les valeurs négatives"
+      ],
+      "correctIndex": 1,
+      "explanation": "Les types à virgule flottante ne peuvent pas représenter exactement certaines fractions décimales (ex: 0.10), ce qui engendre des écarts d'arrondi comptables inacceptables. On utilise toujours DECIMAL(p,s) ou MONEY.",
+      "trapWarning": "En finance et comptabilité réglementaire, l'arithmétique décimale exacte est obligatoire."
+    },
+    {
+      "id": "ex_n1_03",
+      "gradeLevel": 1,
+      "question": "Que produit l'opération 4GL suivante : LET solde = 50000 + NULL ?",
+      "options": [
+        "solde vaut 50000",
+        "solde vaut 0",
+        "solde vaut NULL",
+        "Une exception arithmétique est levée à l'exécution"
+      ],
+      "correctIndex": 2,
+      "explanation": "En 4GL, toute expression arithmétique ou concaténation avec NULL s'évalue à NULL. C'est pourquoi on utilise toujours NVL(variable, 0).",
+      "trapWarning": "NULL n'est pas équivalent à 0 en 4GL/SQL."
+    },
+    {
+      "id": "ex_n1_04",
+      "gradeLevel": 1,
+      "question": "Quelle fonction standard 4GL permet de remplacer une valeur NULL par une valeur de substitution par défaut ?",
+      "options": [
+        "IFNULL()",
+        "COALESCE()",
+        "NVL()",
+        "ISNULL()"
+      ],
+      "correctIndex": 2,
+      "explanation": "En Informix 4GL, la fonction intégrée est NVL(expr, valeur_si_null), par exemple NVL(l_solde, 0.00).",
+      "trapWarning": "COALESCE existe en SQL moderne, mais dans la grammaire 4GL native historique, c'est NVL()."
+    },
+    {
+      "id": "ex_n1_05",
+      "gradeLevel": 1,
+      "question": "Où doivent impérativement être placées les déclarations de variables (DEFINE) dans une FUNCTION 4GL ?",
+      "options": [
+        "N'importe où dans le corps de la fonction avant leur première utilisation",
+        "Au tout début de la fonction, immédiatement après le nom de la FUNCTION et avant toute instruction exécutable",
+        "À la fin de la fonction, juste avant END FUNCTION",
+        "Dans un fichier d'en-tête externe obligatoirement"
+      ],
+      "correctIndex": 1,
+      "explanation": "En Informix 4GL classique, toutes les variables locales doivent être déclarées au sommet du bloc FUNCTION via DEFINE avant la moindre ligne exécutable.",
+      "trapWarning": "Placer un DEFINE après un LET ou un DISPLAY provoque une erreur de compilation c4gl."
+    },
+    {
+      "id": "ex_n1_06",
+      "gradeLevel": 1,
+      "question": "Combien de blocs 'MAIN ... END MAIN' peut comporter un même programme exécutable 4GL ?",
+      "options": [
+        "Autant qu'il y a de fichiers sources",
+        "Exactement un seul",
+        "Au maximum deux (un pour batch et un pour interactif)",
+        "Aucun si on utilise des fonctions"
+      ],
+      "correctIndex": 1,
+      "explanation": "Un exécutable binaire 4GL ne peut posséder qu'un seul et unique point d'entrée MAIN, même si le projet compile 50 fichiers .4gl différents.",
+      "trapWarning": "Avoir deux MAIN dans le même lien d'édition génère une erreur 'duplicate symbol main' à la compilation C."
+    },
+    {
+      "id": "ex_n1_07",
+      "gradeLevel": 1,
+      "question": "Comment sortir prématurément d'une boucle 'FOR i = 1 TO 100' dès qu'un compte bancaire est trouvé ?",
+      "options": [
+        "BREAK",
+        "STOP FOR",
+        "EXIT FOR",
+        "RETURN FOR"
+      ],
+      "correctIndex": 2,
+      "explanation": "L'instruction 4GL pour rompre une boucle FOR est 'EXIT FOR'. Pour WHILE, c'est 'EXIT WHILE'.",
+      "trapWarning": "BREAK est le mot-clé C/Java/Python, non valide en 4GL."
+    },
+    {
+      "id": "ex_n1_08",
+      "gradeLevel": 1,
+      "question": "Quel opérateur 4GL permet de tester un filtre de masque avec les jokers '*' et '?' (ex: numéro de compte commençant par '01') ?",
+      "options": [
+        "LIKE",
+        "MATCHES",
+        "CONTAINS",
+        "REGEX"
+      ],
+      "correctIndex": 1,
+      "explanation": "L'opérateur 4GL natif pour les jokers shell (* et ?) est MATCHES (ex: IF p_ncp MATCHES '01*' THEN). LIKE utilise '%' et '_'.",
+      "trapWarning": "MATCHES utilise '*' pour plusieurs caractères et '?' pour un seul, contrairement à LIKE SQL qui utilise '%' et '_'."
+    },
+    {
+      "id": "ex_n1_09",
+      "gradeLevel": 1,
+      "question": "Quelle instruction termine proprement l'exécution d'un binaire 4GL en transmettant un code retour 0 au script shell parent ?",
+      "options": [
+        "STOP PROGRAM",
+        "EXIT PROGRAM (0)",
+        "TERMINATE 0",
+        "QUIT SUCCESS"
+      ],
+      "correctIndex": 1,
+      "explanation": "EXIT PROGRAM (code) met fin au processus Unix et renvoie le code d'état système au shell (0 pour succès, >0 pour code erreur).",
+      "trapWarning": "EXIT sans argument ou STOP ne garantit pas la transmission propre du code d'erreur au script Unix."
+    },
+    {
+      "id": "ex_n1_10",
+      "gradeLevel": 1,
+      "question": "Comment déclarer une variable globale partagée entre plusieurs fichiers .4gl d'un même projet ?",
+      "options": [
+        "Par le mot-clé GLOBAL DEFINE dans chaque fichier",
+        "Dans un bloc GLOBALS ... END GLOBALS ou via un fichier partagé inclus par 'GLOBALS \"fichier.4gl\"'",
+        "En utilisant la variable système PUBLIC",
+        "Les variables globales n'existent pas en 4GL"
+      ],
+      "correctIndex": 1,
+      "explanation": "Le partage de variables globales s'effectue au moyen de la clause GLOBALS, souvent centralisée dans un fichier d'en-tête commun.",
+      "trapWarning": "Déclarer deux fois un bloc GLOBALS avec des variables différentes dans le même fichier est interdit."
+    },
+    {
+      "id": "ex_n1_11",
+      "gradeLevel": 1,
+      "question": "Quelle est la bonne syntaxe 4GL pour tester si la variable 'devise' est vide ou non renseignée ?",
+      "options": [
+        "IF devise = NULL THEN",
+        "IF devise == '' THEN",
+        "IF devise IS NULL THEN",
+        "IF ISNULL(devise) THEN"
+      ],
+      "correctIndex": 2,
+      "explanation": "En 4GL et SQL standard, NULL se teste exclusivement avec la syntaxe 'IS NULL' ou 'IS NOT NULL'.",
+      "trapWarning": "Écrire '= NULL' renverra toujours FAUX (NULL n'est jamais égal à quoi que ce soit)."
+    },
+    {
+      "id": "ex_n1_12",
+      "gradeLevel": 1,
+      "question": "Quel formatage de chaîne USING permet d'afficher un montant avec séparateur de milliers et deux décimales (ex: 1 250 000,50) ?",
+      "options": [
+        "USING '###,###,##&.&&'",
+        "FORMAT '$###.###,##'",
+        "MASK '999.999.999,99'",
+        "PRINT AS CURRENCY"
+      ],
+      "correctIndex": 0,
+      "explanation": "La clause USING en 4GL utilise '#' pour les chiffres facultatifs et '&' pour forcer l'affichage de zéro dans les décimales.",
+      "trapWarning": "'&' garantit que 0.50 s'affichera '0.50' et non '.50'."
+    },
+    {
+      "id": "ex_n1_13",
+      "gradeLevel": 1,
+      "question": "Dans une structure 'CASE ... END CASE', quelle clause de sécurité doit obligatoirement être présente pour traiter les cas non prévus ?",
+      "options": [
+        "DEFAULT",
+        "ELSE",
+        "OTHERWISE",
+        "CATCH"
+      ],
+      "correctIndex": 2,
+      "explanation": "En 4GL, la clause par défaut d'un CASE est 'OTHERWISE'. Si aucune condition n'est vraie et qu'il n'y a pas d'OTHERWISE, une erreur fatale survient.",
+      "trapWarning": "L'omission d'OTHERWISE fait planter le binaire 4GL si une valeur inattendue se présente."
+    },
+    {
+      "id": "ex_n1_14",
+      "gradeLevel": 1,
+      "question": "Quelle variable système intégrée contient la date système du jour de l'environnement hôte ?",
+      "options": [
+        "SYSDATE",
+        "CURRENT_DATE",
+        "TODAY",
+        "GETDATE()"
+      ],
+      "correctIndex": 2,
+      "explanation": "En 4GL, la constante de date courante est 'TODAY'. Pour l'horodatage précis à la seconde, on utilise 'CURRENT'.",
+      "trapWarning": "SYSDATE est spécifique à Oracle SQL, alors qu'en 4GL natif la constante est TODAY."
+    },
+    {
+      "id": "ex_n1_15",
+      "gradeLevel": 1,
+      "question": "Une fonction 4GL peut-elle retourner plusieurs valeurs à la fois lors d'un appel ?",
+      "options": [
+        "Non, une fonction ne peut retourner qu'un seul scalaire comme en langage C",
+        "Oui, grâce à la clause 'RETURN val1, val2, val3' et la réception par 'RETURNING var1, var2, var3'",
+        "Uniquement si les valeurs sont regroupées dans un tableau statique",
+        "Uniquement via des pointeurs mémoire"
+      ],
+      "correctIndex": 1,
+      "explanation": "L'une des grandes forces du 4GL est le support natif du multi-retour : CALL fn() RETURNING a, b, c.",
+      "trapWarning": "Le nombre de variables réceptrices dans RETURNING doit correspondre exactement au nombre de valeurs émises par RETURN."
+    },
+    {
+      "id": "ex_n2_01",
+      "gradeLevel": 2,
+      "question": "Quelle valeur prend la variable système 'status' lorsqu'un 'SELECT * INTO' ne trouve aucun enregistrement ?",
+      "options": [
+        "status = -1",
+        "status = 100 (NOTFOUND)",
+        "status = 0",
+        "status = 404"
+      ],
+      "correctIndex": 1,
+      "explanation": "En conformité SQL ANSI, quand aucune ligne ne correspond aux critères WHERE, le moteur positionne status à 100, qui correspond à la constante 4GL NOTFOUND.",
+      "trapWarning": "Ce n'est pas une erreur négative mais un code de notification standard (100)."
+    },
+    {
+      "id": "ex_n2_02",
+      "gradeLevel": 2,
+      "question": "Où trouve-t-on le nombre exact de lignes modifiées ou supprimées par le dernier ordre DML (UPDATE / DELETE) ?",
+      "options": [
+        "sqlca.sqlcode",
+        "sqlca.sqlerrd[2]",
+        "status",
+        "sqlca.sqlerrd[1]"
+      ],
+      "correctIndex": 1,
+      "explanation": "sqlca.sqlerrd[2] contient le compteur de lignes impactées par l'opération DML.",
+      "trapWarning": "status vaut 0 même si l'UPDATE n'a modifié 0 ligne (car l'instruction syntaxique a réussi)."
+    },
+    {
+      "id": "ex_n2_03",
+      "gradeLevel": 2,
+      "question": "Quel est l'avantage décisif de la directive 'DEFINE l_compte RECORD LIKE bkcpt.*' ?",
+      "options": [
+        "Elle crypte la table en mémoire",
+        "Elle lie la structure mémoire au schéma de la base et s'ajuste automatiquement en cas d'évolution de colonnes",
+        "Elle verrouille la table en lecture exclusive",
+        "Elle crée automatiquement un index temporaire"
+      ],
+      "correctIndex": 1,
+      "explanation": "La synchronisation dynamique avec le dictionnaire de tables garantit qu'une modification de colonne (ex: passage à l'IBAN) n'exige qu'une simple recompilation sans retoucher le code.",
+      "trapWarning": "RECORD LIKE n'affecte pas la base de données et ne pose aucun verrou : c'est purement une déclaration mémoire."
+    },
+    {
+      "id": "ex_n2_04",
+      "gradeLevel": 2,
+      "question": "Que se passe-t-il si un 'SELECT ... INTO' retourne 2 lignes au lieu d'une seule attendue ?",
+      "options": [
+        "Le 4GL prend la première ligne silencieusement",
+        "Le programme s'arrête avec l'erreur -284 ('A subquery has returned not exactly one row')",
+        "Le 4GL remplit automatiquement un tableau",
+        "Les deux lignes sont fusionnées"
+      ],
+      "correctIndex": 1,
+      "explanation": "Un ordre SELECT ... INTO exige l'unicité stricte du résultat. Si plusieurs lignes correspondent, l'erreur -284 est levée.",
+      "trapWarning": "Pour lire un ensemble de plusieurs lignes, l'utilisation d'un CURSEUR (DECLARE / FOREACH) est impérative."
+    },
+    {
+      "id": "ex_n2_05",
+      "gradeLevel": 2,
+      "question": "À quoi sert la directive 'WHENEVER ERROR CONTINUE' ?",
+      "options": [
+        "À ignorer les erreurs de compilation du code C",
+        "À désactiver le crash immédiat du programme lors d'une erreur SQL, permettant de gérer l'erreur manuellement via status",
+        "À forcer la validation de la transaction même si elle échoue",
+        "À masquer les erreurs dans la console sans les consigner"
+      ],
+      "correctIndex": 1,
+      "explanation": "Par défaut (WHENEVER ERROR STOP), toute erreur SQL négative interrompt brutalement l'exécutable. 'CONTINUE' permet de capturer l'incident et de consigner un log propre.",
+      "trapWarning": "Il faut impérativement réactiver 'WHENEVER ERROR STOP' une fois le bloc critique achevé."
+    },
+    {
+      "id": "ex_n2_06",
+      "gradeLevel": 2,
+      "question": "Que contient la case 'sqlca.sqlerrd[1]' en cas d'échec d'une opération sur fichier de données ?",
+      "options": [
+        "Le temps d'exécution en millisecondes",
+        "Le code d'erreur du moteur de stockage ISAM sous-jacent (ex: erreur de clé en double ou disque saturé)",
+        "Le numéro du port TCP de connexion",
+        "L'identifiant du terminal utilisateur"
+      ],
+      "correctIndex": 1,
+      "explanation": "Le code ISAM indique la raison physique exacte du problème (ex: -100 ISAM = clé dupliquée, -131 ISAM = pas d'espace disque).",
+      "trapWarning": "L'erreur SQL globale est souvent générique (-239 ou -268), c'est l'erreur ISAM qui donne la vraie cause technique."
+    },
+    {
+      "id": "ex_n2_07",
+      "gradeLevel": 2,
+      "question": "Quelle table maîtresse du CBS Amplitude stocke les comptes de la clientèle (soldes, devises, agence) ?",
+      "options": [
+        "BKCLI",
+        "BKCPT",
+        "BKTRA",
+        "BKCOM"
+      ],
+      "correctIndex": 1,
+      "explanation": "BKCPT est la table pivot des comptes client et comptes généraux (colonnes AGE, DEV, NCP, SOL, etc.).",
+      "trapWarning": "BKCLI stocke les informations signalétiques des clients (personnes physiques/morales), pas les soldes."
+    },
+    {
+      "id": "ex_n2_08",
+      "gradeLevel": 2,
+      "question": "Comment insérer une ligne dans la table d'audit BKAUD avec les valeurs exactes d'une structure RECORD LIKE bkaud.* ?",
+      "options": [
+        "INSERT INTO bkaud RECORD l_aud",
+        "INSERT INTO bkaud VALUES (l_aud.*)",
+        "PUT bkaud FROM l_aud",
+        "SAVE l_aud TO bkaud"
+      ],
+      "correctIndex": 1,
+      "explanation": "La syntaxe 4GL pour injecter l'intégralité d'une variable record dans sa table correspondante est 'INSERT INTO table VALUES (record.*)'.",
+      "trapWarning": "Les parenthèses autour de (record.*) sont obligatoires."
+    },
+    {
+      "id": "ex_n2_09",
+      "gradeLevel": 2,
+      "question": "Quelle instruction permet d'intercepter automatiquement toutes les erreurs SQL et d'appeler une routine d'alerte spécifique ?",
+      "options": [
+        "ON ERROR GOTO alerte",
+        "TRY CATCH alerte()",
+        "WHENEVER ERROR CALL alerte_incident",
+        "HANDLE SQLERROR alerte"
+      ],
+      "correctIndex": 2,
+      "explanation": "L'instruction 'WHENEVER ERROR CALL routine' redirige l'exécution vers la fonction d'alerte dès qu'un ordre SQL échoue.",
+      "trapWarning": "TRY/CATCH n'existe pas en Informix 4GL procédural natif."
+    },
+    {
+      "id": "ex_n2_10",
+      "gradeLevel": 2,
+      "question": "Si status = 0 après un UPDATE bkcpt, cela garantit-il qu'au moins un compte a été modifié ?",
+      "options": [
+        "Oui, obligatoirement",
+        "Non, status = 0 signifie seulement que la syntaxe et l'exécution ont réussi, même si aucune ligne ne correspondait au WHERE",
+        "Non, cela signifie que la base de données est en lecture seule",
+        "Oui, sinon status vaudrait NOTFOUND"
+      ],
+      "correctIndex": 1,
+      "explanation": "C'est un piège majeur : un UPDATE qui ne trouve aucune ligne correspondante renvoie quand même status = 0. Il faut vérifier sqlca.sqlerrd[2] > 0.",
+      "trapWarning": "Toujours vérifier sqlca.sqlerrd[2] après un UPDATE pour valider qu'une ligne a bien été modifiée."
+    },
+    {
+      "id": "ex_n2_11",
+      "gradeLevel": 2,
+      "question": "Dans la table BKTRA (mouvements comptables), quelle colonne identifie la date comptable de la transaction ?",
+      "options": [
+        "DCO",
+        "DVAL",
+        "DSIS",
+        "DTRA"
+      ],
+      "correctIndex": 0,
+      "explanation": "DCO (Date COmptable) est la date d'arrêté officielle de l'opération dans Amplitude.",
+      "trapWarning": "DVAL est la date de valeur (calcul des intérêts) et DSIS la date système de saisie."
+    },
+    {
+      "id": "ex_n2_12",
+      "gradeLevel": 2,
+      "question": "Comment effacer physiquement un enregistrement temporaire dans la table de sas monétique 'mon_temp' ?",
+      "options": [
+        "DROP mon_temp WHERE id = 1",
+        "DELETE FROM mon_temp WHERE id = 1",
+        "REMOVE mon_temp WHERE id = 1",
+        "TRUNCATE RECORD FROM mon_temp"
+      ],
+      "correctIndex": 1,
+      "explanation": "La suppression SQL standard en 4GL s'exécute avec l'instruction 'DELETE FROM table WHERE ...'.",
+      "trapWarning": "Oublier la clause WHERE supprimerait la totalité des lignes de la table !"
+    },
+    {
+      "id": "ex_n2_13",
+      "gradeLevel": 2,
+      "question": "Quelle fonction permet de connaître la longueur réelle d'une chaîne de caractères sans compter les espaces de fin ?",
+      "options": [
+        "LENGTH(chaine)",
+        "SIZE(chaine)",
+        "LEN(chaine)",
+        "CHAR_LENGTH(chaine)"
+      ],
+      "correctIndex": 0,
+      "explanation": "La fonction 4GL native 'LENGTH(texte)' retourne la position du dernier caractère non blanc d'une chaîne.",
+      "trapWarning": "Sur une variable CHAR(30) contenant 'ABC', LENGTH() renvoie 3 et non 30."
+    },
+    {
+      "id": "ex_n2_14",
+      "gradeLevel": 2,
+      "question": "Quelle est la différence entre les types CHAR(20) et VARCHAR(20) en Informix 4GL ?",
+      "options": [
+        "CHAR est complété par des espaces jusqu'à 20 caractères, alors que VARCHAR ne stocke que la longueur utile",
+        "VARCHAR est réservé aux chiffres et CHAR aux lettres",
+        "CHAR ne peut pas être inséré dans une base SQL",
+        "VARCHAR consomme toujours 20 octets fixes sur le disque"
+      ],
+      "correctIndex": 0,
+      "explanation": "Le type CHAR(N) a une longueur fixe comblée d'espaces à droite. VARCHAR(N) est à longueur variable, économisant de l'espace disque et réseau.",
+      "trapWarning": "Lors des comparaisons, les espaces de fin d'un CHAR peuvent fausser des égalités strictes avec des VARCHAR."
+    },
+    {
+      "id": "ex_n2_15",
+      "gradeLevel": 2,
+      "question": "Quelle directive est utilisée pour déclarer une structure de données composite spécifique sans référence directe à une table ?",
+      "options": [
+        "DEFINE nom RECORD ... END RECORD",
+        "CREATE STRUCT nom ...",
+        "TYPE nom AS OBJECT",
+        "DECLARE RECORD nom"
+      ],
+      "correctIndex": 0,
+      "explanation": "La syntaxe 4GL pour créer une structure personnalisée est : DEFINE nom RECORD champ1 TYPE, champ2 TYPE END RECORD.",
+      "trapWarning": "Chaque sous-champ doit être typé explicitement à l'intérieur du bloc RECORD."
+    },
+    {
+      "id": "ex_n3_01",
+      "gradeLevel": 3,
+      "question": "À quoi sert le mode d'isolation 'SET ISOLATION TO DIRTY READ' dans les extractions batch volumineuses ?",
+      "options": [
+        "À supprimer les index pour accélérer la lecture",
+        "À lire les données sans poser de verrous partagés et sans être bloqué par les verrous exclusifs des agences",
+        "À forcer l'écriture immédiate des caches disques",
+        "À convertir les montants en devise de reporting"
+      ],
+      "correctIndex": 1,
+      "explanation": "DIRTY READ permet de lire des tables très actives sans attendre la libération des verrous de mise à jour des guichets, évitant de paralyser la banque.",
+      "trapWarning": "DIRTY READ ne doit JAMAIS être utilisé pour des écritures comptables ou des calculs de solde définitifs car il peut lire des données en cours d'annulation (rollback)."
+    },
+    {
+      "id": "ex_n3_02",
+      "gradeLevel": 3,
+      "question": "Quelle boucle 4GL est spécialement conçue pour parcourir séquentiellement les lignes retournées par un curseur SQL ?",
+      "options": [
+        "FOR EACH ... NEXT",
+        "FOREACH nom_curseur INTO variables",
+        "WHILE CURSOR.NEXT",
+        "LOOP CURSOR nom_curseur"
+      ],
+      "correctIndex": 1,
+      "explanation": "La syntaxe 4GL 'FOREACH c_compte INTO l_cpt.* ... END FOREACH' ouvre le curseur, effectue les FETCH successifs et ferme le curseur automatiquement en fin de liste.",
+      "trapWarning": "Il ne faut pas appeler 'OPEN' ou 'CLOSE' sur un curseur parcouru par un FOREACH : 4GL s'en charge automatiquement."
+    },
+    {
+      "id": "ex_n3_03",
+      "gradeLevel": 3,
+      "question": "Comment verrouiller une ligne au moment de la lecture par curseur pour s'assurer qu'aucun autre processus ne la modifie avant nous ?",
+      "options": [
+        "En ajoutant 'FOR UPDATE' à la déclaration du curseur",
+        "En utilisant la commande 'LOCK TABLE IN SHARE MODE'",
+        "En définissant la variable ISOLATION = EXCLUSIVE",
+        "Le 4GL verrouille toujours automatiquement toutes les lignes lues"
+      ],
+      "correctIndex": 0,
+      "explanation": "La clause 'DECLARE c_cpt CURSOR FOR SELECT ... FOR UPDATE' pose un verrou exclusif sur chaque ligne fetchée jusqu'à la fin de la transaction.",
+      "trapWarning": "Un curseur FOR UPDATE doit impérativement s'exécuter à l'intérieur d'un bloc BEGIN WORK / COMMIT."
+    },
+    {
+      "id": "ex_n3_04",
+      "gradeLevel": 3,
+      "question": "Quelle syntaxe permet de mettre à jour la ligne précise actuellement pointée par le curseur 'c_cpt' ?",
+      "options": [
+        "UPDATE bkcpt SET sol = n_sol WHERE ROWID = c_cpt",
+        "UPDATE bkcpt SET sol = n_sol WHERE CURRENT OF c_cpt",
+        "UPDATE CURRENT ROW OF c_cpt",
+        "APPLY UPDATE ON CURSOR c_cpt"
+      ],
+      "correctIndex": 1,
+      "explanation": "La clause 'WHERE CURRENT OF nom_curseur' garantit la modification atomique de la ligne exacte verrouillée par le curseur sans réévaluer le WHERE.",
+      "trapWarning": "Nécessite que le curseur ait été déclaré avec la clause 'FOR UPDATE'."
+    },
+    {
+      "id": "ex_n3_05",
+      "gradeLevel": 3,
+      "question": "Dans un formulaire écran 4GL (.per), quel bloc est exécuté au moment où l'utilisateur quitte un champ de saisie ?",
+      "options": [
+        "BEFORE FIELD nom_champ",
+        "AFTER FIELD nom_champ",
+        "ON LEAVE nom_champ",
+        "EXIT FIELD nom_champ"
+      ],
+      "correctIndex": 1,
+      "explanation": "Le trigger 'AFTER FIELD' se déclenche lorsque la saisie dans le champ se termine. C'est l'endroit idéal pour vérifier les plafonds ou l'existence du compte.",
+      "trapWarning": "Si la validation échoue dans AFTER FIELD, on utilise NEXT FIELD nom_champ pour forcer l'utilisateur à corriger."
+    },
+    {
+      "id": "ex_n3_06",
+      "gradeLevel": 3,
+      "question": "Comment forcer le focus de l'opérateur à revenir sur le champ 'montant' lors d'une saisie erronée dans un formulaire 4GL ?",
+      "options": [
+        "GOTO FIELD montant",
+        "SET FOCUS TO montant",
+        "NEXT FIELD montant",
+        "RETRY FIELD montant"
+      ],
+      "correctIndex": 2,
+      "explanation": "L'instruction 'NEXT FIELD nom_champ' repositionne immédiatement le curseur de saisie sur le champ désigné.",
+      "trapWarning": "NEXT FIELD est utilisable uniquement à l'intérieur d'une instruction INPUT ou CONSTRUCT."
+    },
+    {
+      "id": "ex_n3_07",
+      "gradeLevel": 3,
+      "question": "Quelle instruction permet de régler le comportement du SGBD lorsqu'une ligne demandée est déjà verrouillée par un autre processus ?",
+      "options": [
+        "SET LOCK MODE TO WAIT [secondes]",
+        "SET TIMEOUT LOCK [secondes]",
+        "WAIT FOR UNLOCK",
+        "PAUSE UNTIL RELEASE"
+      ],
+      "correctIndex": 0,
+      "explanation": "SET LOCK MODE TO WAIT (ou SET LOCK MODE TO WAIT 15) demande au SGBD de patienter jusqu'à 15 secondes avant de lever une erreur -244.",
+      "trapWarning": "Par défaut sans cette directive, Informix est en 'NOT WAIT' et échoue immédiatement à la première ressource occupée."
+    },
+    {
+      "id": "ex_n3_08",
+      "gradeLevel": 3,
+      "question": "À quoi sert l'instruction 4GL 'CONSTRUCT' lors du développement d'un écran de recherche guichet ?",
+      "options": [
+        "À créer une nouvelle table physique dans la base",
+        "À laisser l'utilisateur saisir des critères de recherche libres et générer automatiquement la clause SQL WHERE correspondante",
+        "À recompiler le code C en arrière-plan",
+        "À générer un fichier PDF d'extrait de compte"
+      ],
+      "correctIndex": 1,
+      "explanation": "CONSTRUCT génère dynamiquement une chaîne de prédicats WHERE en analysant les valeurs saisies par l'opérateur dans les champs d'un masque écran.",
+      "trapWarning": "La chaîne générée par CONSTRUCT doit ensuite être combinée dans un SQL dynamique avec PREPARE."
+    },
+    {
+      "id": "ex_n3_09",
+      "gradeLevel": 3,
+      "question": "Quelle est la différence fondamentale entre un curseur 'SCROLL CURSOR' et un curseur séquentiel ordinaire ?",
+      "options": [
+        "SCROLL CURSOR permet de se déplacer en avant, en arrière, en début ou en fin de liste (FETCH FIRST, PREVIOUS, LAST, RELATIVE)",
+        "SCROLL CURSOR ne fonctionne que pour les tables de plus d'un million de lignes",
+        "SCROLL CURSOR ne peut être ouvert qu'en mode plein écran",
+        "SCROLL CURSOR supprime automatiquement les lignes lues"
+      ],
+      "correctIndex": 0,
+      "explanation": "Un SCROLL CURSOR maintient une table de pointeurs temporaires permettant une navigation bidirectionnelle, indispensable pour les grilles d'affichage paginées.",
+      "trapWarning": "Un SCROLL CURSOR consomme plus de mémoire et de temps à l'ouverture qu'un curseur séquentiel simple."
+    },
+    {
+      "id": "ex_n3_10",
+      "gradeLevel": 3,
+      "question": "Dans une boucle 'FOREACH', que se passe-t-il si une erreur SQL grave survient lors du traitement d'une ligne ?",
+      "options": [
+        "Le curseur passe à la ligne suivante sans avertir",
+        "Si WHENEVER ERROR STOP est actif, le programme s'arrête immédiatement ; avec CONTINUE, status contient le code d'erreur",
+        "Le SGBD redémarre le serveur",
+        "La base de données supprime le curseur"
+      ],
+      "correctIndex": 1,
+      "explanation": "Le statut SQL du FETCH et des ordres internes à la boucle doit être surveillé avec WHENEVER ERROR CONTINUE pour journaliser l'erreur et poursuivre les autres comptes.",
+      "trapWarning": "Sans gestion d'erreur, un binaire batch peut crasher à la 99 999ème ligne et perdre tout le traitement si aucun commit intermédiaire n'est posé."
+    },
+    {
+      "id": "ex_n3_11",
+      "gradeLevel": 3,
+      "question": "Quelle instruction permet d'intercepter la frappe de touches de fonction spécifiques (ex: F3 pour Quitter, F5 pour Valider) dans un INPUT ?",
+      "options": [
+        "ON KEY (F3) ... END KEY",
+        "WHEN PRESSED F3",
+        "CATCH KEY F3",
+        "IF KEY = 'F3' THEN"
+      ],
+      "correctIndex": 0,
+      "explanation": "Les blocs événementiels 'ON KEY (control-p, f3, accept)' capturent les interactions clavier au sein des instructions INPUT, DISPLAY ARRAY ou MENU.",
+      "trapWarning": "On utilise 'EXIT INPUT' dans un bloc ON KEY pour interrompre la saisie de l'écran proprement."
+    },
+    {
+      "id": "ex_n3_12",
+      "gradeLevel": 3,
+      "question": "Quelle est la portée d'un curseur déclaré à l'intérieur d'une FUNCTION 4GL sans le mot-clé GLOBALS ?",
+      "options": [
+        "Il est visible dans tout le fichier source .4gl",
+        "Il est local à la fonction et automatiquement détruit à la sortie du bloc END FUNCTION",
+        "Il reste ouvert en mémoire pour toutes les sessions Unix",
+        "Il est enregistré dans le catalogue système de la base"
+      ],
+      "correctIndex": 1,
+      "explanation": "Les curseurs déclarés au sein d'une fonction sont locaux à cette fonction. Dès que la fonction se termine, le contexte du curseur est désalloué.",
+      "trapWarning": "Tenter de faire un FETCH sur un curseur local depuis une autre fonction provoquera une erreur de compilation."
+    },
+    {
+      "id": "ex_n3_13",
+      "gradeLevel": 3,
+      "question": "Comment libérer explicitement la mémoire et les verrous associés à un curseur une fois sa lecture achevée ?",
+      "options": [
+        "DISPOSE nom_curseur",
+        "CLOSE nom_curseur",
+        "FREE nom_curseur",
+        "KILL nom_curseur"
+      ],
+      "correctIndex": 1,
+      "explanation": "'CLOSE nom_curseur' ferme le curseur et libère les verrous de lecture. Pour désallouer complètement l'identifiant préparé, on utilise aussi 'FREE'.",
+      "trapWarning": "Oublier de fermer les curseurs peut saturer la table des curseurs ouverts au niveau du moteur Informix."
+    },
+    {
+      "id": "ex_n3_14",
+      "gradeLevel": 3,
+      "question": "Quelle instruction 4GL permet d'afficher une liste interactive tabulaire dans un tableau d'écran en permettant à l'utilisateur de scroller ?",
+      "options": [
+        "DISPLAY TABLE",
+        "SHOW GRID",
+        "DISPLAY ARRAY ... TO écran_tableau.*",
+        "LIST RECORDS"
+      ],
+      "correctIndex": 2,
+      "explanation": "DISPLAY ARRAY permet d'injecter un tableau mémoire dans une sous-grille d'un formulaire d'écran avec gestion automatique des ascenseurs et des sélections de lignes.",
+      "trapWarning": "Le tableau mémoire doit être dimensionné avec un nombre d'éléments suffisant (DEFINE arr ARRAY[500] OF RECORD)."
+    },
+    {
+      "id": "ex_n3_15",
+      "gradeLevel": 3,
+      "question": "Pourquoi est-il crucial de placer l'instruction 'OPEN curseur' juste avant son utilisation plutôt qu'en début de programme ?",
+      "options": [
+        "Parce que les données en base peuvent évoluer entre le début du binaire et le moment réel du traitement",
+        "Parce que le 4GL ne tolère pas plus de 3 secondes entre OPEN et FETCH",
+        "Pour éviter que le CPU ne surchauffe",
+        "Parce que la commande OPEN efface les fichiers journaux"
+      ],
+      "correctIndex": 0,
+      "explanation": "Ouvrir un curseur trop tôt fige la photographie des données (ou les verrous) trop longtemps avant que le traitement n'en ait besoin, augmentant les risques de conflits d'accès.",
+      "trapWarning": "Dans les environnements haute concurrence bancaire, la durée de vie d'un curseur ouvert doit être réduite au strict minimum."
+    },
+    {
+      "id": "ex_n4_01",
+      "gradeLevel": 4,
+      "question": "Pourquoi est-il FORMELLEMENT PROSCRIT d'inclure une saisie utilisateur (PROMPT ou INPUT) à l'intérieur d'un bloc BEGIN WORK / COMMIT ?",
+      "options": [
+        "Le compilateur c4gl refuse de générer le code binaire",
+        "Les verrous exclusifs en base restent actifs tant que l'opérateur n'a pas validé son écran, risquant de paralyser la production bancaire",
+        "Le SGBD désactive les sauvegardes à chaud",
+        "La transaction est automatiquement convertie en DIRTY READ"
+      ],
+      "correctIndex": 1,
+      "explanation": "Une transaction bancaire doit s'exécuter en quelques millisecondes. Une attente humaine de plusieurs secondes ou minutes maintient les locks et provoque des congestions massives.",
+      "trapWarning": "Règle d'or senior : collecter et valider toutes les saisies EN AMONT, puis ouvrir et fermer la transaction au plus vite."
+    },
+    {
+      "id": "ex_n4_02",
+      "gradeLevel": 4,
+      "question": "Comment prévenir de manière mathématique et définitive les interblocages (Deadlocks / erreur Informix -244) lors de virements entre deux comptes A et B ?",
+      "options": [
+        "En désactivant le journal des transactions de la banque",
+        "En ordonnant toujours les accès aux comptes par ordre croissant d'identifiant (ex: if c1 < c2 lock(c1) puis lock(c2))",
+        "En augmentant le nombre de disques durs du serveur AIX",
+        "En exécutant les mises à jour sans clause WHERE"
+      ],
+      "correctIndex": 1,
+      "explanation": "Si tous les programmes concurrents verrouillent toujours les ressources dans le même ordre séquentiel prédéfini, aucun cycle d'attente circulaire (deadlock) ne peut se former.",
+      "trapWarning": "Si le programme 1 verrouille A puis attend B, pendant que le programme 2 verrouille B puis attend A, ils se bloquent mutuellement à l'infini."
+    },
+    {
+      "id": "ex_n4_03",
+      "gradeLevel": 4,
+      "question": "En cas d'anomalie lors du débit d'un compte émetteur pendant un virement, quelle instruction annule l'ensemble des écritures de la transaction en cours ?",
+      "options": [
+        "ABORT WORK",
+        "ROLLBACK WORK",
+        "CANCEL TRANSACTION",
+        "UNDO ALL"
+      ],
+      "correctIndex": 1,
+      "explanation": "'ROLLBACK WORK' révoque immédiatement toutes les modifications effectuées depuis le 'BEGIN WORK', restaurant la cohérence parfaite du bilan bancaire.",
+      "trapWarning": "Oublier d'appeler ROLLBACK WORK en cas d'erreur laisse la transaction pendante et les verrous actifs."
+    },
+    {
+      "id": "ex_n4_04",
+      "gradeLevel": 4,
+      "question": "Quel principe comptable fondamental oblige à toujours générer au moins deux écritures équilibrées (Débit = Crédit) dans une même transaction ?",
+      "options": [
+        "Le principe de caisse",
+        "Le principe de la partie double (équilibre débit/crédit strict)",
+        "Le principe de prudence financière",
+        "Le principe de non-compensation fiscale"
+      ],
+      "correctIndex": 1,
+      "explanation": "En comptabilité bancaire (Amplitude / BKTRA), toute écriture au débit d'un compte doit avoir une contrepartie exacte au crédit d'un autre compte pour que le bilan soit balancé.",
+      "trapWarning": "Valider une transaction où Débit != Crédit fausse la balance générale de la banque (interdit par la commission bancaire)."
+    },
+    {
+      "id": "ex_n4_05",
+      "gradeLevel": 4,
+      "question": "Que signifie le niveau d'isolation 'COMMITTED READ' en Informix 4GL ?",
+      "options": [
+        "Le programme ne peut lire que les données validées et confirmées par un COMMIT d'un autre processus",
+        "Le programme lit les données même si la transaction distante n'est pas validée",
+        "Le programme verrouille toutes les tables de la base en mode exclusif",
+        "Les lectures sont stockées dans un fichier texte temporaire"
+      ],
+      "correctIndex": 0,
+      "explanation": "COMMITTED READ garantit qu'aucune donnée en cours de modification (non validée) ne sera lue. C'est le mode recommandé pour les opérations comptables standard.",
+      "trapWarning": "Empêche les lectures fantômes d'opérations susceptibles d'être annulées par ROLLBACK."
+    },
+    {
+      "id": "ex_n4_06",
+      "gradeLevel": 4,
+      "question": "Quel est l'impact de l'option 'REPEATABLE READ' sur les performances du serveur de base de données ?",
+      "options": [
+        "Elle accélère les requêtes de 50%",
+        "Elle maintient des verrous partagés sur TOUTES les lignes lues jusqu'au COMMIT final, réduisant fortement la concurrence",
+        "Elle désactive la journalisation des transactions",
+        "Elle réduit la taille de la mémoire partagée"
+      ],
+      "correctIndex": 1,
+      "explanation": "REPEATABLE READ garantit que si une requête est réexécutée, elle verra exactement les mêmes lignes. Le coût est la conservation de verrous sur tout l'ensemble lu.",
+      "trapWarning": "À n'utiliser que pour des clôtures comptables critiques ultra-courtes pour ne pas bloquer les autres utilisateurs."
+    },
+    {
+      "id": "ex_n4_07",
+      "gradeLevel": 4,
+      "question": "Quelle commande Informix SQL permet de définir le niveau de granularité des verrous d'une table lors de sa création ou modification ?",
+      "options": [
+        "ALTER TABLE bkcpt LOCK MODE (ROW)",
+        "SET GRANULARITY TO ROW ON bkcpt",
+        "LOCK TABLE bkcpt IN ROW LEVEL",
+        "CONFIGURE LOCKS FOR bkcpt = ROW"
+      ],
+      "correctIndex": 0,
+      "explanation": "Par défaut historique, certaines tables Informix sont en LOCK MODE (PAGE). Pour les tables bancaires à haute concurrence comme BKCPT, il faut impérativement être en LOCK MODE (ROW).",
+      "trapWarning": "En mode PAGE, verrouiller un compte client peut bloquer accidentellement 30 autres clients situés sur la même page physique de 2 Ko !"
+    },
+    {
+      "id": "ex_n4_08",
+      "gradeLevel": 4,
+      "question": "Que provoque l'erreur Informix -107 ('ISAM error: key value already exists') lors de la création d'un mouvement dans BKTRA ?",
+      "options": [
+        "Le disque dur de la baie de stockage est plein",
+        "Une tentative d'insertion d'une transaction avec un numéro de pièce ou une clé primaire déjà existante (doublon d'index unique)",
+        "La table BKTRA a été supprimée",
+        "Le mot de passe de la base de données a expiré"
+      ],
+      "correctIndex": 1,
+      "explanation": "L'erreur -107 indique la violation d'une contrainte d'unicité (index unique). En monétique, cela arrive quand deux trames portent le même RRN ou STAN.",
+      "trapWarning": "Nécessite la gestion des reprises ou des rejets avec un message explicite dans le log d'exploitation."
+    },
+    {
+      "id": "ex_n4_09",
+      "gradeLevel": 4,
+      "question": "Comment gérer élégamment un blocage temporaire de verrou (-244) avec un mécanisme de relance (retry loop) en 4GL ?",
+      "options": [
+        "En utilisant une boucle FOR de 1 à 3 essais avec un sleep court et WHENEVER ERROR CONTINUE",
+        "En redémarrant le serveur Unix immédiatement",
+        "En passant la table en DIRTY READ pour écrire la ligne en force",
+        "En arrêtant le binaire avec un code 99"
+      ],
+      "correctIndex": 0,
+      "explanation": "Une tentative concurrente peut se résoudre en quelques dixièmes de seconde. Réessayer 2 ou 3 fois avec un court délai résout 95% des conflits transitoires d'agences.",
+      "trapWarning": "Ne jamais faire une boucle infinie de retry qui bloquerait le processus indéfiniment."
+    },
+    {
+      "id": "ex_n4_10",
+      "gradeLevel": 4,
+      "question": "Pourquoi est-il proscrit de déclarer une transaction BEGIN WORK à l'intérieur d'une autre transaction déjà ouverte en 4GL ?",
+      "options": [
+        "Informix ne supporte pas les transactions imbriquées imbriquées réelles (nested transactions) et lèvera une erreur",
+        "Le deuxième commit annule le premier",
+        "Toutes les données sont automatiquement écrasées",
+        "La base de données bascule en mode maintenance"
+      ],
+      "correctIndex": 0,
+      "explanation": "En Informix 4GL standard, les transactions imbriquées provoquent l'erreur -535 (Already in transaction) ou ne créent aucun point de sauvegarde indépendant.",
+      "trapWarning": "Toujours vérifier qu'une transaction n'est pas déjà ouverte avant d'invoquer BEGIN WORK."
+    },
+    {
+      "id": "ex_n4_11",
+      "gradeLevel": 4,
+      "question": "Dans le cadre de la réconciliation monétique ATM/POS, quand doit-on positionner l'état du mouvement à 'COMPENSÉ' ?",
+      "options": [
+        "Dès la réception de la trame d'autorisation 0100",
+        "Uniquement après le rapprochement réussi entre le fichier de compensation réseau (Visa/Mastercard/GIM) et le journal interne",
+        "Dès que le client a retiré ses billets au distributeur",
+        "À la fin du mois calendaire"
+      ],
+      "correctIndex": 1,
+      "explanation": "L'autorisation (0100/0200) bloque la provision, mais la compensation financière effective n'intervient qu'après le traitement du clearing et du fichier de règlement.",
+      "trapWarning": "Confondre autorisation et compensation entraîne des écarts de trésorerie sur le compte Nostro de la banque."
+    },
+    {
+      "id": "ex_n4_12",
+      "gradeLevel": 4,
+      "question": "Quelle instruction permet de sauvegarder un point intermédiaire réversible dans une longue suite d'opérations d'une même session ?",
+      "options": [
+        "CHECKPOINT nom_point",
+        "SAVEPOINT nom_point",
+        "MARKER nom_point",
+        "FREEZE TRANSACTION"
+      ],
+      "correctIndex": 1,
+      "explanation": "SAVEPOINT permet de définir des jalons dans une transaction pour pouvoir faire un ROLLBACK TO SAVEPOINT sans annuler toute la transaction.",
+      "trapWarning": "Tous les moteurs Informix plus anciens ne supportent pas les savepoints dans la syntaxe 4GL historique sans passer par du SQL préparé."
+    },
+    {
+      "id": "ex_n4_13",
+      "gradeLevel": 4,
+      "question": "Quel rôle joue la table 'BKCOM' dans la chaîne de comptabilisation des opérations ?",
+      "options": [
+        "Elle enregistre les commissions appliquées aux transactions",
+        "Elle contient l'historique des connexions des utilisateurs",
+        "Elle liste les agences bancaires du pays",
+        "Elle stocke les devises étrangères"
+      ],
+      "correctIndex": 0,
+      "explanation": "BKCOM est la table centrale de tarification et d'enregistrement des commissions prélevées sur les flux bancaires et monétiques.",
+      "trapWarning": "Chaque code opération possède un barème de frais paramétré dans les tables associées."
+    },
+    {
+      "id": "ex_n4_14",
+      "gradeLevel": 4,
+      "question": "Que se passe-t-il si un programme 4GL subit un 'kill -9' du système d'exploitation alors qu'il était en plein milieu d'une transaction BEGIN WORK ?",
+      "options": [
+        "Les modifications partielles restent définitivement écrites en base",
+        "Le serveur Informix détecte la perte de connexion du client et déclenche un ROLLBACK automatique via les journaux logiques",
+        "Toute la base de données est corrompue et doit être restaurée depuis la sauvegarde",
+        "Le serveur AIX s'arrête"
+      ],
+      "correctIndex": 1,
+      "explanation": "Grâce aux principes ACID et aux Physical/Logical Logs du SGBD, toute transaction non commitée lors de la disparition d'un processus client est automatiquement rollbackée par le moteur.",
+      "trapWarning": "C'est la garantie absolue qu'une opération bancaire incomplète ne laissera jamais un compte débité sans sa contrepartie."
+    },
+    {
+      "id": "ex_n4_15",
+      "gradeLevel": 4,
+      "question": "Comment auditer rigoureusement toute modification de solde critique en conservant l'ancien solde et le nouveau solde ?",
+      "options": [
+        "En écrivant une ligne dans la table d'audit (BKAUD) au sein de la MÊME transaction que l'UPDATE du compte",
+        "En imprimant une feuille de papier au guichet",
+        "En envoyant un email à la fin de la journée",
+        "En stockant l'ancien solde dans un fichier temporaire /tmp"
+      ],
+      "correctIndex": 0,
+      "explanation": "L'audit doit impérativement faire partie de la transaction ACID du compte : si l'UPDATE échoue, l'audit est annulé ; si l'audit échoue, l'UPDATE est annulé.",
+      "trapWarning": "Un audit enregistré en dehors de la transaction peut créer des faux positifs si la transaction est finalement rejetée."
+    },
+    {
+      "id": "ex_n5_01",
+      "gradeLevel": 5,
+      "question": "Lors de l'utilisation d'un 'INSERT CURSOR' haute performance avec 'PUT', que se passe-t-il si le développeur omet l'instruction 'FLUSH' avant le COMMIT final ?",
+      "options": [
+        "Le compilateur 4GL signale une erreur fatale",
+        "Toutes les lignes de la table sont effacées",
+        "Les dernières lignes accumulées dans le tampon réseau mémoire (buffer) ne sont jamais transmises au disque et sont définitivement perdues",
+        "Le SGBD Informix effectue un flush automatique toutes les millisecondes"
+      ],
+      "correctIndex": 2,
+      "explanation": "PUT écrit dans un buffer local en mémoire. Tant que le bloc de 4 Ko n'est pas plein, rien n'est envoyé au serveur. Sans FLUSH, la fin du lot est perdue sans aucun message d'erreur !",
+      "trapWarning": "C'est l'un des bugs les plus redoutables et discrets en exploitation bancaire de masse !"
+    },
+    {
+      "id": "ex_n5_02",
+      "gradeLevel": 5,
+      "question": "Pourquoi est-il impératif de découper les batchs volumineux de fin de journée (EOD) en blocs de commit périodiques (chunking de 1 000 à 2 000 lignes) ?",
+      "options": [
+        "Pour éviter de saturer les journaux logiques Informix (erreur -454 'Long transaction aborted') et réduire la durée de reprise après incident",
+        "Parce que le 4GL ne sait pas compter au-delà de 2 000 lignes",
+        "Pour permettre aux agences d'ouvrir pendant la nuit",
+        "Pour réinitialiser le processeur du serveur"
+      ],
+      "correctIndex": 0,
+      "explanation": "Les logical logs ont un espace disque alloué fixe. Une transaction unique qui modifie 2 millions de lignes sature les logs, forçant le SGBD à un rollback massif qui bloque la banque pendant des heures.",
+      "trapWarning": "Le découpage par paquet de 1 000 à 2 000 lignes avec COMMIT régulier est la règle d'or des batchs bancaires."
+    },
+    {
+      "id": "ex_n5_03",
+      "gradeLevel": 5,
+      "question": "Quel est le gain technique décisif de l'utilisation conjointe de 'PREPARE' et d'un 'INSERT CURSOR' pour intégrer 1 000 000 de mouvements ?",
+      "options": [
+        "Les lignes sont compressées en zip sur le serveur",
+        "L'analyse syntaxique et le plan d'exécution de la requête SQL ne sont compilés qu'une seule fois par le SGBD, et les écritures réseau sont regroupées par blocs",
+        "L'insertion ne vérifie pas les contraintes d'intégrité",
+        "Le binaire utilise la carte graphique du serveur"
+      ],
+      "correctIndex": 1,
+      "explanation": "Un INSERT classique répété un million de fois force un million d'allers-retours réseau et un million de compilations SQL. L'INSERT CURSOR réduit les I/O réseau d'un facteur 20 à 50.",
+      "trapWarning": "C'est la différence entre un batch qui met 4 heures et un batch qui s'exécute en 4 minutes !"
+    },
+    {
+      "id": "ex_n5_04",
+      "gradeLevel": 5,
+      "question": "Comment exécuter une requête SQL dynamique construite sous forme de chaîne de caractères lors de l'exécution d'un binaire 4GL ?",
+      "options": [
+        "EVAL(chaine_sql)",
+        "PREPARE identifiant FROM chaine_sql puis EXECUTE identifiant (ou DECLARE curseur FOR identifiant)",
+        "RUN SQL chaine_sql",
+        "SYSTEM chaine_sql"
+      ],
+      "correctIndex": 1,
+      "explanation": "La syntaxe 4GL pour le SQL dynamique exige : PREPARE st_nom FROM variable_texte, puis EXECUTE st_nom USING parametres.",
+      "trapWarning": "Toujours libérer les requêtes préparées avec 'FREE st_nom' pour éviter les fuites de mémoire dans les sessions longues."
+    },
+    {
+      "id": "ex_n5_05",
+      "gradeLevel": 5,
+      "question": "Quelle commande de diagnostic Informix permet à un architecte d'inspecter l'utilisation des locks et d'identifier la session bloquante en production ?",
+      "options": [
+        "onstat -k / onstat -u",
+        "oncheck -pe",
+        "ontape -s",
+        "dbaccess sysmaster"
+      ],
+      "correctIndex": 0,
+      "explanation": "'onstat -k' affiche la table de tous les verrous actifs et 'onstat -u' donne la liste des sessions avec leurs threads et transactions en cours.",
+      "trapWarning": "En astreinte EOD, 'onstat -k' est la commande clé pour trouver l'adresse mémoire de la session qui bloque la chaîne batch."
+    },
+    {
+      "id": "ex_n5_06",
+      "gradeLevel": 5,
+      "question": "Pour optimiser un calcul massif d'intérêts de fin de mois sur 500 000 comptes, quelle technique de parallélisation est recommandée sous AIX ?",
+      "options": [
+        "Lancer 10 instances du binaire 4GL en arrière-plan réparties par tranche de code agence ou modulo de compte (sharding applicatif)",
+        "Mettre le serveur en mode single-user",
+        "Augmenter la taille de police du terminal",
+        "Désactiver la mémoire virtuelle"
+      ],
+      "correctIndex": 0,
+      "explanation": "Le partitionnement logique du travail (sharding applicatif par agence ou tranche de compte) permet d'utiliser tous les cœurs du serveur AIX en parallèle sans conflit de verrous.",
+      "trapWarning": "S'assurer que les tranches sont mutuellement exclusives pour qu'aucun compte ne soit traité en double."
+    },
+    {
+      "id": "ex_n5_07",
+      "gradeLevel": 5,
+      "question": "Quel paramètre de configuration du moteur Informix (onconfig) contrôle la taille du cache des tampons de données en mémoire vive (Buffer Pool) ?",
+      "options": [
+        "LOGFILES",
+        "BUFFERPOOL (ou BUFFERS)",
+        "LOCKS",
+        "SHMVIRTSIZE"
+      ],
+      "correctIndex": 1,
+      "explanation": "Le paramètre BUFFERPOOL configure le nombre de tampons de pages (2K ou 4K) en mémoire partagée, déterminant le taux de hit mémoire (Read Cache Hit Ratio > 98%).",
+      "trapWarning": "Un Buffer Pool sous-dimensionné force le SGBD à lire en permanence sur les disques physiques, écroulant les performances du CBS."
+    },
+    {
+      "id": "ex_n5_08",
+      "gradeLevel": 5,
+      "question": "À quoi sert la directive 'UPDATE STATISTICS LOW / MEDIUM / HIGH' avant le lancement des arrêtés annuels ou mensuels volumineux ?",
+      "options": [
+        "À réindexer et actualiser les statistiques d'histogrammes dans le catalogue système pour que l'optimiseur SQL choisisse le meilleur plan d'exécution",
+        "À supprimer les lignes anciennes de la table d'audit",
+        "À calculer la marge nette de la banque",
+        "À vérifier que les disques durs ne sont pas fragmentés"
+      ],
+      "correctIndex": 0,
+      "explanation": "L'optimiseur basé sur les coûts d'Informix s'appuie sur la distribution des valeurs (UPDATE STATISTICS HIGH) pour décider d'utiliser un index ou un scan séquentiel.",
+      "trapWarning": "Des statistiques obsolètes peuvent conduire l'optimiseur à faire un scan séquentiel complet d'une table de 10 millions de lignes plutôt que d'utiliser l'index !"
+    },
+    {
+      "id": "ex_n5_09",
+      "gradeLevel": 5,
+      "question": "Quelle instruction 4GL permet d'exécuter directement une commande système ou un script shell Unix depuis le code ?",
+      "options": [
+        "EXEC_SHELL commande",
+        "RUN commande [RETURNING variable]",
+        "SHELL(commande)",
+        "CALL SYSTEM(commande)"
+      ],
+      "correctIndex": 1,
+      "explanation": "L'instruction 'RUN \"script.sh\" RETURNING code_retour' délègue l'exécution à un sous-processus shell Unix et récupère le code de terminaison.",
+      "trapWarning": "Le binaire 4GL attend la fin du script shell avant de continuer, sauf si la commande Unix se termine par '&'."
+    },
+    {
+      "id": "ex_n5_10",
+      "gradeLevel": 5,
+      "question": "Comment déclarer et exploiter une table temporaire en mémoire/disque privée pour une session 4GL sans impacter les autres utilisateurs ?",
+      "options": [
+        "CREATE TEMP TABLE t_nom (champs...) WITH NO LOG",
+        "CREATE PRIVATE TABLE t_nom",
+        "DECLARE TEMP TABLE t_nom",
+        "CREATE CACHE TABLE t_nom"
+      ],
+      "correctIndex": 0,
+      "explanation": "Les tables créées avec 'CREATE TEMP TABLE ... WITH NO LOG' sont stockées dans les dbspaces temporaires, n'écrivent pas dans les logical logs et sont détruites automatiquement à la fermeture de session.",
+      "trapWarning": "L'option WITH NO LOG accélère considérablement les traitements et n'encombre pas les journaux de transactions."
+    },
+    {
+      "id": "ex_n5_11",
+      "gradeLevel": 5,
+      "question": "Quelle est la cause principale de l'erreur Informix -271 ('Could not insert new row into the table') lors d'un traitement batch de masse ?",
+      "options": [
+        "L'espace disque dans le Dbspace de données ou d'index est complètement saturé (tablespace plein)",
+        "L'ordinateur client a été éteint",
+        "Le mot de passe de la banque a changé",
+        "Le câble réseau est déconnecté"
+      ],
+      "correctIndex": 0,
+      "explanation": "L'erreur -271 accompagnée du sous-code ISAM -131 (no free space in dbspace) signifie qu'il n'y a plus aucun bloc libre pour agrandir la table ou son index.",
+      "trapWarning": "Exige l'intervention d'urgence du DBA pour ajouter un chunk de stockage au dbspace."
+    },
+    {
+      "id": "ex_n5_12",
+      "gradeLevel": 5,
+      "question": "Dans le cadre de l'architecture Core Banking Amplitude, pourquoi utilise-t-on le mécanisme de 'Two-Phase Commit' (2PC) ?",
+      "options": [
+        "Pour synchroniser atomiquement des transactions réparties sur deux bases de données distinctes (ex: base monétique et base comptable)",
+        "Pour doubler la vitesse des transactions",
+        "Pour faire une sauvegarde le matin et une le soir",
+        "Pour imprimer deux tickets de caisse au guichet"
+      ],
+      "correctIndex": 0,
+      "explanation": "Le commit à deux phases (Prepare / Commit) garantit que les écritures réparties sur deux instances de bases hétérogènes sont soit validées toutes les deux, soit annulées toutes les deux.",
+      "trapWarning": "Si une liaison réseau tombe pendant la phase 2, la transaction passe en état 'in-doubt' jusqu'à résolution."
+    },
+    {
+      "id": "ex_n5_13",
+      "gradeLevel": 5,
+      "question": "Quelle clause 4GL permet de libérer les ressources d'une requête préparée dynamique afin de prévenir toute fuite mémoire dans un processus batch ?",
+      "options": [
+        "FREE st_requete",
+        "DROP st_requete",
+        "CLEAR st_requete",
+        "UNPREPARE st_requete"
+      ],
+      "correctIndex": 0,
+      "explanation": "L'instruction 'FREE identifiant' libère la mémoire allouée par le SGBD et le client 4GL pour la structure de l'ordre SQL préparé.",
+      "trapWarning": "Ne pas libérer les curseurs et requêtes préparées dans une boucle de 100 000 itérations consomme toute la mémoire virtuelle."
+    },
+    {
+      "id": "ex_n5_14",
+      "gradeLevel": 5,
+      "question": "Pour diagnostiquer le plan d'exécution précis d'une requête SQL complexe, quelle directive permet de générer le fichier de trace 'sqexplain.out' ?",
+      "options": [
+        "SET EXPLAIN ON",
+        "TRACE SQL TO FILE",
+        "EXPLAIN PLAN FOR",
+        "ACTIVATE SQL DEBUG"
+      ],
+      "correctIndex": 0,
+      "explanation": "La commande Informix 'SET EXPLAIN ON' (ou SET EXPLAIN ON AVOID_EXEC) écrit l'analyse complète de l'optimiseur dans le fichier sqexplain.out.",
+      "trapWarning": "Penser à faire 'SET EXPLAIN OFF' dès l'analyse terminée pour ne pas dégrader les performances en production."
+    },
+    {
+      "id": "ex_n5_15",
+      "gradeLevel": 5,
+      "question": "Quelle stratégie d'indexation est recommandée sur une table transactionnelle de 50 millions de lignes (BKTRA) interrogée par date comptable et agence ?",
+      "options": [
+        "Un index composite sur (AGE, DCO, NCP) ou un partitionnement par intervalle de date (table fragmentée par dbspace)",
+        "Créer un index sur chacune des 40 colonnes de la table",
+        "Ne créer aucun index pour accélérer les écritures",
+        "Placer la table entière dans un fichier plat"
+      ],
+      "correctIndex": 0,
+      "explanation": "La fragmentation de table par expression (ex: par trimestre ou année sur DCO) et un index composite adéquat limitent la recherche aux seuls dbspaces concernés (partition pruning).",
+      "trapWarning": "Avoir trop d'index ralentit drastiquement les ordres INSERT de la chaîne EOD."
+    }
+  ]
+}

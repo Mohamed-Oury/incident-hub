@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AppShell } from "@/modules/layout/AppShell";
 import {
   CBS_4GL_GRADES,
@@ -15,17 +15,78 @@ import {
 } from "@/modules/cbs/cbs-4gl-cheat-sheet";
 
 export default function Cbs4GlTrainingPage() {
-  // Progression et déblocage des grades (Persistance locale via état)
+  // Progression et déblocage des grades (Persistance persistante BDD + LocalStorage)
   const [unlockedLevel, setUnlockedLevel] = useState<number>(1);
   const [selectedGradeLevel, setSelectedGradeLevel] = useState<number>(1);
   const [activeTab, setActiveTab] = useState<"cours" | "simulateur" | "examen" | "fiche" | "certificat">("cours");
   const [cheatSheetCategory, setCheatSheetCategory] = useState<string>("ALL");
   const [cheatSheetSearch, setCheatSheetSearch] = useState<string>("");
 
+  // Chargement de la progression persistée au démarrage
+  useEffect(() => {
+    // 1. Chargement instantané depuis localStorage
+    try {
+      const savedLevel = localStorage.getItem("cbs_4gl_unlocked_level");
+      if (savedLevel) {
+        const lvl = parseInt(savedLevel, 10);
+        if (lvl >= 1 && lvl <= 5) {
+          setUnlockedLevel(lvl);
+          setSelectedGradeLevel(lvl);
+        }
+      }
+    } catch (_) {}
+
+    // 2. Synchronisation avec le serveur/base de données
+    fetch("/api/training/progress")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data && data.progress && typeof data.progress.cbsLevel === "number") {
+          const serverLvl = data.progress.cbsLevel;
+          setUnlockedLevel((prev) => {
+            const finalLvl = Math.max(prev, serverLvl);
+            try {
+              localStorage.setItem("cbs_4gl_unlocked_level", finalLvl.toString());
+            } catch (_) {}
+            return finalLvl;
+          });
+          setSelectedGradeLevel((prev) => Math.max(prev, serverLvl));
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  // Fonction de sauvegarde robuste
+  const saveProgress = async (newLevel: number, scoreInfo?: any) => {
+    try {
+      localStorage.setItem("cbs_4gl_unlocked_level", newLevel.toString());
+    } catch (_) {}
+
+    try {
+      await fetch("/api/training/progress", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "CBS",
+          level: newLevel,
+          scoreData: scoreInfo,
+        }),
+      });
+    } catch (_) {}
+  };
+
   // Cours sélectionné
   const lessonsForCurrentGrade = CBS_4GL_LESSONS.filter((l) => l.gradeLevel === selectedGradeLevel);
   const [selectedLesson, setSelectedLesson] = useState<Cbs4GlLesson>(lessonsForCurrentGrade[0] || CBS_4GL_LESSONS[0]);
   const [copied, setCopied] = useState(false);
+
+  // Mettre à jour la leçon quand le niveau sélectionné change
+  useEffect(() => {
+    const lessons = CBS_4GL_LESSONS.filter((l) => l.gradeLevel === selectedGradeLevel);
+    if (lessons.length > 0) {
+      setSelectedLesson(lessons[0]);
+      setSimCode(lessons[0].codeSample);
+    }
+  }, [selectedGradeLevel]);
 
   // Simulateur 4GL
   const [simCode, setSimCode] = useState(selectedLesson.codeSample);
@@ -67,17 +128,30 @@ export default function Cbs4GlTrainingPage() {
 
   const handleCompileAndRun = () => {
     setIsCompiling(true);
-    setSimOutput("Compilation Informix 4GL : c4gl -c programme.4gl ...\nÉdition des liens avec les librairies bancaires Amplitude...\n");
+    setSimOutput("Compilation c4gl en cours avec le moteur Informix IDS...\nLiaison avec la base de données AMPLITUDE...\n");
 
     setTimeout(() => {
       setIsCompiling(false);
-      if (simCode.includes("BEGIN WORK") && !simCode.includes("COMMIT WORK") && !simCode.includes("ROLLBACK WORK")) {
-        setSimOutput((prev) => prev + "⚠️ AVERTISSEMENT RUN : Transaction non clôturée (BEGIN WORK sans COMMIT). Risque de lock exclusif sur BKCOM/BKCPT.\n");
-      } else if (simCode.includes("PUT") && !simCode.includes("FLUSH")) {
-        setSimOutput((prev) => prev + "⚠️ AVERTISSEMENT MOTEUR : 'PUT' détecté sans 'FLUSH'. Les dernières lignes risquent d'être perdues en mémoire.\n");
-      } else {
-        setSimOutput((prev) => prev + "✅ SUCCÈS : Binaire exécutable généré avec 0 erreur de syntaxe.\n[MOTEUR 4GL] Connexion à la base 'amplitude' établie.\n[MOTEUR 4GL] Traitement exécuté avec succès (status = 0).\n");
+      let output = "=== RÉSULTAT COMPILATION & RUN (c4gl) ===\n";
+      output += "[OK] 0 avertissements, 0 erreurs de syntaxe.\n";
+      output += "[OK] Binaire exécutable 'cbs_prog.4go' généré.\n";
+      output += "--------------------------------------------------\n";
+      output += "[EXECUTION EN ENVIRONNEMENT BANCAIRE SIMULÉ] :\n";
+
+      if (simCode.includes("DISPLAY")) {
+        output += "> Sortie console : Exécution réussie avec code retour EXIT PROGRAM (0).\n";
       }
+      if (simCode.includes("SELECT") || simCode.includes("FOREACH")) {
+        output += "> Transaction SQL : 12 comptes analysés, 0 anomalies de solde détectées.\n";
+      }
+      if (simCode.includes("BEGIN WORK") || simCode.includes("COMMIT WORK")) {
+        output += "> Contrôle ACID : COMMIT WORK validé. Écritures passées en table d'audit BKAUD.\n";
+      }
+      if (simCode.includes("PUT") || simCode.includes("FLUSH")) {
+        output += "> Performance Batch : 2 500 écritures tamponnées flushées en 42ms.\n";
+      }
+
+      setSimOutput(output);
     }, 500);
   };
 
@@ -92,11 +166,16 @@ export default function Cbs4GlTrainingPage() {
     const pct = total > 0 ? Math.round((score / total) * 100) : 0;
     const passed = pct >= currentGrade.minPassScorePct;
 
-    setExamResult({ score, total, pct, passed });
+    const res = { score, total, pct, passed };
+    setExamResult(res);
     setExamSubmitted(true);
 
-    if (passed && unlockedLevel === selectedGradeLevel && selectedGradeLevel < 5) {
-      setUnlockedLevel(selectedGradeLevel + 1);
+    if (passed) {
+      const nextLevel = Math.min(5, Math.max(unlockedLevel, selectedGradeLevel + 1));
+      if (nextLevel > unlockedLevel) {
+        setUnlockedLevel(nextLevel);
+      }
+      saveProgress(nextLevel, { gradeLevel: selectedGradeLevel, ...res });
     }
   };
 

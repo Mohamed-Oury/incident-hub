@@ -7,6 +7,7 @@ import 'cbs_batch_eod_screen.dart';
 import 'cbs_unix_screen.dart';
 import 'cbs_incidents_screen.dart';
 import 'cbs_quiz_screen.dart';
+import '../../training/screens/training_cbs_screen.dart';
 
 class CbsHomeScreen extends StatefulWidget {
   final VoidCallback? onSwitchUniverse;
@@ -285,6 +286,16 @@ class _CbsHomeScreenState extends State<CbsHomeScreen> {
                         },
                       ),
                     ),
+                  ),
+                ),
+                _buildModuleCard(
+                  title: 'Cursus 4GL & Certif',
+                  subtitle: '5 Grades • 75 Examens • Certificat CBS',
+                  icon: Icons.workspace_premium,
+                  accentColor: Colors.cyanAccent,
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const TrainingCbsScreen()),
                   ),
                 ),
               ],

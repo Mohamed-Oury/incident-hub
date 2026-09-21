@@ -13,6 +13,7 @@ import '../boss_fight/boss_fight_screen.dart';
 import '../tools/iso_raw_parser_screen.dart';
 import '../tools/crypto_toolbox_screen.dart';
 import '../tools/on_call_report_screen.dart';
+import '../training/screens/training_monetique_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final VoidCallback? onSwitchUniverse;
@@ -319,6 +320,73 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                       ],
+                    ),
+
+                    // Carte Cursus Monétique & Certificat (Nouveau Module)
+                    Container(
+                      margin: const EdgeInsets.only(top: 14),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF0F172A), Color(0xFF064E3B)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.greenAccent.withValues(alpha: 0.5), width: 1.5),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.greenAccent.withValues(alpha: 0.15),
+                            blurRadius: 10,
+                            spreadRadius: 1,
+                          ),
+                        ],
+                      ),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => const TrainingMonetiqueScreen()),
+                            );
+                          },
+                          borderRadius: BorderRadius.circular(12),
+                          child: Padding(
+                            padding: const EdgeInsets.all(14),
+                            child: Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: Colors.greenAccent.withValues(alpha: 0.2),
+                                    shape: BoxShape.circle,
+                                    border: Border.all(color: Colors.greenAccent),
+                                  ),
+                                  child: const Icon(Icons.workspace_premium, color: Colors.greenAccent, size: 24),
+                                ),
+                                const SizedBox(width: 14),
+                                const Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Cursus Formation Monétique',
+                                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+                                      ),
+                                      SizedBox(height: 2),
+                                      Text(
+                                        '5 Grades • 150 Examens • Certificat Switch & ISO',
+                                        style: TextStyle(color: Colors.white70, fontSize: 11),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const Icon(Icons.arrow_forward_ios, color: Colors.greenAccent, size: 14),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
 
                     const SizedBox(height: 20),
