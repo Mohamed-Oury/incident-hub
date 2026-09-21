@@ -177,7 +177,7 @@ export default function TrainingMonetiquePage() {
       <div style={{ display: "flex", flexDirection: "column", gap: "24px", maxWidth: "1200px", margin: "0 auto" }}>
         
         {/* BANDEAU EN-TÊTE : PROGRESSION & NIVEAUX */}
-        <div style={{
+        <div className="no-print" style={{
           background: "linear-gradient(135deg, #090d16, #064e3b)",
           border: "1px solid #059669",
           borderRadius: "12px",
@@ -258,7 +258,7 @@ export default function TrainingMonetiquePage() {
         </div>
 
         {/* ONGLETS INTERNES */}
-        <div style={{ display: "flex", gap: "12px", borderBottom: "1px solid #334155", paddingBottom: "12px" }}>
+        <div className="no-print" style={{ display: "flex", gap: "12px", borderBottom: "1px solid #334155", paddingBottom: "12px" }}>
           <button
             onClick={() => setActiveTab("cours")}
             style={{
@@ -712,7 +712,7 @@ export default function TrainingMonetiquePage() {
 
         {/* ONGLET 4 : CERTIFICAT D'INGÉNIEUR MONÉTIQUE */}
         {activeTab === "certificat" && (
-          <div style={{
+          <div className="certificate-tab-container" style={{
             background: "#0f172a",
             borderRadius: "16px",
             border: "1px solid #334155",

@@ -31,7 +31,7 @@ export default function Cbs4GlTrainingPage() {
           setCurrentUserName(data.user.name);
         }
       })
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   // Chargement de la progression persistée au démarrage
@@ -200,7 +200,7 @@ export default function Cbs4GlTrainingPage() {
       <div style={{ display: "flex", flexDirection: "column", gap: "24px", maxWidth: "1200px", margin: "0 auto" }}>
 
         {/* EN-TÊTE : PROGRESSION ET PALMARÈS DES GRADES */}
-        <div style={{
+        <div className="no-print" style={{
           background: "linear-gradient(135deg, #0f172a, #1e1b4b)",
           border: "1px solid #4338ca",
           borderRadius: "12px",
@@ -281,7 +281,7 @@ export default function Cbs4GlTrainingPage() {
         </div>
 
         {/* ONGLETS INTERNES : COURS / SANDBOX / EXAMEN */}
-        <div style={{ display: "flex", gap: "12px", borderBottom: "1px solid #334155", paddingBottom: "12px" }}>
+        <div className="no-print" style={{ display: "flex", gap: "12px", borderBottom: "1px solid #334155", paddingBottom: "12px" }}>
           <button
             onClick={() => setActiveTab("cours")}
             style={{
@@ -966,7 +966,7 @@ export default function Cbs4GlTrainingPage() {
 
         {/* CONTENU ONGLET 5 : CERTIFICAT OFFICIEL D'EXPERT 4GL */}
         {activeTab === "certificat" && (
-          <div style={{
+          <div className="certificate-tab-container" style={{
             background: "#0f172a",
             borderRadius: "16px",
             border: "1px solid #334155",
@@ -1037,7 +1037,7 @@ export default function Cbs4GlTrainingPage() {
                         boxShadow: "0 2px 8px rgba(230,0,40,0.4)"
                       }} />
                       <div style={{ fontSize: "12px", fontWeight: 800, letterSpacing: "2px", color: "#f87171", textTransform: "uppercase", textAlign: "left" }}>
-                        GROUPE SOCIÉTÉ GÉNÉRALE • IT BANKING ACADEMY
+                        IT BANKING ACADEMY
                       </div>
                     </div>
                     <div style={{
@@ -1126,7 +1126,6 @@ export default function Cbs4GlTrainingPage() {
                   }}>
                     <div style={{ textAlign: "left" }}>
                       <div style={{ fontSize: "10px", color: "#9ca3af", textTransform: "uppercase" }}>Direction IT Banking &amp; Monétique</div>
-                      <div style={{ fontSize: "12px", color: "#e60028", fontWeight: 700 }}>Groupe Société Générale</div>
                     </div>
                     <div style={{
                       padding: "6px 14px",
