@@ -20,7 +20,7 @@ export default function Cbs4GlTrainingPage() {
   const [activeTab, setActiveTab] = useState<"cours" | "simulateur" | "examen" | "fiche" | "certificat">("cours");
   const [cheatSheetCategory, setCheatSheetCategory] = useState<string>("ALL");
   const [cheatSheetSearch, setCheatSheetSearch] = useState<string>("");
-  const [currentUserName, setCurrentUserName] = useState<string>("Mohamed Oury BARRY");
+  const [currentUserName, setCurrentUserName] = useState<string>("Mohamed Oury Diallo");
 
   // Chargement de l'utilisateur connecté
   useEffect(() => {
@@ -1029,12 +1029,12 @@ export default function Cbs4GlTrainingPage() {
                     <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                       {/* Logo carré Société Générale : Moitié Rouge SG / Moitié Noir */}
                       <div style={{
-                        width: "32px",
-                        height: "32px",
-                        background: "linear-gradient(to bottom, #e60028 0%, #e60028 50%, #111827 50%, #111827 100%)",
-                        borderRadius: "4px",
-                        border: "1px solid #ffffff",
-                        boxShadow: "0 2px 8px rgba(230,0,40,0.4)"
+                        //width: "32px",
+                        //height: "32px",
+                        //background: "linear-gradient(to bottom, #e60028 0%, #e60028 50%, #111827 50%, #111827 100%)",
+                        //borderRadius: "4px",
+                        //border: "1px solid #ffffff",
+                        //boxShadow: "0 2px 8px rgba(230,0,40,0.4)"
                       }} />
                       <div style={{ fontSize: "12px", fontWeight: 800, letterSpacing: "2px", color: "#f87171", textTransform: "uppercase", textAlign: "left" }}>
                         IT BANKING ACADEMY
@@ -1085,7 +1085,7 @@ export default function Cbs4GlTrainingPage() {
                     marginBottom: "20px",
                     letterSpacing: "1px"
                   }}>
-                    {currentUserName || "Mohamed Oury BARRY"}
+                    Mohamed Oury Diallo - EXPERT
                   </div>
 
                   <p style={{ fontSize: "14px", color: "#94a3b8", maxWidth: "680px", margin: "0 auto 28px auto", lineHeight: "1.7" }}>
