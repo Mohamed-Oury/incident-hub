@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { AppShell } from "@/modules/layout/AppShell";
+import { computeEmvCryptograms, ArqcResult } from "@/modules/crypto/emv-arqc";
 
 interface KcvResult {
   keyHex: string;
@@ -21,7 +22,7 @@ interface PinBlockResult {
 }
 
 export default function CryptoHsmPage() {
-  const [activeTab, setActiveTab] = useState<"KCV" | "PIN_BLOCK" | "HSM_ERRORS">("KCV");
+  const [activeTab, setActiveTab] = useState<"KCV" | "PIN_BLOCK" | "ARQC_ARPC" | "HSM_ERRORS">("ARQC_ARPC");
 
   // State KCV
   const [inputKey, setInputKey] = useState<string>("0123456789ABCDEFFEDCBA9876543210");
@@ -32,6 +33,18 @@ export default function CryptoHsmPage() {
   const [pin, setPin] = useState<string>("1234");
   const [pinFormat] = useState<"ISO-0" | "ISO-1" | "ISO-3">("ISO-0");
   const [pinBlockResult, setPinBlockResult] = useState<PinBlockResult | null>(null);
+
+  // State ARQC / ARPC
+  const [arqcPan, setArqcPan] = useState<string>("4970101234567890");
+  const [arqcPsn, setArqcPsn] = useState<string>("01");
+  const [arqcAmount, setArqcAmount] = useState<string>("000000050000");
+  const [arqcTvr, setArqcTvr] = useState<string>("0000008000");
+  const [arqcCurrency, setArqcCurrency] = useState<string>("0952");
+  const [arqcCountry, setArqcCountry] = useState<string>("0952");
+  const [arqcAtc, setArqcAtc] = useState<string>("004A");
+  const [arqcUn, setArqcUn] = useState<string>("9A1B2C3D");
+  const [arqcMkAc, setArqcMkAc] = useState<string>("0123456789ABCDEFFEDCBA9876543210");
+  const [arqcResult, setArqcResult] = useState<ArqcResult | null>(null);
 
   // State Erreurs HSM
   const [hsmVendor, setHsmVendor] = useState<"THALES" | "ATALLA">("THALES");
@@ -97,6 +110,24 @@ export default function CryptoHsmPage() {
     });
   };
 
+  const handleCalculateArqc = () => {
+    const res = computeEmvCryptograms({
+      pan: arqcPan,
+      panSequenceNumber: arqcPsn,
+      amountAuth: arqcAmount,
+      amountOther: "000000000000",
+      terminalCountryCode: arqcCountry,
+      tvr: arqcTvr,
+      transactionCurrencyCode: arqcCurrency,
+      transactionDate: "260922",
+      transactionType: "01",
+      unpredictableNumber: arqcUn,
+      applicationTransactionCounter: arqcAtc,
+      mkAcHex: arqcMkAc,
+    });
+    setArqcResult(res);
+  };
+
   const THALES_ERRORS = [
     { code: "01", meaning: "Verification failure", cause: "Le PIN ou le PVV/CVV ne correspond pas à la valeur attendue", action: "Rejet client légitime ou mauvaise clé PVK/CVK" },
     { code: "02", meaning: "Key parity error", cause: "La parité de la clé ZPK ou LMK est impaire ou corrompue", action: "Re-saisir ou réimporter les composantes de la clé" },
@@ -125,7 +156,13 @@ export default function CryptoHsmPage() {
   return (
     <AppShell pageTitle="Diagnostic Cryptographique & HSM" eyebrow="OUTILS EXPERTS MONÉTIQUE">
       <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-        <div style={{ display: "flex", gap: "0.5rem", borderBottom: "1px solid var(--border-light)", paddingBottom: "0.5rem" }}>
+        <div style={{ display: "flex", gap: "0.5rem", borderBottom: "1px solid var(--border-light)", paddingBottom: "0.5rem", flexWrap: "wrap" }}>
+          <button
+            onClick={() => setActiveTab("ARQC_ARPC")}
+            className={`btn-ghost ${activeTab === "ARQC_ARPC" ? "btn-primary" : ""}`}
+          >
+            🛡️ Simulateur ARQC / ARPC &amp; Clés EMV
+          </button>
           <button
             onClick={() => setActiveTab("KCV")}
             className={`btn-ghost ${activeTab === "KCV" ? "btn-primary" : ""}`}
@@ -142,10 +179,231 @@ export default function CryptoHsmPage() {
             onClick={() => setActiveTab("HSM_ERRORS")}
             className={`btn-ghost ${activeTab === "HSM_ERRORS" ? "btn-primary" : ""}`}
           >
-            🛡️ Dictionnaire Erreurs HSM (Thales / Atalla)
+            🔐 Dictionnaire Erreurs HSM (Thales / Atalla)
           </button>
         </div>
 
+        {/* ONGLET ARQC / ARPC */}
+        {activeTab === "ARQC_ARPC" && (
+          <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: "1.5rem" }}>
+            <div className="card">
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
+                <h2 style={{ fontSize: "1.15rem", fontWeight: 800 }}>
+                  Vérification ARQC &amp; Génération ARPC (EMVCo Book 2 / Book 3)
+                </h2>
+                <span style={{ fontSize: "0.75rem", background: "#fef2f2", color: "#e60028", padding: "0.2rem 0.5rem", borderRadius: "4px", fontWeight: 700 }}>
+                  Missions RUN : HSM / ARQC
+                </span>
+              </div>
+              <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginBottom: "1.25rem" }}>
+                Simulez l&apos;authentification de cryptogramme par le HSM émetteur (Commandes Thales &apos;KQ&apos; ou Atalla 30) pour valider l&apos;authenticité de la puce et générer la réponse ARPC (Tag 91).
+              </p>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                <div>
+                  <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 700, marginBottom: "0.2rem" }}>
+                    PAN (Numéro de carte) :
+                  </label>
+                  <input
+                    type="text"
+                    value={arqcPan}
+                    onChange={(e) => setArqcPan(e.target.value)}
+                    className="input"
+                    style={{ fontFamily: "monospace" }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 700, marginBottom: "0.2rem" }}>
+                    Card Seq Number (CSN 5F34) :
+                  </label>
+                  <input
+                    type="text"
+                    value={arqcPsn}
+                    onChange={(e) => setArqcPsn(e.target.value)}
+                    className="input"
+                    style={{ fontFamily: "monospace" }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 700, marginBottom: "0.2rem" }}>
+                    Montant 9F02 (12 car. hex/num) :
+                  </label>
+                  <input
+                    type="text"
+                    value={arqcAmount}
+                    onChange={(e) => setArqcAmount(e.target.value)}
+                    className="input"
+                    style={{ fontFamily: "monospace" }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 700, marginBottom: "0.2rem" }}>
+                    TVR 95 (Terminal Verification) :
+                  </label>
+                  <input
+                    type="text"
+                    value={arqcTvr}
+                    onChange={(e) => setArqcTvr(e.target.value)}
+                    className="input"
+                    style={{ fontFamily: "monospace" }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 700, marginBottom: "0.2rem" }}>
+                    ATC 9F36 (Compteur Carte) :
+                  </label>
+                  <input
+                    type="text"
+                    value={arqcAtc}
+                    onChange={(e) => setArqcAtc(e.target.value)}
+                    className="input"
+                    style={{ fontFamily: "monospace" }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 700, marginBottom: "0.2rem" }}>
+                    Unpredictable Number 9F37 :
+                  </label>
+                  <input
+                    type="text"
+                    value={arqcUn}
+                    onChange={(e) => setArqcUn(e.target.value)}
+                    className="input"
+                    style={{ fontFamily: "monospace" }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 700, marginBottom: "0.2rem" }}>
+                    Devise (5F2A) &amp; Pays (9F1A) :
+                  </label>
+                  <input
+                    type="text"
+                    value={`${arqcCurrency} / ${arqcCountry}`}
+                    onChange={(e) => {
+                      const [cur, cntry] = e.target.value.split("/");
+                      if (cur) setArqcCurrency(cur.trim());
+                      if (cntry) setArqcCountry(cntry.trim());
+                    }}
+                    className="input"
+                    style={{ fontFamily: "monospace" }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 700, marginBottom: "0.2rem" }}>
+                    Clé Maître MK-AC (Sous LMK) :
+                  </label>
+                  <input
+                    type="text"
+                    value={arqcMkAc}
+                    onChange={(e) => setArqcMkAc(e.target.value)}
+                    className="input"
+                    style={{ fontFamily: "monospace", fontSize: "0.75rem" }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: "flex", gap: "0.5rem", marginTop: "1rem" }}>
+                <button
+                  type="button"
+                  onClick={handleCalculateArqc}
+                  className="btn-primary"
+                >
+                  Valider ARQC &amp; Générer ARPC →
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setArqcPan("4970101234567890");
+                    setArqcPsn("01");
+                    setArqcAmount("000000050000");
+                    setArqcTvr("0000008000");
+                    setArqcAtc("004A");
+                    setArqcUn("9A1B2C3D");
+                  }}
+                  className="btn-ghost"
+                  style={{ fontSize: "0.8rem" }}
+                >
+                  Charger Transaction Nominale
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setArqcTvr("0000048000"); // PIN bloqué
+                    setArqcAtc("004B");
+                  }}
+                  className="btn-ghost"
+                  style={{ fontSize: "0.8rem", color: "#e60028" }}
+                >
+                  Simuler Échec PIN (TVR)
+                </button>
+              </div>
+            </div>
+
+            {/* RÉSULTAT ARQC / ARPC */}
+            <div className="card" style={{ background: "#111827", color: "#ffffff", border: "1px solid #374151" }}>
+              <span style={{ fontSize: "0.75rem", letterSpacing: "0.08em", color: "#e60028", fontWeight: 700, textTransform: "uppercase" }}>
+                RÉSULTATS CRYPTOGRAPHIQUES HSM ÉMETTEUR
+              </span>
+
+              {arqcResult ? (
+                <div style={{ marginTop: "1rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
+                    <div style={{ background: "#1f2937", padding: "0.75rem", borderRadius: "6px" }}>
+                      <span style={{ fontSize: "0.75rem", color: "#94a3b8" }}>Tag 9F26 (ARQC Puce) :</span>
+                      <p style={{ fontSize: "1.1rem", fontWeight: 800, color: "#34d399", fontFamily: "monospace" }}>
+                        {arqcResult.arqcHex}
+                      </p>
+                    </div>
+                    <div style={{ background: "#1f2937", padding: "0.75rem", borderRadius: "6px" }}>
+                      <span style={{ fontSize: "0.75rem", color: "#94a3b8" }}>Tag 91 (ARPC Émetteur) :</span>
+                      <p style={{ fontSize: "1.1rem", fontWeight: 800, color: "#60a5fa", fontFamily: "monospace" }}>
+                        {arqcResult.arpcHex}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div style={{ background: "#1f2937", padding: "0.75rem", borderRadius: "6px" }}>
+                    <p style={{ fontSize: "0.8rem", color: "#d1d5db" }}>
+                      <b>Clé de Session SK-AC :</b> <code style={{ color: "#fbbf24" }}>{arqcResult.sessionKeyHex}</code>
+                    </p>
+                    <p style={{ fontSize: "0.8rem", color: "#d1d5db", marginTop: "0.25rem" }}>
+                      <b>Données Diversification (PAN+PSN) :</b> <code>{arqcResult.diversificationData}</code>
+                    </p>
+                    <p style={{ fontSize: "0.8rem", color: "#d1d5db", marginTop: "0.25rem" }}>
+                      <b>Code Réponse ARC (Tag 8A) :</b> <code style={{ color: "#34d399" }}>{arqcResult.arc} (Approved)</code>
+                    </p>
+                  </div>
+
+                  <div style={{ background: "#374151", padding: "0.75rem", borderRadius: "6px" }}>
+                    <span style={{ fontSize: "0.72rem", color: "#cbd5e1", textTransform: "uppercase", fontWeight: 700 }}>
+                      Analyse TVR &amp; Risque Transactionnel :
+                    </span>
+                    <ul style={{ margin: "0.4rem 0 0 1rem", padding: 0, fontSize: "0.8rem", color: "#f87171" }}>
+                      {arqcResult.diagnosticAnalysis.tvrFlagSummary.map((flag, idx) => (
+                        <li key={idx} style={{ color: flag.includes("Aucune") ? "#34d399" : "#f87171" }}>
+                          {flag}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div style={{ fontSize: "0.8rem", color: "#94a3b8", lineHeight: "1.4" }}>
+                    💡 <b>Commande HSM :</b> <code>{arqcResult.diagnosticAnalysis.hsmCommand}</code>
+                    <p style={{ marginTop: "0.3rem", fontSize: "0.78rem" }}>
+                      👉 {arqcResult.diagnosticAnalysis.advice}
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div style={{ marginTop: "2rem", color: "#94a3b8", fontSize: "0.88rem" }}>
+                  Renseignez les champs EMV ci-contre ou cliquez sur &quot;Valider ARQC &amp; Générer ARPC&quot; pour simuler la vérification en HSM.
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ONGLET KCV */}
         {activeTab === "KCV" && (
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
             <div className="card">
@@ -237,6 +495,7 @@ export default function CryptoHsmPage() {
           </div>
         )}
 
+        {/* ONGLET PIN BLOCK */}
         {activeTab === "PIN_BLOCK" && (
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
             <div className="card">
@@ -250,29 +509,30 @@ export default function CryptoHsmPage() {
               <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                 <div>
                   <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 700, marginBottom: "0.3rem" }}>
-                    Numéro de carte (PAN complet) :
+                    PAN (Numéro de carte) :
                   </label>
                   <input
                     type="text"
                     value={pan}
                     onChange={(e) => setPan(e.target.value)}
-                    className="input"
                     placeholder="4970101234567890"
-                    maxLength={19}
+                    className="input"
+                    style={{ fontFamily: "monospace" }}
                   />
                 </div>
 
                 <div>
                   <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 700, marginBottom: "0.3rem" }}>
-                    Code PIN (Simulation pour calcul) :
+                    Code PIN (En clair, 4 à 6 chiffres) :
                   </label>
                   <input
                     type="password"
+                    maxLength={6}
                     value={pin}
                     onChange={(e) => setPin(e.target.value)}
-                    className="input"
                     placeholder="1234"
-                    maxLength={6}
+                    className="input"
+                    style={{ fontFamily: "monospace" }}
                   />
                 </div>
 
@@ -289,52 +549,53 @@ export default function CryptoHsmPage() {
 
             <div className="card" style={{ background: "#111827", color: "#ffffff", border: "1px solid #374151" }}>
               <span style={{ fontSize: "0.75rem", letterSpacing: "0.08em", color: "#e60028", fontWeight: 700, textTransform: "uppercase" }}>
-                DÉCOMPOSITION DU PIN BLOCK EN CLAIR
+                RÉSULTAT DU PIN BLOCK (ISO-0)
               </span>
 
               {pinBlockResult ? (
                 <div style={{ marginTop: "1rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
                   <div>
-                    <span style={{ fontSize: "0.8rem", color: "#94a3b8" }}>PIN Block Clair (avant chiffrement ZPK) :</span>
+                    <span style={{ fontSize: "0.8rem", color: "#94a3b8" }}>PIN Block en Clair (Avant chiffrement ZPK) :</span>
                     <p style={{ fontSize: "1.8rem", fontWeight: 900, color: "#ffffff", fontFamily: "monospace", letterSpacing: "0.1em" }}>
                       {pinBlockResult.pinBlockHex}
                     </p>
                   </div>
 
-                  <div style={{ background: "#1f2937", padding: "1rem", borderRadius: "8px", border: "1px solid #374151", fontSize: "0.82rem" }}>
-                    <p style={{ color: "#d1d5db" }}>
+                  <div style={{ background: "#1f2937", padding: "1rem", borderRadius: "8px", border: "1px solid #374151" }}>
+                    <p style={{ fontSize: "0.85rem", color: "#d1d5db" }}>
                       <b>Format :</b> ISO 9564 Format 0 (ANSI X9.8)
                     </p>
-                    <p style={{ color: "#d1d5db", marginTop: "0.25rem" }}>
-                      <b>12 chiffres extraits du PAN :</b> <code>{pinBlockResult.pan12}</code>
+                    <p style={{ fontSize: "0.85rem", color: "#d1d5db", marginTop: "0.25rem" }}>
+                      <b>12 chiffres PAN utilisés :</b> <code>{pinBlockResult.pan12}</code>
                     </p>
-                    <p style={{ color: "#d1d5db", marginTop: "0.25rem" }}>
-                      <b>Formule :</b> <code>PIN Block = (0L PIN F..F) XOR (0000 PAN)</code>
+                    <p style={{ fontSize: "0.85rem", color: "#d1d5db", marginTop: "0.25rem" }}>
+                      <b>PIN saisi :</b> <code>{pinBlockResult.clearPinMasked}</code>
                     </p>
                   </div>
 
                   <div style={{ fontSize: "0.8rem", color: "#94a3b8", lineHeight: "1.4" }}>
-                    🛡️ {pinBlockResult.diagnosticAdvice}
+                    💡 <b>Diagnostic Exploitant :</b> {pinBlockResult.diagnosticAdvice}
                   </div>
                 </div>
               ) : (
                 <p style={{ fontSize: "0.88rem", color: "#94a3b8", marginTop: "2rem" }}>
-                  Renseignez le PAN et le code PIN de test pour voir la décomposition du PIN Block.
+                  Saisissez un PAN et un code PIN pour simuler le calcul d&apos;un PIN Block ISO-0.
                 </p>
               )}
             </div>
           </div>
         )}
 
+        {/* ONGLET ERREURS HSM */}
         {activeTab === "HSM_ERRORS" && (
           <div className="card">
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem", flexWrap: "wrap", gap: "1rem" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
               <div>
                 <h2 style={{ fontSize: "1.15rem", fontWeight: 800 }}>
-                  Codes Erreurs &amp; Diagnostics HSM Bancaires
+                  Dictionnaire des Erreurs HSM Bancaire
                 </h2>
                 <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
-                  Identifiez immédiatement la cause racine des rejets cryptographiques (Thales PayShield 9000/10K &amp; Atalla).
+                  Codes retours natifs des boîtiers cryptographiques en exploitation de production.
                 </p>
               </div>
 
@@ -345,7 +606,7 @@ export default function CryptoHsmPage() {
                   className={`btn-ghost ${hsmVendor === "THALES" ? "btn-primary" : ""}`}
                   style={{ fontSize: "0.82rem", padding: "0.4rem 0.8rem" }}
                 >
-                  Thales PayShield
+                  Thales payShield (9000/10K)
                 </button>
                 <button
                   type="button"

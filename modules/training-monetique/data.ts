@@ -463,6 +463,40 @@ PIN: 1234  |  PAN: 4970 1012 3456 7890
       "Tenter de déchiffrer un PIN Block par programme : seul le HSM bancaire certifié FIPS 140-2 dispose des droits d'exécution nécessaires."
     ]
   },
+  {
+    id: "m_l4_03",
+    gradeLevel: 4,
+    category: "HSM_SECURITE",
+    title: "4.3 Cryptogrammes EMV ARQC / ARPC & Dérivation de Clés en HSM (Thales / Atalla)",
+    summary: "Maîtrisez la chaîne complète d'authentification cryptographique de la puce : MK-AC, SK-AC, ARQC et réponse ARPC.",
+    keyConcepts: ["ARQC (Tag 9F26)", "ARPC (Tag 91)", "MK-AC (Master Key AC)", "SK-AC (Session Key)", "Commande Thales 'KQ' / 'KW'", "ATC (Tag 9F36)"],
+    detailedContent: `La validation en ligne d'une carte à puce repose sur un dialogue cryptographique inviolable entre la puce et le HSM émetteur :
+1. Calcul de la Clé de Session (SK-AC) :
+   - À chaque transaction, la puce incrémente son compteur ATC (Tag 9F36).
+   - Une clé unique de session est dérivée à partir de la Master Key d'Application Cryptogram (MK-AC stockée sécuritairement sous LMK dans le HSM), du PAN/CSN et de l'ATC.
+2. Génération de l'ARQC (Application Request Cryptogram - Tag 9F26) :
+   - La puce chiffre avec SK-AC un bloc comprenant : Montant (9F02), Devise (5F2A), TVR (95), Unpredictable Number (9F37) et ATC.
+   - Ce cryptogramme de 8 octets est transmis dans le champ DE55 de la demande d'autorisation 0200.
+3. Vérification par le HSM Émetteur :
+   - Le switch frontal extrait le DE55 et envoie la commande 'KQ' (Thales payShield) ou 'Command 30' (Atalla) au HSM.
+   - Le HSM recalcule l'ARQC attendu. S'il y a concordance, la puce est déclarée authentique.
+4. Émission de l'ARPC (Application Response Cryptogram - Tag 91) :
+   - Le HSM génère l'ARPC combinant l'ARQC et le code réponse ARC (Tag 8A = "00").
+   - La réponse 0210 renvoie l'ARPC à la puce qui valide que la réponse émane bien de sa banque d'origine avant de délivrer le service (ou autoriser le retrait).`,
+    technicalSample: `Trame Thales Commande 'KQ' (Vérification ARQC / Génération ARPC) :
+Commande Hôte vers HSM :
+[Header 4B] KQ (Code Commande) + Mode dérivation (01 EMV/CSN) + Key Scheme (U) + MK-AC sous LMK + PAN + CSN + ATC + Transaction Data + ARQC (9F26) + ARC (8A='00')
+Réponse du HSM :
+[Header 4B] KR (Code Réponse) + Code Erreur (00 = OK) + ARPC (Tag 91 généré sur 8 octets)`,
+    explanation: "Si un fraudeur intercepte une demande d'autorisation et tente de la rejouer, le HSM rejettera le message (DE39=84 ou 05) car le compteur ATC aura déjà été consommé et l'Unpredictable Number aura changé.",
+    goldenRules: [
+      "En cas d'explosion de rejets DE39=84 (Invalid Cryptogram), vérifier en priorité la synchronisation de l'ATC entre le CBS et la puce ou une mise à jour incorrecte de la clé MK-AC.",
+      "L'ARPC doit obligatoirement être retourné dans le DE55 du message 0210/0110 pour que la puce puisse clore son cycle de transaction."
+    ],
+    pitfallsToAvoid: [
+      "Ignorer l'Unpredictable Number (Tag 9F37) : c'est l'aléa généré par le terminal qui empêche toute attaque par rejeu (Replay Attack)."
+    ]
+  },
 
   // --- NIVEAU 5 : CLEARING & RAPPROCHEMENT ---
   {
@@ -521,5 +555,79 @@ J+28 : Émetteur constate la preuve irréfutable -> Clôture du dossier et redé
     pitfallsToAvoid: [
       "Engager une procédure d'arbitrage sans dossier solide : les frais de pénalité de 500 $ dépassent souvent la valeur marchande du litige initial !"
     ]
+  },
+  {
+    id: "m_l5_03",
+    gradeLevel: 5,
+    category: "CLEARING_COMPENSATION",
+    title: "5.3 Réseaux Régionaux & Internationaux : UPI, GIM-UEMOA, GIMAC & Schemes",
+    summary: "Dominez les spécificités de routage, compensation et règles opérationnelles des schemes mondiaux et régionaux.",
+    keyConcepts: ["UPI (UnionPay)", "GIM-UEMOA (Zone FCFA)", "GIMAC (Zone CEMAC)", "Visa Base II vs MC IPM", "Devise 952 (XOF) / 950 (XAF)"],
+    detailedContent: `L'exploitation monétique moderne opère dans un écosystème multi-schemes exigeant une maîtrise rigoureuse des particularités de chaque réseau :
+1. GIM-UEMOA (Union Économique et Monétaire Ouest-Africaine) :
+   - Fédère les 8 pays de la zone FCFA Ouest (Devise 952 XOF).
+   - Compensation multilatérale quotidienne opérée avec la BCEAO (Cut-off à 18h00 GMT).
+   - Utilise une version enrichie d'ISO 8583 v87/93 avec gestion stricte du DE90 pour les annulations/reversals 0420.
+2. GIMAC (Communauté Économique et Monétaire de l'Afrique Centrale) :
+   - Regroupe les 6 pays de la zone CEMAC (Devise 950 XAF) avec compensation à la BEAC.
+   - Intègre nativement l'interopérabilité GAB, TPE et Mobile Money (Wallet to Account / Account to Wallet).
+3. UnionPay International (UPI) :
+   - Standard dominant en Asie, incontournable pour l'acquisition touristique et marchande en Afrique et Europe.
+   - Messages ISO 8583 spécifiques UPI, chiffrement PBOC 3.0 compatible EMV, et fichiers de compensation quotidienne UPI EP.
+4. Visa (SMS/Base II) & Mastercard (MIP/IPM) :
+   - Fonctionnement en Dual-Message : Autorisation temps réel (0200/0100) suivie d'une présentation financière par lots (Batch Clearing TC05/1240).`,
+    technicalSample: `Comparatif des Cut-offs & Devises Schemes :
+- GIM-UEMOA : Devise 952 XOF | Cut-off 18:00 GMT | Règlement Net BCEAO
+- GIMAC     : Devise 950 XAF | Cut-off 17:00 GMT | Règlement Net BEAC
+- VISA      : Multi (USD/EUR) | Cut-offs multiples (Cycle 1 à 4) Base II
+- MASTERCARD: Multi (USD/EUR) | Fichiers IPM 1240 / 1442 Banknet
+- UPI       : Multi-devises  | Fichiers UPI EP / Règlement USD`,
+    explanation: "Une rupture de liaison ou un retard d'envoi de lot de clearing sur GIM ou Visa impacte immédiatement la trésorerie interbancaire de l'établissement à la banque centrale.",
+    goldenRules: [
+      "Toujours surveiller les accusés de réception (ACK) de télétransmission avant l'heure fatidique de cut-off scheme.",
+      "Vérifier la concordance des codes devises (952 vs 950 vs 840) dans les tables de routage du switch pour chaque BIN émetteur."
+    ],
+    pitfallsToAvoid: [
+      "Dépasser l'heure de cut-off d'un scheme : cela expose la banque à des frais de pénalité de retard (Late Presentment Fees) et reporte la liquidité à J+1."
+    ]
+  },
+  {
+    id: "m_l5_04",
+    gradeLevel: 5,
+    category: "CLEARING_COMPENSATION",
+    title: "5.4 Runbook d'Exploitation Quotidienne, Supervision des Flux & Mises en Production (MEP)",
+    summary: "Appliquez les rituels de RUN monétique : SOD, EOD, gestion des ruptures de flux, injection de clés et procédures de rollback.",
+    keyConcepts: ["Runbook Monétique", "SOD (Start of Day)", "EOD (End of Day)", "MEP (Mise en Production)", "Rollback & Pilotes", "Supervision Émission / Acquisition"],
+    detailedContent: `Le quotidien d'un ingénieur de RUN / Exploitation Monétique s'articule autour de jalons chronologiques précis et stricts :
+1. Rituels du Matin (SOD) :
+   - Contrôle des Heartbeats 0800 / 0810 sur toutes les liaisons Switch (GIM, Visa, MC, UPI).
+   - Healthcheck des boîtiers HSM (Statut 'AUTHORIZED', mémoire LMK intacte, température et batteries).
+   - Vérification de la liaison Switch ↔ CBS (file de messages à zéro, absence de blocage connecteur).
+2. Supervision Continue des Flux (Journée) :
+   - Monitoring du ratio Émission (nos cartes à l'extérieur) vs Acquisition (GAB/TPE locaux).
+   - Alerte immédiate si le taux d'échec technique (DE39=91/96/68) dépasse 0.5% ou si les 0420 s'emballent.
+3. Rituels du Soir (EOD) :
+   - Surveillance des télécollectes TPE marchands et balances GAB (rapprochement physique vs logique).
+   - Génération et télétransmission des fichiers de clearing avant les cut-offs réglementaires.
+   - Purge des suspenses et réconciliation avec les comptes d'attente du CBS.
+4. Mises en Production (MEP) & Rollback :
+   - Sauvegarde complète (Snapshot SGBD) obligatoire avant toute intervention.
+   - Injection sécurisée des clés (TMK/ZPK) sous double contrôle d'officiers de sécurité (KCV identiques).
+   - Passage des tests pilotes réels sur terminaux dédiés avant ouverture générale. Plan de repli activable sous 15 minutes.`,
+    technicalSample: `Checklist d'Urgence en cas de Rupture de Flux (Incident Majeur) :
+1. Alerte : Chute brutale du taux de succès sous 90% ou rafale DE39=91.
+2. Étape 1 : Vérifier ping/echo test 0800 vers le Switch scheme et connecteur CBS.
+3. Étape 2 : Vérifier les logs HSM (erreur de parité 02 ou LMK absent 80).
+4. Étape 3 : Isoler le composant défaillant (bascule automatique sur lien secours VPN / BCP).
+5. Étape 4 : Déclencher la cellule de crise et communiquer le statut aux agences.`,
+    explanation: "La discipline et la rigueur d'exécution du Runbook quotidien sont les seuls garants de la haute disponibilité 24/7 exigée par les systèmes de paiement monétique.",
+    goldenRules: [
+      "Ne jamais déployer une modification de table BIN ou de clé cryptographique sans test pilote réel immédiat.",
+      "Toute anomalie de caisse GAB ou de fichier de clearing non acquitté doit faire l'objet d'une fiche d'incident tracée avant la fin de poste."
+    ],
+    pitfallsToAvoid: [
+      "Effectuer une mise en production sans plan de rollback validé et sans snapshot de la base du Switch."
+    ]
   }
 ];
+

@@ -65,6 +65,7 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
       roleRequired: "ROLE_EXPLOITATION",
       items: [
         { href: "/", label: "Vue d'ensemble", icon: "⊞" },
+        { href: "/run-supervision", label: "Supervision & Runbook", icon: "🖥️" },
         { href: "/knowledge", label: "Base de connaissance", icon: "📚" },
         { href: "/diagnostic", label: "Diagnostic Assistant", icon: "⚡" },
       ],
