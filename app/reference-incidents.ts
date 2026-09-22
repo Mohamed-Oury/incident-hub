@@ -4007,5 +4007,4005 @@ export const referenceIncidents: ReferenceIncident[] = [
     "component": "CMS/GeoBlocking",
     "analysisKeys": "DE39=62, STAN, RRN, CMS/GeoBlocking",
     "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-501",
+    "title": "GAB - Échec chiffrement PIN Pad EPP suite à désynchronisation KSN DUKPT (En période de forte affluence)",
+    "domain": "GAB",
+    "component": "ATM/EPP",
+    "analysisKeys": "DE52/KSN, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-502",
+    "title": "GAB - Erreur de parité de clé TMK injectée sur clavier EPP (En période de forte affluence)",
+    "domain": "GAB",
+    "component": "ATM/EPP",
+    "analysisKeys": "DE52/KSN, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-503",
+    "title": "GAB - Timeout communication série RS232/USB entre PC GAB et EPP (En période de forte affluence)",
+    "domain": "GAB",
+    "component": "ATM/EPP",
+    "analysisKeys": "DE52/KSN, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-504",
+    "title": "GAB - Tentative d écoute ou tamper détecté sur clavier chiffrant EPP (En période de forte affluence)",
+    "domain": "GAB",
+    "component": "ATM/EPP",
+    "analysisKeys": "DE52/KSN, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-505",
+    "title": "GAB - Incompatibilité du format de PIN Block configuré sur EPP (Format ISO-1 au lieu de ISO-0) (En période de forte affluence)",
+    "domain": "GAB",
+    "component": "ATM/EPP",
+    "analysisKeys": "DE52/KSN, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-506",
+    "title": "GAB - Bourrage billets dans le module de transport vertical CDM (En période de forte affluence)",
+    "domain": "GAB",
+    "component": "ATM/Dispenser",
+    "analysisKeys": "CDM/Sensor/DE4, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-507",
+    "title": "GAB - Divergence de comptage entre capteur d extraction et capteur de dépose shutter (En période de forte affluence)",
+    "domain": "GAB",
+    "component": "ATM/Dispenser",
+    "analysisKeys": "CDM/Sensor/DE4, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-508",
+    "title": "GAB - Cassette de rejet pleine provoquant l arrêt du service retrait (En période de forte affluence)",
+    "domain": "GAB",
+    "component": "ATM/Dispenser",
+    "analysisKeys": "CDM/Sensor/DE4, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-509",
+    "title": "GAB - Défaillance moteur pas-à-pas de l extracteur à friction (En période de forte affluence)",
+    "domain": "GAB",
+    "component": "ATM/Dispenser",
+    "analysisKeys": "CDM/Sensor/DE4, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-510",
+    "title": "GAB - Dépassement de délai d ouverture du volet de présentation des billets (Shutter Timeout) (En période de forte affluence)",
+    "domain": "GAB",
+    "component": "ATM/Dispenser",
+    "analysisKeys": "CDM/Sensor/DE4, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-511",
+    "title": "GAB - Rejet systématique des cartes à puce pour lecture contact défaillante (Fallback forcé) (En période de forte affluence)",
+    "domain": "GAB",
+    "component": "ATM/CardReader",
+    "analysisKeys": "EMV/IC/Track2, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-512",
+    "title": "GAB - Capture intempestive de carte suite à arrêt brutal de l alimentation électrique (En période de forte affluence)",
+    "domain": "GAB",
+    "component": "ATM/CardReader",
+    "analysisKeys": "EMV/IC/Track2, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-513",
+    "title": "GAB - Détection anormale par le capteur anti-skimming entraînant la mise hors service (En période de forte affluence)",
+    "domain": "GAB",
+    "component": "ATM/CardReader",
+    "analysisKeys": "EMV/IC/Track2, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-514",
+    "title": "GAB - Non-restitution de carte suite à timeout d oubli porteur non paramétré (En période de forte affluence)",
+    "domain": "GAB",
+    "component": "ATM/CardReader",
+    "analysisKeys": "EMV/IC/Track2, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-515",
+    "title": "GAB - Erreur de lecture piste magnétique sur carte non hybride (Track 2 error) (En période de forte affluence)",
+    "domain": "GAB",
+    "component": "ATM/CardReader",
+    "analysisKeys": "EMV/IC/Track2, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-516",
+    "title": "GAB - Déconnexion intempestive de l agent de supervision NDC/DDC (En période de forte affluence)",
+    "domain": "GAB",
+    "component": "ATM/Supervisor",
+    "analysisKeys": "NDC/Status/DE41, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-517",
+    "title": "GAB - Saturation du disque local de l automate par les journaux de trace détaillés (En période de forte affluence)",
+    "domain": "GAB",
+    "component": "ATM/Supervisor",
+    "analysisKeys": "NDC/Status/DE41, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-518",
+    "title": "GAB - Erreur de téléchargement des états d écrans graphiques et bannières publicitaires (En période de forte affluence)",
+    "domain": "GAB",
+    "component": "ATM/Supervisor",
+    "analysisKeys": "NDC/Status/DE41, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-519",
+    "title": "GAB - Blocage de l automate en mode supervision après intervention de maintenance sans clôture (En période de forte affluence)",
+    "domain": "GAB",
+    "component": "ATM/Supervisor",
+    "analysisKeys": "NDC/Status/DE41, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-520",
+    "title": "GAB - Incohérence des compteurs d inventaire d espèces entre le superviseur et le serveur central (En période de forte affluence)",
+    "domain": "GAB",
+    "component": "ATM/Supervisor",
+    "analysisKeys": "NDC/Status/DE41, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-521",
+    "title": "GAB - Blocage de l accepteur de billets en liasses lors d un versement client (En période de forte affluence)",
+    "domain": "GAB",
+    "component": "ATM/Depository",
+    "analysisKeys": "BRM/Envelope/DE4, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-522",
+    "title": "GAB - Faux signal de contrefaçon rejetant des billets conformes neufs (En période de forte affluence)",
+    "domain": "GAB",
+    "component": "ATM/Depository",
+    "analysisKeys": "BRM/Envelope/DE4, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-523",
+    "title": "GAB - Échec d impression du ticket de justificatif de dépôt d espèces (En période de forte affluence)",
+    "domain": "GAB",
+    "component": "ATM/Depository",
+    "analysisKeys": "BRM/Envelope/DE4, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-524",
+    "title": "GAB - Cassette de recyclage de billets saturée bloquant la fonction de restitution (En période de forte affluence)",
+    "domain": "GAB",
+    "component": "ATM/Depository",
+    "analysisKeys": "BRM/Envelope/DE4, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-525",
+    "title": "GAB - Erreur d identification du compte destinataire lors d un versement sans carte (En période de forte affluence)",
+    "domain": "GAB",
+    "component": "ATM/Depository",
+    "analysisKeys": "BRM/Envelope/DE4, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-526",
+    "title": "TPE - Rejet de transaction sans contact par défaillance de validation du Tag 9F26 (ARQC) (En période de forte affluence)",
+    "domain": "TPE",
+    "component": "POS/Kernel",
+    "analysisKeys": "DE55/TLV/TVR, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-527",
+    "title": "TPE - Incompatibilité AID Visa Electron / CB sur terminal marchand autonome (En période de forte affluence)",
+    "domain": "TPE",
+    "component": "POS/Kernel",
+    "analysisKeys": "DE55/TLV/TVR, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-528",
+    "title": "TPE - Transaction refusée avec code TVR indiquant une vérification de porteur échouée (En période de forte affluence)",
+    "domain": "TPE",
+    "component": "POS/Kernel",
+    "analysisKeys": "DE55/TLV/TVR, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-529",
+    "title": "TPE - Blocage de la transaction sans contact au-dessus du plafond sans bascule contact (Force Contact) (En période de forte affluence)",
+    "domain": "TPE",
+    "component": "POS/Kernel",
+    "analysisKeys": "DE55/TLV/TVR, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-530",
+    "title": "TPE - Erreur de décodage des tags TLV étendus dans la trame 0200 émise par le TPE (En période de forte affluence)",
+    "domain": "TPE",
+    "component": "POS/Kernel",
+    "analysisKeys": "DE55/TLV/TVR, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-531",
+    "title": "TPE - Échec de télécollecte nocturne automatique des transactions marchandes (En période de forte affluence)",
+    "domain": "TPE",
+    "component": "POS/Gateway",
+    "analysisKeys": "0500/Batch/TPE, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-532",
+    "title": "TPE - Doublon de télécollecte entraînant un double crédit sur le compte du commerçant (En période de forte affluence)",
+    "domain": "TPE",
+    "component": "POS/Gateway",
+    "analysisKeys": "0500/Batch/TPE, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-533",
+    "title": "TPE - Fichier de télécollecte tronqué suite à coupure réseau en cours d émission (En période de forte affluence)",
+    "domain": "TPE",
+    "component": "POS/Gateway",
+    "analysisKeys": "0500/Batch/TPE, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-534",
+    "title": "TPE - Rejet du lot de télécollecte pour incohérence du total de contrôle (Checksum Batch) (En période de forte affluence)",
+    "domain": "TPE",
+    "component": "POS/Gateway",
+    "analysisKeys": "0500/Batch/TPE, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-535",
+    "title": "TPE - Délai d expiration du certificat de la passerelle de télécollecte marchand (En période de forte affluence)",
+    "domain": "TPE",
+    "component": "POS/Gateway",
+    "analysisKeys": "0500/Batch/TPE, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-536",
+    "title": "TPE - Perte de signal radio GPRS/4G sur un lot de TPE déployés en zone commerciale (En période de forte affluence)",
+    "domain": "TPE",
+    "component": "POS/GPRS",
+    "analysisKeys": "APN/SIM/GPRS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-537",
+    "title": "TPE - Refus d enregistrement réseau pour carte SIM monétique expirée ou suspendue (En période de forte affluence)",
+    "domain": "TPE",
+    "component": "POS/GPRS",
+    "analysisKeys": "APN/SIM/GPRS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-538",
+    "title": "TPE - Temps de réponse d autorisation supérieur à 45 secondes sur liaison cellulaire (En période de forte affluence)",
+    "domain": "TPE",
+    "component": "POS/GPRS",
+    "analysisKeys": "APN/SIM/GPRS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-539",
+    "title": "TPE - Changement d antenne relais provoquant la coupure du tunnel VPN IPSec du TPE (En période de forte affluence)",
+    "domain": "TPE",
+    "component": "POS/GPRS",
+    "analysisKeys": "APN/SIM/GPRS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-540",
+    "title": "TPE - Interférence radio empêchant l accroche du réseau 4G forçant une bascule 2G instable (En période de forte affluence)",
+    "domain": "TPE",
+    "component": "POS/GPRS",
+    "analysisKeys": "APN/SIM/GPRS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-541",
+    "title": "TPE - Échec de mise à jour des tables de routage BIN via le serveur TMS (En période de forte affluence)",
+    "domain": "TPE",
+    "component": "POS/ParamDownload",
+    "analysisKeys": "TMS/Config/BIN, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-542",
+    "title": "TPE - Corruption de la table des devises après injection d un profil erroné (En période de forte affluence)",
+    "domain": "TPE",
+    "component": "POS/ParamDownload",
+    "analysisKeys": "TMS/Config/BIN, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-543",
+    "title": "TPE - Dépassement de capacité mémoire lors du chargement de la nouvelle liste d opposition (En période de forte affluence)",
+    "domain": "TPE",
+    "component": "POS/ParamDownload",
+    "analysisKeys": "TMS/Config/BIN, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-544",
+    "title": "TPE - Blocage de l application monétique suite à injection d un certificat marchand révoqué (En période de forte affluence)",
+    "domain": "TPE",
+    "component": "POS/ParamDownload",
+    "analysisKeys": "TMS/Config/BIN, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-545",
+    "title": "TPE - Désynchronisation de l horodatage du TPE avec le serveur de temps NTP bancaire (En période de forte affluence)",
+    "domain": "TPE",
+    "component": "POS/ParamDownload",
+    "analysisKeys": "TMS/Config/BIN, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-546",
+    "title": "Carte - Rejets massifs avec DE39=54 consécutifs à une date d expiration mal calculée (En période de forte affluence)",
+    "domain": "Carte",
+    "component": "CMS/Lifecycle",
+    "analysisKeys": "DE39=54/CMS/Card, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-547",
+    "title": "Carte - Carte signalée expirée sur le switch alors qu elle est valide sur le CMS (En période de forte affluence)",
+    "domain": "Carte",
+    "component": "CMS/Lifecycle",
+    "analysisKeys": "DE39=54/CMS/Card, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-548",
+    "title": "Carte - Rejet de cartes nouvellement délivrées non reconnues lors de la première utilisation (En période de forte affluence)",
+    "domain": "Carte",
+    "component": "CMS/Lifecycle",
+    "analysisKeys": "DE39=54/CMS/Card, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-549",
+    "title": "Carte - Opposition préventive automatique déclenchée sur un lot de cartes réémises (En période de forte affluence)",
+    "domain": "Carte",
+    "component": "CMS/Lifecycle",
+    "analysisKeys": "DE39=54/CMS/Card, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-550",
+    "title": "Carte - Défaut de renouvellement des cartes arrivant à échéance en fin de mois (En période de forte affluence)",
+    "domain": "Carte",
+    "component": "CMS/Lifecycle",
+    "analysisKeys": "DE39=54/CMS/Card, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-551",
+    "title": "Carte - Rejet avec DE39=61 pour dépassement de plafond hebdomadaire non remis à zéro (En période de forte affluence)",
+    "domain": "Carte",
+    "component": "CMS/Limits",
+    "analysisKeys": "DE39=61/Plafond/CMS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-552",
+    "title": "Carte - Incohérence de plafond entre la devise du compte et la devise de calcul du CMS (En période de forte affluence)",
+    "domain": "Carte",
+    "component": "CMS/Limits",
+    "analysisKeys": "DE39=61/Plafond/CMS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-553",
+    "title": "Carte - Blocage pour plafond de retrait atteint alors que le solde disponible est largement suffisant (En période de forte affluence)",
+    "domain": "Carte",
+    "component": "CMS/Limits",
+    "analysisKeys": "DE39=61/Plafond/CMS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-554",
+    "title": "Carte - Compteur de retraits hors-réseau bloqué après une seule transaction à l étranger (En période de forte affluence)",
+    "domain": "Carte",
+    "component": "CMS/Limits",
+    "analysisKeys": "DE39=61/Plafond/CMS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-555",
+    "title": "Carte - Mise à jour d augmentation de plafond demandée en agence non propagée en temps réel (En période de forte affluence)",
+    "domain": "Carte",
+    "component": "CMS/Limits",
+    "analysisKeys": "DE39=61/Plafond/CMS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-556",
+    "title": "Carte - Rejet de transaction légitime avec DE39=62 pour porteur en déplacement international (En période de forte affluence)",
+    "domain": "Carte",
+    "component": "CMS/GeoControl",
+    "analysisKeys": "DE39=62/GeoBlock/CMS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-557",
+    "title": "Carte - Blocage systématique des transactions e-commerce auprès de sites hébergés en Europe (En période de forte affluence)",
+    "domain": "Carte",
+    "component": "CMS/GeoControl",
+    "analysisKeys": "DE39=62/GeoBlock/CMS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-558",
+    "title": "Carte - Autorisation acceptée dans un pays soumis à embargo bancaire suite à table de pays obsolète (En période de forte affluence)",
+    "domain": "Carte",
+    "component": "CMS/GeoControl",
+    "analysisKeys": "DE39=62/GeoBlock/CMS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-559",
+    "title": "Carte - Rejet de transaction en zone frontalière captée par un relais de télécommunication étranger (En période de forte affluence)",
+    "domain": "Carte",
+    "component": "CMS/GeoControl",
+    "analysisKeys": "DE39=62/GeoBlock/CMS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-560",
+    "title": "Carte - Déblocage géographique temporaire non désactivé automatiquement après la date de fin (En période de forte affluence)",
+    "domain": "Carte",
+    "component": "CMS/GeoControl",
+    "analysisKeys": "DE39=62/GeoBlock/CMS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-561",
+    "title": "Carte - Blocage carte avec DE39=75 suite à 3 tentatives de PIN infructueuses au GAB (En période de forte affluence)",
+    "domain": "Carte",
+    "component": "CMS/PINCounter",
+    "analysisKeys": "DE39=75/PIN/Retry, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-562",
+    "title": "Carte - Compteur de PIN offline de la puce non réaligné après réinitialisation sur le serveur (En période de forte affluence)",
+    "domain": "Carte",
+    "component": "CMS/PINCounter",
+    "analysisKeys": "DE39=75/PIN/Retry, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-563",
+    "title": "Carte - Faux rejet DE39=75 consécutif à une anomalie de lecture de compteur sur puce dégradée (En période de forte affluence)",
+    "domain": "Carte",
+    "component": "CMS/PINCounter",
+    "analysisKeys": "DE39=75/PIN/Retry, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-564",
+    "title": "Carte - Désynchronisation entre le compteur PIN central et le compteur physique de la carte (En période de forte affluence)",
+    "domain": "Carte",
+    "component": "CMS/PINCounter",
+    "analysisKeys": "DE39=75/PIN/Retry, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-565",
+    "title": "Carte - Tentative de forçage de code PIN par attaque par dictionnaire détectée et neutralisée (En période de forte affluence)",
+    "domain": "Carte",
+    "component": "CMS/PINCounter",
+    "analysisKeys": "DE39=75/PIN/Retry, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-566",
+    "title": "Switch - Rejet massif avec DE39=92 pour nouvelle plage de BIN non référencée dans la table de routage (En période de forte affluence)",
+    "domain": "Switch",
+    "component": "Switch/Router",
+    "analysisKeys": "Routing/BIN/DE39=92, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-567",
+    "title": "Switch - Boucle de routage infinie entre le switch régional et le frontal national (En période de forte affluence)",
+    "domain": "Switch",
+    "component": "Switch/Router",
+    "analysisKeys": "Routing/BIN/DE39=92, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-568",
+    "title": "Switch - Délai excessif de résolution de route sur les transactions internationales Visa (En période de forte affluence)",
+    "domain": "Switch",
+    "component": "Switch/Router",
+    "analysisKeys": "Routing/BIN/DE39=92, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-569",
+    "title": "Switch - Bascule accidentelle du flux GAB sur la route de secours TPE aux capacités limitées (En période de forte affluence)",
+    "domain": "Switch",
+    "component": "Switch/Router",
+    "analysisKeys": "Routing/BIN/DE39=92, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-570",
+    "title": "Switch - Perte des tables de routage dynamiques suite à un redémarrage non planifié du switch (En période de forte affluence)",
+    "domain": "Switch",
+    "component": "Switch/Router",
+    "analysisKeys": "Routing/BIN/DE39=92, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-571",
+    "title": "Switch - Saturation de la file d attente des requêtes d autorisation en période de soldes (En période de forte affluence)",
+    "domain": "Switch",
+    "component": "Switch/Queue",
+    "analysisKeys": "Queue/FIFO/Drop, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-572",
+    "title": "Switch - Blocage de la file d attente provoqué par un message malformé bloquant (Poison Message) (En période de forte affluence)",
+    "domain": "Switch",
+    "component": "Switch/Queue",
+    "analysisKeys": "Queue/FIFO/Drop, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-573",
+    "title": "Switch - Perte de messages en transit suite à un dépassement du temps de rétention en file d attente (En période de forte affluence)",
+    "domain": "Switch",
+    "component": "Switch/Queue",
+    "analysisKeys": "Queue/FIFO/Drop, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-574",
+    "title": "Switch - Désynchronisation entre les files de requêtes 0200 et les files de réponses 0210 (En période de forte affluence)",
+    "domain": "Switch",
+    "component": "Switch/Queue",
+    "analysisKeys": "Queue/FIFO/Drop, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-575",
+    "title": "Switch - Dégradation des performances de la file d attente suite à un manque de threads de consommation (En période de forte affluence)",
+    "domain": "Switch",
+    "component": "Switch/Queue",
+    "analysisKeys": "Queue/FIFO/Drop, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-576",
+    "title": "Switch - Absence d émission du message de contre-passation 0400 après expiration du timer de réponse (En période de forte affluence)",
+    "domain": "Switch",
+    "component": "Switch/Reversal",
+    "analysisKeys": "0400/DE90/Timeout, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-577",
+    "title": "Switch - Rejet du message 0400 par l émetteur pour champ DE90 mal renseigné (En période de forte affluence)",
+    "domain": "Switch",
+    "component": "Switch/Reversal",
+    "analysisKeys": "0400/DE90/Timeout, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-578",
+    "title": "Switch - Contre-passation acceptée par l émetteur mais non prise en compte par le Core Banking (En période de forte affluence)",
+    "domain": "Switch",
+    "component": "Switch/Reversal",
+    "analysisKeys": "0400/DE90/Timeout, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-579",
+    "title": "Switch - Génération en boucle de messages de reversal 0400 pour la même transaction (En période de forte affluence)",
+    "domain": "Switch",
+    "component": "Switch/Reversal",
+    "analysisKeys": "0400/DE90/Timeout, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-580",
+    "title": "Switch - Conflit de séquence entre la réponse tardive 0210 et le message de reversal 0400 (En période de forte affluence)",
+    "domain": "Switch",
+    "component": "Switch/Reversal",
+    "analysisKeys": "0400/DE90/Timeout, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-581",
+    "title": "HSM/Crypto - Perte de liaison socket TCP entre le frontal d acquisition et le boîtier HSM Thales payShield (En période de forte affluence)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/HostLink",
+    "analysisKeys": "HSM/Socket/Error, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-582",
+    "title": "HSM/Crypto - Saturation du pool de connexions simultanées sur le boîtier cryptographique HSM (En période de forte affluence)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/HostLink",
+    "analysisKeys": "HSM/Socket/Error, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-583",
+    "title": "HSM/Crypto - Temps de réponse de calcul cryptographique supérieur à 800ms sur le HSM (En période de forte affluence)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/HostLink",
+    "analysisKeys": "HSM/Socket/Error, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-584",
+    "title": "HSM/Crypto - Bascule automatique en échec vers le HSM de secours suite à une désynchronisation de configuration (En période de forte affluence)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/HostLink",
+    "analysisKeys": "HSM/Socket/Error, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-585",
+    "title": "HSM/Crypto - Erreur de protocole de communication avec le HSM consécutive à une mise à jour logicielle (En période de forte affluence)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/HostLink",
+    "analysisKeys": "HSM/Socket/Error, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-586",
+    "title": "HSM/Crypto - Rejet systématique de vérification PIN sur les flux interbancaires avec DE39=55 (En période de forte affluence)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/ZPKEngine",
+    "analysisKeys": "ZPK/PINBlock/ISO-0, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-587",
+    "title": "HSM/Crypto - Erreur de parité lors de l échange dynamique de clé ZPK avec le réseau Visa (En période de forte affluence)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/ZPKEngine",
+    "analysisKeys": "ZPK/PINBlock/ISO-0, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-588",
+    "title": "HSM/Crypto - Corruption de la clé de transport de clé ZMK utilisée pour déchiffrer la nouvelle ZPK (En période de forte affluence)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/ZPKEngine",
+    "analysisKeys": "ZPK/PINBlock/ISO-0, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-589",
+    "title": "HSM/Crypto - Échec de translation de PIN Block d un format ISO-0 vers un format ISO-3 (En période de forte affluence)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/ZPKEngine",
+    "analysisKeys": "ZPK/PINBlock/ISO-0, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-590",
+    "title": "HSM/Crypto - Expiration de la clé de zone ZPK sans renouvellement automatique préalable (En période de forte affluence)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/ZPKEngine",
+    "analysisKeys": "ZPK/PINBlock/ISO-0, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-591",
+    "title": "HSM/Crypto - Rejet systématique de toutes les transactions à puce d une nouvelle série de cartes (DE39=05) (En période de forte affluence)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/ARQCVerification",
+    "analysisKeys": "MK-AC/ARQC/Tag9F26, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-592",
+    "title": "HSM/Crypto - Erreur de dérivation de clé de session EMV consécutive à un compteur ATC incohérent (En période de forte affluence)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/ARQCVerification",
+    "analysisKeys": "MK-AC/ARQC/Tag9F26, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-593",
+    "title": "HSM/Crypto - Échec de génération du cryptogramme d autorisation ARPC renvoyé à la carte (En période de forte affluence)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/ARQCVerification",
+    "analysisKeys": "MK-AC/ARQC/Tag9F26, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-594",
+    "title": "HSM/Crypto - Désaccord sur la méthode de calcul du cryptogramme dynamique entre la puce et l hôte (En période de forte affluence)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/ARQCVerification",
+    "analysisKeys": "MK-AC/ARQC/Tag9F26, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-595",
+    "title": "HSM/Crypto - Rejet de cryptogramme suite à une corruption du Tag 9F37 (Unpredictable Number) en transmission (En période de forte affluence)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/ARQCVerification",
+    "analysisKeys": "MK-AC/ARQC/Tag9F26, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-596",
+    "title": "Clearing - Rejet du fichier de compensation Visa Base II pour erreur de format d en-tête de lot (En période de forte affluence)",
+    "domain": "Clearing",
+    "component": "Clearing/Incoming",
+    "analysisKeys": "TC40/Incoming/File, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-597",
+    "title": "Clearing - Présence de transactions en double dans le fichier de compensation Mastercard IPM (En période de forte affluence)",
+    "domain": "Clearing",
+    "component": "Clearing/Incoming",
+    "analysisKeys": "TC40/Incoming/File, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-598",
+    "title": "Clearing - Échec d intégration du fichier de compensation GIMAC suite à un enregistrement corrompu (En période de forte affluence)",
+    "domain": "Clearing",
+    "component": "Clearing/Incoming",
+    "analysisKeys": "TC40/Incoming/File, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-599",
+    "title": "Clearing - Dépassement de la fenêtre horaire limite de transmission du fichier de clearing (En période de forte affluence)",
+    "domain": "Clearing",
+    "component": "Clearing/Incoming",
+    "analysisKeys": "TC40/Incoming/File, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-600",
+    "title": "Clearing - Incohérence entre les totaux financiers de contrôle et la somme réelle des enregistrements du fichier (En période de forte affluence)",
+    "domain": "Clearing",
+    "component": "Clearing/Incoming",
+    "analysisKeys": "TC40/Incoming/File, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-601",
+    "title": "Clearing - Transactions compensées sans correspondance dans la base des autorisations (Orphelines) (En période de forte affluence)",
+    "domain": "Clearing",
+    "component": "Clearing/Matching",
+    "analysisKeys": "RRN/Match/Suspense, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-602",
+    "title": "Clearing - Écart de montant entre l autorisation initiale et le règlement final en devise étrangère (En période de forte affluence)",
+    "domain": "Clearing",
+    "component": "Clearing/Matching",
+    "analysisKeys": "RRN/Match/Suspense, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-603",
+    "title": "Clearing - Double imputation comptable consécutive à une contestation traitée manuellement et automatiquement (En période de forte affluence)",
+    "domain": "Clearing",
+    "component": "Clearing/Matching",
+    "analysisKeys": "RRN/Match/Suspense, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-604",
+    "title": "Clearing - Suspense comptable persistant sur les transactions de pré-autorisation hôtelière non clôturées (En période de forte affluence)",
+    "domain": "Clearing",
+    "component": "Clearing/Matching",
+    "analysisKeys": "RRN/Match/Suspense, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-605",
+    "title": "Clearing - Incohérence de devise de règlement entre le compte de compensation Nostro et le compte marchand (En période de forte affluence)",
+    "domain": "Clearing",
+    "component": "Clearing/Matching",
+    "analysisKeys": "RRN/Match/Suspense, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-606",
+    "title": "Clearing - Rejet de dossier de contestation pour dépassement du délai réglementaire scheme (120 jours) (En période de forte affluence)",
+    "domain": "Clearing",
+    "component": "Clearing/Chargeback",
+    "analysisKeys": "Chargeback/Dispute/DE39, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-607",
+    "title": "Clearing - Forclusion d un recours en deuxième présentation (Representment) non notifié au commerçant (En période de forte affluence)",
+    "domain": "Clearing",
+    "component": "Clearing/Chargeback",
+    "analysisKeys": "Chargeback/Dispute/DE39, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-608",
+    "title": "Clearing - Débit indu du compte commerçant suite à un chargeback frauduleux non vérifié (En période de forte affluence)",
+    "domain": "Clearing",
+    "component": "Clearing/Chargeback",
+    "analysisKeys": "Chargeback/Dispute/DE39, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-609",
+    "title": "Clearing - Rejet du dossier de litige par la plateforme Visa Resolve Online (VROL) pour pièce jointe non lisible (En période de forte affluence)",
+    "domain": "Clearing",
+    "component": "Clearing/Chargeback",
+    "analysisKeys": "Chargeback/Dispute/DE39, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-610",
+    "title": "Clearing - Contestation client acceptée par la banque mais non transmise sur le réseau interbancaire (En période de forte affluence)",
+    "domain": "Clearing",
+    "component": "Clearing/Chargeback",
+    "analysisKeys": "Chargeback/Dispute/DE39, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-611",
+    "title": "E-Commerce - Échec d authentification 3D-Secure 2.2 sur les paiements e-commerce par carte internationale (En période de forte affluence)",
+    "domain": "E-Commerce",
+    "component": "3DS/MPI",
+    "analysisKeys": "3DS/MPI/Protocol, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-612",
+    "title": "E-Commerce - Rejet de transaction en authentification sans friction (Frictionless) forçant un challenge systématique (En période de forte affluence)",
+    "domain": "E-Commerce",
+    "component": "3DS/MPI",
+    "analysisKeys": "3DS/MPI/Protocol, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-613",
+    "title": "E-Commerce - Non-réception du code OTP par SMS lors de l étape de challenge 3D-Secure (En période de forte affluence)",
+    "domain": "E-Commerce",
+    "component": "3DS/MPI",
+    "analysisKeys": "3DS/MPI/Protocol, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-614",
+    "title": "E-Commerce - Incompatibilité de version de protocole 3D-Secure entre le marchand et l émetteur de la carte (En période de forte affluence)",
+    "domain": "E-Commerce",
+    "component": "3DS/MPI",
+    "analysisKeys": "3DS/MPI/Protocol, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-615",
+    "title": "E-Commerce - Échec d affichage de la page de challenge 3D-Secure dans l iframe du site marchand (En période de forte affluence)",
+    "domain": "E-Commerce",
+    "component": "3DS/MPI",
+    "analysisKeys": "3DS/MPI/Protocol, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-616",
+    "title": "E-Commerce - Erreur HTTP 500 sur l API de paiement e-commerce lors de la validation du panier (En période de forte affluence)",
+    "domain": "E-Commerce",
+    "component": "PaymentGateway/API",
+    "analysisKeys": "REST/Webhook/HTTP500, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-617",
+    "title": "E-Commerce - Non-réception des webhooks de confirmation de paiement par le site e-commerce du commerçant (En période de forte affluence)",
+    "domain": "E-Commerce",
+    "component": "PaymentGateway/API",
+    "analysisKeys": "REST/Webhook/HTTP500, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-618",
+    "title": "E-Commerce - Double débit client consécutif à des clics répétitifs sur le bouton de paiement en ligne (En période de forte affluence)",
+    "domain": "E-Commerce",
+    "component": "PaymentGateway/API",
+    "analysisKeys": "REST/Webhook/HTTP500, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-619",
+    "title": "E-Commerce - Rejet de transaction en ligne pour montant non conforme aux limites du contrat marchand VAD (En période de forte affluence)",
+    "domain": "E-Commerce",
+    "component": "PaymentGateway/API",
+    "analysisKeys": "REST/Webhook/HTTP500, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-620",
+    "title": "E-Commerce - Attaque par force brute sur l API de vérification de validité de carte (Card Testing Attack) (En période de forte affluence)",
+    "domain": "E-Commerce",
+    "component": "PaymentGateway/API",
+    "analysisKeys": "REST/Webhook/HTTP500, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-621",
+    "title": "Mobile/API - Échec d alimentation de portefeuille électronique mobile depuis une carte bancaire (En période de forte affluence)",
+    "domain": "Mobile/API",
+    "component": "Mobile/WalletAPI",
+    "analysisKeys": "Wallet/API/TopUp, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-622",
+    "title": "Mobile/API - Désynchronisation de solde entre le portefeuille mobile et le compte bancaire support (En période de forte affluence)",
+    "domain": "Mobile/API",
+    "component": "Mobile/WalletAPI",
+    "analysisKeys": "Wallet/API/TopUp, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-623",
+    "title": "Mobile/API - Rejet de transaction de virement instantané de compte à wallet pour plafond journalier atteint (En période de forte affluence)",
+    "domain": "Mobile/API",
+    "component": "Mobile/WalletAPI",
+    "analysisKeys": "Wallet/API/TopUp, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-624",
+    "title": "Mobile/API - Échec d enrôlement de la carte bancaire dans le service de paiement sans contact sur smartphone (En période de forte affluence)",
+    "domain": "Mobile/API",
+    "component": "Mobile/WalletAPI",
+    "analysisKeys": "Wallet/API/TopUp, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-625",
+    "title": "Mobile/API - Rejet de paiement par QR Code marchand EMVCo suite à un QR Code altéré ou expiré (En période de forte affluence)",
+    "domain": "Mobile/API",
+    "component": "Mobile/WalletAPI",
+    "analysisKeys": "Wallet/API/TopUp, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-626",
+    "title": "GAB - Échec chiffrement PIN Pad EPP suite à désynchronisation KSN DUKPT (Lors d un basculement de secours PRA)",
+    "domain": "GAB",
+    "component": "ATM/EPP",
+    "analysisKeys": "DE52/KSN, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-627",
+    "title": "GAB - Erreur de parité de clé TMK injectée sur clavier EPP (Lors d un basculement de secours PRA)",
+    "domain": "GAB",
+    "component": "ATM/EPP",
+    "analysisKeys": "DE52/KSN, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-628",
+    "title": "GAB - Timeout communication série RS232/USB entre PC GAB et EPP (Lors d un basculement de secours PRA)",
+    "domain": "GAB",
+    "component": "ATM/EPP",
+    "analysisKeys": "DE52/KSN, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-629",
+    "title": "GAB - Tentative d écoute ou tamper détecté sur clavier chiffrant EPP (Lors d un basculement de secours PRA)",
+    "domain": "GAB",
+    "component": "ATM/EPP",
+    "analysisKeys": "DE52/KSN, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-630",
+    "title": "GAB - Incompatibilité du format de PIN Block configuré sur EPP (Format ISO-1 au lieu de ISO-0) (Lors d un basculement de secours PRA)",
+    "domain": "GAB",
+    "component": "ATM/EPP",
+    "analysisKeys": "DE52/KSN, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-631",
+    "title": "GAB - Bourrage billets dans le module de transport vertical CDM (Lors d un basculement de secours PRA)",
+    "domain": "GAB",
+    "component": "ATM/Dispenser",
+    "analysisKeys": "CDM/Sensor/DE4, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-632",
+    "title": "GAB - Divergence de comptage entre capteur d extraction et capteur de dépose shutter (Lors d un basculement de secours PRA)",
+    "domain": "GAB",
+    "component": "ATM/Dispenser",
+    "analysisKeys": "CDM/Sensor/DE4, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-633",
+    "title": "GAB - Cassette de rejet pleine provoquant l arrêt du service retrait (Lors d un basculement de secours PRA)",
+    "domain": "GAB",
+    "component": "ATM/Dispenser",
+    "analysisKeys": "CDM/Sensor/DE4, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-634",
+    "title": "GAB - Défaillance moteur pas-à-pas de l extracteur à friction (Lors d un basculement de secours PRA)",
+    "domain": "GAB",
+    "component": "ATM/Dispenser",
+    "analysisKeys": "CDM/Sensor/DE4, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-635",
+    "title": "GAB - Dépassement de délai d ouverture du volet de présentation des billets (Shutter Timeout) (Lors d un basculement de secours PRA)",
+    "domain": "GAB",
+    "component": "ATM/Dispenser",
+    "analysisKeys": "CDM/Sensor/DE4, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-636",
+    "title": "GAB - Rejet systématique des cartes à puce pour lecture contact défaillante (Fallback forcé) (Lors d un basculement de secours PRA)",
+    "domain": "GAB",
+    "component": "ATM/CardReader",
+    "analysisKeys": "EMV/IC/Track2, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-637",
+    "title": "GAB - Capture intempestive de carte suite à arrêt brutal de l alimentation électrique (Lors d un basculement de secours PRA)",
+    "domain": "GAB",
+    "component": "ATM/CardReader",
+    "analysisKeys": "EMV/IC/Track2, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-638",
+    "title": "GAB - Détection anormale par le capteur anti-skimming entraînant la mise hors service (Lors d un basculement de secours PRA)",
+    "domain": "GAB",
+    "component": "ATM/CardReader",
+    "analysisKeys": "EMV/IC/Track2, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-639",
+    "title": "GAB - Non-restitution de carte suite à timeout d oubli porteur non paramétré (Lors d un basculement de secours PRA)",
+    "domain": "GAB",
+    "component": "ATM/CardReader",
+    "analysisKeys": "EMV/IC/Track2, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-640",
+    "title": "GAB - Erreur de lecture piste magnétique sur carte non hybride (Track 2 error) (Lors d un basculement de secours PRA)",
+    "domain": "GAB",
+    "component": "ATM/CardReader",
+    "analysisKeys": "EMV/IC/Track2, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-641",
+    "title": "GAB - Déconnexion intempestive de l agent de supervision NDC/DDC (Lors d un basculement de secours PRA)",
+    "domain": "GAB",
+    "component": "ATM/Supervisor",
+    "analysisKeys": "NDC/Status/DE41, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-642",
+    "title": "GAB - Saturation du disque local de l automate par les journaux de trace détaillés (Lors d un basculement de secours PRA)",
+    "domain": "GAB",
+    "component": "ATM/Supervisor",
+    "analysisKeys": "NDC/Status/DE41, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-643",
+    "title": "GAB - Erreur de téléchargement des états d écrans graphiques et bannières publicitaires (Lors d un basculement de secours PRA)",
+    "domain": "GAB",
+    "component": "ATM/Supervisor",
+    "analysisKeys": "NDC/Status/DE41, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-644",
+    "title": "GAB - Blocage de l automate en mode supervision après intervention de maintenance sans clôture (Lors d un basculement de secours PRA)",
+    "domain": "GAB",
+    "component": "ATM/Supervisor",
+    "analysisKeys": "NDC/Status/DE41, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-645",
+    "title": "GAB - Incohérence des compteurs d inventaire d espèces entre le superviseur et le serveur central (Lors d un basculement de secours PRA)",
+    "domain": "GAB",
+    "component": "ATM/Supervisor",
+    "analysisKeys": "NDC/Status/DE41, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-646",
+    "title": "GAB - Blocage de l accepteur de billets en liasses lors d un versement client (Lors d un basculement de secours PRA)",
+    "domain": "GAB",
+    "component": "ATM/Depository",
+    "analysisKeys": "BRM/Envelope/DE4, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-647",
+    "title": "GAB - Faux signal de contrefaçon rejetant des billets conformes neufs (Lors d un basculement de secours PRA)",
+    "domain": "GAB",
+    "component": "ATM/Depository",
+    "analysisKeys": "BRM/Envelope/DE4, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-648",
+    "title": "GAB - Échec d impression du ticket de justificatif de dépôt d espèces (Lors d un basculement de secours PRA)",
+    "domain": "GAB",
+    "component": "ATM/Depository",
+    "analysisKeys": "BRM/Envelope/DE4, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-649",
+    "title": "GAB - Cassette de recyclage de billets saturée bloquant la fonction de restitution (Lors d un basculement de secours PRA)",
+    "domain": "GAB",
+    "component": "ATM/Depository",
+    "analysisKeys": "BRM/Envelope/DE4, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-650",
+    "title": "GAB - Erreur d identification du compte destinataire lors d un versement sans carte (Lors d un basculement de secours PRA)",
+    "domain": "GAB",
+    "component": "ATM/Depository",
+    "analysisKeys": "BRM/Envelope/DE4, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-651",
+    "title": "TPE - Rejet de transaction sans contact par défaillance de validation du Tag 9F26 (ARQC) (Lors d un basculement de secours PRA)",
+    "domain": "TPE",
+    "component": "POS/Kernel",
+    "analysisKeys": "DE55/TLV/TVR, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-652",
+    "title": "TPE - Incompatibilité AID Visa Electron / CB sur terminal marchand autonome (Lors d un basculement de secours PRA)",
+    "domain": "TPE",
+    "component": "POS/Kernel",
+    "analysisKeys": "DE55/TLV/TVR, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-653",
+    "title": "TPE - Transaction refusée avec code TVR indiquant une vérification de porteur échouée (Lors d un basculement de secours PRA)",
+    "domain": "TPE",
+    "component": "POS/Kernel",
+    "analysisKeys": "DE55/TLV/TVR, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-654",
+    "title": "TPE - Blocage de la transaction sans contact au-dessus du plafond sans bascule contact (Force Contact) (Lors d un basculement de secours PRA)",
+    "domain": "TPE",
+    "component": "POS/Kernel",
+    "analysisKeys": "DE55/TLV/TVR, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-655",
+    "title": "TPE - Erreur de décodage des tags TLV étendus dans la trame 0200 émise par le TPE (Lors d un basculement de secours PRA)",
+    "domain": "TPE",
+    "component": "POS/Kernel",
+    "analysisKeys": "DE55/TLV/TVR, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-656",
+    "title": "TPE - Échec de télécollecte nocturne automatique des transactions marchandes (Lors d un basculement de secours PRA)",
+    "domain": "TPE",
+    "component": "POS/Gateway",
+    "analysisKeys": "0500/Batch/TPE, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-657",
+    "title": "TPE - Doublon de télécollecte entraînant un double crédit sur le compte du commerçant (Lors d un basculement de secours PRA)",
+    "domain": "TPE",
+    "component": "POS/Gateway",
+    "analysisKeys": "0500/Batch/TPE, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-658",
+    "title": "TPE - Fichier de télécollecte tronqué suite à coupure réseau en cours d émission (Lors d un basculement de secours PRA)",
+    "domain": "TPE",
+    "component": "POS/Gateway",
+    "analysisKeys": "0500/Batch/TPE, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-659",
+    "title": "TPE - Rejet du lot de télécollecte pour incohérence du total de contrôle (Checksum Batch) (Lors d un basculement de secours PRA)",
+    "domain": "TPE",
+    "component": "POS/Gateway",
+    "analysisKeys": "0500/Batch/TPE, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-660",
+    "title": "TPE - Délai d expiration du certificat de la passerelle de télécollecte marchand (Lors d un basculement de secours PRA)",
+    "domain": "TPE",
+    "component": "POS/Gateway",
+    "analysisKeys": "0500/Batch/TPE, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-661",
+    "title": "TPE - Perte de signal radio GPRS/4G sur un lot de TPE déployés en zone commerciale (Lors d un basculement de secours PRA)",
+    "domain": "TPE",
+    "component": "POS/GPRS",
+    "analysisKeys": "APN/SIM/GPRS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-662",
+    "title": "TPE - Refus d enregistrement réseau pour carte SIM monétique expirée ou suspendue (Lors d un basculement de secours PRA)",
+    "domain": "TPE",
+    "component": "POS/GPRS",
+    "analysisKeys": "APN/SIM/GPRS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-663",
+    "title": "TPE - Temps de réponse d autorisation supérieur à 45 secondes sur liaison cellulaire (Lors d un basculement de secours PRA)",
+    "domain": "TPE",
+    "component": "POS/GPRS",
+    "analysisKeys": "APN/SIM/GPRS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-664",
+    "title": "TPE - Changement d antenne relais provoquant la coupure du tunnel VPN IPSec du TPE (Lors d un basculement de secours PRA)",
+    "domain": "TPE",
+    "component": "POS/GPRS",
+    "analysisKeys": "APN/SIM/GPRS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-665",
+    "title": "TPE - Interférence radio empêchant l accroche du réseau 4G forçant une bascule 2G instable (Lors d un basculement de secours PRA)",
+    "domain": "TPE",
+    "component": "POS/GPRS",
+    "analysisKeys": "APN/SIM/GPRS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-666",
+    "title": "TPE - Échec de mise à jour des tables de routage BIN via le serveur TMS (Lors d un basculement de secours PRA)",
+    "domain": "TPE",
+    "component": "POS/ParamDownload",
+    "analysisKeys": "TMS/Config/BIN, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-667",
+    "title": "TPE - Corruption de la table des devises après injection d un profil erroné (Lors d un basculement de secours PRA)",
+    "domain": "TPE",
+    "component": "POS/ParamDownload",
+    "analysisKeys": "TMS/Config/BIN, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-668",
+    "title": "TPE - Dépassement de capacité mémoire lors du chargement de la nouvelle liste d opposition (Lors d un basculement de secours PRA)",
+    "domain": "TPE",
+    "component": "POS/ParamDownload",
+    "analysisKeys": "TMS/Config/BIN, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-669",
+    "title": "TPE - Blocage de l application monétique suite à injection d un certificat marchand révoqué (Lors d un basculement de secours PRA)",
+    "domain": "TPE",
+    "component": "POS/ParamDownload",
+    "analysisKeys": "TMS/Config/BIN, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-670",
+    "title": "TPE - Désynchronisation de l horodatage du TPE avec le serveur de temps NTP bancaire (Lors d un basculement de secours PRA)",
+    "domain": "TPE",
+    "component": "POS/ParamDownload",
+    "analysisKeys": "TMS/Config/BIN, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-671",
+    "title": "Carte - Rejets massifs avec DE39=54 consécutifs à une date d expiration mal calculée (Lors d un basculement de secours PRA)",
+    "domain": "Carte",
+    "component": "CMS/Lifecycle",
+    "analysisKeys": "DE39=54/CMS/Card, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-672",
+    "title": "Carte - Carte signalée expirée sur le switch alors qu elle est valide sur le CMS (Lors d un basculement de secours PRA)",
+    "domain": "Carte",
+    "component": "CMS/Lifecycle",
+    "analysisKeys": "DE39=54/CMS/Card, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-673",
+    "title": "Carte - Rejet de cartes nouvellement délivrées non reconnues lors de la première utilisation (Lors d un basculement de secours PRA)",
+    "domain": "Carte",
+    "component": "CMS/Lifecycle",
+    "analysisKeys": "DE39=54/CMS/Card, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-674",
+    "title": "Carte - Opposition préventive automatique déclenchée sur un lot de cartes réémises (Lors d un basculement de secours PRA)",
+    "domain": "Carte",
+    "component": "CMS/Lifecycle",
+    "analysisKeys": "DE39=54/CMS/Card, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-675",
+    "title": "Carte - Défaut de renouvellement des cartes arrivant à échéance en fin de mois (Lors d un basculement de secours PRA)",
+    "domain": "Carte",
+    "component": "CMS/Lifecycle",
+    "analysisKeys": "DE39=54/CMS/Card, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-676",
+    "title": "Carte - Rejet avec DE39=61 pour dépassement de plafond hebdomadaire non remis à zéro (Lors d un basculement de secours PRA)",
+    "domain": "Carte",
+    "component": "CMS/Limits",
+    "analysisKeys": "DE39=61/Plafond/CMS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-677",
+    "title": "Carte - Incohérence de plafond entre la devise du compte et la devise de calcul du CMS (Lors d un basculement de secours PRA)",
+    "domain": "Carte",
+    "component": "CMS/Limits",
+    "analysisKeys": "DE39=61/Plafond/CMS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-678",
+    "title": "Carte - Blocage pour plafond de retrait atteint alors que le solde disponible est largement suffisant (Lors d un basculement de secours PRA)",
+    "domain": "Carte",
+    "component": "CMS/Limits",
+    "analysisKeys": "DE39=61/Plafond/CMS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-679",
+    "title": "Carte - Compteur de retraits hors-réseau bloqué après une seule transaction à l étranger (Lors d un basculement de secours PRA)",
+    "domain": "Carte",
+    "component": "CMS/Limits",
+    "analysisKeys": "DE39=61/Plafond/CMS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-680",
+    "title": "Carte - Mise à jour d augmentation de plafond demandée en agence non propagée en temps réel (Lors d un basculement de secours PRA)",
+    "domain": "Carte",
+    "component": "CMS/Limits",
+    "analysisKeys": "DE39=61/Plafond/CMS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-681",
+    "title": "Carte - Rejet de transaction légitime avec DE39=62 pour porteur en déplacement international (Lors d un basculement de secours PRA)",
+    "domain": "Carte",
+    "component": "CMS/GeoControl",
+    "analysisKeys": "DE39=62/GeoBlock/CMS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-682",
+    "title": "Carte - Blocage systématique des transactions e-commerce auprès de sites hébergés en Europe (Lors d un basculement de secours PRA)",
+    "domain": "Carte",
+    "component": "CMS/GeoControl",
+    "analysisKeys": "DE39=62/GeoBlock/CMS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-683",
+    "title": "Carte - Autorisation acceptée dans un pays soumis à embargo bancaire suite à table de pays obsolète (Lors d un basculement de secours PRA)",
+    "domain": "Carte",
+    "component": "CMS/GeoControl",
+    "analysisKeys": "DE39=62/GeoBlock/CMS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-684",
+    "title": "Carte - Rejet de transaction en zone frontalière captée par un relais de télécommunication étranger (Lors d un basculement de secours PRA)",
+    "domain": "Carte",
+    "component": "CMS/GeoControl",
+    "analysisKeys": "DE39=62/GeoBlock/CMS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-685",
+    "title": "Carte - Déblocage géographique temporaire non désactivé automatiquement après la date de fin (Lors d un basculement de secours PRA)",
+    "domain": "Carte",
+    "component": "CMS/GeoControl",
+    "analysisKeys": "DE39=62/GeoBlock/CMS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-686",
+    "title": "Carte - Blocage carte avec DE39=75 suite à 3 tentatives de PIN infructueuses au GAB (Lors d un basculement de secours PRA)",
+    "domain": "Carte",
+    "component": "CMS/PINCounter",
+    "analysisKeys": "DE39=75/PIN/Retry, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-687",
+    "title": "Carte - Compteur de PIN offline de la puce non réaligné après réinitialisation sur le serveur (Lors d un basculement de secours PRA)",
+    "domain": "Carte",
+    "component": "CMS/PINCounter",
+    "analysisKeys": "DE39=75/PIN/Retry, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-688",
+    "title": "Carte - Faux rejet DE39=75 consécutif à une anomalie de lecture de compteur sur puce dégradée (Lors d un basculement de secours PRA)",
+    "domain": "Carte",
+    "component": "CMS/PINCounter",
+    "analysisKeys": "DE39=75/PIN/Retry, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-689",
+    "title": "Carte - Désynchronisation entre le compteur PIN central et le compteur physique de la carte (Lors d un basculement de secours PRA)",
+    "domain": "Carte",
+    "component": "CMS/PINCounter",
+    "analysisKeys": "DE39=75/PIN/Retry, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-690",
+    "title": "Carte - Tentative de forçage de code PIN par attaque par dictionnaire détectée et neutralisée (Lors d un basculement de secours PRA)",
+    "domain": "Carte",
+    "component": "CMS/PINCounter",
+    "analysisKeys": "DE39=75/PIN/Retry, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-691",
+    "title": "Switch - Rejet massif avec DE39=92 pour nouvelle plage de BIN non référencée dans la table de routage (Lors d un basculement de secours PRA)",
+    "domain": "Switch",
+    "component": "Switch/Router",
+    "analysisKeys": "Routing/BIN/DE39=92, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-692",
+    "title": "Switch - Boucle de routage infinie entre le switch régional et le frontal national (Lors d un basculement de secours PRA)",
+    "domain": "Switch",
+    "component": "Switch/Router",
+    "analysisKeys": "Routing/BIN/DE39=92, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-693",
+    "title": "Switch - Délai excessif de résolution de route sur les transactions internationales Visa (Lors d un basculement de secours PRA)",
+    "domain": "Switch",
+    "component": "Switch/Router",
+    "analysisKeys": "Routing/BIN/DE39=92, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-694",
+    "title": "Switch - Bascule accidentelle du flux GAB sur la route de secours TPE aux capacités limitées (Lors d un basculement de secours PRA)",
+    "domain": "Switch",
+    "component": "Switch/Router",
+    "analysisKeys": "Routing/BIN/DE39=92, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-695",
+    "title": "Switch - Perte des tables de routage dynamiques suite à un redémarrage non planifié du switch (Lors d un basculement de secours PRA)",
+    "domain": "Switch",
+    "component": "Switch/Router",
+    "analysisKeys": "Routing/BIN/DE39=92, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-696",
+    "title": "Switch - Saturation de la file d attente des requêtes d autorisation en période de soldes (Lors d un basculement de secours PRA)",
+    "domain": "Switch",
+    "component": "Switch/Queue",
+    "analysisKeys": "Queue/FIFO/Drop, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-697",
+    "title": "Switch - Blocage de la file d attente provoqué par un message malformé bloquant (Poison Message) (Lors d un basculement de secours PRA)",
+    "domain": "Switch",
+    "component": "Switch/Queue",
+    "analysisKeys": "Queue/FIFO/Drop, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-698",
+    "title": "Switch - Perte de messages en transit suite à un dépassement du temps de rétention en file d attente (Lors d un basculement de secours PRA)",
+    "domain": "Switch",
+    "component": "Switch/Queue",
+    "analysisKeys": "Queue/FIFO/Drop, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-699",
+    "title": "Switch - Désynchronisation entre les files de requêtes 0200 et les files de réponses 0210 (Lors d un basculement de secours PRA)",
+    "domain": "Switch",
+    "component": "Switch/Queue",
+    "analysisKeys": "Queue/FIFO/Drop, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-700",
+    "title": "Switch - Dégradation des performances de la file d attente suite à un manque de threads de consommation (Lors d un basculement de secours PRA)",
+    "domain": "Switch",
+    "component": "Switch/Queue",
+    "analysisKeys": "Queue/FIFO/Drop, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-701",
+    "title": "Switch - Absence d émission du message de contre-passation 0400 après expiration du timer de réponse (Lors d un basculement de secours PRA)",
+    "domain": "Switch",
+    "component": "Switch/Reversal",
+    "analysisKeys": "0400/DE90/Timeout, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-702",
+    "title": "Switch - Rejet du message 0400 par l émetteur pour champ DE90 mal renseigné (Lors d un basculement de secours PRA)",
+    "domain": "Switch",
+    "component": "Switch/Reversal",
+    "analysisKeys": "0400/DE90/Timeout, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-703",
+    "title": "Switch - Contre-passation acceptée par l émetteur mais non prise en compte par le Core Banking (Lors d un basculement de secours PRA)",
+    "domain": "Switch",
+    "component": "Switch/Reversal",
+    "analysisKeys": "0400/DE90/Timeout, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-704",
+    "title": "Switch - Génération en boucle de messages de reversal 0400 pour la même transaction (Lors d un basculement de secours PRA)",
+    "domain": "Switch",
+    "component": "Switch/Reversal",
+    "analysisKeys": "0400/DE90/Timeout, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-705",
+    "title": "Switch - Conflit de séquence entre la réponse tardive 0210 et le message de reversal 0400 (Lors d un basculement de secours PRA)",
+    "domain": "Switch",
+    "component": "Switch/Reversal",
+    "analysisKeys": "0400/DE90/Timeout, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-706",
+    "title": "HSM/Crypto - Perte de liaison socket TCP entre le frontal d acquisition et le boîtier HSM Thales payShield (Lors d un basculement de secours PRA)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/HostLink",
+    "analysisKeys": "HSM/Socket/Error, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-707",
+    "title": "HSM/Crypto - Saturation du pool de connexions simultanées sur le boîtier cryptographique HSM (Lors d un basculement de secours PRA)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/HostLink",
+    "analysisKeys": "HSM/Socket/Error, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-708",
+    "title": "HSM/Crypto - Temps de réponse de calcul cryptographique supérieur à 800ms sur le HSM (Lors d un basculement de secours PRA)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/HostLink",
+    "analysisKeys": "HSM/Socket/Error, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-709",
+    "title": "HSM/Crypto - Bascule automatique en échec vers le HSM de secours suite à une désynchronisation de configuration (Lors d un basculement de secours PRA)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/HostLink",
+    "analysisKeys": "HSM/Socket/Error, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-710",
+    "title": "HSM/Crypto - Erreur de protocole de communication avec le HSM consécutive à une mise à jour logicielle (Lors d un basculement de secours PRA)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/HostLink",
+    "analysisKeys": "HSM/Socket/Error, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-711",
+    "title": "HSM/Crypto - Rejet systématique de vérification PIN sur les flux interbancaires avec DE39=55 (Lors d un basculement de secours PRA)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/ZPKEngine",
+    "analysisKeys": "ZPK/PINBlock/ISO-0, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-712",
+    "title": "HSM/Crypto - Erreur de parité lors de l échange dynamique de clé ZPK avec le réseau Visa (Lors d un basculement de secours PRA)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/ZPKEngine",
+    "analysisKeys": "ZPK/PINBlock/ISO-0, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-713",
+    "title": "HSM/Crypto - Corruption de la clé de transport de clé ZMK utilisée pour déchiffrer la nouvelle ZPK (Lors d un basculement de secours PRA)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/ZPKEngine",
+    "analysisKeys": "ZPK/PINBlock/ISO-0, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-714",
+    "title": "HSM/Crypto - Échec de translation de PIN Block d un format ISO-0 vers un format ISO-3 (Lors d un basculement de secours PRA)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/ZPKEngine",
+    "analysisKeys": "ZPK/PINBlock/ISO-0, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-715",
+    "title": "HSM/Crypto - Expiration de la clé de zone ZPK sans renouvellement automatique préalable (Lors d un basculement de secours PRA)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/ZPKEngine",
+    "analysisKeys": "ZPK/PINBlock/ISO-0, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-716",
+    "title": "HSM/Crypto - Rejet systématique de toutes les transactions à puce d une nouvelle série de cartes (DE39=05) (Lors d un basculement de secours PRA)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/ARQCVerification",
+    "analysisKeys": "MK-AC/ARQC/Tag9F26, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-717",
+    "title": "HSM/Crypto - Erreur de dérivation de clé de session EMV consécutive à un compteur ATC incohérent (Lors d un basculement de secours PRA)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/ARQCVerification",
+    "analysisKeys": "MK-AC/ARQC/Tag9F26, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-718",
+    "title": "HSM/Crypto - Échec de génération du cryptogramme d autorisation ARPC renvoyé à la carte (Lors d un basculement de secours PRA)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/ARQCVerification",
+    "analysisKeys": "MK-AC/ARQC/Tag9F26, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-719",
+    "title": "HSM/Crypto - Désaccord sur la méthode de calcul du cryptogramme dynamique entre la puce et l hôte (Lors d un basculement de secours PRA)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/ARQCVerification",
+    "analysisKeys": "MK-AC/ARQC/Tag9F26, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-720",
+    "title": "HSM/Crypto - Rejet de cryptogramme suite à une corruption du Tag 9F37 (Unpredictable Number) en transmission (Lors d un basculement de secours PRA)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/ARQCVerification",
+    "analysisKeys": "MK-AC/ARQC/Tag9F26, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-721",
+    "title": "Clearing - Rejet du fichier de compensation Visa Base II pour erreur de format d en-tête de lot (Lors d un basculement de secours PRA)",
+    "domain": "Clearing",
+    "component": "Clearing/Incoming",
+    "analysisKeys": "TC40/Incoming/File, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-722",
+    "title": "Clearing - Présence de transactions en double dans le fichier de compensation Mastercard IPM (Lors d un basculement de secours PRA)",
+    "domain": "Clearing",
+    "component": "Clearing/Incoming",
+    "analysisKeys": "TC40/Incoming/File, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-723",
+    "title": "Clearing - Échec d intégration du fichier de compensation GIMAC suite à un enregistrement corrompu (Lors d un basculement de secours PRA)",
+    "domain": "Clearing",
+    "component": "Clearing/Incoming",
+    "analysisKeys": "TC40/Incoming/File, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-724",
+    "title": "Clearing - Dépassement de la fenêtre horaire limite de transmission du fichier de clearing (Lors d un basculement de secours PRA)",
+    "domain": "Clearing",
+    "component": "Clearing/Incoming",
+    "analysisKeys": "TC40/Incoming/File, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-725",
+    "title": "Clearing - Incohérence entre les totaux financiers de contrôle et la somme réelle des enregistrements du fichier (Lors d un basculement de secours PRA)",
+    "domain": "Clearing",
+    "component": "Clearing/Incoming",
+    "analysisKeys": "TC40/Incoming/File, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-726",
+    "title": "Clearing - Transactions compensées sans correspondance dans la base des autorisations (Orphelines) (Lors d un basculement de secours PRA)",
+    "domain": "Clearing",
+    "component": "Clearing/Matching",
+    "analysisKeys": "RRN/Match/Suspense, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-727",
+    "title": "Clearing - Écart de montant entre l autorisation initiale et le règlement final en devise étrangère (Lors d un basculement de secours PRA)",
+    "domain": "Clearing",
+    "component": "Clearing/Matching",
+    "analysisKeys": "RRN/Match/Suspense, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-728",
+    "title": "Clearing - Double imputation comptable consécutive à une contestation traitée manuellement et automatiquement (Lors d un basculement de secours PRA)",
+    "domain": "Clearing",
+    "component": "Clearing/Matching",
+    "analysisKeys": "RRN/Match/Suspense, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-729",
+    "title": "Clearing - Suspense comptable persistant sur les transactions de pré-autorisation hôtelière non clôturées (Lors d un basculement de secours PRA)",
+    "domain": "Clearing",
+    "component": "Clearing/Matching",
+    "analysisKeys": "RRN/Match/Suspense, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-730",
+    "title": "Clearing - Incohérence de devise de règlement entre le compte de compensation Nostro et le compte marchand (Lors d un basculement de secours PRA)",
+    "domain": "Clearing",
+    "component": "Clearing/Matching",
+    "analysisKeys": "RRN/Match/Suspense, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-731",
+    "title": "Clearing - Rejet de dossier de contestation pour dépassement du délai réglementaire scheme (120 jours) (Lors d un basculement de secours PRA)",
+    "domain": "Clearing",
+    "component": "Clearing/Chargeback",
+    "analysisKeys": "Chargeback/Dispute/DE39, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-732",
+    "title": "Clearing - Forclusion d un recours en deuxième présentation (Representment) non notifié au commerçant (Lors d un basculement de secours PRA)",
+    "domain": "Clearing",
+    "component": "Clearing/Chargeback",
+    "analysisKeys": "Chargeback/Dispute/DE39, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-733",
+    "title": "Clearing - Débit indu du compte commerçant suite à un chargeback frauduleux non vérifié (Lors d un basculement de secours PRA)",
+    "domain": "Clearing",
+    "component": "Clearing/Chargeback",
+    "analysisKeys": "Chargeback/Dispute/DE39, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-734",
+    "title": "Clearing - Rejet du dossier de litige par la plateforme Visa Resolve Online (VROL) pour pièce jointe non lisible (Lors d un basculement de secours PRA)",
+    "domain": "Clearing",
+    "component": "Clearing/Chargeback",
+    "analysisKeys": "Chargeback/Dispute/DE39, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-735",
+    "title": "Clearing - Contestation client acceptée par la banque mais non transmise sur le réseau interbancaire (Lors d un basculement de secours PRA)",
+    "domain": "Clearing",
+    "component": "Clearing/Chargeback",
+    "analysisKeys": "Chargeback/Dispute/DE39, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-736",
+    "title": "E-Commerce - Échec d authentification 3D-Secure 2.2 sur les paiements e-commerce par carte internationale (Lors d un basculement de secours PRA)",
+    "domain": "E-Commerce",
+    "component": "3DS/MPI",
+    "analysisKeys": "3DS/MPI/Protocol, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-737",
+    "title": "E-Commerce - Rejet de transaction en authentification sans friction (Frictionless) forçant un challenge systématique (Lors d un basculement de secours PRA)",
+    "domain": "E-Commerce",
+    "component": "3DS/MPI",
+    "analysisKeys": "3DS/MPI/Protocol, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-738",
+    "title": "E-Commerce - Non-réception du code OTP par SMS lors de l étape de challenge 3D-Secure (Lors d un basculement de secours PRA)",
+    "domain": "E-Commerce",
+    "component": "3DS/MPI",
+    "analysisKeys": "3DS/MPI/Protocol, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-739",
+    "title": "E-Commerce - Incompatibilité de version de protocole 3D-Secure entre le marchand et l émetteur de la carte (Lors d un basculement de secours PRA)",
+    "domain": "E-Commerce",
+    "component": "3DS/MPI",
+    "analysisKeys": "3DS/MPI/Protocol, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-740",
+    "title": "E-Commerce - Échec d affichage de la page de challenge 3D-Secure dans l iframe du site marchand (Lors d un basculement de secours PRA)",
+    "domain": "E-Commerce",
+    "component": "3DS/MPI",
+    "analysisKeys": "3DS/MPI/Protocol, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-741",
+    "title": "E-Commerce - Erreur HTTP 500 sur l API de paiement e-commerce lors de la validation du panier (Lors d un basculement de secours PRA)",
+    "domain": "E-Commerce",
+    "component": "PaymentGateway/API",
+    "analysisKeys": "REST/Webhook/HTTP500, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-742",
+    "title": "E-Commerce - Non-réception des webhooks de confirmation de paiement par le site e-commerce du commerçant (Lors d un basculement de secours PRA)",
+    "domain": "E-Commerce",
+    "component": "PaymentGateway/API",
+    "analysisKeys": "REST/Webhook/HTTP500, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-743",
+    "title": "E-Commerce - Double débit client consécutif à des clics répétitifs sur le bouton de paiement en ligne (Lors d un basculement de secours PRA)",
+    "domain": "E-Commerce",
+    "component": "PaymentGateway/API",
+    "analysisKeys": "REST/Webhook/HTTP500, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-744",
+    "title": "E-Commerce - Rejet de transaction en ligne pour montant non conforme aux limites du contrat marchand VAD (Lors d un basculement de secours PRA)",
+    "domain": "E-Commerce",
+    "component": "PaymentGateway/API",
+    "analysisKeys": "REST/Webhook/HTTP500, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-745",
+    "title": "E-Commerce - Attaque par force brute sur l API de vérification de validité de carte (Card Testing Attack) (Lors d un basculement de secours PRA)",
+    "domain": "E-Commerce",
+    "component": "PaymentGateway/API",
+    "analysisKeys": "REST/Webhook/HTTP500, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-746",
+    "title": "Mobile/API - Échec d alimentation de portefeuille électronique mobile depuis une carte bancaire (Lors d un basculement de secours PRA)",
+    "domain": "Mobile/API",
+    "component": "Mobile/WalletAPI",
+    "analysisKeys": "Wallet/API/TopUp, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-747",
+    "title": "Mobile/API - Désynchronisation de solde entre le portefeuille mobile et le compte bancaire support (Lors d un basculement de secours PRA)",
+    "domain": "Mobile/API",
+    "component": "Mobile/WalletAPI",
+    "analysisKeys": "Wallet/API/TopUp, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-748",
+    "title": "Mobile/API - Rejet de transaction de virement instantané de compte à wallet pour plafond journalier atteint (Lors d un basculement de secours PRA)",
+    "domain": "Mobile/API",
+    "component": "Mobile/WalletAPI",
+    "analysisKeys": "Wallet/API/TopUp, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-749",
+    "title": "Mobile/API - Échec d enrôlement de la carte bancaire dans le service de paiement sans contact sur smartphone (Lors d un basculement de secours PRA)",
+    "domain": "Mobile/API",
+    "component": "Mobile/WalletAPI",
+    "analysisKeys": "Wallet/API/TopUp, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-750",
+    "title": "Mobile/API - Rejet de paiement par QR Code marchand EMVCo suite à un QR Code altéré ou expiré (Lors d un basculement de secours PRA)",
+    "domain": "Mobile/API",
+    "component": "Mobile/WalletAPI",
+    "analysisKeys": "Wallet/API/TopUp, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-751",
+    "title": "GAB - Échec chiffrement PIN Pad EPP suite à désynchronisation KSN DUKPT (Sur périmètre régional Agences)",
+    "domain": "GAB",
+    "component": "ATM/EPP",
+    "analysisKeys": "DE52/KSN, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-752",
+    "title": "GAB - Erreur de parité de clé TMK injectée sur clavier EPP (Sur périmètre régional Agences)",
+    "domain": "GAB",
+    "component": "ATM/EPP",
+    "analysisKeys": "DE52/KSN, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-753",
+    "title": "GAB - Timeout communication série RS232/USB entre PC GAB et EPP (Sur périmètre régional Agences)",
+    "domain": "GAB",
+    "component": "ATM/EPP",
+    "analysisKeys": "DE52/KSN, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-754",
+    "title": "GAB - Tentative d écoute ou tamper détecté sur clavier chiffrant EPP (Sur périmètre régional Agences)",
+    "domain": "GAB",
+    "component": "ATM/EPP",
+    "analysisKeys": "DE52/KSN, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-755",
+    "title": "GAB - Incompatibilité du format de PIN Block configuré sur EPP (Format ISO-1 au lieu de ISO-0) (Sur périmètre régional Agences)",
+    "domain": "GAB",
+    "component": "ATM/EPP",
+    "analysisKeys": "DE52/KSN, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-756",
+    "title": "GAB - Bourrage billets dans le module de transport vertical CDM (Sur périmètre régional Agences)",
+    "domain": "GAB",
+    "component": "ATM/Dispenser",
+    "analysisKeys": "CDM/Sensor/DE4, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-757",
+    "title": "GAB - Divergence de comptage entre capteur d extraction et capteur de dépose shutter (Sur périmètre régional Agences)",
+    "domain": "GAB",
+    "component": "ATM/Dispenser",
+    "analysisKeys": "CDM/Sensor/DE4, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-758",
+    "title": "GAB - Cassette de rejet pleine provoquant l arrêt du service retrait (Sur périmètre régional Agences)",
+    "domain": "GAB",
+    "component": "ATM/Dispenser",
+    "analysisKeys": "CDM/Sensor/DE4, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-759",
+    "title": "GAB - Défaillance moteur pas-à-pas de l extracteur à friction (Sur périmètre régional Agences)",
+    "domain": "GAB",
+    "component": "ATM/Dispenser",
+    "analysisKeys": "CDM/Sensor/DE4, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-760",
+    "title": "GAB - Dépassement de délai d ouverture du volet de présentation des billets (Shutter Timeout) (Sur périmètre régional Agences)",
+    "domain": "GAB",
+    "component": "ATM/Dispenser",
+    "analysisKeys": "CDM/Sensor/DE4, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-761",
+    "title": "GAB - Rejet systématique des cartes à puce pour lecture contact défaillante (Fallback forcé) (Sur périmètre régional Agences)",
+    "domain": "GAB",
+    "component": "ATM/CardReader",
+    "analysisKeys": "EMV/IC/Track2, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-762",
+    "title": "GAB - Capture intempestive de carte suite à arrêt brutal de l alimentation électrique (Sur périmètre régional Agences)",
+    "domain": "GAB",
+    "component": "ATM/CardReader",
+    "analysisKeys": "EMV/IC/Track2, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-763",
+    "title": "GAB - Détection anormale par le capteur anti-skimming entraînant la mise hors service (Sur périmètre régional Agences)",
+    "domain": "GAB",
+    "component": "ATM/CardReader",
+    "analysisKeys": "EMV/IC/Track2, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-764",
+    "title": "GAB - Non-restitution de carte suite à timeout d oubli porteur non paramétré (Sur périmètre régional Agences)",
+    "domain": "GAB",
+    "component": "ATM/CardReader",
+    "analysisKeys": "EMV/IC/Track2, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-765",
+    "title": "GAB - Erreur de lecture piste magnétique sur carte non hybride (Track 2 error) (Sur périmètre régional Agences)",
+    "domain": "GAB",
+    "component": "ATM/CardReader",
+    "analysisKeys": "EMV/IC/Track2, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-766",
+    "title": "GAB - Déconnexion intempestive de l agent de supervision NDC/DDC (Sur périmètre régional Agences)",
+    "domain": "GAB",
+    "component": "ATM/Supervisor",
+    "analysisKeys": "NDC/Status/DE41, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-767",
+    "title": "GAB - Saturation du disque local de l automate par les journaux de trace détaillés (Sur périmètre régional Agences)",
+    "domain": "GAB",
+    "component": "ATM/Supervisor",
+    "analysisKeys": "NDC/Status/DE41, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-768",
+    "title": "GAB - Erreur de téléchargement des états d écrans graphiques et bannières publicitaires (Sur périmètre régional Agences)",
+    "domain": "GAB",
+    "component": "ATM/Supervisor",
+    "analysisKeys": "NDC/Status/DE41, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-769",
+    "title": "GAB - Blocage de l automate en mode supervision après intervention de maintenance sans clôture (Sur périmètre régional Agences)",
+    "domain": "GAB",
+    "component": "ATM/Supervisor",
+    "analysisKeys": "NDC/Status/DE41, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-770",
+    "title": "GAB - Incohérence des compteurs d inventaire d espèces entre le superviseur et le serveur central (Sur périmètre régional Agences)",
+    "domain": "GAB",
+    "component": "ATM/Supervisor",
+    "analysisKeys": "NDC/Status/DE41, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-771",
+    "title": "GAB - Blocage de l accepteur de billets en liasses lors d un versement client (Sur périmètre régional Agences)",
+    "domain": "GAB",
+    "component": "ATM/Depository",
+    "analysisKeys": "BRM/Envelope/DE4, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-772",
+    "title": "GAB - Faux signal de contrefaçon rejetant des billets conformes neufs (Sur périmètre régional Agences)",
+    "domain": "GAB",
+    "component": "ATM/Depository",
+    "analysisKeys": "BRM/Envelope/DE4, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-773",
+    "title": "GAB - Échec d impression du ticket de justificatif de dépôt d espèces (Sur périmètre régional Agences)",
+    "domain": "GAB",
+    "component": "ATM/Depository",
+    "analysisKeys": "BRM/Envelope/DE4, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-774",
+    "title": "GAB - Cassette de recyclage de billets saturée bloquant la fonction de restitution (Sur périmètre régional Agences)",
+    "domain": "GAB",
+    "component": "ATM/Depository",
+    "analysisKeys": "BRM/Envelope/DE4, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-775",
+    "title": "GAB - Erreur d identification du compte destinataire lors d un versement sans carte (Sur périmètre régional Agences)",
+    "domain": "GAB",
+    "component": "ATM/Depository",
+    "analysisKeys": "BRM/Envelope/DE4, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-776",
+    "title": "TPE - Rejet de transaction sans contact par défaillance de validation du Tag 9F26 (ARQC) (Sur périmètre régional Agences)",
+    "domain": "TPE",
+    "component": "POS/Kernel",
+    "analysisKeys": "DE55/TLV/TVR, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-777",
+    "title": "TPE - Incompatibilité AID Visa Electron / CB sur terminal marchand autonome (Sur périmètre régional Agences)",
+    "domain": "TPE",
+    "component": "POS/Kernel",
+    "analysisKeys": "DE55/TLV/TVR, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-778",
+    "title": "TPE - Transaction refusée avec code TVR indiquant une vérification de porteur échouée (Sur périmètre régional Agences)",
+    "domain": "TPE",
+    "component": "POS/Kernel",
+    "analysisKeys": "DE55/TLV/TVR, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-779",
+    "title": "TPE - Blocage de la transaction sans contact au-dessus du plafond sans bascule contact (Force Contact) (Sur périmètre régional Agences)",
+    "domain": "TPE",
+    "component": "POS/Kernel",
+    "analysisKeys": "DE55/TLV/TVR, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-780",
+    "title": "TPE - Erreur de décodage des tags TLV étendus dans la trame 0200 émise par le TPE (Sur périmètre régional Agences)",
+    "domain": "TPE",
+    "component": "POS/Kernel",
+    "analysisKeys": "DE55/TLV/TVR, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-781",
+    "title": "TPE - Échec de télécollecte nocturne automatique des transactions marchandes (Sur périmètre régional Agences)",
+    "domain": "TPE",
+    "component": "POS/Gateway",
+    "analysisKeys": "0500/Batch/TPE, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-782",
+    "title": "TPE - Doublon de télécollecte entraînant un double crédit sur le compte du commerçant (Sur périmètre régional Agences)",
+    "domain": "TPE",
+    "component": "POS/Gateway",
+    "analysisKeys": "0500/Batch/TPE, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-783",
+    "title": "TPE - Fichier de télécollecte tronqué suite à coupure réseau en cours d émission (Sur périmètre régional Agences)",
+    "domain": "TPE",
+    "component": "POS/Gateway",
+    "analysisKeys": "0500/Batch/TPE, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-784",
+    "title": "TPE - Rejet du lot de télécollecte pour incohérence du total de contrôle (Checksum Batch) (Sur périmètre régional Agences)",
+    "domain": "TPE",
+    "component": "POS/Gateway",
+    "analysisKeys": "0500/Batch/TPE, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-785",
+    "title": "TPE - Délai d expiration du certificat de la passerelle de télécollecte marchand (Sur périmètre régional Agences)",
+    "domain": "TPE",
+    "component": "POS/Gateway",
+    "analysisKeys": "0500/Batch/TPE, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-786",
+    "title": "TPE - Perte de signal radio GPRS/4G sur un lot de TPE déployés en zone commerciale (Sur périmètre régional Agences)",
+    "domain": "TPE",
+    "component": "POS/GPRS",
+    "analysisKeys": "APN/SIM/GPRS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-787",
+    "title": "TPE - Refus d enregistrement réseau pour carte SIM monétique expirée ou suspendue (Sur périmètre régional Agences)",
+    "domain": "TPE",
+    "component": "POS/GPRS",
+    "analysisKeys": "APN/SIM/GPRS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-788",
+    "title": "TPE - Temps de réponse d autorisation supérieur à 45 secondes sur liaison cellulaire (Sur périmètre régional Agences)",
+    "domain": "TPE",
+    "component": "POS/GPRS",
+    "analysisKeys": "APN/SIM/GPRS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-789",
+    "title": "TPE - Changement d antenne relais provoquant la coupure du tunnel VPN IPSec du TPE (Sur périmètre régional Agences)",
+    "domain": "TPE",
+    "component": "POS/GPRS",
+    "analysisKeys": "APN/SIM/GPRS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-790",
+    "title": "TPE - Interférence radio empêchant l accroche du réseau 4G forçant une bascule 2G instable (Sur périmètre régional Agences)",
+    "domain": "TPE",
+    "component": "POS/GPRS",
+    "analysisKeys": "APN/SIM/GPRS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-791",
+    "title": "TPE - Échec de mise à jour des tables de routage BIN via le serveur TMS (Sur périmètre régional Agences)",
+    "domain": "TPE",
+    "component": "POS/ParamDownload",
+    "analysisKeys": "TMS/Config/BIN, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-792",
+    "title": "TPE - Corruption de la table des devises après injection d un profil erroné (Sur périmètre régional Agences)",
+    "domain": "TPE",
+    "component": "POS/ParamDownload",
+    "analysisKeys": "TMS/Config/BIN, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-793",
+    "title": "TPE - Dépassement de capacité mémoire lors du chargement de la nouvelle liste d opposition (Sur périmètre régional Agences)",
+    "domain": "TPE",
+    "component": "POS/ParamDownload",
+    "analysisKeys": "TMS/Config/BIN, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-794",
+    "title": "TPE - Blocage de l application monétique suite à injection d un certificat marchand révoqué (Sur périmètre régional Agences)",
+    "domain": "TPE",
+    "component": "POS/ParamDownload",
+    "analysisKeys": "TMS/Config/BIN, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-795",
+    "title": "TPE - Désynchronisation de l horodatage du TPE avec le serveur de temps NTP bancaire (Sur périmètre régional Agences)",
+    "domain": "TPE",
+    "component": "POS/ParamDownload",
+    "analysisKeys": "TMS/Config/BIN, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-796",
+    "title": "Carte - Rejets massifs avec DE39=54 consécutifs à une date d expiration mal calculée (Sur périmètre régional Agences)",
+    "domain": "Carte",
+    "component": "CMS/Lifecycle",
+    "analysisKeys": "DE39=54/CMS/Card, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-797",
+    "title": "Carte - Carte signalée expirée sur le switch alors qu elle est valide sur le CMS (Sur périmètre régional Agences)",
+    "domain": "Carte",
+    "component": "CMS/Lifecycle",
+    "analysisKeys": "DE39=54/CMS/Card, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-798",
+    "title": "Carte - Rejet de cartes nouvellement délivrées non reconnues lors de la première utilisation (Sur périmètre régional Agences)",
+    "domain": "Carte",
+    "component": "CMS/Lifecycle",
+    "analysisKeys": "DE39=54/CMS/Card, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-799",
+    "title": "Carte - Opposition préventive automatique déclenchée sur un lot de cartes réémises (Sur périmètre régional Agences)",
+    "domain": "Carte",
+    "component": "CMS/Lifecycle",
+    "analysisKeys": "DE39=54/CMS/Card, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-800",
+    "title": "Carte - Défaut de renouvellement des cartes arrivant à échéance en fin de mois (Sur périmètre régional Agences)",
+    "domain": "Carte",
+    "component": "CMS/Lifecycle",
+    "analysisKeys": "DE39=54/CMS/Card, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-801",
+    "title": "Carte - Rejet avec DE39=61 pour dépassement de plafond hebdomadaire non remis à zéro (Sur périmètre régional Agences)",
+    "domain": "Carte",
+    "component": "CMS/Limits",
+    "analysisKeys": "DE39=61/Plafond/CMS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-802",
+    "title": "Carte - Incohérence de plafond entre la devise du compte et la devise de calcul du CMS (Sur périmètre régional Agences)",
+    "domain": "Carte",
+    "component": "CMS/Limits",
+    "analysisKeys": "DE39=61/Plafond/CMS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-803",
+    "title": "Carte - Blocage pour plafond de retrait atteint alors que le solde disponible est largement suffisant (Sur périmètre régional Agences)",
+    "domain": "Carte",
+    "component": "CMS/Limits",
+    "analysisKeys": "DE39=61/Plafond/CMS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-804",
+    "title": "Carte - Compteur de retraits hors-réseau bloqué après une seule transaction à l étranger (Sur périmètre régional Agences)",
+    "domain": "Carte",
+    "component": "CMS/Limits",
+    "analysisKeys": "DE39=61/Plafond/CMS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-805",
+    "title": "Carte - Mise à jour d augmentation de plafond demandée en agence non propagée en temps réel (Sur périmètre régional Agences)",
+    "domain": "Carte",
+    "component": "CMS/Limits",
+    "analysisKeys": "DE39=61/Plafond/CMS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-806",
+    "title": "Carte - Rejet de transaction légitime avec DE39=62 pour porteur en déplacement international (Sur périmètre régional Agences)",
+    "domain": "Carte",
+    "component": "CMS/GeoControl",
+    "analysisKeys": "DE39=62/GeoBlock/CMS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-807",
+    "title": "Carte - Blocage systématique des transactions e-commerce auprès de sites hébergés en Europe (Sur périmètre régional Agences)",
+    "domain": "Carte",
+    "component": "CMS/GeoControl",
+    "analysisKeys": "DE39=62/GeoBlock/CMS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-808",
+    "title": "Carte - Autorisation acceptée dans un pays soumis à embargo bancaire suite à table de pays obsolète (Sur périmètre régional Agences)",
+    "domain": "Carte",
+    "component": "CMS/GeoControl",
+    "analysisKeys": "DE39=62/GeoBlock/CMS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-809",
+    "title": "Carte - Rejet de transaction en zone frontalière captée par un relais de télécommunication étranger (Sur périmètre régional Agences)",
+    "domain": "Carte",
+    "component": "CMS/GeoControl",
+    "analysisKeys": "DE39=62/GeoBlock/CMS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-810",
+    "title": "Carte - Déblocage géographique temporaire non désactivé automatiquement après la date de fin (Sur périmètre régional Agences)",
+    "domain": "Carte",
+    "component": "CMS/GeoControl",
+    "analysisKeys": "DE39=62/GeoBlock/CMS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-811",
+    "title": "Carte - Blocage carte avec DE39=75 suite à 3 tentatives de PIN infructueuses au GAB (Sur périmètre régional Agences)",
+    "domain": "Carte",
+    "component": "CMS/PINCounter",
+    "analysisKeys": "DE39=75/PIN/Retry, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-812",
+    "title": "Carte - Compteur de PIN offline de la puce non réaligné après réinitialisation sur le serveur (Sur périmètre régional Agences)",
+    "domain": "Carte",
+    "component": "CMS/PINCounter",
+    "analysisKeys": "DE39=75/PIN/Retry, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-813",
+    "title": "Carte - Faux rejet DE39=75 consécutif à une anomalie de lecture de compteur sur puce dégradée (Sur périmètre régional Agences)",
+    "domain": "Carte",
+    "component": "CMS/PINCounter",
+    "analysisKeys": "DE39=75/PIN/Retry, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-814",
+    "title": "Carte - Désynchronisation entre le compteur PIN central et le compteur physique de la carte (Sur périmètre régional Agences)",
+    "domain": "Carte",
+    "component": "CMS/PINCounter",
+    "analysisKeys": "DE39=75/PIN/Retry, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-815",
+    "title": "Carte - Tentative de forçage de code PIN par attaque par dictionnaire détectée et neutralisée (Sur périmètre régional Agences)",
+    "domain": "Carte",
+    "component": "CMS/PINCounter",
+    "analysisKeys": "DE39=75/PIN/Retry, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-816",
+    "title": "Switch - Rejet massif avec DE39=92 pour nouvelle plage de BIN non référencée dans la table de routage (Sur périmètre régional Agences)",
+    "domain": "Switch",
+    "component": "Switch/Router",
+    "analysisKeys": "Routing/BIN/DE39=92, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-817",
+    "title": "Switch - Boucle de routage infinie entre le switch régional et le frontal national (Sur périmètre régional Agences)",
+    "domain": "Switch",
+    "component": "Switch/Router",
+    "analysisKeys": "Routing/BIN/DE39=92, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-818",
+    "title": "Switch - Délai excessif de résolution de route sur les transactions internationales Visa (Sur périmètre régional Agences)",
+    "domain": "Switch",
+    "component": "Switch/Router",
+    "analysisKeys": "Routing/BIN/DE39=92, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-819",
+    "title": "Switch - Bascule accidentelle du flux GAB sur la route de secours TPE aux capacités limitées (Sur périmètre régional Agences)",
+    "domain": "Switch",
+    "component": "Switch/Router",
+    "analysisKeys": "Routing/BIN/DE39=92, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-820",
+    "title": "Switch - Perte des tables de routage dynamiques suite à un redémarrage non planifié du switch (Sur périmètre régional Agences)",
+    "domain": "Switch",
+    "component": "Switch/Router",
+    "analysisKeys": "Routing/BIN/DE39=92, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-821",
+    "title": "Switch - Saturation de la file d attente des requêtes d autorisation en période de soldes (Sur périmètre régional Agences)",
+    "domain": "Switch",
+    "component": "Switch/Queue",
+    "analysisKeys": "Queue/FIFO/Drop, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-822",
+    "title": "Switch - Blocage de la file d attente provoqué par un message malformé bloquant (Poison Message) (Sur périmètre régional Agences)",
+    "domain": "Switch",
+    "component": "Switch/Queue",
+    "analysisKeys": "Queue/FIFO/Drop, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-823",
+    "title": "Switch - Perte de messages en transit suite à un dépassement du temps de rétention en file d attente (Sur périmètre régional Agences)",
+    "domain": "Switch",
+    "component": "Switch/Queue",
+    "analysisKeys": "Queue/FIFO/Drop, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-824",
+    "title": "Switch - Désynchronisation entre les files de requêtes 0200 et les files de réponses 0210 (Sur périmètre régional Agences)",
+    "domain": "Switch",
+    "component": "Switch/Queue",
+    "analysisKeys": "Queue/FIFO/Drop, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-825",
+    "title": "Switch - Dégradation des performances de la file d attente suite à un manque de threads de consommation (Sur périmètre régional Agences)",
+    "domain": "Switch",
+    "component": "Switch/Queue",
+    "analysisKeys": "Queue/FIFO/Drop, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-826",
+    "title": "Switch - Absence d émission du message de contre-passation 0400 après expiration du timer de réponse (Sur périmètre régional Agences)",
+    "domain": "Switch",
+    "component": "Switch/Reversal",
+    "analysisKeys": "0400/DE90/Timeout, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-827",
+    "title": "Switch - Rejet du message 0400 par l émetteur pour champ DE90 mal renseigné (Sur périmètre régional Agences)",
+    "domain": "Switch",
+    "component": "Switch/Reversal",
+    "analysisKeys": "0400/DE90/Timeout, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-828",
+    "title": "Switch - Contre-passation acceptée par l émetteur mais non prise en compte par le Core Banking (Sur périmètre régional Agences)",
+    "domain": "Switch",
+    "component": "Switch/Reversal",
+    "analysisKeys": "0400/DE90/Timeout, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-829",
+    "title": "Switch - Génération en boucle de messages de reversal 0400 pour la même transaction (Sur périmètre régional Agences)",
+    "domain": "Switch",
+    "component": "Switch/Reversal",
+    "analysisKeys": "0400/DE90/Timeout, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-830",
+    "title": "Switch - Conflit de séquence entre la réponse tardive 0210 et le message de reversal 0400 (Sur périmètre régional Agences)",
+    "domain": "Switch",
+    "component": "Switch/Reversal",
+    "analysisKeys": "0400/DE90/Timeout, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-831",
+    "title": "HSM/Crypto - Perte de liaison socket TCP entre le frontal d acquisition et le boîtier HSM Thales payShield (Sur périmètre régional Agences)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/HostLink",
+    "analysisKeys": "HSM/Socket/Error, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-832",
+    "title": "HSM/Crypto - Saturation du pool de connexions simultanées sur le boîtier cryptographique HSM (Sur périmètre régional Agences)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/HostLink",
+    "analysisKeys": "HSM/Socket/Error, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-833",
+    "title": "HSM/Crypto - Temps de réponse de calcul cryptographique supérieur à 800ms sur le HSM (Sur périmètre régional Agences)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/HostLink",
+    "analysisKeys": "HSM/Socket/Error, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-834",
+    "title": "HSM/Crypto - Bascule automatique en échec vers le HSM de secours suite à une désynchronisation de configuration (Sur périmètre régional Agences)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/HostLink",
+    "analysisKeys": "HSM/Socket/Error, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-835",
+    "title": "HSM/Crypto - Erreur de protocole de communication avec le HSM consécutive à une mise à jour logicielle (Sur périmètre régional Agences)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/HostLink",
+    "analysisKeys": "HSM/Socket/Error, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-836",
+    "title": "HSM/Crypto - Rejet systématique de vérification PIN sur les flux interbancaires avec DE39=55 (Sur périmètre régional Agences)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/ZPKEngine",
+    "analysisKeys": "ZPK/PINBlock/ISO-0, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-837",
+    "title": "HSM/Crypto - Erreur de parité lors de l échange dynamique de clé ZPK avec le réseau Visa (Sur périmètre régional Agences)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/ZPKEngine",
+    "analysisKeys": "ZPK/PINBlock/ISO-0, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-838",
+    "title": "HSM/Crypto - Corruption de la clé de transport de clé ZMK utilisée pour déchiffrer la nouvelle ZPK (Sur périmètre régional Agences)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/ZPKEngine",
+    "analysisKeys": "ZPK/PINBlock/ISO-0, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-839",
+    "title": "HSM/Crypto - Échec de translation de PIN Block d un format ISO-0 vers un format ISO-3 (Sur périmètre régional Agences)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/ZPKEngine",
+    "analysisKeys": "ZPK/PINBlock/ISO-0, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-840",
+    "title": "HSM/Crypto - Expiration de la clé de zone ZPK sans renouvellement automatique préalable (Sur périmètre régional Agences)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/ZPKEngine",
+    "analysisKeys": "ZPK/PINBlock/ISO-0, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-841",
+    "title": "HSM/Crypto - Rejet systématique de toutes les transactions à puce d une nouvelle série de cartes (DE39=05) (Sur périmètre régional Agences)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/ARQCVerification",
+    "analysisKeys": "MK-AC/ARQC/Tag9F26, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-842",
+    "title": "HSM/Crypto - Erreur de dérivation de clé de session EMV consécutive à un compteur ATC incohérent (Sur périmètre régional Agences)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/ARQCVerification",
+    "analysisKeys": "MK-AC/ARQC/Tag9F26, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-843",
+    "title": "HSM/Crypto - Échec de génération du cryptogramme d autorisation ARPC renvoyé à la carte (Sur périmètre régional Agences)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/ARQCVerification",
+    "analysisKeys": "MK-AC/ARQC/Tag9F26, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-844",
+    "title": "HSM/Crypto - Désaccord sur la méthode de calcul du cryptogramme dynamique entre la puce et l hôte (Sur périmètre régional Agences)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/ARQCVerification",
+    "analysisKeys": "MK-AC/ARQC/Tag9F26, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-845",
+    "title": "HSM/Crypto - Rejet de cryptogramme suite à une corruption du Tag 9F37 (Unpredictable Number) en transmission (Sur périmètre régional Agences)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/ARQCVerification",
+    "analysisKeys": "MK-AC/ARQC/Tag9F26, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-846",
+    "title": "Clearing - Rejet du fichier de compensation Visa Base II pour erreur de format d en-tête de lot (Sur périmètre régional Agences)",
+    "domain": "Clearing",
+    "component": "Clearing/Incoming",
+    "analysisKeys": "TC40/Incoming/File, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-847",
+    "title": "Clearing - Présence de transactions en double dans le fichier de compensation Mastercard IPM (Sur périmètre régional Agences)",
+    "domain": "Clearing",
+    "component": "Clearing/Incoming",
+    "analysisKeys": "TC40/Incoming/File, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-848",
+    "title": "Clearing - Échec d intégration du fichier de compensation GIMAC suite à un enregistrement corrompu (Sur périmètre régional Agences)",
+    "domain": "Clearing",
+    "component": "Clearing/Incoming",
+    "analysisKeys": "TC40/Incoming/File, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-849",
+    "title": "Clearing - Dépassement de la fenêtre horaire limite de transmission du fichier de clearing (Sur périmètre régional Agences)",
+    "domain": "Clearing",
+    "component": "Clearing/Incoming",
+    "analysisKeys": "TC40/Incoming/File, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-850",
+    "title": "Clearing - Incohérence entre les totaux financiers de contrôle et la somme réelle des enregistrements du fichier (Sur périmètre régional Agences)",
+    "domain": "Clearing",
+    "component": "Clearing/Incoming",
+    "analysisKeys": "TC40/Incoming/File, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-851",
+    "title": "Clearing - Transactions compensées sans correspondance dans la base des autorisations (Orphelines) (Sur périmètre régional Agences)",
+    "domain": "Clearing",
+    "component": "Clearing/Matching",
+    "analysisKeys": "RRN/Match/Suspense, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-852",
+    "title": "Clearing - Écart de montant entre l autorisation initiale et le règlement final en devise étrangère (Sur périmètre régional Agences)",
+    "domain": "Clearing",
+    "component": "Clearing/Matching",
+    "analysisKeys": "RRN/Match/Suspense, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-853",
+    "title": "Clearing - Double imputation comptable consécutive à une contestation traitée manuellement et automatiquement (Sur périmètre régional Agences)",
+    "domain": "Clearing",
+    "component": "Clearing/Matching",
+    "analysisKeys": "RRN/Match/Suspense, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-854",
+    "title": "Clearing - Suspense comptable persistant sur les transactions de pré-autorisation hôtelière non clôturées (Sur périmètre régional Agences)",
+    "domain": "Clearing",
+    "component": "Clearing/Matching",
+    "analysisKeys": "RRN/Match/Suspense, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-855",
+    "title": "Clearing - Incohérence de devise de règlement entre le compte de compensation Nostro et le compte marchand (Sur périmètre régional Agences)",
+    "domain": "Clearing",
+    "component": "Clearing/Matching",
+    "analysisKeys": "RRN/Match/Suspense, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-856",
+    "title": "Clearing - Rejet de dossier de contestation pour dépassement du délai réglementaire scheme (120 jours) (Sur périmètre régional Agences)",
+    "domain": "Clearing",
+    "component": "Clearing/Chargeback",
+    "analysisKeys": "Chargeback/Dispute/DE39, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-857",
+    "title": "Clearing - Forclusion d un recours en deuxième présentation (Representment) non notifié au commerçant (Sur périmètre régional Agences)",
+    "domain": "Clearing",
+    "component": "Clearing/Chargeback",
+    "analysisKeys": "Chargeback/Dispute/DE39, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-858",
+    "title": "Clearing - Débit indu du compte commerçant suite à un chargeback frauduleux non vérifié (Sur périmètre régional Agences)",
+    "domain": "Clearing",
+    "component": "Clearing/Chargeback",
+    "analysisKeys": "Chargeback/Dispute/DE39, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-859",
+    "title": "Clearing - Rejet du dossier de litige par la plateforme Visa Resolve Online (VROL) pour pièce jointe non lisible (Sur périmètre régional Agences)",
+    "domain": "Clearing",
+    "component": "Clearing/Chargeback",
+    "analysisKeys": "Chargeback/Dispute/DE39, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-860",
+    "title": "Clearing - Contestation client acceptée par la banque mais non transmise sur le réseau interbancaire (Sur périmètre régional Agences)",
+    "domain": "Clearing",
+    "component": "Clearing/Chargeback",
+    "analysisKeys": "Chargeback/Dispute/DE39, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-861",
+    "title": "E-Commerce - Échec d authentification 3D-Secure 2.2 sur les paiements e-commerce par carte internationale (Sur périmètre régional Agences)",
+    "domain": "E-Commerce",
+    "component": "3DS/MPI",
+    "analysisKeys": "3DS/MPI/Protocol, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-862",
+    "title": "E-Commerce - Rejet de transaction en authentification sans friction (Frictionless) forçant un challenge systématique (Sur périmètre régional Agences)",
+    "domain": "E-Commerce",
+    "component": "3DS/MPI",
+    "analysisKeys": "3DS/MPI/Protocol, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-863",
+    "title": "E-Commerce - Non-réception du code OTP par SMS lors de l étape de challenge 3D-Secure (Sur périmètre régional Agences)",
+    "domain": "E-Commerce",
+    "component": "3DS/MPI",
+    "analysisKeys": "3DS/MPI/Protocol, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-864",
+    "title": "E-Commerce - Incompatibilité de version de protocole 3D-Secure entre le marchand et l émetteur de la carte (Sur périmètre régional Agences)",
+    "domain": "E-Commerce",
+    "component": "3DS/MPI",
+    "analysisKeys": "3DS/MPI/Protocol, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-865",
+    "title": "E-Commerce - Échec d affichage de la page de challenge 3D-Secure dans l iframe du site marchand (Sur périmètre régional Agences)",
+    "domain": "E-Commerce",
+    "component": "3DS/MPI",
+    "analysisKeys": "3DS/MPI/Protocol, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-866",
+    "title": "E-Commerce - Erreur HTTP 500 sur l API de paiement e-commerce lors de la validation du panier (Sur périmètre régional Agences)",
+    "domain": "E-Commerce",
+    "component": "PaymentGateway/API",
+    "analysisKeys": "REST/Webhook/HTTP500, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-867",
+    "title": "E-Commerce - Non-réception des webhooks de confirmation de paiement par le site e-commerce du commerçant (Sur périmètre régional Agences)",
+    "domain": "E-Commerce",
+    "component": "PaymentGateway/API",
+    "analysisKeys": "REST/Webhook/HTTP500, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-868",
+    "title": "E-Commerce - Double débit client consécutif à des clics répétitifs sur le bouton de paiement en ligne (Sur périmètre régional Agences)",
+    "domain": "E-Commerce",
+    "component": "PaymentGateway/API",
+    "analysisKeys": "REST/Webhook/HTTP500, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-869",
+    "title": "E-Commerce - Rejet de transaction en ligne pour montant non conforme aux limites du contrat marchand VAD (Sur périmètre régional Agences)",
+    "domain": "E-Commerce",
+    "component": "PaymentGateway/API",
+    "analysisKeys": "REST/Webhook/HTTP500, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-870",
+    "title": "E-Commerce - Attaque par force brute sur l API de vérification de validité de carte (Card Testing Attack) (Sur périmètre régional Agences)",
+    "domain": "E-Commerce",
+    "component": "PaymentGateway/API",
+    "analysisKeys": "REST/Webhook/HTTP500, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-871",
+    "title": "Mobile/API - Échec d alimentation de portefeuille électronique mobile depuis une carte bancaire (Sur périmètre régional Agences)",
+    "domain": "Mobile/API",
+    "component": "Mobile/WalletAPI",
+    "analysisKeys": "Wallet/API/TopUp, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-872",
+    "title": "Mobile/API - Désynchronisation de solde entre le portefeuille mobile et le compte bancaire support (Sur périmètre régional Agences)",
+    "domain": "Mobile/API",
+    "component": "Mobile/WalletAPI",
+    "analysisKeys": "Wallet/API/TopUp, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-873",
+    "title": "Mobile/API - Rejet de transaction de virement instantané de compte à wallet pour plafond journalier atteint (Sur périmètre régional Agences)",
+    "domain": "Mobile/API",
+    "component": "Mobile/WalletAPI",
+    "analysisKeys": "Wallet/API/TopUp, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-874",
+    "title": "Mobile/API - Échec d enrôlement de la carte bancaire dans le service de paiement sans contact sur smartphone (Sur périmètre régional Agences)",
+    "domain": "Mobile/API",
+    "component": "Mobile/WalletAPI",
+    "analysisKeys": "Wallet/API/TopUp, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-875",
+    "title": "Mobile/API - Rejet de paiement par QR Code marchand EMVCo suite à un QR Code altéré ou expiré (Sur périmètre régional Agences)",
+    "domain": "Mobile/API",
+    "component": "Mobile/WalletAPI",
+    "analysisKeys": "Wallet/API/TopUp, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-876",
+    "title": "GAB - Échec chiffrement PIN Pad EPP suite à désynchronisation KSN DUKPT (En clôture comptable mensuelle)",
+    "domain": "GAB",
+    "component": "ATM/EPP",
+    "analysisKeys": "DE52/KSN, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-877",
+    "title": "GAB - Erreur de parité de clé TMK injectée sur clavier EPP (En clôture comptable mensuelle)",
+    "domain": "GAB",
+    "component": "ATM/EPP",
+    "analysisKeys": "DE52/KSN, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-878",
+    "title": "GAB - Timeout communication série RS232/USB entre PC GAB et EPP (En clôture comptable mensuelle)",
+    "domain": "GAB",
+    "component": "ATM/EPP",
+    "analysisKeys": "DE52/KSN, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-879",
+    "title": "GAB - Tentative d écoute ou tamper détecté sur clavier chiffrant EPP (En clôture comptable mensuelle)",
+    "domain": "GAB",
+    "component": "ATM/EPP",
+    "analysisKeys": "DE52/KSN, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-880",
+    "title": "GAB - Incompatibilité du format de PIN Block configuré sur EPP (Format ISO-1 au lieu de ISO-0) (En clôture comptable mensuelle)",
+    "domain": "GAB",
+    "component": "ATM/EPP",
+    "analysisKeys": "DE52/KSN, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-881",
+    "title": "GAB - Bourrage billets dans le module de transport vertical CDM (En clôture comptable mensuelle)",
+    "domain": "GAB",
+    "component": "ATM/Dispenser",
+    "analysisKeys": "CDM/Sensor/DE4, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-882",
+    "title": "GAB - Divergence de comptage entre capteur d extraction et capteur de dépose shutter (En clôture comptable mensuelle)",
+    "domain": "GAB",
+    "component": "ATM/Dispenser",
+    "analysisKeys": "CDM/Sensor/DE4, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-883",
+    "title": "GAB - Cassette de rejet pleine provoquant l arrêt du service retrait (En clôture comptable mensuelle)",
+    "domain": "GAB",
+    "component": "ATM/Dispenser",
+    "analysisKeys": "CDM/Sensor/DE4, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-884",
+    "title": "GAB - Défaillance moteur pas-à-pas de l extracteur à friction (En clôture comptable mensuelle)",
+    "domain": "GAB",
+    "component": "ATM/Dispenser",
+    "analysisKeys": "CDM/Sensor/DE4, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-885",
+    "title": "GAB - Dépassement de délai d ouverture du volet de présentation des billets (Shutter Timeout) (En clôture comptable mensuelle)",
+    "domain": "GAB",
+    "component": "ATM/Dispenser",
+    "analysisKeys": "CDM/Sensor/DE4, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-886",
+    "title": "GAB - Rejet systématique des cartes à puce pour lecture contact défaillante (Fallback forcé) (En clôture comptable mensuelle)",
+    "domain": "GAB",
+    "component": "ATM/CardReader",
+    "analysisKeys": "EMV/IC/Track2, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-887",
+    "title": "GAB - Capture intempestive de carte suite à arrêt brutal de l alimentation électrique (En clôture comptable mensuelle)",
+    "domain": "GAB",
+    "component": "ATM/CardReader",
+    "analysisKeys": "EMV/IC/Track2, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-888",
+    "title": "GAB - Détection anormale par le capteur anti-skimming entraînant la mise hors service (En clôture comptable mensuelle)",
+    "domain": "GAB",
+    "component": "ATM/CardReader",
+    "analysisKeys": "EMV/IC/Track2, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-889",
+    "title": "GAB - Non-restitution de carte suite à timeout d oubli porteur non paramétré (En clôture comptable mensuelle)",
+    "domain": "GAB",
+    "component": "ATM/CardReader",
+    "analysisKeys": "EMV/IC/Track2, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-890",
+    "title": "GAB - Erreur de lecture piste magnétique sur carte non hybride (Track 2 error) (En clôture comptable mensuelle)",
+    "domain": "GAB",
+    "component": "ATM/CardReader",
+    "analysisKeys": "EMV/IC/Track2, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-891",
+    "title": "GAB - Déconnexion intempestive de l agent de supervision NDC/DDC (En clôture comptable mensuelle)",
+    "domain": "GAB",
+    "component": "ATM/Supervisor",
+    "analysisKeys": "NDC/Status/DE41, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-892",
+    "title": "GAB - Saturation du disque local de l automate par les journaux de trace détaillés (En clôture comptable mensuelle)",
+    "domain": "GAB",
+    "component": "ATM/Supervisor",
+    "analysisKeys": "NDC/Status/DE41, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-893",
+    "title": "GAB - Erreur de téléchargement des états d écrans graphiques et bannières publicitaires (En clôture comptable mensuelle)",
+    "domain": "GAB",
+    "component": "ATM/Supervisor",
+    "analysisKeys": "NDC/Status/DE41, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-894",
+    "title": "GAB - Blocage de l automate en mode supervision après intervention de maintenance sans clôture (En clôture comptable mensuelle)",
+    "domain": "GAB",
+    "component": "ATM/Supervisor",
+    "analysisKeys": "NDC/Status/DE41, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-895",
+    "title": "GAB - Incohérence des compteurs d inventaire d espèces entre le superviseur et le serveur central (En clôture comptable mensuelle)",
+    "domain": "GAB",
+    "component": "ATM/Supervisor",
+    "analysisKeys": "NDC/Status/DE41, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-896",
+    "title": "GAB - Blocage de l accepteur de billets en liasses lors d un versement client (En clôture comptable mensuelle)",
+    "domain": "GAB",
+    "component": "ATM/Depository",
+    "analysisKeys": "BRM/Envelope/DE4, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-897",
+    "title": "GAB - Faux signal de contrefaçon rejetant des billets conformes neufs (En clôture comptable mensuelle)",
+    "domain": "GAB",
+    "component": "ATM/Depository",
+    "analysisKeys": "BRM/Envelope/DE4, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-898",
+    "title": "GAB - Échec d impression du ticket de justificatif de dépôt d espèces (En clôture comptable mensuelle)",
+    "domain": "GAB",
+    "component": "ATM/Depository",
+    "analysisKeys": "BRM/Envelope/DE4, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-899",
+    "title": "GAB - Cassette de recyclage de billets saturée bloquant la fonction de restitution (En clôture comptable mensuelle)",
+    "domain": "GAB",
+    "component": "ATM/Depository",
+    "analysisKeys": "BRM/Envelope/DE4, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-900",
+    "title": "GAB - Erreur d identification du compte destinataire lors d un versement sans carte (En clôture comptable mensuelle)",
+    "domain": "GAB",
+    "component": "ATM/Depository",
+    "analysisKeys": "BRM/Envelope/DE4, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-901",
+    "title": "TPE - Rejet de transaction sans contact par défaillance de validation du Tag 9F26 (ARQC) (En clôture comptable mensuelle)",
+    "domain": "TPE",
+    "component": "POS/Kernel",
+    "analysisKeys": "DE55/TLV/TVR, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-902",
+    "title": "TPE - Incompatibilité AID Visa Electron / CB sur terminal marchand autonome (En clôture comptable mensuelle)",
+    "domain": "TPE",
+    "component": "POS/Kernel",
+    "analysisKeys": "DE55/TLV/TVR, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-903",
+    "title": "TPE - Transaction refusée avec code TVR indiquant une vérification de porteur échouée (En clôture comptable mensuelle)",
+    "domain": "TPE",
+    "component": "POS/Kernel",
+    "analysisKeys": "DE55/TLV/TVR, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-904",
+    "title": "TPE - Blocage de la transaction sans contact au-dessus du plafond sans bascule contact (Force Contact) (En clôture comptable mensuelle)",
+    "domain": "TPE",
+    "component": "POS/Kernel",
+    "analysisKeys": "DE55/TLV/TVR, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-905",
+    "title": "TPE - Erreur de décodage des tags TLV étendus dans la trame 0200 émise par le TPE (En clôture comptable mensuelle)",
+    "domain": "TPE",
+    "component": "POS/Kernel",
+    "analysisKeys": "DE55/TLV/TVR, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-906",
+    "title": "TPE - Échec de télécollecte nocturne automatique des transactions marchandes (En clôture comptable mensuelle)",
+    "domain": "TPE",
+    "component": "POS/Gateway",
+    "analysisKeys": "0500/Batch/TPE, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-907",
+    "title": "TPE - Doublon de télécollecte entraînant un double crédit sur le compte du commerçant (En clôture comptable mensuelle)",
+    "domain": "TPE",
+    "component": "POS/Gateway",
+    "analysisKeys": "0500/Batch/TPE, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-908",
+    "title": "TPE - Fichier de télécollecte tronqué suite à coupure réseau en cours d émission (En clôture comptable mensuelle)",
+    "domain": "TPE",
+    "component": "POS/Gateway",
+    "analysisKeys": "0500/Batch/TPE, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-909",
+    "title": "TPE - Rejet du lot de télécollecte pour incohérence du total de contrôle (Checksum Batch) (En clôture comptable mensuelle)",
+    "domain": "TPE",
+    "component": "POS/Gateway",
+    "analysisKeys": "0500/Batch/TPE, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-910",
+    "title": "TPE - Délai d expiration du certificat de la passerelle de télécollecte marchand (En clôture comptable mensuelle)",
+    "domain": "TPE",
+    "component": "POS/Gateway",
+    "analysisKeys": "0500/Batch/TPE, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-911",
+    "title": "TPE - Perte de signal radio GPRS/4G sur un lot de TPE déployés en zone commerciale (En clôture comptable mensuelle)",
+    "domain": "TPE",
+    "component": "POS/GPRS",
+    "analysisKeys": "APN/SIM/GPRS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-912",
+    "title": "TPE - Refus d enregistrement réseau pour carte SIM monétique expirée ou suspendue (En clôture comptable mensuelle)",
+    "domain": "TPE",
+    "component": "POS/GPRS",
+    "analysisKeys": "APN/SIM/GPRS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-913",
+    "title": "TPE - Temps de réponse d autorisation supérieur à 45 secondes sur liaison cellulaire (En clôture comptable mensuelle)",
+    "domain": "TPE",
+    "component": "POS/GPRS",
+    "analysisKeys": "APN/SIM/GPRS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-914",
+    "title": "TPE - Changement d antenne relais provoquant la coupure du tunnel VPN IPSec du TPE (En clôture comptable mensuelle)",
+    "domain": "TPE",
+    "component": "POS/GPRS",
+    "analysisKeys": "APN/SIM/GPRS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-915",
+    "title": "TPE - Interférence radio empêchant l accroche du réseau 4G forçant une bascule 2G instable (En clôture comptable mensuelle)",
+    "domain": "TPE",
+    "component": "POS/GPRS",
+    "analysisKeys": "APN/SIM/GPRS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-916",
+    "title": "TPE - Échec de mise à jour des tables de routage BIN via le serveur TMS (En clôture comptable mensuelle)",
+    "domain": "TPE",
+    "component": "POS/ParamDownload",
+    "analysisKeys": "TMS/Config/BIN, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-917",
+    "title": "TPE - Corruption de la table des devises après injection d un profil erroné (En clôture comptable mensuelle)",
+    "domain": "TPE",
+    "component": "POS/ParamDownload",
+    "analysisKeys": "TMS/Config/BIN, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-918",
+    "title": "TPE - Dépassement de capacité mémoire lors du chargement de la nouvelle liste d opposition (En clôture comptable mensuelle)",
+    "domain": "TPE",
+    "component": "POS/ParamDownload",
+    "analysisKeys": "TMS/Config/BIN, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-919",
+    "title": "TPE - Blocage de l application monétique suite à injection d un certificat marchand révoqué (En clôture comptable mensuelle)",
+    "domain": "TPE",
+    "component": "POS/ParamDownload",
+    "analysisKeys": "TMS/Config/BIN, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-920",
+    "title": "TPE - Désynchronisation de l horodatage du TPE avec le serveur de temps NTP bancaire (En clôture comptable mensuelle)",
+    "domain": "TPE",
+    "component": "POS/ParamDownload",
+    "analysisKeys": "TMS/Config/BIN, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-921",
+    "title": "Carte - Rejets massifs avec DE39=54 consécutifs à une date d expiration mal calculée (En clôture comptable mensuelle)",
+    "domain": "Carte",
+    "component": "CMS/Lifecycle",
+    "analysisKeys": "DE39=54/CMS/Card, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-922",
+    "title": "Carte - Carte signalée expirée sur le switch alors qu elle est valide sur le CMS (En clôture comptable mensuelle)",
+    "domain": "Carte",
+    "component": "CMS/Lifecycle",
+    "analysisKeys": "DE39=54/CMS/Card, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-923",
+    "title": "Carte - Rejet de cartes nouvellement délivrées non reconnues lors de la première utilisation (En clôture comptable mensuelle)",
+    "domain": "Carte",
+    "component": "CMS/Lifecycle",
+    "analysisKeys": "DE39=54/CMS/Card, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-924",
+    "title": "Carte - Opposition préventive automatique déclenchée sur un lot de cartes réémises (En clôture comptable mensuelle)",
+    "domain": "Carte",
+    "component": "CMS/Lifecycle",
+    "analysisKeys": "DE39=54/CMS/Card, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-925",
+    "title": "Carte - Défaut de renouvellement des cartes arrivant à échéance en fin de mois (En clôture comptable mensuelle)",
+    "domain": "Carte",
+    "component": "CMS/Lifecycle",
+    "analysisKeys": "DE39=54/CMS/Card, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-926",
+    "title": "Carte - Rejet avec DE39=61 pour dépassement de plafond hebdomadaire non remis à zéro (En clôture comptable mensuelle)",
+    "domain": "Carte",
+    "component": "CMS/Limits",
+    "analysisKeys": "DE39=61/Plafond/CMS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-927",
+    "title": "Carte - Incohérence de plafond entre la devise du compte et la devise de calcul du CMS (En clôture comptable mensuelle)",
+    "domain": "Carte",
+    "component": "CMS/Limits",
+    "analysisKeys": "DE39=61/Plafond/CMS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-928",
+    "title": "Carte - Blocage pour plafond de retrait atteint alors que le solde disponible est largement suffisant (En clôture comptable mensuelle)",
+    "domain": "Carte",
+    "component": "CMS/Limits",
+    "analysisKeys": "DE39=61/Plafond/CMS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-929",
+    "title": "Carte - Compteur de retraits hors-réseau bloqué après une seule transaction à l étranger (En clôture comptable mensuelle)",
+    "domain": "Carte",
+    "component": "CMS/Limits",
+    "analysisKeys": "DE39=61/Plafond/CMS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-930",
+    "title": "Carte - Mise à jour d augmentation de plafond demandée en agence non propagée en temps réel (En clôture comptable mensuelle)",
+    "domain": "Carte",
+    "component": "CMS/Limits",
+    "analysisKeys": "DE39=61/Plafond/CMS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-931",
+    "title": "Carte - Rejet de transaction légitime avec DE39=62 pour porteur en déplacement international (En clôture comptable mensuelle)",
+    "domain": "Carte",
+    "component": "CMS/GeoControl",
+    "analysisKeys": "DE39=62/GeoBlock/CMS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-932",
+    "title": "Carte - Blocage systématique des transactions e-commerce auprès de sites hébergés en Europe (En clôture comptable mensuelle)",
+    "domain": "Carte",
+    "component": "CMS/GeoControl",
+    "analysisKeys": "DE39=62/GeoBlock/CMS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-933",
+    "title": "Carte - Autorisation acceptée dans un pays soumis à embargo bancaire suite à table de pays obsolète (En clôture comptable mensuelle)",
+    "domain": "Carte",
+    "component": "CMS/GeoControl",
+    "analysisKeys": "DE39=62/GeoBlock/CMS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-934",
+    "title": "Carte - Rejet de transaction en zone frontalière captée par un relais de télécommunication étranger (En clôture comptable mensuelle)",
+    "domain": "Carte",
+    "component": "CMS/GeoControl",
+    "analysisKeys": "DE39=62/GeoBlock/CMS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-935",
+    "title": "Carte - Déblocage géographique temporaire non désactivé automatiquement après la date de fin (En clôture comptable mensuelle)",
+    "domain": "Carte",
+    "component": "CMS/GeoControl",
+    "analysisKeys": "DE39=62/GeoBlock/CMS, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-936",
+    "title": "Carte - Blocage carte avec DE39=75 suite à 3 tentatives de PIN infructueuses au GAB (En clôture comptable mensuelle)",
+    "domain": "Carte",
+    "component": "CMS/PINCounter",
+    "analysisKeys": "DE39=75/PIN/Retry, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-937",
+    "title": "Carte - Compteur de PIN offline de la puce non réaligné après réinitialisation sur le serveur (En clôture comptable mensuelle)",
+    "domain": "Carte",
+    "component": "CMS/PINCounter",
+    "analysisKeys": "DE39=75/PIN/Retry, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-938",
+    "title": "Carte - Faux rejet DE39=75 consécutif à une anomalie de lecture de compteur sur puce dégradée (En clôture comptable mensuelle)",
+    "domain": "Carte",
+    "component": "CMS/PINCounter",
+    "analysisKeys": "DE39=75/PIN/Retry, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-939",
+    "title": "Carte - Désynchronisation entre le compteur PIN central et le compteur physique de la carte (En clôture comptable mensuelle)",
+    "domain": "Carte",
+    "component": "CMS/PINCounter",
+    "analysisKeys": "DE39=75/PIN/Retry, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-940",
+    "title": "Carte - Tentative de forçage de code PIN par attaque par dictionnaire détectée et neutralisée (En clôture comptable mensuelle)",
+    "domain": "Carte",
+    "component": "CMS/PINCounter",
+    "analysisKeys": "DE39=75/PIN/Retry, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-941",
+    "title": "Switch - Rejet massif avec DE39=92 pour nouvelle plage de BIN non référencée dans la table de routage (En clôture comptable mensuelle)",
+    "domain": "Switch",
+    "component": "Switch/Router",
+    "analysisKeys": "Routing/BIN/DE39=92, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-942",
+    "title": "Switch - Boucle de routage infinie entre le switch régional et le frontal national (En clôture comptable mensuelle)",
+    "domain": "Switch",
+    "component": "Switch/Router",
+    "analysisKeys": "Routing/BIN/DE39=92, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-943",
+    "title": "Switch - Délai excessif de résolution de route sur les transactions internationales Visa (En clôture comptable mensuelle)",
+    "domain": "Switch",
+    "component": "Switch/Router",
+    "analysisKeys": "Routing/BIN/DE39=92, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-944",
+    "title": "Switch - Bascule accidentelle du flux GAB sur la route de secours TPE aux capacités limitées (En clôture comptable mensuelle)",
+    "domain": "Switch",
+    "component": "Switch/Router",
+    "analysisKeys": "Routing/BIN/DE39=92, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-945",
+    "title": "Switch - Perte des tables de routage dynamiques suite à un redémarrage non planifié du switch (En clôture comptable mensuelle)",
+    "domain": "Switch",
+    "component": "Switch/Router",
+    "analysisKeys": "Routing/BIN/DE39=92, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-946",
+    "title": "Switch - Saturation de la file d attente des requêtes d autorisation en période de soldes (En clôture comptable mensuelle)",
+    "domain": "Switch",
+    "component": "Switch/Queue",
+    "analysisKeys": "Queue/FIFO/Drop, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-947",
+    "title": "Switch - Blocage de la file d attente provoqué par un message malformé bloquant (Poison Message) (En clôture comptable mensuelle)",
+    "domain": "Switch",
+    "component": "Switch/Queue",
+    "analysisKeys": "Queue/FIFO/Drop, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-948",
+    "title": "Switch - Perte de messages en transit suite à un dépassement du temps de rétention en file d attente (En clôture comptable mensuelle)",
+    "domain": "Switch",
+    "component": "Switch/Queue",
+    "analysisKeys": "Queue/FIFO/Drop, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-949",
+    "title": "Switch - Désynchronisation entre les files de requêtes 0200 et les files de réponses 0210 (En clôture comptable mensuelle)",
+    "domain": "Switch",
+    "component": "Switch/Queue",
+    "analysisKeys": "Queue/FIFO/Drop, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-950",
+    "title": "Switch - Dégradation des performances de la file d attente suite à un manque de threads de consommation (En clôture comptable mensuelle)",
+    "domain": "Switch",
+    "component": "Switch/Queue",
+    "analysisKeys": "Queue/FIFO/Drop, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-951",
+    "title": "Switch - Absence d émission du message de contre-passation 0400 après expiration du timer de réponse (En clôture comptable mensuelle)",
+    "domain": "Switch",
+    "component": "Switch/Reversal",
+    "analysisKeys": "0400/DE90/Timeout, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-952",
+    "title": "Switch - Rejet du message 0400 par l émetteur pour champ DE90 mal renseigné (En clôture comptable mensuelle)",
+    "domain": "Switch",
+    "component": "Switch/Reversal",
+    "analysisKeys": "0400/DE90/Timeout, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-953",
+    "title": "Switch - Contre-passation acceptée par l émetteur mais non prise en compte par le Core Banking (En clôture comptable mensuelle)",
+    "domain": "Switch",
+    "component": "Switch/Reversal",
+    "analysisKeys": "0400/DE90/Timeout, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-954",
+    "title": "Switch - Génération en boucle de messages de reversal 0400 pour la même transaction (En clôture comptable mensuelle)",
+    "domain": "Switch",
+    "component": "Switch/Reversal",
+    "analysisKeys": "0400/DE90/Timeout, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-955",
+    "title": "Switch - Conflit de séquence entre la réponse tardive 0210 et le message de reversal 0400 (En clôture comptable mensuelle)",
+    "domain": "Switch",
+    "component": "Switch/Reversal",
+    "analysisKeys": "0400/DE90/Timeout, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-956",
+    "title": "HSM/Crypto - Perte de liaison socket TCP entre le frontal d acquisition et le boîtier HSM Thales payShield (En clôture comptable mensuelle)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/HostLink",
+    "analysisKeys": "HSM/Socket/Error, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-957",
+    "title": "HSM/Crypto - Saturation du pool de connexions simultanées sur le boîtier cryptographique HSM (En clôture comptable mensuelle)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/HostLink",
+    "analysisKeys": "HSM/Socket/Error, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-958",
+    "title": "HSM/Crypto - Temps de réponse de calcul cryptographique supérieur à 800ms sur le HSM (En clôture comptable mensuelle)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/HostLink",
+    "analysisKeys": "HSM/Socket/Error, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-959",
+    "title": "HSM/Crypto - Bascule automatique en échec vers le HSM de secours suite à une désynchronisation de configuration (En clôture comptable mensuelle)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/HostLink",
+    "analysisKeys": "HSM/Socket/Error, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-960",
+    "title": "HSM/Crypto - Erreur de protocole de communication avec le HSM consécutive à une mise à jour logicielle (En clôture comptable mensuelle)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/HostLink",
+    "analysisKeys": "HSM/Socket/Error, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-961",
+    "title": "HSM/Crypto - Rejet systématique de vérification PIN sur les flux interbancaires avec DE39=55 (En clôture comptable mensuelle)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/ZPKEngine",
+    "analysisKeys": "ZPK/PINBlock/ISO-0, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-962",
+    "title": "HSM/Crypto - Erreur de parité lors de l échange dynamique de clé ZPK avec le réseau Visa (En clôture comptable mensuelle)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/ZPKEngine",
+    "analysisKeys": "ZPK/PINBlock/ISO-0, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-963",
+    "title": "HSM/Crypto - Corruption de la clé de transport de clé ZMK utilisée pour déchiffrer la nouvelle ZPK (En clôture comptable mensuelle)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/ZPKEngine",
+    "analysisKeys": "ZPK/PINBlock/ISO-0, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-964",
+    "title": "HSM/Crypto - Échec de translation de PIN Block d un format ISO-0 vers un format ISO-3 (En clôture comptable mensuelle)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/ZPKEngine",
+    "analysisKeys": "ZPK/PINBlock/ISO-0, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-965",
+    "title": "HSM/Crypto - Expiration de la clé de zone ZPK sans renouvellement automatique préalable (En clôture comptable mensuelle)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/ZPKEngine",
+    "analysisKeys": "ZPK/PINBlock/ISO-0, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-966",
+    "title": "HSM/Crypto - Rejet systématique de toutes les transactions à puce d une nouvelle série de cartes (DE39=05) (En clôture comptable mensuelle)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/ARQCVerification",
+    "analysisKeys": "MK-AC/ARQC/Tag9F26, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-967",
+    "title": "HSM/Crypto - Erreur de dérivation de clé de session EMV consécutive à un compteur ATC incohérent (En clôture comptable mensuelle)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/ARQCVerification",
+    "analysisKeys": "MK-AC/ARQC/Tag9F26, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-968",
+    "title": "HSM/Crypto - Échec de génération du cryptogramme d autorisation ARPC renvoyé à la carte (En clôture comptable mensuelle)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/ARQCVerification",
+    "analysisKeys": "MK-AC/ARQC/Tag9F26, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-969",
+    "title": "HSM/Crypto - Désaccord sur la méthode de calcul du cryptogramme dynamique entre la puce et l hôte (En clôture comptable mensuelle)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/ARQCVerification",
+    "analysisKeys": "MK-AC/ARQC/Tag9F26, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-970",
+    "title": "HSM/Crypto - Rejet de cryptogramme suite à une corruption du Tag 9F37 (Unpredictable Number) en transmission (En clôture comptable mensuelle)",
+    "domain": "HSM/Crypto",
+    "component": "HSM/ARQCVerification",
+    "analysisKeys": "MK-AC/ARQC/Tag9F26, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-971",
+    "title": "Clearing - Rejet du fichier de compensation Visa Base II pour erreur de format d en-tête de lot (En clôture comptable mensuelle)",
+    "domain": "Clearing",
+    "component": "Clearing/Incoming",
+    "analysisKeys": "TC40/Incoming/File, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-972",
+    "title": "Clearing - Présence de transactions en double dans le fichier de compensation Mastercard IPM (En clôture comptable mensuelle)",
+    "domain": "Clearing",
+    "component": "Clearing/Incoming",
+    "analysisKeys": "TC40/Incoming/File, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-973",
+    "title": "Clearing - Échec d intégration du fichier de compensation GIMAC suite à un enregistrement corrompu (En clôture comptable mensuelle)",
+    "domain": "Clearing",
+    "component": "Clearing/Incoming",
+    "analysisKeys": "TC40/Incoming/File, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-974",
+    "title": "Clearing - Dépassement de la fenêtre horaire limite de transmission du fichier de clearing (En clôture comptable mensuelle)",
+    "domain": "Clearing",
+    "component": "Clearing/Incoming",
+    "analysisKeys": "TC40/Incoming/File, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-975",
+    "title": "Clearing - Incohérence entre les totaux financiers de contrôle et la somme réelle des enregistrements du fichier (En clôture comptable mensuelle)",
+    "domain": "Clearing",
+    "component": "Clearing/Incoming",
+    "analysisKeys": "TC40/Incoming/File, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-976",
+    "title": "Clearing - Transactions compensées sans correspondance dans la base des autorisations (Orphelines) (En clôture comptable mensuelle)",
+    "domain": "Clearing",
+    "component": "Clearing/Matching",
+    "analysisKeys": "RRN/Match/Suspense, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-977",
+    "title": "Clearing - Écart de montant entre l autorisation initiale et le règlement final en devise étrangère (En clôture comptable mensuelle)",
+    "domain": "Clearing",
+    "component": "Clearing/Matching",
+    "analysisKeys": "RRN/Match/Suspense, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-978",
+    "title": "Clearing - Double imputation comptable consécutive à une contestation traitée manuellement et automatiquement (En clôture comptable mensuelle)",
+    "domain": "Clearing",
+    "component": "Clearing/Matching",
+    "analysisKeys": "RRN/Match/Suspense, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-979",
+    "title": "Clearing - Suspense comptable persistant sur les transactions de pré-autorisation hôtelière non clôturées (En clôture comptable mensuelle)",
+    "domain": "Clearing",
+    "component": "Clearing/Matching",
+    "analysisKeys": "RRN/Match/Suspense, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-980",
+    "title": "Clearing - Incohérence de devise de règlement entre le compte de compensation Nostro et le compte marchand (En clôture comptable mensuelle)",
+    "domain": "Clearing",
+    "component": "Clearing/Matching",
+    "analysisKeys": "RRN/Match/Suspense, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-981",
+    "title": "Clearing - Rejet de dossier de contestation pour dépassement du délai réglementaire scheme (120 jours) (En clôture comptable mensuelle)",
+    "domain": "Clearing",
+    "component": "Clearing/Chargeback",
+    "analysisKeys": "Chargeback/Dispute/DE39, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-982",
+    "title": "Clearing - Forclusion d un recours en deuxième présentation (Representment) non notifié au commerçant (En clôture comptable mensuelle)",
+    "domain": "Clearing",
+    "component": "Clearing/Chargeback",
+    "analysisKeys": "Chargeback/Dispute/DE39, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-983",
+    "title": "Clearing - Débit indu du compte commerçant suite à un chargeback frauduleux non vérifié (En clôture comptable mensuelle)",
+    "domain": "Clearing",
+    "component": "Clearing/Chargeback",
+    "analysisKeys": "Chargeback/Dispute/DE39, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-984",
+    "title": "Clearing - Rejet du dossier de litige par la plateforme Visa Resolve Online (VROL) pour pièce jointe non lisible (En clôture comptable mensuelle)",
+    "domain": "Clearing",
+    "component": "Clearing/Chargeback",
+    "analysisKeys": "Chargeback/Dispute/DE39, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-985",
+    "title": "Clearing - Contestation client acceptée par la banque mais non transmise sur le réseau interbancaire (En clôture comptable mensuelle)",
+    "domain": "Clearing",
+    "component": "Clearing/Chargeback",
+    "analysisKeys": "Chargeback/Dispute/DE39, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-986",
+    "title": "E-Commerce - Échec d authentification 3D-Secure 2.2 sur les paiements e-commerce par carte internationale (En clôture comptable mensuelle)",
+    "domain": "E-Commerce",
+    "component": "3DS/MPI",
+    "analysisKeys": "3DS/MPI/Protocol, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-987",
+    "title": "E-Commerce - Rejet de transaction en authentification sans friction (Frictionless) forçant un challenge systématique (En clôture comptable mensuelle)",
+    "domain": "E-Commerce",
+    "component": "3DS/MPI",
+    "analysisKeys": "3DS/MPI/Protocol, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-988",
+    "title": "E-Commerce - Non-réception du code OTP par SMS lors de l étape de challenge 3D-Secure (En clôture comptable mensuelle)",
+    "domain": "E-Commerce",
+    "component": "3DS/MPI",
+    "analysisKeys": "3DS/MPI/Protocol, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-989",
+    "title": "E-Commerce - Incompatibilité de version de protocole 3D-Secure entre le marchand et l émetteur de la carte (En clôture comptable mensuelle)",
+    "domain": "E-Commerce",
+    "component": "3DS/MPI",
+    "analysisKeys": "3DS/MPI/Protocol, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-990",
+    "title": "E-Commerce - Échec d affichage de la page de challenge 3D-Secure dans l iframe du site marchand (En clôture comptable mensuelle)",
+    "domain": "E-Commerce",
+    "component": "3DS/MPI",
+    "analysisKeys": "3DS/MPI/Protocol, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-991",
+    "title": "E-Commerce - Erreur HTTP 500 sur l API de paiement e-commerce lors de la validation du panier (En clôture comptable mensuelle)",
+    "domain": "E-Commerce",
+    "component": "PaymentGateway/API",
+    "analysisKeys": "REST/Webhook/HTTP500, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-992",
+    "title": "E-Commerce - Non-réception des webhooks de confirmation de paiement par le site e-commerce du commerçant (En clôture comptable mensuelle)",
+    "domain": "E-Commerce",
+    "component": "PaymentGateway/API",
+    "analysisKeys": "REST/Webhook/HTTP500, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-993",
+    "title": "E-Commerce - Double débit client consécutif à des clics répétitifs sur le bouton de paiement en ligne (En clôture comptable mensuelle)",
+    "domain": "E-Commerce",
+    "component": "PaymentGateway/API",
+    "analysisKeys": "REST/Webhook/HTTP500, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-994",
+    "title": "E-Commerce - Rejet de transaction en ligne pour montant non conforme aux limites du contrat marchand VAD (En clôture comptable mensuelle)",
+    "domain": "E-Commerce",
+    "component": "PaymentGateway/API",
+    "analysisKeys": "REST/Webhook/HTTP500, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-995",
+    "title": "E-Commerce - Attaque par force brute sur l API de vérification de validité de carte (Card Testing Attack) (En clôture comptable mensuelle)",
+    "domain": "E-Commerce",
+    "component": "PaymentGateway/API",
+    "analysisKeys": "REST/Webhook/HTTP500, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-996",
+    "title": "Mobile/API - Échec d alimentation de portefeuille électronique mobile depuis une carte bancaire (En clôture comptable mensuelle)",
+    "domain": "Mobile/API",
+    "component": "Mobile/WalletAPI",
+    "analysisKeys": "Wallet/API/TopUp, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-997",
+    "title": "Mobile/API - Désynchronisation de solde entre le portefeuille mobile et le compte bancaire support (En clôture comptable mensuelle)",
+    "domain": "Mobile/API",
+    "component": "Mobile/WalletAPI",
+    "analysisKeys": "Wallet/API/TopUp, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-998",
+    "title": "Mobile/API - Rejet de transaction de virement instantané de compte à wallet pour plafond journalier atteint (En clôture comptable mensuelle)",
+    "domain": "Mobile/API",
+    "component": "Mobile/WalletAPI",
+    "analysisKeys": "Wallet/API/TopUp, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-999",
+    "title": "Mobile/API - Échec d enrôlement de la carte bancaire dans le service de paiement sans contact sur smartphone (En clôture comptable mensuelle)",
+    "domain": "Mobile/API",
+    "component": "Mobile/WalletAPI",
+    "analysisKeys": "Wallet/API/TopUp, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
+  },
+  {
+    "reference": "INC-1000",
+    "title": "Mobile/API - Rejet de paiement par QR Code marchand EMVCo suite à un QR Code altéré ou expiré (En clôture comptable mensuelle)",
+    "domain": "Mobile/API",
+    "component": "Mobile/WalletAPI",
+    "analysisKeys": "Wallet/API/TopUp, STAN, RRN",
+    "knowledgeStatus": "VALIDATED"
   }
 ];

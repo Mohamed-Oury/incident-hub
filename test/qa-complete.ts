@@ -11,6 +11,7 @@ import { CBS_4GL_KEYWORDS_CHEAT_SHEET } from "../modules/cbs/cbs-4gl-cheat-sheet
 
 import { MONETIQUE_GRADES, MONETIQUE_LESSONS } from "../modules/training-monetique/data";
 import { MONETIQUE_EXAMS } from "../modules/training-monetique/exams-data";
+import { referenceIncidents } from "../app/reference-incidents";
 
 function runQaAll() {
   console.log("=================================================");
@@ -49,6 +50,7 @@ function runQaAll() {
   const sampleEj = `14:32:01 ATM: GAB-AG-04 TID: 88776655\n14:32:03 CARD INSERTED: PAN 4970101234567890\n14:32:17 HARDWARE ERROR: STACKER JAMMED IN TRANSPORT MODULE\n14:32:25 TRANSACTION ABORTED - SHUTTER NOT OPENED`;
   const ejRes = parseAtmElectronicJournal(sampleEj);
   assert("TEST 6 - Analyseur Journal GAB (ATM EJ)", ejRes.summary.hasBillJam && ejRes.summary.claimAdvice === "FAVORABLE_RECREDIT", `Bourrage détecté, Décision ${ejRes.summary.claimAdvice}`);
+  assert("TEST 6 bis - Base de Connaissance Monétique (1000 incidents résolus)", referenceIncidents.length === 1000 && referenceIncidents.every(i => i.knowledgeStatus === "VALIDATED"), `${referenceIncidents.length} incidents monétiques capitalisés & résolus`);
 
   // --- VOLET CBS AMPLITUDE FONDAMENTAL ---
   assert("TEST 7 - Référentiel Domaines Métier CBS", CBS_DOMAINS.length === 8, `${CBS_DOMAINS.length} domaines métier Amplitude`);
