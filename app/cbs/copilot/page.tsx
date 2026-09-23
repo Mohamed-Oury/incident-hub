@@ -205,7 +205,6 @@ END MAIN`);
         const data = await res.json();
         setSavedProjects((prev) => [data.project || project, ...prev.filter((p) => p.id !== project.id)]);
       } else {
-        // Enregistrement local si l'API retourne une erreur
         setSavedProjects((prev) => [project, ...prev.filter((p) => p.id !== project.id)]);
       }
     } catch (err) {
@@ -370,48 +369,55 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
     <div
       style={{
         minHeight: "100vh",
-        backgroundColor: "#090d16",
-        color: "#f1f5f9",
+        backgroundColor: "#f8fafc",
+        color: "#0f172a",
         fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
         display: "flex",
         flexDirection: "column",
+        overflowX: "hidden",
+        width: "100%",
+        boxSizing: "border-box",
       }}
     >
       {/* ========================================================================= */}
-      {/* 1. TOPBAR DÉDIÉE : RETOUR CBS, BRANDING, STATUS BD, ACTIONS DE PERSISTANCE */}
+      {/* 1. TOPBAR CLAIRE : RETOUR CBS, BRANDING, STATUS BD, ACTIONS DE PERSISTANCE */}
       {/* ========================================================================= */}
       <header
         style={{
-          height: "64px",
-          backgroundColor: "#0d1424",
-          borderBottom: "1px solid #1e293b",
-          padding: "0 1.5rem",
+          minHeight: "64px",
+          backgroundColor: "#ffffff",
+          borderBottom: "1px solid #e2e8f0",
+          padding: "0.75rem 1.5rem",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
+          flexWrap: "wrap",
+          gap: "1rem",
           position: "sticky",
           top: 0,
           zIndex: 100,
-          boxShadow: "0 4px 12px rgba(0,0,0,0.4)",
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)",
+          boxSizing: "border-box",
+          width: "100%",
         }}
       >
         {/* Bouton de retour vers CBS Amplitude & Logo */}
-        <div style={{ display: "flex", alignItems: "center", gap: "1.25rem" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "1rem", flexWrap: "wrap" }}>
           <Link
             href="/cbs"
             style={{
               display: "flex",
               alignItems: "center",
               gap: "0.5rem",
-              padding: "0.45rem 0.85rem",
-              backgroundColor: "rgba(30, 41, 59, 0.8)",
-              color: "#38bdf8",
-              border: "1px solid #334155",
+              padding: "0.45rem 0.9rem",
+              backgroundColor: "#f1f5f9",
+              color: "#0284c7",
+              border: "1px solid #cbd5e1",
               borderRadius: "8px",
               fontSize: "0.85rem",
-              fontWeight: 600,
+              fontWeight: 700,
               textDecoration: "none",
-              transition: "all 0.2s ease",
+              transition: "all 0.15s ease",
             }}
             title="Quitter l'atelier et revenir au portail Core Banking Amplitude"
           >
@@ -419,21 +425,21 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
             <span>Retour CBS Amplitude</span>
           </Link>
 
-          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-            <span style={{ fontSize: "1.5rem" }}>🤖</span>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+            <span style={{ fontSize: "1.6rem" }}>🤖</span>
             <div>
-              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                <span style={{ fontWeight: 800, fontSize: "1.05rem", color: "#f8fafc", letterSpacing: "0.02em" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexWrap: "wrap" }}>
+                <span style={{ fontWeight: 800, fontSize: "1.05rem", color: "#0f172a" }}>
                   CBS 4GL Development Copilot
                 </span>
                 <span
                   style={{
-                    backgroundColor: "#1e1b4b",
-                    color: "#a5b4fc",
-                    border: "1px solid #4338ca",
+                    backgroundColor: "#eff6ff",
+                    color: "#1d4ed8",
+                    border: "1px solid #bfdbfe",
                     fontSize: "0.68rem",
                     fontWeight: 700,
-                    padding: "2px 6px",
+                    padding: "2px 8px",
                     borderRadius: "6px",
                     textTransform: "uppercase",
                   }}
@@ -441,15 +447,15 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                   Studio Dédié
                 </span>
               </div>
-              <div style={{ fontSize: "0.75rem", color: "#94a3b8" }}>
-                Amplitude v11 / v12 • Informix 4GL &amp; Oracle SGBD • Ingénierie &amp; Build
+              <div style={{ fontSize: "0.75rem", color: "#64748b" }}>
+                Amplitude v11 / v12 • Informix 4GL &amp; Oracle SGBD • Conception &amp; Build
               </div>
             </div>
           </div>
         </div>
 
         {/* Indicateur SGBD & Actions projet */}
-        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", flexWrap: "wrap" }}>
           {/* Badge BD active */}
           <div
             onClick={() => setActiveTab("DICTIONARY")}
@@ -457,18 +463,19 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
               display: "flex",
               alignItems: "center",
               gap: "0.45rem",
-              backgroundColor: "rgba(6, 78, 59, 0.4)",
-              border: "1px solid #059669",
+              backgroundColor: "#ecfdf5",
+              border: "1px solid #a7f3d0",
               borderRadius: "6px",
-              padding: "0.35rem 0.75rem",
+              padding: "0.4rem 0.75rem",
               fontSize: "0.75rem",
-              color: "#34d399",
+              color: "#047857",
               cursor: "pointer",
+              fontWeight: 600,
             }}
             title="Cliquez pour consulter le dictionnaire des tables Amplitude"
           >
-            <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#10b981", boxShadow: "0 0 8px #10b981" }} />
-            <span style={{ fontWeight: 600 }}>Dictionnaire BK* Connecté ({CBS_SCHEMA_TABLES.length} tables)</span>
+            <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#10b981" }} />
+            <span>Dictionnaire BK* Connecté ({CBS_SCHEMA_TABLES.length} tables)</span>
           </div>
 
           {/* Bouton Mes Projets */}
@@ -478,9 +485,9 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
               display: "flex",
               alignItems: "center",
               gap: "0.4rem",
-              backgroundColor: "#1e293b",
-              color: "#e2e8f0",
-              border: "1px solid #334155",
+              backgroundColor: "#ffffff",
+              color: "#334155",
+              border: "1px solid #cbd5e1",
               borderRadius: "6px",
               padding: "0.45rem 0.85rem",
               fontSize: "0.82rem",
@@ -499,7 +506,7 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
               display: "flex",
               alignItems: "center",
               gap: "0.4rem",
-              backgroundColor: "#0369a1",
+              backgroundColor: "#0284c7",
               color: "#ffffff",
               border: "none",
               borderRadius: "6px",
@@ -507,6 +514,7 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
               fontSize: "0.82rem",
               fontWeight: 600,
               cursor: "pointer",
+              boxShadow: "0 1px 2px rgba(2, 132, 199, 0.2)",
             }}
           >
             <span>💾</span>
@@ -528,6 +536,7 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
               fontSize: "0.82rem",
               fontWeight: 600,
               cursor: "pointer",
+              boxShadow: "0 1px 2px rgba(79, 70, 229, 0.2)",
             }}
           >
             <span>📦</span>
@@ -544,14 +553,14 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
             top: "76px",
             right: "24px",
             zIndex: 999,
-            backgroundColor: "#065f46",
-            border: "1px solid #10b981",
+            backgroundColor: "#047857",
+            border: "1px solid #059669",
             color: "#ffffff",
             padding: "0.6rem 1.2rem",
             borderRadius: "8px",
             fontSize: "0.85rem",
             fontWeight: 600,
-            boxShadow: "0 8px 24px rgba(0,0,0,0.5)",
+            boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
           }}
         >
           {saveStatus}
@@ -559,16 +568,18 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
       )}
 
       {/* ========================================================================= */}
-      {/* 2. BARRE D'ONGLETS DU WORKSPACE STUDIO */}
+      {/* 2. BARRE D'ONGLETS RESPONSIVE (AVEC RETOUR À LA LIGNE POUR ÉVITER LE DÉPASSEMENT) */}
       {/* ========================================================================= */}
       <nav
         style={{
-          backgroundColor: "#0b1120",
-          borderBottom: "1px solid #1e293b",
-          padding: "0.5rem 1.5rem",
+          backgroundColor: "#ffffff",
+          borderBottom: "1px solid #e2e8f0",
+          padding: "0.6rem 1.5rem",
           display: "flex",
-          gap: "0.4rem",
-          overflowX: "auto",
+          flexWrap: "wrap",
+          gap: "0.45rem",
+          boxSizing: "border-box",
+          width: "100%",
         }}
       >
         {[
@@ -579,30 +590,48 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
           { key: "SQL", label: "5. Requêtes SQL & Index", icon: "🗄️" },
           { key: "TESTS", label: "6. Jeux de Tests", icon: "🧪" },
           { key: "DELIVERY", label: "7. Dossier de Livraison", icon: "🚀" },
-          { key: "FAILURE", label: "8. Point de Rupture RUN", icon: "🚨", color: "#f87171" },
-          { key: "REVIEW", label: "9. Revue de Code 4GL", icon: "🔍", color: "#fbbf24" },
-          { key: "DICTIONARY", label: "10. Dictionnaire BD Amplitude", icon: "🗃️", color: "#34d399" },
+          { key: "FAILURE", label: "8. Point de Rupture RUN", icon: "🚨", alert: true },
+          { key: "REVIEW", label: "9. Revue de Code 4GL", icon: "🔍", warning: true },
+          { key: "DICTIONARY", label: "10. Dictionnaire BD", icon: "🗃️", success: true },
         ].map((tab) => {
           const isActive = activeTab === tab.key;
+          let bg = isActive ? "#0284c7" : "#f8fafc";
+          let color = isActive ? "#ffffff" : "#475569";
+          let border = isActive ? "1px solid #0284c7" : "1px solid #e2e8f0";
+
+          if (!isActive && tab.alert) {
+            color = "#b91c1c";
+            bg = "#fef2f2";
+            border = "1px solid #fecaca";
+          } else if (!isActive && tab.warning) {
+            color = "#b45309";
+            bg = "#fffbeb";
+            border = "1px solid #fde68a";
+          } else if (!isActive && tab.success) {
+            color = "#047857";
+            bg = "#ecfdf5";
+            border = "1px solid #a7f3d0";
+          }
+
           return (
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key as any)}
               style={{
-                display: "flex",
+                display: "inline-flex",
                 alignItems: "center",
                 gap: "0.4rem",
-                padding: "0.5rem 0.9rem",
+                padding: "0.45rem 0.85rem",
                 borderRadius: "6px",
-                border: "none",
+                border,
                 fontSize: "0.82rem",
-                fontWeight: isActive ? 700 : 500,
-                backgroundColor: isActive ? "#1e293b" : "transparent",
-                color: isActive ? "#38bdf8" : tab.color || "#94a3b8",
-                borderBottom: isActive ? "2px solid #38bdf8" : "2px solid transparent",
+                fontWeight: isActive ? 700 : 600,
+                backgroundColor: bg,
+                color,
                 cursor: "pointer",
-                whiteSpace: "nowrap",
                 transition: "all 0.15s ease",
+                whiteSpace: "nowrap",
+                boxShadow: isActive ? "0 2px 4px rgba(2,132,199,0.2)" : "none",
               }}
             >
               <span>{tab.icon}</span>
@@ -613,61 +642,82 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
       </nav>
 
       {/* ========================================================================= */}
-      {/* 3. CORPS DE L'ESPACE DE TRAVAIL (CONTENU DYNAMIQUE SELON L'ONGLET ACTIF) */}
+      {/* 3. CORPS DE L'ESPACE DE TRAVAIL (THEME CLAIR SANS AUCUN DÉPASSEMENT) */}
       {/* ========================================================================= */}
-      <main style={{ flex: 1, padding: "1.5rem", maxWidth: "1600px", width: "100%", margin: "0 auto" }}>
-        
+      <main
+        style={{
+          flex: 1,
+          padding: "1.5rem",
+          maxWidth: "1600px",
+          width: "100%",
+          margin: "0 auto",
+          boxSizing: "border-box",
+          overflowX: "hidden",
+        }}
+      >
         {/* --------------------------------------------------------------------- */}
         {/* ONGLET 1 : EXPRESSION DU BESOIN AVEC PRÉRÉGLAGES BANCAIRES */}
         {/* --------------------------------------------------------------------- */}
         {activeTab === "NEED" && (
-          <div style={{ display: "grid", gridTemplateColumns: "1.3fr 1fr", gap: "1.5rem" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(360px, 1fr))", gap: "1.5rem", width: "100%", boxSizing: "border-box" }}>
             {/* Formulaire de saisie */}
-            <div style={{ backgroundColor: "#111827", borderRadius: "10px", border: "1px solid #1f2937", padding: "1.5rem" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
-                <div>
-                  <h3 style={{ fontSize: "1.15rem", fontWeight: 700, margin: 0, color: "#f9fafb" }}>
-                    Paramètres du Besoin Métier Core Banking
-                  </h3>
-                  <p style={{ fontSize: "0.8rem", color: "#9ca3af", margin: "4px 0 0 0" }}>
-                    Précisez le besoin fonctionnel. Le Copilot générera le code 4GL, le masque .per et les requêtes SQL correspondants.
-                  </p>
-                </div>
+            <div
+              style={{
+                backgroundColor: "#ffffff",
+                borderRadius: "12px",
+                border: "1px solid #e2e8f0",
+                padding: "1.5rem",
+                boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)",
+                minWidth: 0,
+                boxSizing: "border-box",
+              }}
+            >
+              <div style={{ marginBottom: "1rem" }}>
+                <h3 style={{ fontSize: "1.2rem", fontWeight: 700, margin: 0, color: "#0f172a" }}>
+                  Paramètres du Besoin Métier Core Banking
+                </h3>
+                <p style={{ fontSize: "0.85rem", color: "#64748b", margin: "4px 0 0 0" }}>
+                  Précisez le besoin fonctionnel. Le Copilot générera le code 4GL, le masque .per et les requêtes SQL correspondants.
+                </p>
               </div>
 
               {/* Barre de pré-réglages rapides */}
               <div style={{ marginBottom: "1.25rem" }}>
-                <span style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.05em", color: "#6b7280", fontWeight: 700 }}>
-                  Modèles Prédéfinis Amplitude :
+                <span style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.05em", color: "#64748b", fontWeight: 700 }}>
+                  MODÈLES PRÉDÉFINIS AMPLITUDE :
                 </span>
                 <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", marginTop: "0.4rem" }}>
-                  {PRESET_NEEDS.map((preset, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => handleSelectPreset(preset)}
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "0.35rem",
-                        padding: "0.35rem 0.65rem",
-                        backgroundColor: needInput.title === preset.input.title ? "#1e3a8a" : "#1f2937",
-                        color: needInput.title === preset.input.title ? "#93c5fd" : "#d1d5db",
-                        border: needInput.title === preset.input.title ? "1px solid #3b82f6" : "1px solid #374151",
-                        borderRadius: "6px",
-                        fontSize: "0.75rem",
-                        cursor: "pointer",
-                      }}
-                    >
-                      <span>{preset.icon}</span>
-                      <span>{preset.label}</span>
-                    </button>
-                  ))}
+                  {PRESET_NEEDS.map((preset, idx) => {
+                    const isSelected = needInput.title === preset.input.title;
+                    return (
+                      <button
+                        key={idx}
+                        onClick={() => handleSelectPreset(preset)}
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "0.35rem",
+                          padding: "0.35rem 0.75rem",
+                          backgroundColor: isSelected ? "#eff6ff" : "#f8fafc",
+                          color: isSelected ? "#1d4ed8" : "#334155",
+                          border: isSelected ? "1px solid #3b82f6" : "1px solid #e2e8f0",
+                          borderRadius: "6px",
+                          fontSize: "0.78rem",
+                          fontWeight: isSelected ? 700 : 500,
+                          cursor: "pointer",
+                        }}
+                      >
+                        <span>{preset.icon}</span>
+                        <span>{preset.label}</span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
-              <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "1rem", width: "100%", boxSizing: "border-box" }}>
                 <div>
-                  <label style={{ fontSize: "0.8rem", fontWeight: 600, color: "#d1d5db", display: "block", marginBottom: "4px" }}>
+                  <label style={{ fontSize: "0.82rem", fontWeight: 600, color: "#334155", display: "block", marginBottom: "4px" }}>
                     Titre du besoin ou de la User Story *
                   </label>
                   <input
@@ -676,18 +726,19 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                     onChange={(e) => setNeedInput({ ...needInput, title: e.target.value })}
                     style={{
                       width: "100%",
-                      backgroundColor: "#0d1117",
-                      border: "1px solid #30363d",
+                      backgroundColor: "#ffffff",
+                      border: "1px solid #cbd5e1",
                       borderRadius: "6px",
                       padding: "0.6rem 0.8rem",
-                      color: "#f0f6fc",
-                      fontSize: "0.85rem",
+                      color: "#0f172a",
+                      fontSize: "0.88rem",
+                      boxSizing: "border-box",
                     }}
                   />
                 </div>
 
                 <div>
-                  <label style={{ fontSize: "0.8rem", fontWeight: 600, color: "#d1d5db", display: "block", marginBottom: "4px" }}>
+                  <label style={{ fontSize: "0.82rem", fontWeight: 600, color: "#334155", display: "block", marginBottom: "4px" }}>
                     Description fonctionnelle détaillée *
                   </label>
                   <textarea
@@ -696,20 +747,21 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                     onChange={(e) => setNeedInput({ ...needInput, functionalDescription: e.target.value })}
                     style={{
                       width: "100%",
-                      backgroundColor: "#0d1117",
-                      border: "1px solid #30363d",
+                      backgroundColor: "#ffffff",
+                      border: "1px solid #cbd5e1",
                       borderRadius: "6px",
                       padding: "0.6rem 0.8rem",
-                      color: "#f0f6fc",
-                      fontSize: "0.85rem",
+                      color: "#0f172a",
+                      fontSize: "0.88rem",
                       fontFamily: "inherit",
+                      boxSizing: "border-box",
                     }}
                   />
                 </div>
 
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-                  <div>
-                    <label style={{ fontSize: "0.8rem", fontWeight: 600, color: "#d1d5db", display: "block", marginBottom: "4px" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "1rem", width: "100%" }}>
+                  <div style={{ minWidth: 0 }}>
+                    <label style={{ fontSize: "0.82rem", fontWeight: 600, color: "#334155", display: "block", marginBottom: "4px" }}>
                       Domaine Métier Amplitude
                     </label>
                     <input
@@ -718,18 +770,19 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                       onChange={(e) => setNeedInput({ ...needInput, bankingDomain: e.target.value })}
                       style={{
                         width: "100%",
-                        backgroundColor: "#0d1117",
-                        border: "1px solid #30363d",
+                        backgroundColor: "#ffffff",
+                        border: "1px solid #cbd5e1",
                         borderRadius: "6px",
                         padding: "0.55rem 0.75rem",
-                        color: "#f0f6fc",
+                        color: "#0f172a",
                         fontSize: "0.85rem",
+                        boxSizing: "border-box",
                       }}
                     />
                   </div>
 
-                  <div>
-                    <label style={{ fontSize: "0.8rem", fontWeight: 600, color: "#d1d5db", display: "block", marginBottom: "4px" }}>
+                  <div style={{ minWidth: 0 }}>
+                    <label style={{ fontSize: "0.82rem", fontWeight: 600, color: "#334155", display: "block", marginBottom: "4px" }}>
                       Profils Utilisateurs Cibles
                     </label>
                     <input
@@ -738,19 +791,20 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                       onChange={(e) => setNeedInput({ ...needInput, targetUsers: e.target.value })}
                       style={{
                         width: "100%",
-                        backgroundColor: "#0d1117",
-                        border: "1px solid #30363d",
+                        backgroundColor: "#ffffff",
+                        border: "1px solid #cbd5e1",
                         borderRadius: "6px",
                         padding: "0.55rem 0.75rem",
-                        color: "#f0f6fc",
+                        color: "#0f172a",
                         fontSize: "0.85rem",
+                        boxSizing: "border-box",
                       }}
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label style={{ fontSize: "0.8rem", fontWeight: 600, color: "#d1d5db", display: "block", marginBottom: "4px" }}>
+                  <label style={{ fontSize: "0.82rem", fontWeight: 600, color: "#334155", display: "block", marginBottom: "4px" }}>
                     Règles Métier connues &amp; Contrôles de Sécurité
                   </label>
                   <textarea
@@ -759,19 +813,20 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                     onChange={(e) => setNeedInput({ ...needInput, knownBusinessRules: e.target.value })}
                     style={{
                       width: "100%",
-                      backgroundColor: "#0d1117",
-                      border: "1px solid #30363d",
+                      backgroundColor: "#ffffff",
+                      border: "1px solid #cbd5e1",
                       borderRadius: "6px",
                       padding: "0.55rem 0.75rem",
-                      color: "#f0f6fc",
+                      color: "#0f172a",
                       fontSize: "0.85rem",
+                      boxSizing: "border-box",
                     }}
                   />
                 </div>
 
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-                  <div>
-                    <label style={{ fontSize: "0.8rem", fontWeight: 600, color: "#d1d5db", display: "block", marginBottom: "4px" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "1rem", width: "100%" }}>
+                  <div style={{ minWidth: 0 }}>
+                    <label style={{ fontSize: "0.82rem", fontWeight: 600, color: "#334155", display: "block", marginBottom: "4px" }}>
                       Données en Entrée
                     </label>
                     <input
@@ -780,18 +835,19 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                       onChange={(e) => setNeedInput({ ...needInput, inputData: e.target.value })}
                       style={{
                         width: "100%",
-                        backgroundColor: "#0d1117",
-                        border: "1px solid #30363d",
+                        backgroundColor: "#ffffff",
+                        border: "1px solid #cbd5e1",
                         borderRadius: "6px",
                         padding: "0.55rem 0.75rem",
-                        color: "#f0f6fc",
+                        color: "#0f172a",
                         fontSize: "0.85rem",
+                        boxSizing: "border-box",
                       }}
                     />
                   </div>
 
-                  <div>
-                    <label style={{ fontSize: "0.8rem", fontWeight: 600, color: "#d1d5db", display: "block", marginBottom: "4px" }}>
+                  <div style={{ minWidth: 0 }}>
+                    <label style={{ fontSize: "0.82rem", fontWeight: 600, color: "#334155", display: "block", marginBottom: "4px" }}>
                       Données en Sortie Attendues
                     </label>
                     <input
@@ -800,20 +856,21 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                       onChange={(e) => setNeedInput({ ...needInput, expectedOutput: e.target.value })}
                       style={{
                         width: "100%",
-                        backgroundColor: "#0d1117",
-                        border: "1px solid #30363d",
+                        backgroundColor: "#ffffff",
+                        border: "1px solid #cbd5e1",
                         borderRadius: "6px",
                         padding: "0.55rem 0.75rem",
-                        color: "#f0f6fc",
+                        color: "#0f172a",
                         fontSize: "0.85rem",
+                        boxSizing: "border-box",
                       }}
                     />
                   </div>
                 </div>
 
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-                  <div>
-                    <label style={{ fontSize: "0.8rem", fontWeight: 600, color: "#d1d5db", display: "block", marginBottom: "4px" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "1rem", width: "100%" }}>
+                  <div style={{ minWidth: 0 }}>
+                    <label style={{ fontSize: "0.82rem", fontWeight: 600, color: "#334155", display: "block", marginBottom: "4px" }}>
                       Version Core Banking Amplitude
                     </label>
                     <select
@@ -821,12 +878,13 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                       onChange={(e) => setNeedInput({ ...needInput, amplitudeVersion: e.target.value as any })}
                       style={{
                         width: "100%",
-                        backgroundColor: "#0d1117",
-                        border: "1px solid #30363d",
+                        backgroundColor: "#ffffff",
+                        border: "1px solid #cbd5e1",
                         borderRadius: "6px",
                         padding: "0.55rem 0.75rem",
-                        color: "#f0f6fc",
+                        color: "#0f172a",
                         fontSize: "0.85rem",
+                        boxSizing: "border-box",
                       }}
                     >
                       <option value="v10.x">Amplitude v10.x (Informix natif)</option>
@@ -836,8 +894,8 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                     </select>
                   </div>
 
-                  <div>
-                    <label style={{ fontSize: "0.8rem", fontWeight: 600, color: "#d1d5db", display: "block", marginBottom: "4px" }}>
+                  <div style={{ minWidth: 0 }}>
+                    <label style={{ fontSize: "0.82rem", fontWeight: 600, color: "#334155", display: "block", marginBottom: "4px" }}>
                       Environnement SGBD &amp; OS
                     </label>
                     <select
@@ -845,12 +903,13 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                       onChange={(e) => setNeedInput({ ...needInput, technicalEnvironment: e.target.value as any })}
                       style={{
                         width: "100%",
-                        backgroundColor: "#0d1117",
-                        border: "1px solid #30363d",
+                        backgroundColor: "#ffffff",
+                        border: "1px solid #cbd5e1",
                         borderRadius: "6px",
                         padding: "0.55rem 0.75rem",
-                        color: "#f0f6fc",
+                        color: "#0f172a",
                         fontSize: "0.85rem",
+                        boxSizing: "border-box",
                       }}
                     >
                       <option value="Informix / AIX">Informix Dynamic Server / IBM AIX</option>
@@ -864,11 +923,11 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                   type="button"
                   onClick={handleGeneratePlan}
                   style={{
-                    backgroundColor: "#2563eb",
+                    backgroundColor: "#0284c7",
                     color: "#ffffff",
                     border: "none",
                     borderRadius: "8px",
-                    padding: "0.75rem 1.25rem",
+                    padding: "0.8rem 1.25rem",
                     fontSize: "0.95rem",
                     fontWeight: 700,
                     cursor: "pointer",
@@ -877,7 +936,7 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                     justifyContent: "center",
                     gap: "0.6rem",
                     marginTop: "0.5rem",
-                    boxShadow: "0 4px 12px rgba(37,99,235,0.3)",
+                    boxShadow: "0 2px 6px rgba(2, 132, 199, 0.3)",
                   }}
                 >
                   <span>⚡</span>
@@ -887,13 +946,21 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
             </div>
 
             {/* Panneau d'informations & Table d'assistance */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "1rem", minWidth: 0, boxSizing: "border-box" }}>
               {/* Carte Méthodologie Amplitude */}
-              <div style={{ backgroundColor: "#111827", borderRadius: "10px", border: "1px solid #1f2937", padding: "1.25rem" }}>
-                <h4 style={{ fontSize: "0.95rem", fontWeight: 700, margin: "0 0 0.5rem 0", color: "#38bdf8" }}>
+              <div
+                style={{
+                  backgroundColor: "#ffffff",
+                  borderRadius: "12px",
+                  border: "1px solid #e2e8f0",
+                  padding: "1.25rem",
+                  boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)",
+                }}
+              >
+                <h4 style={{ fontSize: "0.95rem", fontWeight: 700, margin: "0 0 0.5rem 0", color: "#0369a1" }}>
                   📐 Méthodologie de Conception Amplitude
                 </h4>
-                <ul style={{ margin: 0, paddingLeft: "1.25rem", fontSize: "0.82rem", color: "#cbd5e1", lineHeight: "1.5" }}>
+                <ul style={{ margin: 0, paddingLeft: "1.25rem", fontSize: "0.82rem", color: "#334155", lineHeight: "1.6" }}>
                   <li><strong>Modèle Relationnel :</strong> Tables maîtresses BK* (BKCPT pour les comptes, BKCLI pour les tiers, BKTRA pour les transactions).</li>
                   <li><strong>Contrôle Transactions :</strong> Encadrer les écritures DML par <code>BEGIN WORK</code> / <code>COMMIT WORK</code> avec <code>WHENEVER ERROR CONTINUE</code>.</li>
                   <li><strong>Conventions 4GL :</strong> Déclaration obligatoire des variables avec <code>DEFINE</code>, normalisation des codes retours (0=Succès, &gt;0=Erreur).</li>
@@ -902,14 +969,22 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
               </div>
 
               {/* Carte Tables Clés Liées */}
-              <div style={{ backgroundColor: "#111827", borderRadius: "10px", border: "1px solid #1f2937", padding: "1.25rem" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
-                  <h4 style={{ fontSize: "0.95rem", fontWeight: 700, margin: 0, color: "#34d399" }}>
+              <div
+                style={{
+                  backgroundColor: "#ffffff",
+                  borderRadius: "12px",
+                  border: "1px solid #e2e8f0",
+                  padding: "1.25rem",
+                  boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)",
+                }}
+              >
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem", flexWrap: "wrap", gap: "0.5rem" }}>
+                  <h4 style={{ fontSize: "0.95rem", fontWeight: 700, margin: 0, color: "#047857" }}>
                     🗃️ Tables Amplitude Maîtresses
                   </h4>
                   <button
                     onClick={() => setActiveTab("DICTIONARY")}
-                    style={{ background: "none", border: "none", color: "#38bdf8", fontSize: "0.75rem", cursor: "pointer", textDecoration: "underline" }}
+                    style={{ background: "none", border: "none", color: "#0284c7", fontSize: "0.78rem", cursor: "pointer", fontWeight: 600, textDecoration: "underline" }}
                   >
                     Voir toutes les tables →
                   </button>
@@ -924,9 +999,9 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                       }}
                       style={{
                         padding: "0.6rem 0.8rem",
-                        backgroundColor: "#0d1117",
-                        border: "1px solid #30363d",
-                        borderRadius: "6px",
+                        backgroundColor: "#f8fafc",
+                        border: "1px solid #e2e8f0",
+                        borderRadius: "8px",
                         cursor: "pointer",
                         display: "flex",
                         justifyContent: "space-between",
@@ -934,10 +1009,10 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                       }}
                     >
                       <div>
-                        <span style={{ fontWeight: 700, color: "#f3f4f6", fontSize: "0.85rem" }}>{t.tableName}</span>
-                        <span style={{ fontSize: "0.75rem", color: "#9ca3af", marginLeft: "0.5rem" }}>({t.module})</span>
+                        <span style={{ fontWeight: 700, color: "#0f172a", fontSize: "0.85rem" }}>{t.tableName}</span>
+                        <span style={{ fontSize: "0.75rem", color: "#64748b", marginLeft: "0.5rem" }}>({t.module})</span>
                       </div>
-                      <span style={{ fontSize: "0.72rem", color: "#60a5fa", backgroundColor: "#1e3a8a", padding: "2px 6px", borderRadius: "4px" }}>
+                      <span style={{ fontSize: "0.72rem", color: "#1d4ed8", backgroundColor: "#eff6ff", border: "1px solid #bfdbfe", padding: "2px 6px", borderRadius: "4px", fontWeight: 600 }}>
                         PK: {t.primaryKey.join(", ")}
                       </span>
                     </div>
@@ -952,18 +1027,18 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
         {/* ONGLET 2 : SOUS-TÂCHES & ANALYSE FONCTIONNELLE */}
         {/* --------------------------------------------------------------------- */}
         {activeTab === "TASKS" && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem", width: "100%", boxSizing: "border-box" }}>
             {/* Synthèse fonctionnelle */}
-            <div style={{ backgroundColor: "#111827", borderRadius: "10px", border: "1px solid #1f2937", padding: "1.5rem" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1rem" }}>
+            <div style={{ backgroundColor: "#ffffff", borderRadius: "12px", border: "1px solid #e2e8f0", padding: "1.5rem", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1rem", flexWrap: "wrap", gap: "1rem" }}>
                 <div>
-                  <span style={{ fontSize: "0.75rem", color: "#38bdf8", textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 700 }}>
+                  <span style={{ fontSize: "0.75rem", color: "#0284c7", textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 700 }}>
                     SYNTHÈSE TECHNIQUE &amp; FONCTIONNELLE
                   </span>
-                  <h3 style={{ fontSize: "1.25rem", fontWeight: 700, margin: "4px 0", color: "#f8fafc" }}>
+                  <h3 style={{ fontSize: "1.25rem", fontWeight: 700, margin: "4px 0", color: "#0f172a" }}>
                     {generatedPlan.analysis.summary}
                   </h3>
-                  <p style={{ fontSize: "0.85rem", color: "#cbd5e1", margin: 0 }}>
+                  <p style={{ fontSize: "0.88rem", color: "#475569", margin: 0 }}>
                     {generatedPlan.analysis.businessObjective}
                   </p>
                 </div>
@@ -984,28 +1059,28 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                 </button>
               </div>
 
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1rem", marginTop: "1rem" }}>
-                <div style={{ backgroundColor: "#0d1117", padding: "0.85rem", borderRadius: "8px", border: "1px solid #21262d" }}>
-                  <div style={{ fontSize: "0.75rem", color: "#9ca3af", fontWeight: 700, marginBottom: "0.4rem" }}>PRÉCONDITIONS CBS</div>
-                  <ul style={{ margin: 0, paddingLeft: "1.1rem", fontSize: "0.8rem", color: "#e2e8f0" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1rem", marginTop: "1rem" }}>
+                <div style={{ backgroundColor: "#f8fafc", padding: "0.85rem", borderRadius: "8px", border: "1px solid #e2e8f0" }}>
+                  <div style={{ fontSize: "0.75rem", color: "#64748b", fontWeight: 700, marginBottom: "0.4rem" }}>PRÉCONDITIONS CBS</div>
+                  <ul style={{ margin: 0, paddingLeft: "1.1rem", fontSize: "0.82rem", color: "#334155", lineHeight: "1.5" }}>
                     {generatedPlan.analysis.preconditions.map((p, i) => (
                       <li key={i}>{p}</li>
                     ))}
                   </ul>
                 </div>
 
-                <div style={{ backgroundColor: "#0d1117", padding: "0.85rem", borderRadius: "8px", border: "1px solid #21262d" }}>
-                  <div style={{ fontSize: "0.75rem", color: "#9ca3af", fontWeight: 700, marginBottom: "0.4rem" }}>RÈGLES MÉTIER CONTRÔLÉES</div>
-                  <ul style={{ margin: 0, paddingLeft: "1.1rem", fontSize: "0.8rem", color: "#e2e8f0" }}>
+                <div style={{ backgroundColor: "#f8fafc", padding: "0.85rem", borderRadius: "8px", border: "1px solid #e2e8f0" }}>
+                  <div style={{ fontSize: "0.75rem", color: "#64748b", fontWeight: 700, marginBottom: "0.4rem" }}>RÈGLES MÉTIER CONTRÔLÉES</div>
+                  <ul style={{ margin: 0, paddingLeft: "1.1rem", fontSize: "0.82rem", color: "#334155", lineHeight: "1.5" }}>
                     {generatedPlan.analysis.businessRules.map((r, i) => (
                       <li key={i}>{r}</li>
                     ))}
                   </ul>
                 </div>
 
-                <div style={{ backgroundColor: "#0d1117", padding: "0.85rem", borderRadius: "8px", border: "1px solid #21262d" }}>
-                  <div style={{ fontSize: "0.75rem", color: "#f87171", fontWeight: 700, marginBottom: "0.4rem" }}>RISQUES TECHNIQUES</div>
-                  <ul style={{ margin: 0, paddingLeft: "1.1rem", fontSize: "0.8rem", color: "#fca5a5" }}>
+                <div style={{ backgroundColor: "#fef2f2", padding: "0.85rem", borderRadius: "8px", border: "1px solid #fecaca" }}>
+                  <div style={{ fontSize: "0.75rem", color: "#b91c1c", fontWeight: 700, marginBottom: "0.4rem" }}>RISQUES TECHNIQUES</div>
+                  <ul style={{ margin: 0, paddingLeft: "1.1rem", fontSize: "0.82rem", color: "#991b1b", lineHeight: "1.5" }}>
                     {generatedPlan.analysis.technicalRisks.map((tr, i) => (
                       <li key={i}>{tr}</li>
                     ))}
@@ -1015,8 +1090,8 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
             </div>
 
             {/* Liste des sous-tâches ordonnées */}
-            <div style={{ backgroundColor: "#111827", borderRadius: "10px", border: "1px solid #1f2937", padding: "1.5rem" }}>
-              <h3 style={{ fontSize: "1.1rem", fontWeight: 700, marginBottom: "1rem", color: "#f8fafc" }}>
+            <div style={{ backgroundColor: "#ffffff", borderRadius: "12px", border: "1px solid #e2e8f0", padding: "1.5rem", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
+              <h3 style={{ fontSize: "1.1rem", fontWeight: 700, marginBottom: "1rem", color: "#0f172a" }}>
                 Plan de Développement &amp; Sous-Tâches ({generatedPlan.subTasks.length} Tâches Ordonnées)
               </h3>
 
@@ -1025,12 +1100,12 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                   <div
                     key={task.id}
                     style={{
-                      backgroundColor: "#0d1117",
-                      border: "1px solid #30363d",
+                      backgroundColor: "#f8fafc",
+                      border: "1px solid #e2e8f0",
                       borderRadius: "8px",
                       padding: "1rem",
                       display: "grid",
-                      gridTemplateColumns: "100px 1.5fr 1fr 1fr",
+                      gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
                       gap: "1rem",
                       alignItems: "center",
                     }}
@@ -1038,9 +1113,9 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                     <div>
                       <span
                         style={{
-                          backgroundColor: "#1e293b",
-                          color: "#38bdf8",
-                          border: "1px solid #334155",
+                          backgroundColor: "#eff6ff",
+                          color: "#1d4ed8",
+                          border: "1px solid #bfdbfe",
                           padding: "2px 8px",
                           borderRadius: "4px",
                           fontSize: "0.75rem",
@@ -1049,24 +1124,24 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                       >
                         {task.id}
                       </span>
-                      <div style={{ fontSize: "0.7rem", color: "#94a3b8", marginTop: "4px" }}>{task.estimation}</div>
+                      <div style={{ fontSize: "0.75rem", color: "#64748b", marginTop: "4px" }}>{task.estimation}</div>
                     </div>
 
                     <div>
-                      <div style={{ fontWeight: 700, fontSize: "0.9rem", color: "#f1f5f9" }}>{task.title}</div>
-                      <div style={{ fontSize: "0.8rem", color: "#94a3b8", marginTop: "2px" }}>{task.description}</div>
+                      <div style={{ fontWeight: 700, fontSize: "0.9rem", color: "#0f172a" }}>{task.title}</div>
+                      <div style={{ fontSize: "0.8rem", color: "#475569", marginTop: "2px" }}>{task.description}</div>
                     </div>
 
                     <div>
-                      <div style={{ fontSize: "0.72rem", color: "#64748b" }}>CRITÈRES D&apos;ACCEPTATION</div>
-                      <div style={{ fontSize: "0.78rem", color: "#cbd5e1", marginTop: "2px" }}>
+                      <div style={{ fontSize: "0.72rem", color: "#64748b", fontWeight: 600 }}>CRITÈRES D&apos;ACCEPTATION</div>
+                      <div style={{ fontSize: "0.78rem", color: "#334155", marginTop: "2px" }}>
                         {task.acceptanceCriteria[0]}
                       </div>
                     </div>
 
                     <div>
-                      <div style={{ fontSize: "0.72rem", color: "#64748b" }}>FICHIERS CIBLES</div>
-                      <div style={{ fontSize: "0.78rem", color: "#a5b4fc", fontFamily: "monospace" }}>
+                      <div style={{ fontSize: "0.72rem", color: "#64748b", fontWeight: 600 }}>FICHIERS CIBLES</div>
+                      <div style={{ fontSize: "0.78rem", color: "#4338ca", fontFamily: "monospace" }}>
                         {task.concernedFiles.join(", ")}
                       </div>
                     </div>
@@ -1078,16 +1153,16 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
         )}
 
         {/* --------------------------------------------------------------------- */}
-        {/* ONGLET 3 : CODE INFORMIX 4GL (EDITEUR, COPIE, TELECHARGEMENT) */}
+        {/* ONGLET 3 : CODE INFORMIX 4GL (THEME CLAIR AVEC TÉLÉCHARGEMENT) */}
         {/* --------------------------------------------------------------------- */}
         {activeTab === "CODE" && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "1rem", width: "100%", boxSizing: "border-box" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.75rem" }}>
               <div>
-                <h3 style={{ fontSize: "1.15rem", fontWeight: 700, margin: 0, color: "#f8fafc" }}>
+                <h3 style={{ fontSize: "1.15rem", fontWeight: 700, margin: 0, color: "#0f172a" }}>
                   Code Informix 4GL Généré (Sopra Banking Amplitude)
                 </h3>
-                <p style={{ fontSize: "0.8rem", color: "#94a3b8", margin: "2px 0 0 0" }}>
+                <p style={{ fontSize: "0.82rem", color: "#64748b", margin: "2px 0 0 0" }}>
                   Programme autonome exploitant les tables <code>BKCPT</code>, <code>BKCLI</code> et <code>BKTRA</code> avec gestion transactionnelle et contrôle <code>SQLCA.SQLCODE</code>.
                 </p>
               </div>
@@ -1096,9 +1171,9 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                 <button
                   onClick={() => copyToClipboard(generatedPlan.code4GlProposal.code4Gl, "4gl")}
                   style={{
-                    backgroundColor: "#1e293b",
-                    color: "#f8fafc",
-                    border: "1px solid #334155",
+                    backgroundColor: "#ffffff",
+                    color: "#334155",
+                    border: "1px solid #cbd5e1",
                     borderRadius: "6px",
                     padding: "0.45rem 0.85rem",
                     fontSize: "0.82rem",
@@ -1135,11 +1210,12 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
 
             <div
               style={{
-                backgroundColor: "#0d1117",
-                border: "1px solid #30363d",
+                backgroundColor: "#ffffff",
+                border: "1px solid #cbd5e1",
                 borderRadius: "8px",
                 padding: "1rem",
                 overflowX: "auto",
+                boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
               }}
             >
               <pre
@@ -1148,7 +1224,7 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                   fontSize: "0.85rem",
                   lineHeight: "1.5",
                   fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
-                  color: "#e6edf3",
+                  color: "#0f172a",
                 }}
               >
                 <code>{generatedPlan.code4GlProposal.code4Gl}</code>
@@ -1156,11 +1232,11 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
             </div>
 
             {/* Notes d'architecture */}
-            <div style={{ backgroundColor: "#111827", borderRadius: "8px", border: "1px solid #1f2937", padding: "1rem" }}>
-              <div style={{ fontSize: "0.8rem", fontWeight: 700, color: "#38bdf8", marginBottom: "0.4rem" }}>
+            <div style={{ backgroundColor: "#ffffff", borderRadius: "8px", border: "1px solid #e2e8f0", padding: "1rem" }}>
+              <div style={{ fontSize: "0.82rem", fontWeight: 700, color: "#0369a1", marginBottom: "0.4rem" }}>
                 RECOMMANDATIONS D&apos;EXPLOITATION RUN / BUILD AMPLITUDE
               </div>
-              <ul style={{ margin: 0, paddingLeft: "1.25rem", fontSize: "0.82rem", color: "#cbd5e1", lineHeight: "1.5" }}>
+              <ul style={{ margin: 0, paddingLeft: "1.25rem", fontSize: "0.82rem", color: "#334155", lineHeight: "1.6" }}>
                 {generatedPlan.code4GlProposal.importantNotes.map((note, i) => (
                   <li key={i}>{note}</li>
                 ))}
@@ -1173,15 +1249,15 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
         {/* ONGLET 4 : ECRAN MASQUE (.PER) */}
         {/* --------------------------------------------------------------------- */}
         {activeTab === "PER_SCREEN" && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "1rem", width: "100%", boxSizing: "border-box" }}>
             {generatedPlan.perScreen ? (
               <>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.75rem" }}>
                   <div>
-                    <h3 style={{ fontSize: "1.15rem", fontWeight: 700, margin: 0, color: "#f8fafc" }}>
+                    <h3 style={{ fontSize: "1.15rem", fontWeight: 700, margin: 0, color: "#0f172a" }}>
                       Conception du Masque d&apos;Écran Formulaire (.per)
                     </h3>
-                    <p style={{ fontSize: "0.8rem", color: "#94a3b8", margin: "2px 0 0 0" }}>
+                    <p style={{ fontSize: "0.82rem", color: "#64748b", margin: "2px 0 0 0" }}>
                       Masque terminal Curses 24x80 pour AIX / Linux avec mapping champs tables <code>BKCPT</code> et <code>BKCLI</code>.
                     </p>
                   </div>
@@ -1190,9 +1266,9 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                     <button
                       onClick={() => copyToClipboard(generatedPlan.perScreen!.perCodeSnippet, "per")}
                       style={{
-                        backgroundColor: "#1e293b",
-                        color: "#f8fafc",
-                        border: "1px solid #334155",
+                        backgroundColor: "#ffffff",
+                        color: "#334155",
+                        border: "1px solid #cbd5e1",
                         borderRadius: "6px",
                         padding: "0.45rem 0.85rem",
                         fontSize: "0.82rem",
@@ -1228,22 +1304,24 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                 </div>
 
                 {/* Rendu visuel ASCII du masque terminal */}
-                <div style={{ backgroundColor: "#111827", borderRadius: "8px", border: "1px solid #1f2937", padding: "1.25rem" }}>
-                  <div style={{ fontSize: "0.8rem", fontWeight: 700, color: "#a5b4fc", marginBottom: "0.6rem" }}>
+                <div style={{ backgroundColor: "#ffffff", borderRadius: "8px", border: "1px solid #e2e8f0", padding: "1.25rem", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
+                  <div style={{ fontSize: "0.82rem", fontWeight: 700, color: "#4338ca", marginBottom: "0.6rem" }}>
                     🖥️ MAQUETTE VISUELLE TERMINAL CURSES (24 LIGNES x 80 COLONNES)
                   </div>
                   <pre
                     style={{
                       margin: 0,
-                      backgroundColor: "#030712",
-                      border: "1px solid #1f2937",
+                      backgroundColor: "#f8fafc",
+                      border: "1px solid #cbd5e1",
                       borderRadius: "6px",
                       padding: "1rem",
-                      fontSize: "0.8rem",
+                      fontSize: "0.82rem",
                       lineHeight: "1.3",
                       fontFamily: "ui-monospace, monospace",
-                      color: "#34d399",
+                      color: "#0f172a",
                       overflowX: "auto",
+                      maxWidth: "100%",
+                      boxSizing: "border-box",
                     }}
                   >
                     {generatedPlan.perScreen.visualMockupAscii}
@@ -1251,22 +1329,24 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                 </div>
 
                 {/* Code source .per */}
-                <div style={{ backgroundColor: "#111827", borderRadius: "8px", border: "1px solid #1f2937", padding: "1.25rem" }}>
-                  <div style={{ fontSize: "0.8rem", fontWeight: 700, color: "#38bdf8", marginBottom: "0.6rem" }}>
+                <div style={{ backgroundColor: "#ffffff", borderRadius: "8px", border: "1px solid #e2e8f0", padding: "1.25rem", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
+                  <div style={{ fontSize: "0.82rem", fontWeight: 700, color: "#0284c7", marginBottom: "0.6rem" }}>
                     📄 SOURCE INFORMIX FORMULAIRE ({generatedPlan.perScreen.screenName})
                   </div>
                   <pre
                     style={{
                       margin: 0,
-                      backgroundColor: "#0d1117",
-                      border: "1px solid #30363d",
+                      backgroundColor: "#f8fafc",
+                      border: "1px solid #cbd5e1",
                       borderRadius: "6px",
                       padding: "1rem",
                       fontSize: "0.85rem",
                       lineHeight: "1.4",
                       fontFamily: "ui-monospace, monospace",
-                      color: "#e6edf3",
+                      color: "#0f172a",
                       overflowX: "auto",
+                      maxWidth: "100%",
+                      boxSizing: "border-box",
                     }}
                   >
                     {generatedPlan.perScreen.perCodeSnippet}
@@ -1274,7 +1354,7 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                 </div>
               </>
             ) : (
-              <div style={{ padding: "3rem", textAlign: "center", color: "#94a3b8" }}>
+              <div style={{ padding: "3rem", textAlign: "center", color: "#64748b" }}>
                 Ce besoin ne requiert pas de masque d&apos;écran formulaire interactif (programme purement batch ou API).
               </div>
             )}
@@ -1285,13 +1365,13 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
         {/* ONGLET 5 : REQUÊTES SQL & INDEX */}
         {/* --------------------------------------------------------------------- */}
         {activeTab === "SQL" && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "1rem", width: "100%", boxSizing: "border-box" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.75rem" }}>
               <div>
-                <h3 style={{ fontSize: "1.15rem", fontWeight: 700, margin: 0, color: "#f8fafc" }}>
+                <h3 style={{ fontSize: "1.15rem", fontWeight: 700, margin: 0, color: "#0f172a" }}>
                   Requêtes SQL &amp; Optimisation SGBD (Informix / Oracle)
                 </h3>
-                <p style={{ fontSize: "0.8rem", color: "#94a3b8", margin: "2px 0 0 0" }}>
+                <p style={{ fontSize: "0.82rem", color: "#64748b", margin: "2px 0 0 0" }}>
                   Requêtes indexées sur <code>BKCPT</code>, <code>BKCLI</code> et <code>BKTRA</code> garantissant l&apos;absence de Full Table Scan et respectant la concurrence.
                 </p>
               </div>
@@ -1300,9 +1380,9 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                 <button
                   onClick={() => copyToClipboard(generatedPlan.sqlProposal.sqlCode, "sql")}
                   style={{
-                    backgroundColor: "#1e293b",
-                    color: "#f8fafc",
-                    border: "1px solid #334155",
+                    backgroundColor: "#ffffff",
+                    color: "#334155",
+                    border: "1px solid #cbd5e1",
                     borderRadius: "6px",
                     padding: "0.45rem 0.85rem",
                     fontSize: "0.82rem",
@@ -1331,37 +1411,37 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
               </div>
             </div>
 
-            <div style={{ backgroundColor: "#0d1117", border: "1px solid #30363d", borderRadius: "8px", padding: "1rem" }}>
+            <div style={{ backgroundColor: "#ffffff", border: "1px solid #cbd5e1", borderRadius: "8px", padding: "1rem", overflowX: "auto", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
               <pre
                 style={{
                   margin: 0,
                   fontSize: "0.85rem",
                   lineHeight: "1.5",
                   fontFamily: "ui-monospace, monospace",
-                  color: "#67e8f9",
+                  color: "#0369a1",
                 }}
               >
                 <code>{generatedPlan.sqlProposal.sqlCode}</code>
               </pre>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-              <div style={{ backgroundColor: "#111827", borderRadius: "8px", border: "1px solid #1f2937", padding: "1rem" }}>
-                <div style={{ fontSize: "0.8rem", fontWeight: 700, color: "#f87171", marginBottom: "0.4rem" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1rem" }}>
+              <div style={{ backgroundColor: "#ffffff", borderRadius: "8px", border: "1px solid #fecaca", padding: "1rem" }}>
+                <div style={{ fontSize: "0.82rem", fontWeight: 700, color: "#b91c1c", marginBottom: "0.4rem" }}>
                   ⚠️ RISQUES DE PERFORMANCE &amp; FULL TABLE SCAN
                 </div>
-                <ul style={{ margin: 0, paddingLeft: "1.25rem", fontSize: "0.8rem", color: "#cbd5e1", lineHeight: "1.5" }}>
+                <ul style={{ margin: 0, paddingLeft: "1.25rem", fontSize: "0.82rem", color: "#475569", lineHeight: "1.5" }}>
                   {generatedPlan.sqlProposal.performanceRisks.map((r, i) => (
                     <li key={i}>{r}</li>
                   ))}
                 </ul>
               </div>
 
-              <div style={{ backgroundColor: "#111827", borderRadius: "8px", border: "1px solid #1f2937", padding: "1rem" }}>
-                <div style={{ fontSize: "0.8rem", fontWeight: 700, color: "#34d399", marginBottom: "0.4rem" }}>
+              <div style={{ backgroundColor: "#ffffff", borderRadius: "8px", border: "1px solid #a7f3d0", padding: "1rem" }}>
+                <div style={{ fontSize: "0.82rem", fontWeight: 700, color: "#047857", marginBottom: "0.4rem" }}>
                   🔒 CONSIGNES DE SÉCURITÉ &amp; CONFIDENTIALITÉ
                 </div>
-                <ul style={{ margin: 0, paddingLeft: "1.25rem", fontSize: "0.8rem", color: "#cbd5e1", lineHeight: "1.5" }}>
+                <ul style={{ margin: 0, paddingLeft: "1.25rem", fontSize: "0.82rem", color: "#475569", lineHeight: "1.5" }}>
                   {generatedPlan.sqlProposal.securityPrecautions.map((s, i) => (
                     <li key={i}>{s}</li>
                   ))}
@@ -1375,8 +1455,8 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
         {/* ONGLET 6 : JEUX DE TESTS & RECETTE */}
         {/* --------------------------------------------------------------------- */}
         {activeTab === "TESTS" && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-            <h3 style={{ fontSize: "1.15rem", fontWeight: 700, margin: 0, color: "#f8fafc" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "1rem", width: "100%", boxSizing: "border-box" }}>
+            <h3 style={{ fontSize: "1.15rem", fontWeight: 700, margin: 0, color: "#0f172a" }}>
               Matrice de Qualification &amp; Recette Technique ({generatedPlan.testCases.length} Cas de Test)
             </h3>
 
@@ -1385,14 +1465,15 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                 <div
                   key={tc.id}
                   style={{
-                    backgroundColor: "#111827",
-                    border: "1px solid #1f2937",
+                    backgroundColor: "#ffffff",
+                    border: "1px solid #e2e8f0",
                     borderRadius: "8px",
                     padding: "1rem",
                     display: "grid",
-                    gridTemplateColumns: "120px 1.5fr 1.5fr 120px",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
                     gap: "1rem",
                     alignItems: "center",
+                    boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
                   }}
                 >
                   <div>
@@ -1400,13 +1481,21 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                       style={{
                         backgroundColor:
                           tc.category === "NOMINAL"
-                            ? "#065f46"
+                            ? "#ecfdf5"
                             : tc.category === "ERREUR"
-                            ? "#7f1d1d"
+                            ? "#fef2f2"
                             : tc.category === "DROITS"
-                            ? "#78350f"
-                            : "#1e1b4b",
-                        color: "#ffffff",
+                            ? "#fffbeb"
+                            : "#eff6ff",
+                        color:
+                          tc.category === "NOMINAL"
+                            ? "#047857"
+                            : tc.category === "ERREUR"
+                            ? "#b91c1c"
+                            : tc.category === "DROITS"
+                            ? "#b45309"
+                            : "#1d4ed8",
+                        border: "1px solid currentColor",
                         padding: "2px 8px",
                         borderRadius: "4px",
                         fontSize: "0.72rem",
@@ -1418,27 +1507,27 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                   </div>
 
                   <div>
-                    <div style={{ fontWeight: 700, fontSize: "0.9rem", color: "#f8fafc" }}>{tc.title}</div>
-                    <div style={{ fontSize: "0.78rem", color: "#9ca3af", marginTop: "4px" }}>
+                    <div style={{ fontWeight: 700, fontSize: "0.9rem", color: "#0f172a" }}>{tc.title}</div>
+                    <div style={{ fontSize: "0.78rem", color: "#64748b", marginTop: "4px" }}>
                       <strong>Préconditions :</strong> {tc.preconditions}
                     </div>
                   </div>
 
                   <div>
-                    <div style={{ fontSize: "0.75rem", color: "#64748b" }}>RÉSULTAT ATTENDU</div>
-                    <div style={{ fontSize: "0.8rem", color: "#e2e8f0", marginTop: "2px" }}>{tc.expectedResult}</div>
+                    <div style={{ fontSize: "0.72rem", color: "#64748b", fontWeight: 600 }}>RÉSULTAT ATTENDU</div>
+                    <div style={{ fontSize: "0.82rem", color: "#334155", marginTop: "2px" }}>{tc.expectedResult}</div>
                   </div>
 
                   <div style={{ textAlign: "right" }}>
                     <span
                       style={{
-                        backgroundColor: "#1e293b",
-                        color: "#38bdf8",
-                        border: "1px solid #334155",
+                        backgroundColor: "#f1f5f9",
+                        color: "#0284c7",
+                        border: "1px solid #cbd5e1",
                         padding: "4px 10px",
                         borderRadius: "6px",
                         fontSize: "0.75rem",
-                        fontWeight: 600,
+                        fontWeight: 700,
                       }}
                     >
                       A_TESTER
@@ -1454,18 +1543,18 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
         {/* ONGLET 7 : DOSSIER DE LIVRAISON & PLAN DE ROLLBACK */}
         {/* --------------------------------------------------------------------- */}
         {activeTab === "DELIVERY" && (
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
-            <div style={{ backgroundColor: "#111827", borderRadius: "10px", border: "1px solid #1f2937", padding: "1.5rem" }}>
-              <h3 style={{ fontSize: "1.1rem", fontWeight: 700, marginBottom: "0.75rem", color: "#38bdf8" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "1.5rem", width: "100%", boxSizing: "border-box" }}>
+            <div style={{ backgroundColor: "#ffffff", borderRadius: "12px", border: "1px solid #e2e8f0", padding: "1.5rem", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
+              <h3 style={{ fontSize: "1.1rem", fontWeight: 700, marginBottom: "0.75rem", color: "#0369a1" }}>
                 📦 Procédure d&apos;Installation &amp; Fiche MEP
               </h3>
-              <div style={{ fontSize: "0.82rem", color: "#9ca3af", marginBottom: "1rem" }}>
+              <div style={{ fontSize: "0.82rem", color: "#64748b", marginBottom: "1rem" }}>
                 Ordre strict d&apos;exécution sur le serveur de production AIX / Linux :
               </div>
-              <ol style={{ margin: 0, paddingLeft: "1.25rem", fontSize: "0.85rem", color: "#f1f5f9", lineHeight: "1.6" }}>
+              <ol style={{ margin: 0, paddingLeft: "1.25rem", fontSize: "0.85rem", color: "#1e293b", lineHeight: "1.6" }}>
                 {generatedPlan.deliveryPackage.installationOrder.map((step, idx) => (
-                  <li key={idx} style={{ marginBottom: "0.4rem" }}>
-                    <code style={{ color: "#a5b4fc", backgroundColor: "#0d1117", padding: "2px 6px", borderRadius: "4px" }}>
+                  <li key={idx} style={{ marginBottom: "0.5rem" }}>
+                    <code style={{ color: "#1d4ed8", backgroundColor: "#f1f5f9", padding: "3px 6px", borderRadius: "4px", border: "1px solid #e2e8f0" }}>
                       {step}
                     </code>
                   </li>
@@ -1473,14 +1562,14 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
               </ol>
             </div>
 
-            <div style={{ backgroundColor: "#111827", borderRadius: "10px", border: "1px solid #1f2937", padding: "1.5rem" }}>
-              <h3 style={{ fontSize: "1.1rem", fontWeight: 700, marginBottom: "0.75rem", color: "#f87171" }}>
+            <div style={{ backgroundColor: "#ffffff", borderRadius: "12px", border: "1px solid #fecaca", padding: "1.5rem", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
+              <h3 style={{ fontSize: "1.1rem", fontWeight: 700, marginBottom: "0.75rem", color: "#b91c1c" }}>
                 🚨 Plan de Retour Arrière Immédiat (Rollback)
               </h3>
-              <div style={{ fontSize: "0.82rem", color: "#9ca3af", marginBottom: "1rem" }}>
+              <div style={{ fontSize: "0.82rem", color: "#64748b", marginBottom: "1rem" }}>
                 À exécuter sous 10 minutes en cas d&apos;anomalie critique constatée :
               </div>
-              <ul style={{ margin: 0, paddingLeft: "1.25rem", fontSize: "0.85rem", color: "#fca5a5", lineHeight: "1.6" }}>
+              <ul style={{ margin: 0, paddingLeft: "1.25rem", fontSize: "0.85rem", color: "#991b1b", lineHeight: "1.6" }}>
                 {generatedPlan.deliveryPackage.rollbackPlan.map((r, idx) => (
                   <li key={idx} style={{ marginBottom: "0.4rem" }}>
                     {r}
@@ -1495,18 +1584,18 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
         {/* ONGLET 8 : POINT DE RUPTURE RUN (DIAGNOSTIC D'INCIDENTS PRODUCTION) */}
         {/* --------------------------------------------------------------------- */}
         {activeTab === "FAILURE" && (
-          <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: "1.5rem" }}>
-            <div style={{ backgroundColor: "#111827", borderRadius: "10px", border: "1px solid #1f2937", padding: "1.5rem" }}>
-              <h3 style={{ fontSize: "1.15rem", fontWeight: 700, marginBottom: "0.5rem", color: "#f87171" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "1.5rem", width: "100%", boxSizing: "border-box" }}>
+            <div style={{ backgroundColor: "#ffffff", borderRadius: "12px", border: "1px solid #fecaca", padding: "1.5rem", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
+              <h3 style={{ fontSize: "1.15rem", fontWeight: 700, marginBottom: "0.5rem", color: "#b91c1c" }}>
                 🚨 Diagnostic d&apos;un Point de Rupture Core Banking (RUN)
               </h3>
-              <p style={{ fontSize: "0.82rem", color: "#9ca3af", marginBottom: "1rem" }}>
+              <p style={{ fontSize: "0.82rem", color: "#64748b", marginBottom: "1rem" }}>
                 Collez un message d&apos;erreur Informix (SQLCA.SQLCODE), Oracle (ORA-XXXXX) ou log batch. Le Copilot en identifiera la cause racine et la procédure de résolution.
               </p>
 
               <div style={{ marginBottom: "1rem" }}>
-                <span style={{ fontSize: "0.75rem", color: "#6b7280", fontWeight: 700 }}>Erreurs de production fréquentes :</span>
-                <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", marginTop: "0.4rem" }}>
+                <span style={{ fontSize: "0.75rem", color: "#64748b", fontWeight: 700 }}>Erreurs de production fréquentes :</span>
+                <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap", marginTop: "0.4rem" }}>
                   {[
                     "SQLCODE = -143 (Deadlock detected on table bkcpt)",
                     "SQLCODE = -154 (Lock Timeout on table bkcom)",
@@ -1522,12 +1611,13 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                       }}
                       style={{
                         padding: "0.3rem 0.6rem",
-                        backgroundColor: "#1f2937",
-                        color: "#fca5a5",
-                        border: "1px solid #374151",
+                        backgroundColor: "#fef2f2",
+                        color: "#991b1b",
+                        border: "1px solid #fecaca",
                         borderRadius: "4px",
                         fontSize: "0.72rem",
                         cursor: "pointer",
+                        fontWeight: 600,
                       }}
                     >
                       {err.split(" ")[0]} {err.split(" ")[1] || ""}
@@ -1542,13 +1632,14 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                 onChange={(e) => setFailureInput(e.target.value)}
                 style={{
                   width: "100%",
-                  backgroundColor: "#0d1117",
-                  border: "1px solid #30363d",
+                  backgroundColor: "#ffffff",
+                  border: "1px solid #cbd5e1",
                   borderRadius: "6px",
                   padding: "0.75rem",
-                  color: "#f0f6fc",
+                  color: "#0f172a",
                   fontSize: "0.85rem",
                   fontFamily: "monospace",
+                  boxSizing: "border-box",
                 }}
               />
 
@@ -1571,26 +1662,26 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
             </div>
 
             {/* Résultat du diagnostic */}
-            <div style={{ backgroundColor: "#111827", borderRadius: "10px", border: "1px solid #1f2937", padding: "1.5rem" }}>
-              <h4 style={{ fontSize: "1rem", fontWeight: 700, color: "#f87171", margin: "0 0 1rem 0" }}>
+            <div style={{ backgroundColor: "#ffffff", borderRadius: "12px", border: "1px solid #e2e8f0", padding: "1.5rem", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
+              <h4 style={{ fontSize: "1rem", fontWeight: 700, color: "#b91c1c", margin: "0 0 1rem 0" }}>
                 Rapport d&apos;Investigation d&apos;Incident
               </h4>
 
               {failureResult && (
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", fontSize: "0.85rem" }}>
-                  <div style={{ backgroundColor: "#0d1117", padding: "0.75rem", borderRadius: "6px" }}>
-                    <span style={{ fontSize: "0.72rem", color: "#64748b", fontWeight: 700 }}>CAUSE RACINE DÉTECTÉE</span>
-                    <div style={{ color: "#fca5a5", fontWeight: 700, marginTop: "2px" }}>{failureResult.rootCause}</div>
+                  <div style={{ backgroundColor: "#fef2f2", border: "1px solid #fecaca", padding: "0.75rem", borderRadius: "6px" }}>
+                    <span style={{ fontSize: "0.72rem", color: "#991b1b", fontWeight: 700 }}>CAUSE RACINE DÉTECTÉE</span>
+                    <div style={{ color: "#7f1d1d", fontWeight: 700, marginTop: "2px" }}>{failureResult.rootCause}</div>
                   </div>
 
-                  <div style={{ backgroundColor: "#0d1117", padding: "0.75rem", borderRadius: "6px" }}>
-                    <span style={{ fontSize: "0.72rem", color: "#64748b", fontWeight: 700 }}>PROCÉDURE DE RÉPARATION RECOMMANDÉE</span>
-                    <div style={{ color: "#34d399", marginTop: "2px" }}>{failureResult.recommendedFix}</div>
+                  <div style={{ backgroundColor: "#ecfdf5", border: "1px solid #a7f3d0", padding: "0.75rem", borderRadius: "6px" }}>
+                    <span style={{ fontSize: "0.72rem", color: "#047857", fontWeight: 700 }}>PROCÉDURE DE RÉPARATION RECOMMANDÉE</span>
+                    <div style={{ color: "#065f46", marginTop: "2px" }}>{failureResult.recommendedFix}</div>
                   </div>
 
-                  <div style={{ backgroundColor: "#0d1117", padding: "0.75rem", borderRadius: "6px" }}>
+                  <div style={{ backgroundColor: "#f8fafc", border: "1px solid #e2e8f0", padding: "0.75rem", borderRadius: "6px" }}>
                     <span style={{ fontSize: "0.72rem", color: "#64748b", fontWeight: 700 }}>CONTRÔLES SGBD À EXÉCUTER</span>
-                    <ul style={{ margin: "4px 0 0 0", paddingLeft: "1.2rem", color: "#cbd5e1" }}>
+                    <ul style={{ margin: "4px 0 0 0", paddingLeft: "1.2rem", color: "#334155" }}>
                       {failureResult.checksToPerform.map((c: string, idx: number) => (
                         <li key={idx}><code>{c}</code></li>
                       ))}
@@ -1606,12 +1697,12 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
         {/* ONGLET 9 : REVUE DE CODE 4GL AUTOMATISÉE */}
         {/* --------------------------------------------------------------------- */}
         {activeTab === "REVIEW" && (
-          <div style={{ display: "grid", gridTemplateColumns: "1.1fr 1fr", gap: "1.5rem" }}>
-            <div style={{ backgroundColor: "#111827", borderRadius: "10px", border: "1px solid #1f2937", padding: "1.5rem" }}>
-              <h3 style={{ fontSize: "1.15rem", fontWeight: 700, marginBottom: "0.5rem", color: "#fbbf24" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "1.5rem", width: "100%", boxSizing: "border-box" }}>
+            <div style={{ backgroundColor: "#ffffff", borderRadius: "12px", border: "1px solid #fde68a", padding: "1.5rem", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
+              <h3 style={{ fontSize: "1.15rem", fontWeight: 700, marginBottom: "0.5rem", color: "#b45309" }}>
                 🔍 Revue Automatique de Code Informix 4GL
               </h3>
-              <p style={{ fontSize: "0.82rem", color: "#9ca3af", marginBottom: "1rem" }}>
+              <p style={{ fontSize: "0.82rem", color: "#64748b", marginBottom: "1rem" }}>
                 Vérification statique : détection des requêtes SELECT sans INTO, transactions orphelines, absence de <code>WHENEVER ERROR</code> et suppressions non restreintes.
               </p>
 
@@ -1621,13 +1712,14 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                 onChange={(e) => setCodeReviewInput(e.target.value)}
                 style={{
                   width: "100%",
-                  backgroundColor: "#0d1117",
-                  border: "1px solid #30363d",
+                  backgroundColor: "#ffffff",
+                  border: "1px solid #cbd5e1",
                   borderRadius: "6px",
                   padding: "0.75rem",
-                  color: "#f0f6fc",
+                  color: "#0f172a",
                   fontSize: "0.85rem",
                   fontFamily: "monospace",
+                  boxSizing: "border-box",
                 }}
               />
 
@@ -1650,14 +1742,14 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
             </div>
 
             {/* Constats de revue */}
-            <div style={{ backgroundColor: "#111827", borderRadius: "10px", border: "1px solid #1f2937", padding: "1.5rem" }}>
-              <h4 style={{ fontSize: "1rem", fontWeight: 700, color: "#fbbf24", margin: "0 0 1rem 0" }}>
+            <div style={{ backgroundColor: "#ffffff", borderRadius: "12px", border: "1px solid #e2e8f0", padding: "1.5rem", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
+              <h4 style={{ fontSize: "1rem", fontWeight: 700, color: "#b45309", margin: "0 0 1rem 0" }}>
                 Anomalies &amp; Failles Détectées ({reviewFindings.length})
               </h4>
 
               <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
                 {reviewFindings.length === 0 ? (
-                  <div style={{ padding: "2rem", textAlign: "center", color: "#34d399" }}>
+                  <div style={{ padding: "2rem", textAlign: "center", color: "#047857", fontWeight: 600 }}>
                     ✅ Aucune anomalie critique détectée dans ce fragment de code 4GL !
                   </div>
                 ) : (
@@ -1665,21 +1757,21 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                     <div
                       key={f.id}
                       style={{
-                        backgroundColor: "#0d1117",
-                        border: "1px solid #30363d",
+                        backgroundColor: f.severity === "BLOQUANTE" ? "#fef2f2" : "#fffbeb",
+                        border: f.severity === "BLOQUANTE" ? "1px solid #fecaca" : "1px solid #fde68a",
                         borderRadius: "6px",
                         padding: "0.85rem",
                       }}
                     >
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <span style={{ fontWeight: 700, color: f.severity === "BLOQUANTE" ? "#f87171" : "#fbbf24", fontSize: "0.85rem" }}>
+                        <span style={{ fontWeight: 700, color: f.severity === "BLOQUANTE" ? "#b91c1c" : "#b45309", fontSize: "0.85rem" }}>
                           [{f.severity}] {f.description}
                         </span>
-                        <span style={{ fontSize: "0.72rem", color: "#9ca3af" }}>{f.location}</span>
+                        <span style={{ fontSize: "0.72rem", color: "#64748b" }}>{f.location}</span>
                       </div>
-                      <div style={{ fontSize: "0.8rem", color: "#cbd5e1", marginTop: "4px" }}>{f.explanation}</div>
-                      <div style={{ fontSize: "0.78rem", color: "#34d399", marginTop: "6px" }}>
-                        <strong>Correction :</strong> {f.proposedFix}
+                      <div style={{ fontSize: "0.8rem", color: "#334155", marginTop: "4px" }}>{f.explanation}</div>
+                      <div style={{ fontSize: "0.78rem", color: "#047857", marginTop: "6px", fontWeight: 600 }}>
+                        Correction : {f.proposedFix}
                       </div>
                     </div>
                   ))
@@ -1693,11 +1785,11 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
         {/* ONGLET 10 : EXPLORATEUR DICTIONNAIRE BD AMPLITUDE */}
         {/* --------------------------------------------------------------------- */}
         {activeTab === "DICTIONARY" && (
-          <div style={{ display: "grid", gridTemplateColumns: "340px 1fr", gap: "1.5rem" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "1.5rem", width: "100%", boxSizing: "border-box" }}>
             {/* Colonne latérale : Liste des tables */}
-            <div style={{ backgroundColor: "#111827", borderRadius: "10px", border: "1px solid #1f2937", padding: "1.25rem", height: "calc(100vh - 180px)", display: "flex", flexDirection: "column" }}>
+            <div style={{ backgroundColor: "#ffffff", borderRadius: "12px", border: "1px solid #e2e8f0", padding: "1.25rem", height: "calc(100vh - 200px)", display: "flex", flexDirection: "column", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
               <div style={{ marginBottom: "1rem" }}>
-                <h4 style={{ fontSize: "1rem", fontWeight: 700, color: "#38bdf8", margin: "0 0 0.5rem 0" }}>
+                <h4 style={{ fontSize: "1rem", fontWeight: 700, color: "#0284c7", margin: "0 0 0.5rem 0" }}>
                   Tables Maîtresses Amplitude
                 </h4>
                 <input
@@ -1707,12 +1799,13 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                   onChange={(e) => setDbSearch(e.target.value)}
                   style={{
                     width: "100%",
-                    backgroundColor: "#0d1117",
-                    border: "1px solid #30363d",
+                    backgroundColor: "#ffffff",
+                    border: "1px solid #cbd5e1",
                     borderRadius: "6px",
                     padding: "0.5rem 0.75rem",
-                    color: "#f0f6fc",
+                    color: "#0f172a",
                     fontSize: "0.8rem",
+                    boxSizing: "border-box",
                   }}
                 />
               </div>
@@ -1726,20 +1819,20 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                       onClick={() => setSelectedDbTable(tbl)}
                       style={{
                         padding: "0.6rem 0.75rem",
-                        backgroundColor: isSel ? "#1e293b" : "#0d1117",
-                        border: isSel ? "1px solid #38bdf8" : "1px solid #21262d",
+                        backgroundColor: isSel ? "#eff6ff" : "#f8fafc",
+                        border: isSel ? "1px solid #3b82f6" : "1px solid #e2e8f0",
                         borderRadius: "6px",
                         cursor: "pointer",
                         transition: "all 0.1s ease",
                       }}
                     >
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <span style={{ fontWeight: 700, color: isSel ? "#38bdf8" : "#f1f5f9", fontSize: "0.85rem" }}>
+                        <span style={{ fontWeight: 700, color: isSel ? "#1d4ed8" : "#0f172a", fontSize: "0.85rem" }}>
                           {tbl.tableName}
                         </span>
-                        <span style={{ fontSize: "0.7rem", color: "#94a3b8" }}>{tbl.columns.length} col.</span>
+                        <span style={{ fontSize: "0.7rem", color: "#64748b" }}>{tbl.columns.length} col.</span>
                       </div>
-                      <div style={{ fontSize: "0.75rem", color: "#9ca3af", marginTop: "2px" }}>{tbl.module}</div>
+                      <div style={{ fontSize: "0.75rem", color: "#64748b", marginTop: "2px" }}>{tbl.module}</div>
                     </div>
                   );
                 })}
@@ -1747,25 +1840,25 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
             </div>
 
             {/* Panneau principal : Détail de la table sélectionnée */}
-            <div style={{ backgroundColor: "#111827", borderRadius: "10px", border: "1px solid #1f2937", padding: "1.5rem" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1rem" }}>
+            <div style={{ backgroundColor: "#ffffff", borderRadius: "12px", border: "1px solid #e2e8f0", padding: "1.5rem", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1rem", flexWrap: "wrap", gap: "0.5rem" }}>
                 <div>
                   <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                    <h3 style={{ fontSize: "1.4rem", fontWeight: 800, margin: 0, color: "#f8fafc" }}>
+                    <h3 style={{ fontSize: "1.4rem", fontWeight: 800, margin: 0, color: "#0f172a" }}>
                       {selectedDbTable.tableName}
                     </h3>
-                    <span style={{ backgroundColor: "#1e3a8a", color: "#93c5fd", padding: "2px 8px", borderRadius: "4px", fontSize: "0.75rem", fontWeight: 600 }}>
+                    <span style={{ backgroundColor: "#eff6ff", color: "#1d4ed8", border: "1px solid #bfdbfe", padding: "2px 8px", borderRadius: "4px", fontSize: "0.75rem", fontWeight: 600 }}>
                       {selectedDbTable.module}
                     </span>
                   </div>
-                  <p style={{ fontSize: "0.85rem", color: "#cbd5e1", margin: "4px 0 0 0" }}>
+                  <p style={{ fontSize: "0.85rem", color: "#475569", margin: "4px 0 0 0" }}>
                     {selectedDbTable.description}
                   </p>
                 </div>
 
                 <div style={{ textAlign: "right" }}>
-                  <span style={{ fontSize: "0.75rem", color: "#9ca3af", display: "block" }}>CLÉ PRIMAIRE (PK)</span>
-                  <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "#38bdf8", fontFamily: "monospace" }}>
+                  <span style={{ fontSize: "0.72rem", color: "#64748b", display: "block" }}>CLÉ PRIMAIRE (PK)</span>
+                  <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "#0284c7", fontFamily: "monospace" }}>
                     ({selectedDbTable.primaryKey.join(", ")})
                   </span>
                 </div>
@@ -1773,12 +1866,12 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
 
               {/* Colonnes de la table */}
               <div style={{ marginBottom: "1.5rem" }}>
-                <div style={{ fontSize: "0.85rem", fontWeight: 700, color: "#d1d5db", marginBottom: "0.6rem" }}>
+                <div style={{ fontSize: "0.85rem", fontWeight: 700, color: "#0f172a", marginBottom: "0.6rem" }}>
                   Structure des Colonnes ({selectedDbTable.columns.length} champs réels)
                 </div>
-                <div style={{ maxHeight: "320px", overflowY: "auto", border: "1px solid #30363d", borderRadius: "6px" }}>
+                <div style={{ maxHeight: "320px", overflowY: "auto", border: "1px solid #e2e8f0", borderRadius: "6px" }}>
                   <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.8rem", textAlign: "left" }}>
-                    <thead style={{ backgroundColor: "#0d1117", borderBottom: "1px solid #30363d", color: "#9ca3af" }}>
+                    <thead style={{ backgroundColor: "#f8fafc", borderBottom: "1px solid #e2e8f0", color: "#475569" }}>
                       <tr>
                         <th style={{ padding: "0.5rem 0.75rem" }}>Colonne</th>
                         <th style={{ padding: "0.5rem 0.75rem" }}>Type SGBD</th>
@@ -1790,17 +1883,17 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                         <tr
                           key={col.name}
                           style={{
-                            borderBottom: "1px solid #1f2937",
-                            backgroundColor: idx % 2 === 0 ? "transparent" : "#0b0f19",
+                            borderBottom: "1px solid #e2e8f0",
+                            backgroundColor: idx % 2 === 0 ? "#ffffff" : "#f8fafc",
                           }}
                         >
-                          <td style={{ padding: "0.5rem 0.75rem", fontWeight: 700, color: selectedDbTable.primaryKey.includes(col.name) ? "#38bdf8" : "#f1f5f9", fontFamily: "monospace" }}>
+                          <td style={{ padding: "0.5rem 0.75rem", fontWeight: 700, color: selectedDbTable.primaryKey.includes(col.name) ? "#0284c7" : "#0f172a", fontFamily: "monospace" }}>
                             {col.name} {selectedDbTable.primaryKey.includes(col.name) ? "🔑" : ""}
                           </td>
-                          <td style={{ padding: "0.5rem 0.75rem", color: "#a5b4fc", fontFamily: "monospace" }}>
+                          <td style={{ padding: "0.5rem 0.75rem", color: "#4338ca", fontFamily: "monospace" }}>
                             {col.type}
                           </td>
-                          <td style={{ padding: "0.5rem 0.75rem", color: "#cbd5e1" }}>
+                          <td style={{ padding: "0.5rem 0.75rem", color: "#334155" }}>
                             {col.description}
                           </td>
                         </tr>
@@ -1812,15 +1905,15 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
 
               {/* Requête SQL de consultation de référence */}
               <div>
-                <div style={{ fontSize: "0.85rem", fontWeight: 700, color: "#d1d5db", marginBottom: "0.4rem" }}>
+                <div style={{ fontSize: "0.85rem", fontWeight: 700, color: "#0f172a", marginBottom: "0.4rem" }}>
                   Requête SQL Type d&apos;Exploitation
                 </div>
-                <div style={{ backgroundColor: "#0d1117", border: "1px solid #30363d", borderRadius: "6px", padding: "0.85rem", position: "relative" }}>
-                  <pre style={{ margin: 0, fontSize: "0.82rem", color: "#67e8f9", fontFamily: "monospace", overflowX: "auto" }}>
+                <div style={{ backgroundColor: "#f8fafc", border: "1px solid #cbd5e1", borderRadius: "6px", padding: "0.85rem", position: "relative" }}>
+                  <pre style={{ margin: 0, fontSize: "0.82rem", color: "#0369a1", fontFamily: "monospace", overflowX: "auto" }}>
                     {selectedDbTable.sampleQuery}
                   </pre>
                 </div>
-                <div style={{ fontSize: "0.75rem", color: "#f87171", marginTop: "6px" }}>
+                <div style={{ fontSize: "0.75rem", color: "#b91c1c", marginTop: "6px" }}>
                   ⚠️ {selectedDbTable.criticalNotes}
                 </div>
               </div>
@@ -1840,7 +1933,7 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: "rgba(0, 0, 0, 0.75)",
+            backgroundColor: "rgba(15, 23, 42, 0.5)",
             backdropFilter: "blur(4px)",
             display: "flex",
             alignItems: "center",
@@ -1853,23 +1946,25 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
             onClick={(e) => e.stopPropagation()}
             style={{
               width: "700px",
+              maxWidth: "95vw",
               maxHeight: "80vh",
-              backgroundColor: "#111827",
-              border: "1px solid #374151",
+              backgroundColor: "#ffffff",
+              border: "1px solid #cbd5e1",
               borderRadius: "12px",
               padding: "1.5rem",
               display: "flex",
               flexDirection: "column",
-              boxShadow: "0 20px 40px rgba(0,0,0,0.6)",
+              boxShadow: "0 20px 40px rgba(0,0,0,0.15)",
+              boxSizing: "border-box",
             }}
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
-              <h3 style={{ fontSize: "1.2rem", fontWeight: 700, margin: 0, color: "#f8fafc" }}>
+              <h3 style={{ fontSize: "1.2rem", fontWeight: 700, margin: 0, color: "#0f172a" }}>
                 📂 Projets de Développement Enregistrés ({savedProjects.length})
               </h3>
               <button
                 onClick={() => setShowProjectsModal(false)}
-                style={{ background: "none", border: "none", color: "#9ca3af", fontSize: "1.2rem", cursor: "pointer" }}
+                style={{ background: "none", border: "none", color: "#64748b", fontSize: "1.2rem", cursor: "pointer" }}
               >
                 ✕
               </button>
@@ -1877,7 +1972,7 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
 
             <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
               {savedProjects.length === 0 ? (
-                <div style={{ padding: "3rem", textAlign: "center", color: "#9ca3af" }}>
+                <div style={{ padding: "3rem", textAlign: "center", color: "#64748b" }}>
                   Aucun projet sauvegardé pour le moment. Cliquez sur <strong>💾 Sauvegarder (BD)</strong> pour conserver vos développements.
                 </div>
               ) : (
@@ -1887,8 +1982,8 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                     onClick={() => handleLoadProject(p)}
                     style={{
                       padding: "1rem",
-                      backgroundColor: "#0d1117",
-                      border: "1px solid #30363d",
+                      backgroundColor: "#f8fafc",
+                      border: "1px solid #e2e8f0",
                       borderRadius: "8px",
                       cursor: "pointer",
                       display: "flex",
@@ -1898,14 +1993,14 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                     }}
                   >
                     <div>
-                      <div style={{ fontWeight: 700, color: "#f8fafc", fontSize: "0.95rem" }}>{p.name}</div>
-                      <div style={{ fontSize: "0.78rem", color: "#9ca3af", marginTop: "4px" }}>
-                        Domaine : <span style={{ color: "#38bdf8" }}>{p.domain}</span> • Mis à jour le : {new Date(p.updatedAt).toLocaleString("fr-FR")}
+                      <div style={{ fontWeight: 700, color: "#0f172a", fontSize: "0.95rem" }}>{p.name}</div>
+                      <div style={{ fontSize: "0.78rem", color: "#64748b", marginTop: "4px" }}>
+                        Domaine : <span style={{ color: "#0284c7" }}>{p.domain}</span> • Mis à jour le : {new Date(p.updatedAt).toLocaleString("fr-FR")}
                       </div>
                     </div>
 
                     <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-                      <span style={{ fontSize: "0.8rem", color: "#38bdf8", fontWeight: 600 }}>Ouvrir →</span>
+                      <span style={{ fontSize: "0.8rem", color: "#0284c7", fontWeight: 600 }}>Ouvrir →</span>
                       <button
                         onClick={(e) => handleDeleteProject(p.id, e)}
                         style={{
