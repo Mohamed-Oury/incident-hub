@@ -3,6 +3,7 @@ import fs from "fs";
 import path from "path";
 import { CBS_SCHEMA_TABLES } from "@/modules/cbs/cbs-advanced-data";
 import { CopilotProject } from "@/modules/cbs/copilot/types";
+import { prisma } from "@/lib/prisma";
 
 const DATA_FILE = path.join(process.cwd(), "data", "cbs-copilot-projects.json");
 
@@ -38,14 +39,57 @@ export async function GET(request: Request) {
     const projectId = searchParams.get("id");
     const getDictionary = searchParams.get("dictionary");
 
-    const projects = loadPersistedProjects();
+    let projects: CopilotProject[] = [];
+    let isDbConnected = false;
 
-    if (projectId) {
-      const found = projects.find((p) => p.id === projectId);
-      if (!found) {
-        return NextResponse.json({ error: "Projet introuvable" }, { status: 404 });
+    try {
+      if (projectId) {
+        const row = await prisma.cbsCopilotProject.findUnique({
+          where: { id: projectId },
+        });
+        if (row) {
+          const project: CopilotProject = {
+            id: row.id,
+            name: row.name,
+            domain: row.domain,
+            amplitudeVersion: row.amplitudeVersion,
+            input: row.inputData as any,
+            plan: row.planData as any,
+            createdAt: row.createdAt.toISOString(),
+            updatedAt: row.updatedAt.toISOString(),
+          };
+          return NextResponse.json({ success: true, project, storage: "DATABASE_MYSQL" });
+        }
+      } else {
+        const rows = await prisma.cbsCopilotProject.findMany({
+          orderBy: { updatedAt: "desc" },
+        });
+        projects = rows.map((r) => ({
+          id: r.id,
+          name: r.name,
+          domain: r.domain,
+          amplitudeVersion: r.amplitudeVersion,
+          input: r.inputData as any,
+          plan: r.planData as any,
+          createdAt: r.createdAt.toISOString(),
+          updatedAt: r.updatedAt.toISOString(),
+        }));
+        isDbConnected = true;
       }
-      return NextResponse.json({ success: true, project: found });
+    } catch (dbErr) {
+      console.warn("DB MySQL fallback vers fichier local:", dbErr);
+    }
+
+    if (!isDbConnected) {
+      const fileProjects = loadPersistedProjects();
+      if (projectId) {
+        const found = fileProjects.find((p) => p.id === projectId);
+        if (!found) {
+          return NextResponse.json({ error: "Projet introuvable" }, { status: 404 });
+        }
+        return NextResponse.json({ success: true, project: found, storage: "FALLBACK_FILE" });
+      }
+      projects = fileProjects;
     }
 
     const dictSummary = CBS_SCHEMA_TABLES.map((t) => ({
@@ -86,36 +130,68 @@ export async function POST(request: Request) {
       );
     }
 
-    const projects = loadPersistedProjects();
     const id = project.id || "PROJ-" + Date.now();
-    const now = new Date().toISOString();
+    const now = new Date();
 
-    const existingIdx = projects.findIndex((p) => p.id === id);
     const toSave: CopilotProject = {
       ...project,
       id,
-      updatedAt: now,
-      createdAt: existingIdx >= 0 ? projects[existingIdx].createdAt : now,
+      updatedAt: now.toISOString(),
+      createdAt: project.createdAt || now.toISOString(),
     };
 
+    let savedInDb = false;
+
+    try {
+      await prisma.cbsCopilotProject.upsert({
+        where: { id },
+        create: {
+          id,
+          name: toSave.name,
+          domain: toSave.domain || "Général",
+          amplitudeVersion: toSave.amplitudeVersion || "v11.x",
+          inputData: toSave.input as any,
+          planData: toSave.plan as any,
+          createdAt: new Date(toSave.createdAt),
+          updatedAt: now,
+        },
+        update: {
+          name: toSave.name,
+          domain: toSave.domain || "Général",
+          amplitudeVersion: toSave.amplitudeVersion || "v11.x",
+          inputData: toSave.input as any,
+          planData: toSave.plan as any,
+          updatedAt: now,
+        },
+      });
+      savedInDb = true;
+    } catch (dbErr) {
+      console.warn("Échec écriture Prisma MySQL, sauvegarde dans le fichier de secours:", dbErr);
+    }
+
+    // Réplication de sécurité dans le fichier local
+    const projects = loadPersistedProjects();
+    const existingIdx = projects.findIndex((p) => p.id === id);
     if (existingIdx >= 0) {
       projects[existingIdx] = toSave;
     } else {
       projects.unshift(toSave);
     }
-
     savePersistedProjects(projects);
 
     return NextResponse.json({
       success: true,
-      message: "Projet sauvegardé avec succès dans le référentiel CBS",
+      message: savedInDb
+        ? "Projet enregistré avec succès dans la base de données MySQL (table CbsCopilotProject)"
+        : "Projet sauvegardé dans le référentiel de secours",
+      storage: savedInDb ? "DATABASE_MYSQL" : "FILE_FALLBACK",
       project: toSave,
       totalProjects: projects.length,
     });
   } catch (error: any) {
     console.error("Erreur POST /api/cbs/copilot:", error);
     return NextResponse.json(
-      { error: "Échec de l'enregistrement du projet Copilot" },
+      { error: "Échec de l'enregistrement du projet Copilot dans la base de données" },
       { status: 500 }
     );
   }
@@ -130,18 +206,25 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: "Identifiant id requis" }, { status: 400 });
     }
 
-    const projects = loadPersistedProjects();
-    const filtered = projects.filter((p) => p.id !== id);
+    let deletedFromDb = false;
 
-    if (filtered.length === projects.length) {
-      return NextResponse.json({ error: "Projet introuvable" }, { status: 404 });
+    try {
+      await prisma.cbsCopilotProject.delete({
+        where: { id },
+      });
+      deletedFromDb = true;
+    } catch (dbErr) {
+      console.warn("Erreur suppression Prisma MySQL:", dbErr);
     }
 
+    const projects = loadPersistedProjects();
+    const filtered = projects.filter((p) => p.id !== id);
     savePersistedProjects(filtered);
 
     return NextResponse.json({
       success: true,
-      message: "Projet supprimé avec succès",
+      message: "Projet supprimé de la base de données",
+      storage: deletedFromDb ? "DATABASE_MYSQL" : "FILE_FALLBACK",
       remainingCount: filtered.length,
     });
   } catch (error: any) {

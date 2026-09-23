@@ -224,3 +224,18 @@ model AuditLog {
   @@index([entity, entityId])
   @@index([userId])
 }
+
+model CbsCopilotProject {
+  id               String   @id
+  name             String
+  domain           String
+  amplitudeVersion String   @default("v11.x")
+  inputData        Json
+  planData         Json?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([domain])
+  @@index([name])
+}
+
