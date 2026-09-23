@@ -167,7 +167,7 @@ export async function getAllIncidents(): Promise<IncidentRecord[]> {
       orderBy: { reference: "asc" },
     });
 
-    if (dbIncidents.length > 0) {
+    if (dbIncidents.length >= referenceIncidents.length) {
       return dbIncidents.map((inc) => ({
         id: inc.id,
         reference: inc.reference,
