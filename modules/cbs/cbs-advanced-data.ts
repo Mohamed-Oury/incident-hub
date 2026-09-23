@@ -1,5 +1,6 @@
 // modules/cbs/cbs-advanced-data.ts
 import { CBS_ADDITIONAL_TABLES } from "./cbs-additional-tables";
+import { CBS_EXTENDED_DICTIONARY } from "./cbs-amplitude-full-dictionary";
 
 export interface CbsTableDefinition {
   tableName: string;
@@ -180,6 +181,7 @@ export const CBS_SCHEMA_TABLES: CbsTableDefinition[] = [
     criticalNotes: "Définit les flux miroir entre la monétique et les comptes généraux de compensation.",
   },
   ...CBS_ADDITIONAL_TABLES,
+  ...CBS_EXTENDED_DICTIONARY,
 ];
 
 // ----------------------------------------------------
