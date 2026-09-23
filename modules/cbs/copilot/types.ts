@@ -126,3 +126,15 @@ export interface CopilotFullPlan {
   deliveryPackage: DeliveryPackage;
   generatedDate: string;
 }
+
+export interface CopilotProject {
+  id: string;
+  name: string;
+  domain: string;
+  amplitudeVersion: string;
+  input: DevelopmentNeedInput;
+  plan?: CopilotFullPlan;
+  createdAt: string;
+  updatedAt: string;
+}
+

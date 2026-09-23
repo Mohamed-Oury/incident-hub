@@ -63,8 +63,8 @@ export function generateCopilotPlan(input: DevelopmentNeedInput): CopilotFullPla
       "Gestionnaire de transactions SQL (BEGIN WORK / COMMIT WORK)",
     ],
     unresolvedQuestions: [
-      "Information nécessaire : nom réel de la table ou structure CBS à confirmer dans le dictionnaire de données pour l'environnement cible.",
-      "Quel est le comportement attendu en cas de compte débiteur non autorisé ?",
+      "Vérification des habilitations spécifiques agence sur la table BKCPT (filtre sur colonne AGE).",
+      "Quel est le comportement attendu en cas de compte débiteur au-delà de la limite DEB autorisée ?",
       "Le programme doit-il supporter l'appel en mode Batch (sans IHM) et interactif (.per) ?",
     ],
     technicalRisks: [
@@ -187,18 +187,26 @@ export function generateCopilotPlan(input: DevelopmentNeedInput): CopilotFullPla
   // 3. Proposition de Code 4GL
   const progName = isAccountOrClient ? "p_cbs_cpt_consult" : "p_cbs_traitement_flux";
   const code4GlProposal: Generated4GlProposal = {
-    programObjective: `Assurer le traitement métier pour '${input.title}' avec contrôles stricts de solvabilité, sécurité et gestion des erreurs.`,
-    programType: needsIhm ? "Programme Interactif avec Écran Formulaire" : "Programme Batch / Fonction Métier",
+    programObjective: `Assurer le traitement métier pour '${input.title}' avec contrôles stricts de solvabilité sur BKCPT, contrôle KYC tiers BKCLI et gestion des erreurs SQLCA.`,
+    programType: needsIhm ? "Programme Interactif avec Écran Formulaire (.per)" : "Programme Batch / Fonction Métier (C4GL)",
     entryPoint: `MAIN ou FUNCTION ${progName}()`,
-    parameters: ["p_identifiant CHAR(24)", "p_code_agence CHAR(5)", "p_user_login CHAR(10)"],
+    parameters: ["p_agence CHAR(5)", "p_ncp CHAR(11)", "p_user_login CHAR(10)"],
     variables: [
-      "v_statut CHAR(2)",
-      "v_solde DECIMAL(18,3)",
-      "v_nom_client CHAR(50)",
+      "v_age VARCHAR(5)",
+      "v_ncp VARCHAR(11)",
+      "v_cli VARCHAR(15)",
+      "v_nom VARCHAR(45)",
+      "v_pre VARCHAR(30)",
+      "v_dev VARCHAR(3)",
+      "v_sol DECIMAL(19,4)",
+      "v_sind DECIMAL(19,4)",
+      "v_deb DECIMAL(19,4)",
+      "v_solde_dispo DECIMAL(19,4)",
+      "v_eta VARCHAR(1)",
       "v_code_retour INTEGER",
-      "v_message CHAR(255)",
+      "v_message VARCHAR(255)",
     ],
-    dataStructures: ["RECORD LIKE structure_cbs.*"],
+    dataStructures: ["RECORD LIKE bkcpt.*", "RECORD LIKE bkcli.*"],
     errorHandling: "Contrôle systématique de SQLCA.SQLCODE et interception WHENEVER ERROR CONTINUE",
     transactionControl: "BEGIN WORK / COMMIT WORK avec protection ROLLBACK WORK",
     loggingStrategy: "Journalisation dans la table d'audit CBS des tentatives frauduleuses ou erreurs critiques",
@@ -207,65 +215,82 @@ export function generateCopilotPlan(input: DevelopmentNeedInput): CopilotFullPla
 # Objet     : ${input.title}
 # Auteur    : M.Oury (CBS 4GL Development Copilot)
 # Système   : Sopra Banking Amplitude (${input.amplitudeVersion})
-# Note      : Proposition technique à adapter au dictionnaire réel de la banque.
+# SGBD      : ${input.technicalEnvironment} (Tables BKCPT, BKCLI, BKTRA)
 ###############################################################################
 
 DATABASE amplitude_db
 
 GLOBALS
-    DEFINE g_user_id      CHAR(10),
-    DEFINE g_code_agence  CHAR(5)
+    DEFINE g_user_id      VARCHAR(10),
+    DEFINE g_code_agence  VARCHAR(5)
 END GLOBALS
 
 MAIN
-    DEFINE v_num_compte   CHAR(24)
-    DEFINE v_client_nom   CHAR(50)
-    DEFINE v_solde_disp   DECIMAL(18,3)
-    DEFINE v_etat_compte  CHAR(2)
+    DEFINE v_age          VARCHAR(5)
+    DEFINE v_ncp          VARCHAR(11)
+    DEFINE v_cli          VARCHAR(15)
+    DEFINE v_nom          VARCHAR(45)
+    DEFINE v_pre          VARCHAR(30)
+    DEFINE v_dev          VARCHAR(3)
+    DEFINE v_sol          DECIMAL(19,4)
+    DEFINE v_sind         DECIMAL(19,4)
+    DEFINE v_deb          DECIMAL(19,4)
+    DEFINE v_solde_dispo  DECIMAL(19,4)
+    DEFINE v_eta          VARCHAR(1)
     DEFINE v_code_retour  INTEGER
-    DEFINE v_message      CHAR(255)
+    DEFINE v_message      VARCHAR(255)
 
-    -- Initialisation des variables
+    -- Initialisation des compteurs et accumulateurs
     LET v_code_retour = 0
     LET v_message     = NULL
-    LET v_solde_disp  = 0.000
+    LET v_solde_dispo = 0.0000
 
-    -- Affichage de l'en-tête de session
+    -- Affichage de l'en-tête de session d'ingénierie Amplitude
     DISPLAY "--- INITIALISATION DU TRAITEMENT CBS AMPLITUDE ---" AT 1, 2
 
-    ${needsIhm ? `-- Ouverture de l'écran formulaire
+    ${needsIhm ? `-- Ouverture du masque écran formulaire
     OPEN WINDOW w_cbs_cpt AT 3, 2 WITH FORM "f_cbs_cpt_rech"
     
-    INPUT BY NAME v_num_compte WITHOUT DEFAULTS
-        BEFORE FIELD v_num_compte
-            MESSAGE "Veuillez saisir le numéro de compte (ou F12 pour quitter)"
-        AFTER FIELD v_num_compte
-            IF v_num_compte IS NULL OR v_num_compte = "" THEN
-                ERROR "Erreur : Le numéro de compte est obligatoire."
-                NEXT FIELD v_num_compte
+    INPUT BY NAME v_age, v_ncp WITHOUT DEFAULTS
+        BEFORE FIELD v_age
+            MESSAGE "Saisissez l'agence (ex: 00100) ou F12 pour quitter"
+        AFTER FIELD v_age
+            IF v_age IS NULL OR LENGTH(v_age) < 3 THEN
+                ERROR "Erreur : Code agence obligatoire (min 3 caractères)."
+                NEXT FIELD v_age
             END IF
-    END INPUT` : `-- Récupération des paramètres en ligne de commande
-    LET v_num_compte = ARG_VAL(1)`}
+
+        BEFORE FIELD v_ncp
+            MESSAGE "Saisissez le numéro de compte racine (11 chiffres) ou F12 pour quitter"
+        AFTER FIELD v_ncp
+            IF v_ncp IS NULL OR LENGTH(v_ncp) < 6 THEN
+                ERROR "Erreur : Numéro de compte racine BKCPT invalide."
+                NEXT FIELD v_ncp
+            END IF
+    END INPUT` : `-- Récupération des paramètres en ligne de commande (Batch/Script)
+    LET v_age = ARG_VAL(1)
+    LET v_ncp = ARG_VAL(2)`}
 
     -- 1. Contrôle fonctionnel préalable
-    IF v_num_compte IS NULL OR LENGTH(v_num_compte) < 6 THEN
+    IF v_age IS NULL OR v_ncp IS NULL THEN
         LET v_code_retour = 1
-        LET v_message = "Numéro de compte non conforme ou manquant."
+        LET v_message = "Paramètres de recherche manquants (AGE/NCP obligatoires)."
         DISPLAY v_message AT 23, 2
         EXIT PROGRAM (v_code_retour)
     END IF
 
-    -- 2. Recherche et contrôle d'existence dans le référentiel CBS
-    -- Information nécessaire : nom réel de la table (ex: BKCOM / BKMVT / COMPTES)
+    -- 2. Recherche et contrôle d'existence dans le référentiel des comptes BKCPT et tiers BKCLI
     WHENEVER ERROR CONTINUE
-    SELECT c.nom_client, c.solde_disponible, c.statut
-      INTO v_client_nom, v_solde_disp, v_etat_compte
-      FROM bkcom c
-     WHERE c.num_compte = v_num_compte
+    SELECT c.cli, c.dev, c.sol, c.sind, NVL(c.deb, 0), c.eta, k.nom, k.pre
+      INTO v_cli, v_dev, v_sol, v_sind, v_deb, v_eta, v_nom, v_pre
+      FROM bkcpt c, OUTER bkcli k
+     WHERE c.age = v_age
+       AND c.ncp = v_ncp
+       AND c.cli = k.cli
 
     IF SQLCA.SQLCODE = 100 THEN
         LET v_code_retour = 2
-        LET v_message = "Rejet : Compte client inexistant dans le référentiel CBS."
+        LET v_message = "Rejet : Compte introuvable dans BKCPT (AGE: " || v_age || ", NCP: " || v_ncp || ")."
         ERROR v_message
     ELSE
         IF SQLCA.SQLCODE < 0 THEN
@@ -273,23 +298,36 @@ MAIN
             LET v_message = "Erreur SQL SGBD interne : ", SQLCA.SQLCODE USING "-<<<<<<"
             ERROR v_message
         ELSE
-            -- 3. Contrôles métier spécifiques
-            IF v_etat_compte = "F" OR v_etat_compte = "CLO" THEN
+            -- 3. Contrôles métier de conformité et de statut juridique
+            IF v_eta = "F" THEN
                 LET v_code_retour = 3
-                LET v_message = "Avertissement : Ce compte est clôturé / bloqué juridiquement."
+                LET v_message = "Avertissement : Ce compte est CLÔTURÉ (Statut F dans BKCPT)."
                 ERROR v_message
             ELSE
-                -- Affichage des informations validées
-                DISPLAY "Compte valide : ", v_num_compte CLIPPED AT 10, 5
-                DISPLAY "Titulaire     : ", v_client_nom CLIPPED AT 11, 5
-                DISPLAY "Solde Dispo   : ", v_solde_disp USING "---,---,---,---.&&&" AT 12, 5
-                LET v_message = "Consultation effectuée avec succès."
+                IF v_eta = "D" THEN
+                    LET v_code_retour = 4
+                    LET v_message = "Alerte Sécurité : Compte en CONTENTIEUX / SÉQUESTRE (Statut D)."
+                    ERROR v_message
+                ELSE
+                    -- Calcul de solvabilité temps réel Amplitude
+                    LET v_solde_dispo = (v_sol - v_sind + v_deb)
+
+                    -- Affichage des informations validées
+                    DISPLAY "Compte Valide : ", v_age CLIPPED, "-", v_ncp CLIPPED AT 10, 5
+                    DISPLAY "Titulaire     : ", v_nom CLIPPED, " ", v_pre CLIPPED AT 11, 5
+                    DISPLAY "Devise        : ", v_dev CLIPPED AT 12, 5
+                    DISPLAY "Solde Compt.  : ", v_sol USING "---,---,---,--&.&&&&" AT 13, 5
+                    DISPLAY "Indisponible  : ", v_sind USING "---,---,---,--&.&&&&" AT 14, 5
+                    DISPLAY "Découvert Aut.: ", v_deb USING "---,---,---,--&.&&&&" AT 15, 5
+                    DISPLAY "SOLDE DISPO   : ", v_solde_dispo USING "---,---,---,--&.&&&&" AT 16, 5
+                    LET v_message = "Consultation effectuée avec succès."
+                END IF
             END IF
         END IF
     END IF
     WHENEVER ERROR STOP
 
-    -- 4. Enregistrement dans la piste d'audit CBS
+    -- 4. Piste d'audit CBS
     INSERT INTO trace_audit_cbs (prog_nom, user_id, date_oper, action_desc, code_ret)
     VALUES ("${progName}", g_user_id, CURRENT YEAR TO SECOND, v_message, v_code_retour)
 
@@ -299,9 +337,9 @@ MAIN
     EXIT PROGRAM (v_code_retour)
 END MAIN`,
     importantNotes: [
-      "La table 'bkcom' est une désignation usuelle Amplitude : confirmez son libellé exact sur votre schéma (ex: BKSOL, BKCOM, CLI_CPT).",
-      "Toujours encadrer les ordres d'écriture DML dans un bloc BEGIN WORK / COMMIT WORK avec gestion de ROLLBACK WORK.",
-      "Le code retour doit être normalisé : 0 = Succès, 1 = Format invalide, 2 = Introuvable, 3 = Statut bloqué, 99 = Erreur technique SGBD.",
+      "Table centrale des soldes : 'BKCPT' indexée sur (AGE, NCP). Ne jamais faire de SELECT sans la clause 'AGE = v_age AND NCP = v_ncp'.",
+      "Formule de disponibilité monétique Amplitude : Solde Disponible = SOL - SIND + DEB.",
+      "Le code retour normalisé : 0 = Succès, 1 = Paramètres invalides, 2 = Compte inexistant, 3 = Clôturé, 4 = Contentieux, 99 = Erreur SGBD.",
     ],
   };
 
@@ -313,110 +351,146 @@ END MAIN`,
       title: `Consultation & Traitement - ${input.title}`,
       screenType: "Formulaire Transactionnel Interactif",
       dimensions: "24 lignes x 80 colonnes (Standard terminal Curses/AIX)",
-      inputFieldList: ["v_num_compte (Numéro de compte, 24 caractères alphanumériques)"],
-      readOnlyFieldList: [
-        "v_client_nom (Titulaire, 50 caractères)",
-        "v_solde_disp (Solde disponible, numérique formaté)",
-        "v_etat_compte (Statut administratif)",
+      inputFieldList: [
+        "v_age (Code Agence, 5 caractères)",
+        "v_ncp (Numéro de compte racine, 11 caractères)",
       ],
-      buttons: ["F1 = Aide fonctionnelle", "F5 = Rafraîchir", "F10 = Valider", "F12 = Quitter l'écran"],
+      readOnlyFieldList: [
+        "bkcli.nom / bkcli.pre (Titulaire Tiers, 45+30 caractères)",
+        "bkcpt.dev (Devise ISO, 3 caractères)",
+        "bkcpt.sol (Solde comptable, 19,4 formaté)",
+        "bkcpt.sind (Indisponibilités, 19,4 formaté)",
+        "bkcpt.deb (Découvert accordé, 19,4 formaté)",
+        "solde_dispo (Solde net disponible temps réel)",
+        "bkcpt.eta (État : A=Actif, F=Fermé, D=Contentieux)",
+      ],
+      buttons: ["F1 = Aide fonctionnelle", "F2 = Derniers Mouvements", "F5 = Rafraîchir", "F10 = Valider", "F12 = Quitter l'écran"],
       messages: [
-        "Ligne 23 : Messages d'avertissement et guidage opérateur",
+        "Ligne 23 : Messages de guidage et statut opérationnel",
         "Ligne 24 : Erreurs bloquantes et alertes de sécurité",
       ],
       visualMockupAscii: `+------------------------------------------------------------------------------+
-|                     BANQUE - CBS AMPLITUDE (MODULE COMPTES)                  |
+|             SOPRA BANKING AMPLITUDE - ATELIER DE CONSULTATION BKCPT          |
 +------------------------------------------------------------------------------+
 |                                                                              |
-|  [ CRITÈRES DE RECHERCHE ]                                                   |
-|  Numéro de compte : [________________________]                               |
+|  [ CRITÈRES D'IDENTIFICATION COMPTE ]                                        |
+|  Code Agence : [f000 ]         Numéro Compte : [f001       ]                 |
 |                                                                              |
-|  [ INFORMATIONS DU COMPTE ]                                                  |
-|  Titulaire        : [                                                  ]     |
-|  Statut juridique : [__]                                                     |
-|  Solde disponible : [____________________] FCFA                              |
+|  [ RÉFÉRENTIEL TIERS & PROFIL JURIDIQUE ]                                    |
+|  Code Tiers  : [f002           ]                                             |
+|  Titulaire   : [f003                                        ] [f004        ] |
+|  Devise      : [f005]          Statut Compte : [f006] (A=Actif, F=Fermé)     |
 |                                                                              |
-|  [ DERNIÈRES OPÉRATIONS COMPTABLES ]                                         |
-|  Date       | Réf Mouvement    | Libellé                  | Débit / Crédit   |
-|  -----------+------------------+--------------------------+----------------  |
-|  [  /  /  ] | [              ] | [                      ] | [              ] |
-|  [  /  /  ] | [              ] | [                      ] | [              ] |
-|  [  /  /  ] | [              ] | [                      ] | [              ] |
+|  [ POSITION DE TRÉSORERIE TEMPS RÉEL ]                                       |
+|  Solde Comptable  : [f007               ] XOF                                |
+|  Indisponibilités : [f008               ] XOF (Blocages / Garanties)         |
+|  Découvert Accordé: [f009               ] XOF                                |
+|  --------------------------------------------------------------------------  |
+|  SOLDE DISPONIBLE : [f010               ] XOF (Temps réel monétique)         |
 |                                                                              |
-|  [F1] Aide    [F5] Rafraîchir    [F10] Valider recherche    [F12] Quitter    |
+|  [F1] Aide    [F2] Mouvements BKTRA    [F5] Recharger    [F12] Quitter       |
 +------------------------------------------------------------------------------+
-| MESSAGE : Saisissez un numéro de compte et appuyez sur F10                   |
+| MESSAGE : Renseignez le code agence et compte racine puis appuyez sur Entrée |
 +------------------------------------------------------------------------------+`,
       perCodeSnippet: `DATABASE amplitude_db
-SCREEN
+SCREEN SIZE 24 BY 80
 {
-==============================================================================
-                    CONSULTATION COMPTE CLIENT - CBS AMPLITUDE
-==============================================================================
+================================================================================
+           SOPRA BANKING AMPLITUDE - CONSULTATION SOLDE COMPTE
+================================================================================
 
-  Numéro de compte : [f001                    ]
+ Agence : [f000 ]       Numéro Compte : [f001       ]
+--------------------------------------------------------------------------------
+ Code Client   : [f002           ]
+ Titulaire     : [f003                                        ] [f004      ]
+ Devise        : [f005]  Statut Compte : [f006] (A=Actif, F=Ferme, D=Contentieux)
 
-  Titulaire        : [f002                                              ]
-  Statut Compte    : [f003]
-  Solde Disponible : [f004                ]
-
-==============================================================================
- [F10] Rechercher         [F5] Réinitialiser         [F12] Quitter
-==============================================================================
+ Solde Comptable : [f007               ]
+ Indisponibilités: [f008               ]
+ Découvert Aut.  : [f009               ]
+ -------------------------------------------------------------------------------
+ SOLDE DISPONIBLE: [f010               ]
+================================================================================
+ [F1] Aide   [F2] Derniers Mouvements   [F5] Recharger   [F12] Quitter
 }
 END
 TABLES
-  bkcom
+    bkcpt, bkcli
 ATTRIBUTES
-  f001 = bkcom.num_compte, REQUIRED, UPSHIFT,
-         COMMENTS = "Saisissez le numéro de compte client (24 caractères max)";
-  f002 = bkcom.nom_client, NOENTRY;
-  f003 = bkcom.statut, NOENTRY;
-  f004 = bkcom.solde_disponible, NOENTRY, FORMAT = "---,---,---,---.&&&";
+    f000 = bkcpt.age, REQUIRED, UPSHIFT, COMMENTS = "Code agence (5 caractères)";
+    f001 = bkcpt.ncp, REQUIRED, COMMENTS = "Numéro de compte racine (11 chiffres)";
+    f002 = bkcpt.cli, NOENTRY;
+    f003 = bkcli.nom, NOENTRY;
+    f004 = bkcli.pre, NOENTRY;
+    f005 = bkcpt.dev, NOENTRY;
+    f006 = bkcpt.eta, NOENTRY;
+    f007 = bkcpt.sol, FORMAT = "---,---,---,--&.&&", NOENTRY;
+    f008 = bkcpt.sind, FORMAT = "---,---,---,--&.&&", NOENTRY;
+    f009 = bkcpt.deb, FORMAT = "---,---,---,--&.&&", NOENTRY;
+    f010 = FORMONLY.solde_dispo TYPE DECIMAL(19,4), FORMAT = "---,---,---,--&.&&", REVERSE, NOENTRY;
 INSTRUCTIONS
-  DELIMITERS "[]"
+    DELIMITERS "[]"
 END`,
       amplitudeIntegrationNotes: [
-        "Compiler le masque avec : 'form4gl f_cbs_cpt_rech.per' (génère f_cbs_cpt_rech.frm).",
-        "Le fichier .frm doit être déployé dans le répertoire $AMPLITUDE_FORMS / $FORMPATH.",
-        "Vérifier le support de l'émulation terminal VT100 / VT220 pour l'affichage correct des bordures ASCII.",
+        "Compiler le masque avec l'outil natif Informix/Amplitude : 'form4gl f_cbs_cpt_rech.per' (génère f_cbs_cpt_rech.frm).",
+        "Le binaire .frm compilé doit être déposé dans le répertoire $AMPLITUDE_FORMS / $FORMPATH sur le serveur AIX/Linux.",
+        "Le champ calculé solde_dispo utilise la clause FORMONLY pour ne pas altérer le dictionnaire physique BKCPT.",
       ],
     };
   }
 
   // 5. Proposition SQL
   const sqlProposal: GeneratedSqlQuery = {
-    objective: `Extraction performante des données de compte et historique pour '${input.title}'.`,
-    targetTables: [isAccountOrClient ? "bkcom (Comptes)" : "bkmvt (Mouvements)", "bkcli (Clients)"],
-    joins: "INNER JOIN bkcli ON bkcom.cod_client = bkcli.cod_client",
-    parameters: [":p_num_compte (CHAR 24)", ":p_date_valeur (DATE)"],
-    filters: "WHERE bkcom.num_compte = :p_num_compte AND bkcom.cod_agence = :p_agence",
+    objective: `Extraction performante des soldes et historique des mouvements pour '${input.title}'.`,
+    targetTables: ["BKCPT (Comptes & Soldes)", "BKCLI (Référentiel Tiers KYC)", "BKTRA (Journal des Mouvements)"],
+    joins: "INNER JOIN BKCLI k ON c.CLI = k.CLI",
+    parameters: [":p_age (VARCHAR 5)", ":p_ncp (VARCHAR 11)", ":p_date_j (DATE)"],
+    filters: "WHERE c.AGE = :p_age AND c.NCP = :p_ncp",
     performanceRisks: [
-      "Risque de Full Table Scan si recherche sur le nom au lieu du numéro de compte (index clé primaire).",
-      "Éviter les fonctions scalaires dans le WHERE (ex: UPPER, SUBSTR) qui invalident l'utilisation de l'index B-Tree.",
+      "Risque de Full Table Scan sur BKTRA si non filtré par DCO (Date Comptable) et NCP (index primaire).",
+      "Éviter les fonctions scalaires dans le WHERE (ex: UPPER, SUBSTR) qui désactivent l'index B-Tree Informix.",
       "Sur Informix, exécuter 'SET ISOLATION TO DIRTY READ' si la requête est purement informative et n'effectue aucun calcul comptable bloquant.",
     ],
     securityPrecautions: [
       "Filtrage systématique par code agence pour empêcher les fuites de données inter-agences non autorisées.",
       "Masquage partiel des numéros de carte ou données PII sensibles dans les historiques de mouvements.",
     ],
-    sqlCode: `-- Requête principale d'extraction optimisée pour Amplitude
+    sqlCode: `-- 1. Consultation solde en temps réel avec jointure client KYC
 SELECT 
-    c.num_compte,
-    c.cod_client,
-    cl.nom_client,
-    c.statut,
-    c.devise,
-    c.solde_comptable,
-    c.solde_disponible,
-    c.date_derniere_op
-FROM bkcom c
-INNER JOIN bkcli cl ON c.cod_client = cl.cod_client
-WHERE c.num_compte = :p_num_compte
-  AND c.cod_agence = :p_code_agence;
+    c.AGE,
+    c.NCP,
+    c.CLI,
+    k.NOM,
+    k.PRE,
+    c.DEV,
+    c.SOL,
+    c.SIND,
+    NVL(c.DEB, 0) AS DECOUVERT,
+    (c.SOL - c.SIND + NVL(c.DEB, 0)) AS SOLDE_DISPONIBLE,
+    c.ETA
+FROM BKCPT c
+LEFT OUTER JOIN BKCLI k ON c.CLI = k.CLI
+WHERE c.AGE = :p_age
+  AND c.NCP = :p_ncp;
 
--- Index recommandé à vérifier dans le schéma :
--- CREATE UNIQUE INDEX idx_bkcom_numcpt ON bkcom (num_compte);`,
+-- 2. Consultation des 10 dernières écritures dans le journal des transactions BKTRA
+SELECT 
+    t.DCO,
+    t.OPE,
+    t.NCP,
+    t.MON,
+    t.SEN,
+    t.LIB,
+    t.UTI
+FROM BKTRA t
+WHERE t.AGE = :p_age
+  AND t.NCP = :p_ncp
+  AND t.DCO >= TRUNC(SYSDATE) - 30
+ORDER BY t.DCO DESC, t.EVE DESC;
+
+-- Index primaire utilisé :
+-- PK_BKCPT ON BKCPT (AGE, NCP)
+-- PK_BKTRA ON BKTRA (AGE, DCO, ETA, EVE)`,
   };
 
   // 6. Jeux de Tests

@@ -23,6 +23,15 @@ export default function CbsDashboardPage() {
 
   const quickModules = [
     {
+      title: "CBS 4GL Development Copilot",
+      count: "Studio Dédié & SGBD",
+      desc: "Transformation d'un besoin en plan 4GL, masque .per, requêtes SQL et tests unitaires",
+      href: "/cbs/copilot",
+      icon: "🤖",
+      badge: "Nouveau • Studio",
+      badgeColor: "#8b5cf6",
+    },
+    {
       title: "8 Domaines Métier",
       count: `${CBS_DOMAINS.length} domaines`,
       desc: "Comptabilité, Soldes, Virements, Crédits, Épargne, Monétique CBS",
@@ -228,7 +237,72 @@ export default function CbsDashboardPage() {
           </div>
         </div>
 
-        {/* Grille des 6 Modules Opérationnels */}
+        {/* Bannière Vedette Espace Dédié : CBS 4GL Development Copilot */}
+        <div
+          style={{
+            background: "linear-gradient(135deg, #1e1b4b 0%, #0f172a 60%, #1e293b 100%)",
+            border: "1px solid #4338ca",
+            borderRadius: "var(--radius-lg)",
+            padding: "1.5rem 1.75rem",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            flexWrap: "wrap",
+            gap: "1.25rem",
+            boxShadow: "0 8px 24px rgba(67, 56, 202, 0.2)",
+          }}
+        >
+          <div style={{ maxWidth: "720px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.35rem" }}>
+              <span
+                style={{
+                  backgroundColor: "#4f46e5",
+                  color: "#ffffff",
+                  fontSize: "0.72rem",
+                  fontWeight: 800,
+                  padding: "2px 8px",
+                  borderRadius: "6px",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.05em",
+                }}
+              >
+                ESPACE DE TRAVAIL DÉDIÉ
+              </span>
+              <span style={{ color: "#a5b4fc", fontSize: "0.8rem", fontWeight: 600 }}>
+                ⚡ Studio Plein Écran sans Sidebar ni Header
+              </span>
+            </div>
+            <h3 style={{ fontSize: "1.3rem", fontWeight: 800, color: "#ffffff", margin: "0 0 0.4rem 0" }}>
+              CBS 4GL Development Copilot
+            </h3>
+            <p style={{ fontSize: "0.88rem", color: "#cbd5e1", margin: 0, lineHeight: "1.5" }}>
+              Passez d&apos;un besoin fonctionnel bancaire à un plan technique 4GL structuré : sous-tâches, code Informix 4GL connecté aux tables <code>BKCPT</code> et <code>BKCLI</code>, masque d&apos;écran <code>.per</code>, requêtes SQL indexées, diagnostic de point de rupture et persistance base de données.
+            </p>
+          </div>
+
+          <Link
+            href="/cbs/copilot"
+            style={{
+              backgroundColor: "#4f46e5",
+              color: "#ffffff",
+              textDecoration: "none",
+              padding: "0.75rem 1.35rem",
+              borderRadius: "8px",
+              fontWeight: 700,
+              fontSize: "0.92rem",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              boxShadow: "0 4px 12px rgba(79, 70, 229, 0.4)",
+              transition: "transform 0.15s ease",
+            }}
+          >
+            <span>🚀 Ouvrir le Studio 4GL</span>
+            <span>→</span>
+          </Link>
+        </div>
+
+        {/* Grille des Modules Opérationnels */}
         <div>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
             <h3 style={{ fontSize: "1.15rem", fontWeight: 700, color: "var(--text-primary)" }}>

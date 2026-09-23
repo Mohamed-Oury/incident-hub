@@ -13,7 +13,7 @@ import { MONETIQUE_GRADES, MONETIQUE_LESSONS } from "../modules/training-monetiq
 import { MONETIQUE_EXAMS } from "../modules/training-monetique/exams-data";
 import { referenceIncidents } from "../app/reference-incidents";
 import { computeEmvCryptograms } from "../modules/crypto/emv-arqc";
-import { generateCopilotPlan } from "../modules/cbs/copilot/engine";
+import { generateCopilotPlan, review4GlCode, analyzeCbsFailure } from "../modules/cbs/copilot/engine";
 
 function runQaAll() {
   console.log("=================================================");
@@ -123,6 +123,20 @@ function runQaAll() {
     copilotPlan.testCases.length >= 4 &&
     copilotPlan.deliveryPackage.rollbackPlan.length >= 3,
     `${copilotPlan.subTasks.length} sous-tâches ordonnées, code 4GL, masque .per, SQL, ${copilotPlan.testCases.length} tests et plan de rollback`
+  );
+
+  // --- CBS COPILOT ADVANCED (REVUE 4GL, DIAGNOSTIC RUN, DICTIONNAIRE BD) ---
+  const reviewRes = review4GlCode("MAIN\nSELECT sol FROM bkcpt WHERE ncp = v_ncp\nBEGIN WORK\nDELETE FROM bkcpt\nEND MAIN");
+  const failRes = analyzeCbsFailure("SQLCA.SQLCODE = -143 deadlock on bkcpt");
+  const hasBkTables = ["BKCPT", "BKCLI", "BKTRA", "BKCOM"].every((tbl) =>
+    CBS_SCHEMA_TABLES.some((t) => t.tableName === tbl)
+  );
+
+  assert("TEST 27 - Copilot Modules (Revue 4GL, Diagnostic RUN & Dictionnaire BD)",
+    reviewRes.length >= 2 &&
+    failRes.rootCause.includes("verrouillage") &&
+    hasBkTables,
+    `Revue détecte ${reviewRes.length} anomalies, RCA deadlock validée, tables BKCPT/BKCLI/BKTRA/BKCOM connectées`
   );
 
   console.log("\n=================================================");

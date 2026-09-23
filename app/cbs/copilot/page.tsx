@@ -1,67 +1,274 @@
 "use client";
 
-import { useState } from "react";
-import { AppShell } from "@/modules/layout/AppShell";
+import { useState, useEffect } from "react";
+import Link from "next/link";
 import {
   DevelopmentNeedInput,
   CopilotFullPlan,
   CodeReviewFinding,
+  CopilotProject,
 } from "@/modules/cbs/copilot/types";
 import {
   generateCopilotPlan,
   analyzeCbsFailure,
   review4GlCode,
 } from "@/modules/cbs/copilot/engine";
+import { CBS_SCHEMA_TABLES, CbsTableDefinition } from "@/modules/cbs/cbs-advanced-data";
+
+// Préréglages de besoins bancaires courants
+const PRESET_NEEDS: { label: string; icon: string; input: DevelopmentNeedInput }[] = [
+  {
+    label: "Consultation Solde & Tiers (BKCPT + BKCLI)",
+    icon: "💳",
+    input: {
+      title: "Consultation du solde et dernières opérations compte client",
+      functionalDescription:
+        "Ajouter une fonctionnalité permettant à un gestionnaire d'agence de rechercher un compte client par agence et numéro de compte, d'afficher son solde disponible (SOL - SIND + DEB) et de consulter ses dernières opérations comptables.",
+      bankingDomain: "Comptes & Relation Client",
+      targetUsers: "Gestionnaire de compte / Chargé de clientèle agence",
+      knownBusinessRules:
+        "Contrôle d'existence du compte dans BKCPT, contrôle d'habilitation agence, interdiction de consultation sur compte sous séquestre ou contentieux (ETA='D') sans profil Superviseur.",
+      inputData: "Code agence (5 car.) et numéro de compte racine (11 chiffres)",
+      expectedOutput: "Nom/Prénom titulaire (BKCLI), solde comptable, indisponibilités, solde disponible, historique 10 derniers mouvements",
+      specialConstraints: "Temps de réponse inférieur à 300ms, masquage des informations confidentielles non nécessaires",
+      amplitudeVersion: "v11.x",
+      technicalEnvironment: "Informix / AIX",
+      nominalExample: "Agence 00100, Compte 001001234567 -> Affiche 'M. DIOP - Solde 1 540 000 XOF - Actif'",
+      errorExample: "Compte 999999999999 -> Rejet 'Compte introuvable dans le référentiel BKCPT'",
+    },
+  },
+  {
+    label: "Virement Inter-Comptes (BKCPT + BKTRA)",
+    icon: "💸",
+    input: {
+      title: "Passation d'un virement inter-comptes avec contrôle de provision",
+      functionalDescription:
+        "Programme de débit du compte donneur d'ordre et crédit du compte bénéficiaire avec vérification temps réel de la provision disponible et écriture dans le journal des mouvements BKTRA.",
+      bankingDomain: "Virements & Moyens de Paiement",
+      targetUsers: "Agent d'exploitation / Automate d'échanges",
+      knownBusinessRules:
+        "Solde disponible suffisant (SOL - SIND >= Montant), même devise pour les deux comptes ou appel au module de change, interdiction si compte donneur d'ordre clôturé (ETA='F').",
+      inputData: "Compte émetteur, Compte destinataire, Montant, Devise, Motif",
+      expectedOutput: "Numéro d'événement BKTRA généré, solde après écriture, accusé d'imputation comptable",
+      specialConstraints: "Exécution dans une transaction unique (BEGIN WORK / COMMIT WORK) avec ROLLBACK immédiat en cas d'incident.",
+      amplitudeVersion: "v11.x",
+      technicalEnvironment: "Informix / AIX",
+      nominalExample: "Débit 500 000 XOF sur CPT-A, Crédit 500 000 XOF sur CPT-B -> Statut SUCCÈS",
+      errorExample: "CPT-A solde insuffisant -> Rejet 'Provision insuffisante (Solde dispo < Montant)'",
+    },
+  },
+  {
+    label: "Blocage Provision Monétique (BKCPT.SIND)",
+    icon: "🏧",
+    input: {
+      title: "Prise et libération d'une pré-autorisation monétique GAB/TPE",
+      functionalDescription:
+        "Mise à jour du montant des indisponibilités (SIND) sur BKCPT lors d'une demande d'autorisation ISO 8583 (0100), puis libération ou imputation définitive lors du clearing (0200/0220).",
+      bankingDomain: "Monétique & Cartes",
+      targetUsers: "Interface Switch Monétique ↔ Core Banking Amplitude",
+      knownBusinessRules:
+        "Augmenter BKCPT.SIND de la valeur autorisée. Si délai d'expiration de 7 jours dépassé sans présentation de compensation, libérer la provision réservée.",
+      inputData: "Identifiant compte BKCPT, Numéro d'autorisation (STAN/RRN), Montant de la réservation",
+      expectedOutput: "Nouveau SIND calculé, confirmation de prise de garantie",
+      specialConstraints: "Latence maximale 120ms pour respecter le SLA Switch monétique.",
+      amplitudeVersion: "v11.x",
+      technicalEnvironment: "Informix / AIX",
+      nominalExample: "Autorisation 50 000 XOF GAB -> SIND passe de 10 000 à 60 000 XOF",
+      errorExample: "Dépassement du découvert autorisé -> Code réponse monétique 51 (Fonds insuffisants)",
+    },
+  },
+  {
+    label: "Batch Arrêté EOD & Grand Livre (BKCOM)",
+    icon: "⚙️",
+    input: {
+      title: "Contrôle de balance générale d'arrêté journalier EOD",
+      functionalDescription:
+        "Traitement batch nocturne vérifiant l'égalité Débit/Crédit sur les comptes de Grand Livre BKCOM avant autorisation du basculement à J+1 (BOD).",
+      bankingDomain: "Comptabilité Générale & EOD",
+      targetUsers: "Opérateur de nuit / Responsable de chaîne Batch",
+      knownBusinessRules:
+        "Somme(SDC) = Somme(SCC) pour chaque devise gérée dans BKDEV. Tolérance d'écart = 0.0000.",
+      inputData: "Code devise, Date de journée comptable",
+      expectedOutput: "Rapport d'équilibre de balance, code retour 0 (GO BOD) ou 99 (NO GO BOD)",
+      specialConstraints: "Exécution sans IHM en mode CLI Unix AIX, journalisation détaillée des comptes déséquilibrés.",
+      amplitudeVersion: "v11.x",
+      technicalEnvironment: "Informix / AIX",
+      nominalExample: "Total Débit XOF = Total Crédit XOF -> Basculement EOD autorisé",
+      errorExample: "Écart de 1 250 XOF détecté sur chapitre 4110 -> Blocage immédiat de la chaîne EOD",
+    },
+  },
+];
 
 export default function CbsCopilotPage() {
-  const [activeTab, setActiveTab] = useState<"NEED" | "TASKS" | "CODE" | "PER_SCREEN" | "TESTS" | "DELIVERY" | "FAILURE" | "REVIEW">("NEED");
+  const [activeTab, setActiveTab] = useState<
+    "NEED" | "TASKS" | "CODE" | "PER_SCREEN" | "SQL" | "TESTS" | "DELIVERY" | "FAILURE" | "REVIEW" | "DICTIONARY"
+  >("NEED");
 
   // Formulaire Saisie du besoin
-  const [needInput, setNeedInput] = useState<DevelopmentNeedInput>({
-    title: "Consultation du solde et dernières opérations compte client",
-    functionalDescription:
-      "Ajouter une fonctionnalité permettant à un gestionnaire d'agence de rechercher un compte client par numéro de compte, d'afficher son solde disponible et de consulter ses dernières opérations comptables.",
-    bankingDomain: "Comptes & Relation Client",
-    targetUsers: "Gestionnaire de compte / Chargé de clientèle agence",
-    knownBusinessRules:
-      "Contrôle d'existence du compte, contrôle d'habilitation agence, interdiction de consultation sur compte sous séquestre sans profil Superviseur.",
-    inputData: "Numéro de compte (24 caractères)",
-    expectedOutput: "Nom du titulaire, solde disponible formaté, statut juridique, historique 10 derniers mouvements",
-    specialConstraints: "Temps de réponse inférieur à 300ms, masquage des informations confidentielles non nécessaires",
-    amplitudeVersion: "v11.x",
-    technicalEnvironment: "Informix / AIX",
-    nominalExample: "Compte 001001234567 -> Affiche 'M. DIOP - Solde 1 540 000 XOF - Actif'",
-    errorExample: "Compte 999999999999 -> Rejet 'Compte introuvable dans le référentiel CBS'",
-  });
-
-  const [generatedPlan, setGeneratedPlan] = useState<CopilotFullPlan>(() => generateCopilotPlan(needInput));
+  const [needInput, setNeedInput] = useState<DevelopmentNeedInput>(PRESET_NEEDS[0].input);
+  const [generatedPlan, setGeneratedPlan] = useState<CopilotFullPlan>(() => generateCopilotPlan(PRESET_NEEDS[0].input));
 
   // Onglet Analyse Point de Rupture
   const [failureInput, setFailureInput] = useState<string>(
-    "Erreur SQLCA.SQLCODE = -143 (Deadlock detected on table bkcom during batch UPDATE) - Transaction aborted"
+    "Erreur SQLCA.SQLCODE = -143 (Deadlock detected on table bkcpt during batch UPDATE) - Transaction aborted"
   );
   const [failureResult, setFailureResult] = useState<any>(() => analyzeCbsFailure(failureInput));
 
   // Onglet Revue de Code 4GL
   const [codeReviewInput, setCodeReviewInput] = useState<string>(`MAIN
-    DEFINE v_cpt CHAR(24)
-    DEFINE v_solde DECIMAL(18,3)
+    DEFINE v_age VARCHAR(5)
+    DEFINE v_ncp VARCHAR(11)
+    DEFINE v_sol DECIMAL(19,4)
 
-    SELECT solde_disponible
-      FROM bkcom
-     WHERE num_compte = v_cpt
+    SELECT sol
+      FROM bkcpt
+     WHERE ncp = v_ncp
 
     BEGIN WORK
-    DELETE FROM bkcom
+    DELETE FROM bkcpt
 END MAIN`);
   const [reviewFindings, setReviewFindings] = useState<CodeReviewFinding[]>(() => review4GlCode(codeReviewInput));
 
+  // Projets enregistrés & Persistance
+  const [savedProjects, setSavedProjects] = useState<CopilotProject[]>([]);
+  const [showProjectsModal, setShowProjectsModal] = useState<boolean>(false);
+  const [saveStatus, setSaveStatus] = useState<string | null>(null);
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const [dbSearch, setDbSearch] = useState<string>("");
+  const [selectedDbTable, setSelectedDbTable] = useState<CbsTableDefinition>(CBS_SCHEMA_TABLES[1]); // BKCPT par défaut
+
+  // Charger les projets enregistrés depuis l'API et le localStorage
+  useEffect(() => {
+    async function fetchSavedProjects() {
+      try {
+        const res = await fetch("/api/cbs/copilot");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.projects && Array.isArray(data.projects)) {
+            setSavedProjects(data.projects);
+            return;
+          }
+        }
+      } catch (e) {
+        console.warn("Échec lecture API copilot, bascule sur localStorage:", e);
+      }
+
+      // Fallback localStorage
+      try {
+        const local = localStorage.getItem("cbs_copilot_projects");
+        if (local) {
+          setSavedProjects(JSON.parse(local));
+        }
+      } catch (err) {
+        console.error("Erreur localStorage:", err);
+      }
+    }
+    fetchSavedProjects();
+  }, []);
+
+  // Génération du plan
   const handleGeneratePlan = () => {
     const plan = generateCopilotPlan(needInput);
     setGeneratedPlan(plan);
     setActiveTab("TASKS");
   };
 
+  // Sélection d'un préréglage
+  const handleSelectPreset = (preset: typeof PRESET_NEEDS[0]) => {
+    setNeedInput(preset.input);
+    const plan = generateCopilotPlan(preset.input);
+    setGeneratedPlan(plan);
+  };
+
+  // Sauvegarder le projet en cours (API + LocalStorage)
+  const handleSaveProject = async () => {
+    setSaveStatus("Enregistrement en cours...");
+    const project: CopilotProject = {
+      id: "PROJ-" + Date.now(),
+      name: needInput.title,
+      domain: needInput.bankingDomain,
+      amplitudeVersion: needInput.amplitudeVersion,
+      input: needInput,
+      plan: generatedPlan,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    try {
+      const res = await fetch("/api/cbs/copilot", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ project }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setSavedProjects((prev) => [data.project || project, ...prev.filter((p) => p.id !== project.id)]);
+      } else {
+        // Enregistrement local si l'API retourne une erreur
+        setSavedProjects((prev) => [project, ...prev.filter((p) => p.id !== project.id)]);
+      }
+    } catch (err) {
+      setSavedProjects((prev) => [project, ...prev.filter((p) => p.id !== project.id)]);
+    }
+
+    try {
+      const updated = [project, ...savedProjects.filter((p) => p.id !== project.id)];
+      localStorage.setItem("cbs_copilot_projects", JSON.stringify(updated));
+    } catch (err) {
+      console.warn("Erreur écriture localStorage:", err);
+    }
+
+    setSaveStatus("✅ Projet enregistré avec succès !");
+    setTimeout(() => setSaveStatus(null), 3500);
+  };
+
+  // Charger un projet sauvegardé
+  const handleLoadProject = (proj: CopilotProject) => {
+    setNeedInput(proj.input);
+    if (proj.plan) {
+      setGeneratedPlan(proj.plan);
+    } else {
+      setGeneratedPlan(generateCopilotPlan(proj.input));
+    }
+    setShowProjectsModal(false);
+    setActiveTab("TASKS");
+  };
+
+  // Supprimer un projet
+  const handleDeleteProject = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      await fetch(`/api/cbs/copilot?id=${id}`, { method: "DELETE" });
+    } catch (err) {
+      console.warn("Suppression API échouée, suppression locale");
+    }
+    const updated = savedProjects.filter((p) => p.id !== id);
+    setSavedProjects(updated);
+    try {
+      localStorage.setItem("cbs_copilot_projects", JSON.stringify(updated));
+    } catch (err) {}
+  };
+
+  // Téléchargement d'un fichier texte
+  const downloadFile = (content: string, filename: string, mimeType = "text/plain") => {
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  // Copie dans le presse-papier avec feedback
+  const copyToClipboard = (text: string, key: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedKey(key);
+    setTimeout(() => setCopiedKey(null), 2000);
+  };
+
+  // Export complet du dossier markdown
   const handleExportFullDossier = () => {
     if (!generatedPlan) return;
     const p = generatedPlan;
@@ -71,7 +278,7 @@ END MAIN`);
 **Domaine :** ${p.need.bankingDomain} | **Version Amplitude :** ${p.need.amplitudeVersion}  
 **Environnement :** ${p.need.technicalEnvironment}  
 **Date de génération :** ${new Date(p.generatedDate).toLocaleString("fr-FR")}  
-**Règle d'or :** Proposition technique à adapter au dictionnaire de données et aux conventions du projet. Ne jamais considérer comme prêt à déployer sans validation.
+**Règle d'or :** Proposition technique alignée sur les tables maîtresses Amplitude (BKCPT, BKCLI, BKTRA, BKCOM). À tester et valider en environnement de recette avant livraison en production.
 
 ---
 
@@ -81,7 +288,7 @@ END MAIN`);
 - **Préconditions :** ${p.analysis.preconditions.join(" / ")}
 - **Règles Métier :**
 ${p.analysis.businessRules.map((r) => `  * ${r}`).join("\n")}
-- **Questions à trancher :**
+- **Points de vigilance :**
 ${p.analysis.unresolvedQuestions.map((q) => `  ! ${q}`).join("\n")}
 
 ---
@@ -148,358 +355,719 @@ ${p.deliveryPackage.installationOrder.map((s) => `  ${s}`).join("\n")}
 ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
 `;
 
-    const blob = new Blob([markdown], { type: "text/markdown" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `DOSSIER_DEV_CBS_${p.need.title.replace(/\s+/g, "_")}.md`;
-    a.click();
+    downloadFile(markdown, `DOSSIER_DEV_CBS_${p.need.title.replace(/\s+/g, "_")}.md`, "text/markdown");
   };
 
-  return (
-    <AppShell pageTitle="CBS 4GL Development Copilot" eyebrow="INGÉNIERIE & ATELIER DE DÉVELOPPEMENT AMPLITUDE">
-      <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-        
-        {/* EN-TÊTE COPILOT AVEC ACTION EXPORT DOSSIER */}
-        <div className="card" style={{ background: "linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%)", color: "#ffffff", border: "1px solid #3730a3" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
-            <div>
-              <span style={{ fontSize: "0.75rem", letterSpacing: "0.1em", fontWeight: 800, color: "#818cf8", textTransform: "uppercase" }}>
-                ATELIER DE CONCEPTION &amp; DÉVELOPPEMENT CBS AMPLITUDE
-              </span>
-              <h2 style={{ fontSize: "1.35rem", fontWeight: 800, marginTop: "0.2rem" }}>
-                CBS 4GL Development Copilot
-              </h2>
-              <p style={{ fontSize: "0.85rem", color: "#cbd5e1", marginTop: "0.25rem", maxWidth: "800px" }}>
-                Transformez un besoin fonctionnel bancaire en plan de développement structuré : analyse, sous-tâches, code Informix 4GL, masque d&apos;écran <code>.per</code>, requêtes SQL, jeux d&apos;essais et plan de rollback.
-              </p>
-            </div>
+  // Filtrage du dictionnaire de tables
+  const filteredTables = CBS_SCHEMA_TABLES.filter(
+    (t) =>
+      t.tableName.toLowerCase().includes(dbSearch.toLowerCase()) ||
+      t.module.toLowerCase().includes(dbSearch.toLowerCase()) ||
+      t.description.toLowerCase().includes(dbSearch.toLowerCase())
+  );
 
-            <button
-              type="button"
-              onClick={handleExportFullDossier}
-              className="btn-primary"
-              style={{ background: "#4f46e5", border: "none", display: "flex", alignItems: "center", gap: "0.5rem" }}
-            >
-              📦 Générer le Dossier Complet (.md)
-            </button>
+  return (
+    <div
+      style={{
+        minHeight: "100vh",
+        backgroundColor: "#090d16",
+        color: "#f1f5f9",
+        fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      {/* ========================================================================= */}
+      {/* 1. TOPBAR DÉDIÉE : RETOUR CBS, BRANDING, STATUS BD, ACTIONS DE PERSISTANCE */}
+      {/* ========================================================================= */}
+      <header
+        style={{
+          height: "64px",
+          backgroundColor: "#0d1424",
+          borderBottom: "1px solid #1e293b",
+          padding: "0 1.5rem",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          position: "sticky",
+          top: 0,
+          zIndex: 100,
+          boxShadow: "0 4px 12px rgba(0,0,0,0.4)",
+        }}
+      >
+        {/* Bouton de retour vers CBS Amplitude & Logo */}
+        <div style={{ display: "flex", alignItems: "center", gap: "1.25rem" }}>
+          <Link
+            href="/cbs"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              padding: "0.45rem 0.85rem",
+              backgroundColor: "rgba(30, 41, 59, 0.8)",
+              color: "#38bdf8",
+              border: "1px solid #334155",
+              borderRadius: "8px",
+              fontSize: "0.85rem",
+              fontWeight: 600,
+              textDecoration: "none",
+              transition: "all 0.2s ease",
+            }}
+            title="Quitter l'atelier et revenir au portail Core Banking Amplitude"
+          >
+            <span style={{ fontSize: "1.1rem" }}>←</span>
+            <span>Retour CBS Amplitude</span>
+          </Link>
+
+          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+            <span style={{ fontSize: "1.5rem" }}>🤖</span>
+            <div>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <span style={{ fontWeight: 800, fontSize: "1.05rem", color: "#f8fafc", letterSpacing: "0.02em" }}>
+                  CBS 4GL Development Copilot
+                </span>
+                <span
+                  style={{
+                    backgroundColor: "#1e1b4b",
+                    color: "#a5b4fc",
+                    border: "1px solid #4338ca",
+                    fontSize: "0.68rem",
+                    fontWeight: 700,
+                    padding: "2px 6px",
+                    borderRadius: "6px",
+                    textTransform: "uppercase",
+                  }}
+                >
+                  Studio Dédié
+                </span>
+              </div>
+              <div style={{ fontSize: "0.75rem", color: "#94a3b8" }}>
+                Amplitude v11 / v12 • Informix 4GL &amp; Oracle SGBD • Ingénierie &amp; Build
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* NAVIGATION PAR ONGLETS */}
-        <div style={{ display: "flex", gap: "0.5rem", borderBottom: "1px solid var(--border-light)", paddingBottom: "0.5rem", flexWrap: "wrap" }}>
-          <button
-            onClick={() => setActiveTab("NEED")}
-            className={`btn-ghost ${activeTab === "NEED" ? "btn-primary" : ""}`}
+        {/* Indicateur SGBD & Actions projet */}
+        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+          {/* Badge BD active */}
+          <div
+            onClick={() => setActiveTab("DICTIONARY")}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.45rem",
+              backgroundColor: "rgba(6, 78, 59, 0.4)",
+              border: "1px solid #059669",
+              borderRadius: "6px",
+              padding: "0.35rem 0.75rem",
+              fontSize: "0.75rem",
+              color: "#34d399",
+              cursor: "pointer",
+            }}
+            title="Cliquez pour consulter le dictionnaire des tables Amplitude"
           >
-            📝 1. Expression du Besoin
+            <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#10b981", boxShadow: "0 0 8px #10b981" }} />
+            <span style={{ fontWeight: 600 }}>Dictionnaire BK* Connecté ({CBS_SCHEMA_TABLES.length} tables)</span>
+          </div>
+
+          {/* Bouton Mes Projets */}
+          <button
+            onClick={() => setShowProjectsModal(true)}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.4rem",
+              backgroundColor: "#1e293b",
+              color: "#e2e8f0",
+              border: "1px solid #334155",
+              borderRadius: "6px",
+              padding: "0.45rem 0.85rem",
+              fontSize: "0.82rem",
+              fontWeight: 600,
+              cursor: "pointer",
+            }}
+          >
+            <span>📂</span>
+            <span>Mes Projets ({savedProjects.length})</span>
           </button>
+
+          {/* Bouton Sauvegarder Projet */}
           <button
-            onClick={() => setActiveTab("TASKS")}
-            className={`btn-ghost ${activeTab === "TASKS" ? "btn-primary" : ""}`}
+            onClick={handleSaveProject}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.4rem",
+              backgroundColor: "#0369a1",
+              color: "#ffffff",
+              border: "none",
+              borderRadius: "6px",
+              padding: "0.45rem 0.85rem",
+              fontSize: "0.82rem",
+              fontWeight: 600,
+              cursor: "pointer",
+            }}
           >
-            📋 2. Sous-Tâches &amp; Analyse
+            <span>💾</span>
+            <span>Sauvegarder (BD)</span>
           </button>
+
+          {/* Bouton Export Dossier */}
           <button
-            onClick={() => setActiveTab("CODE")}
-            className={`btn-ghost ${activeTab === "CODE" ? "btn-primary" : ""}`}
+            onClick={handleExportFullDossier}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.4rem",
+              backgroundColor: "#4f46e5",
+              color: "#ffffff",
+              border: "none",
+              borderRadius: "6px",
+              padding: "0.45rem 0.85rem",
+              fontSize: "0.82rem",
+              fontWeight: 600,
+              cursor: "pointer",
+            }}
           >
-            💻 3. Code Informix 4GL
-          </button>
-          <button
-            onClick={() => setActiveTab("PER_SCREEN")}
-            className={`btn-ghost ${activeTab === "PER_SCREEN" ? "btn-primary" : ""}`}
-          >
-            🖥️ 4. Écran Masque (.per)
-          </button>
-          <button
-            onClick={() => setActiveTab("TESTS")}
-            className={`btn-ghost ${activeTab === "TESTS" ? "btn-primary" : ""}`}
-          >
-            🧪 5. Jeux de Tests
-          </button>
-          <button
-            onClick={() => setActiveTab("DELIVERY")}
-            className={`btn-ghost ${activeTab === "DELIVERY" ? "btn-primary" : ""}`}
-          >
-            🚀 6. Dossier de Livraison
-          </button>
-          <button
-            onClick={() => setActiveTab("FAILURE")}
-            className={`btn-ghost ${activeTab === "FAILURE" ? "btn-primary" : ""}`}
-            style={{ color: "#ef4444" }}
-          >
-            🚨 7. Point de Rupture (RUN)
-          </button>
-          <button
-            onClick={() => setActiveTab("REVIEW")}
-            className={`btn-ghost ${activeTab === "REVIEW" ? "btn-primary" : ""}`}
-            style={{ color: "#f59e0b" }}
-          >
-            🔍 8. Revue de Code 4GL
+            <span>📦</span>
+            <span>Dossier (.md)</span>
           </button>
         </div>
+      </header>
 
-        {/* 1. ONGLET EXPRESSION DU BESOIN */}
+      {/* Notification Toast de Sauvegarde */}
+      {saveStatus && (
+        <div
+          style={{
+            position: "fixed",
+            top: "76px",
+            right: "24px",
+            zIndex: 999,
+            backgroundColor: "#065f46",
+            border: "1px solid #10b981",
+            color: "#ffffff",
+            padding: "0.6rem 1.2rem",
+            borderRadius: "8px",
+            fontSize: "0.85rem",
+            fontWeight: 600,
+            boxShadow: "0 8px 24px rgba(0,0,0,0.5)",
+          }}
+        >
+          {saveStatus}
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 2. BARRE D'ONGLETS DU WORKSPACE STUDIO */}
+      {/* ========================================================================= */}
+      <nav
+        style={{
+          backgroundColor: "#0b1120",
+          borderBottom: "1px solid #1e293b",
+          padding: "0.5rem 1.5rem",
+          display: "flex",
+          gap: "0.4rem",
+          overflowX: "auto",
+        }}
+      >
+        {[
+          { key: "NEED", label: "1. Besoin Métier", icon: "📝" },
+          { key: "TASKS", label: "2. Analyse & Tâches", icon: "📋" },
+          { key: "CODE", label: "3. Code Informix 4GL", icon: "💻" },
+          { key: "PER_SCREEN", label: "4. Écran Masque (.per)", icon: "🖥️" },
+          { key: "SQL", label: "5. Requêtes SQL & Index", icon: "🗄️" },
+          { key: "TESTS", label: "6. Jeux de Tests", icon: "🧪" },
+          { key: "DELIVERY", label: "7. Dossier de Livraison", icon: "🚀" },
+          { key: "FAILURE", label: "8. Point de Rupture RUN", icon: "🚨", color: "#f87171" },
+          { key: "REVIEW", label: "9. Revue de Code 4GL", icon: "🔍", color: "#fbbf24" },
+          { key: "DICTIONARY", label: "10. Dictionnaire BD Amplitude", icon: "🗃️", color: "#34d399" },
+        ].map((tab) => {
+          const isActive = activeTab === tab.key;
+          return (
+            <button
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key as any)}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.4rem",
+                padding: "0.5rem 0.9rem",
+                borderRadius: "6px",
+                border: "none",
+                fontSize: "0.82rem",
+                fontWeight: isActive ? 700 : 500,
+                backgroundColor: isActive ? "#1e293b" : "transparent",
+                color: isActive ? "#38bdf8" : tab.color || "#94a3b8",
+                borderBottom: isActive ? "2px solid #38bdf8" : "2px solid transparent",
+                cursor: "pointer",
+                whiteSpace: "nowrap",
+                transition: "all 0.15s ease",
+              }}
+            >
+              <span>{tab.icon}</span>
+              <span>{tab.label}</span>
+            </button>
+          );
+        })}
+      </nav>
+
+      {/* ========================================================================= */}
+      {/* 3. CORPS DE L'ESPACE DE TRAVAIL (CONTENU DYNAMIQUE SELON L'ONGLET ACTIF) */}
+      {/* ========================================================================= */}
+      <main style={{ flex: 1, padding: "1.5rem", maxWidth: "1600px", width: "100%", margin: "0 auto" }}>
+        
+        {/* --------------------------------------------------------------------- */}
+        {/* ONGLET 1 : EXPRESSION DU BESOIN AVEC PRÉRÉGLAGES BANCAIRES */}
+        {/* --------------------------------------------------------------------- */}
         {activeTab === "NEED" && (
-          <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: "1.5rem" }}>
-            <div className="card">
-              <h3 style={{ fontSize: "1.1rem", fontWeight: 800, marginBottom: "0.5rem" }}>
-                Paramètres du Besoin Métier
-              </h3>
-              <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginBottom: "1rem" }}>
-                Renseignez le contexte bancaire pour permettre au Copilot de calibrer l&apos;analyse fonctionnelle et l&apos;architecture technique.
-              </p>
-
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.85rem" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1.3fr 1fr", gap: "1.5rem" }}>
+            {/* Formulaire de saisie */}
+            <div style={{ backgroundColor: "#111827", borderRadius: "10px", border: "1px solid #1f2937", padding: "1.5rem" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
                 <div>
-                  <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 700, marginBottom: "0.2rem" }}>
-                    Titre du besoin :
+                  <h3 style={{ fontSize: "1.15rem", fontWeight: 700, margin: 0, color: "#f9fafb" }}>
+                    Paramètres du Besoin Métier Core Banking
+                  </h3>
+                  <p style={{ fontSize: "0.8rem", color: "#9ca3af", margin: "4px 0 0 0" }}>
+                    Précisez le besoin fonctionnel. Le Copilot générera le code 4GL, le masque .per et les requêtes SQL correspondants.
+                  </p>
+                </div>
+              </div>
+
+              {/* Barre de pré-réglages rapides */}
+              <div style={{ marginBottom: "1.25rem" }}>
+                <span style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.05em", color: "#6b7280", fontWeight: 700 }}>
+                  Modèles Prédéfinis Amplitude :
+                </span>
+                <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", marginTop: "0.4rem" }}>
+                  {PRESET_NEEDS.map((preset, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => handleSelectPreset(preset)}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.35rem",
+                        padding: "0.35rem 0.65rem",
+                        backgroundColor: needInput.title === preset.input.title ? "#1e3a8a" : "#1f2937",
+                        color: needInput.title === preset.input.title ? "#93c5fd" : "#d1d5db",
+                        border: needInput.title === preset.input.title ? "1px solid #3b82f6" : "1px solid #374151",
+                        borderRadius: "6px",
+                        fontSize: "0.75rem",
+                        cursor: "pointer",
+                      }}
+                    >
+                      <span>{preset.icon}</span>
+                      <span>{preset.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                <div>
+                  <label style={{ fontSize: "0.8rem", fontWeight: 600, color: "#d1d5db", display: "block", marginBottom: "4px" }}>
+                    Titre du besoin ou de la User Story *
                   </label>
                   <input
                     type="text"
                     value={needInput.title}
                     onChange={(e) => setNeedInput({ ...needInput, title: e.target.value })}
-                    className="input"
+                    style={{
+                      width: "100%",
+                      backgroundColor: "#0d1117",
+                      border: "1px solid #30363d",
+                      borderRadius: "6px",
+                      padding: "0.6rem 0.8rem",
+                      color: "#f0f6fc",
+                      fontSize: "0.85rem",
+                    }}
                   />
                 </div>
 
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
-                  <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 700, marginBottom: "0.2rem" }}>
-                      Domaine bancaire CBS :
-                    </label>
-                    <input
-                      type="text"
-                      value={needInput.bankingDomain}
-                      onChange={(e) => setNeedInput({ ...needInput, bankingDomain: e.target.value })}
-                      className="input"
-                    />
-                  </div>
-                  <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 700, marginBottom: "0.2rem" }}>
-                      Version d&apos;Amplitude :
-                    </label>
-                    <select
-                      value={needInput.amplitudeVersion}
-                      onChange={(e) => setNeedInput({ ...needInput, amplitudeVersion: e.target.value as any })}
-                      className="input"
-                    >
-                      <option value="v10.x">Amplitude v10.x (Informix C-ISAM / Forms)</option>
-                      <option value="v11.x">Amplitude v11.x (Informix Dynamic Server / Tuxedo)</option>
-                      <option value="v12.x">Amplitude v12.x (Oracle / WebLogic SOA)</option>
-                      <option value="v13.x">Amplitude v13.x (Cloud Native / REST API)</option>
-                    </select>
-                  </div>
-                </div>
-
                 <div>
-                  <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 700, marginBottom: "0.2rem" }}>
-                    Description fonctionnelle détaillée :
+                  <label style={{ fontSize: "0.8rem", fontWeight: 600, color: "#d1d5db", display: "block", marginBottom: "4px" }}>
+                    Description fonctionnelle détaillée *
                   </label>
                   <textarea
                     rows={4}
                     value={needInput.functionalDescription}
                     onChange={(e) => setNeedInput({ ...needInput, functionalDescription: e.target.value })}
-                    className="input"
+                    style={{
+                      width: "100%",
+                      backgroundColor: "#0d1117",
+                      border: "1px solid #30363d",
+                      borderRadius: "6px",
+                      padding: "0.6rem 0.8rem",
+                      color: "#f0f6fc",
+                      fontSize: "0.85rem",
+                      fontFamily: "inherit",
+                    }}
                   />
                 </div>
 
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                   <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 700, marginBottom: "0.2rem" }}>
-                      Utilisateurs cibles :
+                    <label style={{ fontSize: "0.8rem", fontWeight: 600, color: "#d1d5db", display: "block", marginBottom: "4px" }}>
+                      Domaine Métier Amplitude
+                    </label>
+                    <input
+                      type="text"
+                      value={needInput.bankingDomain}
+                      onChange={(e) => setNeedInput({ ...needInput, bankingDomain: e.target.value })}
+                      style={{
+                        width: "100%",
+                        backgroundColor: "#0d1117",
+                        border: "1px solid #30363d",
+                        borderRadius: "6px",
+                        padding: "0.55rem 0.75rem",
+                        color: "#f0f6fc",
+                        fontSize: "0.85rem",
+                      }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: "0.8rem", fontWeight: 600, color: "#d1d5db", display: "block", marginBottom: "4px" }}>
+                      Profils Utilisateurs Cibles
                     </label>
                     <input
                       type="text"
                       value={needInput.targetUsers}
                       onChange={(e) => setNeedInput({ ...needInput, targetUsers: e.target.value })}
-                      className="input"
-                    />
-                  </div>
-                  <div>
-                    <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 700, marginBottom: "0.2rem" }}>
-                      Données d&apos;entrée :
-                    </label>
-                    <input
-                      type="text"
-                      value={needInput.inputData}
-                      onChange={(e) => setNeedInput({ ...needInput, inputData: e.target.value })}
-                      className="input"
+                      style={{
+                        width: "100%",
+                        backgroundColor: "#0d1117",
+                        border: "1px solid #30363d",
+                        borderRadius: "6px",
+                        padding: "0.55rem 0.75rem",
+                        color: "#f0f6fc",
+                        fontSize: "0.85rem",
+                      }}
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 700, marginBottom: "0.2rem" }}>
-                    Règles métier connues :
+                  <label style={{ fontSize: "0.8rem", fontWeight: 600, color: "#d1d5db", display: "block", marginBottom: "4px" }}>
+                    Règles Métier connues &amp; Contrôles de Sécurité
                   </label>
                   <textarea
                     rows={2}
                     value={needInput.knownBusinessRules}
                     onChange={(e) => setNeedInput({ ...needInput, knownBusinessRules: e.target.value })}
-                    className="input"
+                    style={{
+                      width: "100%",
+                      backgroundColor: "#0d1117",
+                      border: "1px solid #30363d",
+                      borderRadius: "6px",
+                      padding: "0.55rem 0.75rem",
+                      color: "#f0f6fc",
+                      fontSize: "0.85rem",
+                    }}
                   />
+                </div>
+
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                  <div>
+                    <label style={{ fontSize: "0.8rem", fontWeight: 600, color: "#d1d5db", display: "block", marginBottom: "4px" }}>
+                      Données en Entrée
+                    </label>
+                    <input
+                      type="text"
+                      value={needInput.inputData}
+                      onChange={(e) => setNeedInput({ ...needInput, inputData: e.target.value })}
+                      style={{
+                        width: "100%",
+                        backgroundColor: "#0d1117",
+                        border: "1px solid #30363d",
+                        borderRadius: "6px",
+                        padding: "0.55rem 0.75rem",
+                        color: "#f0f6fc",
+                        fontSize: "0.85rem",
+                      }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: "0.8rem", fontWeight: 600, color: "#d1d5db", display: "block", marginBottom: "4px" }}>
+                      Données en Sortie Attendues
+                    </label>
+                    <input
+                      type="text"
+                      value={needInput.expectedOutput}
+                      onChange={(e) => setNeedInput({ ...needInput, expectedOutput: e.target.value })}
+                      style={{
+                        width: "100%",
+                        backgroundColor: "#0d1117",
+                        border: "1px solid #30363d",
+                        borderRadius: "6px",
+                        padding: "0.55rem 0.75rem",
+                        color: "#f0f6fc",
+                        fontSize: "0.85rem",
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                  <div>
+                    <label style={{ fontSize: "0.8rem", fontWeight: 600, color: "#d1d5db", display: "block", marginBottom: "4px" }}>
+                      Version Core Banking Amplitude
+                    </label>
+                    <select
+                      value={needInput.amplitudeVersion}
+                      onChange={(e) => setNeedInput({ ...needInput, amplitudeVersion: e.target.value as any })}
+                      style={{
+                        width: "100%",
+                        backgroundColor: "#0d1117",
+                        border: "1px solid #30363d",
+                        borderRadius: "6px",
+                        padding: "0.55rem 0.75rem",
+                        color: "#f0f6fc",
+                        fontSize: "0.85rem",
+                      }}
+                    >
+                      <option value="v10.x">Amplitude v10.x (Informix natif)</option>
+                      <option value="v11.x">Amplitude v11.x (Informix / AIX standard)</option>
+                      <option value="v12.x">Amplitude v12.x (Oracle Enterprise / Linux)</option>
+                      <option value="v13.x">Amplitude v13.x (API REST / Tuxedo)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: "0.8rem", fontWeight: 600, color: "#d1d5db", display: "block", marginBottom: "4px" }}>
+                      Environnement SGBD &amp; OS
+                    </label>
+                    <select
+                      value={needInput.technicalEnvironment}
+                      onChange={(e) => setNeedInput({ ...needInput, technicalEnvironment: e.target.value as any })}
+                      style={{
+                        width: "100%",
+                        backgroundColor: "#0d1117",
+                        border: "1px solid #30363d",
+                        borderRadius: "6px",
+                        padding: "0.55rem 0.75rem",
+                        color: "#f0f6fc",
+                        fontSize: "0.85rem",
+                      }}
+                    >
+                      <option value="Informix / AIX">Informix Dynamic Server / IBM AIX</option>
+                      <option value="Oracle / Linux">Oracle Database 19c / Red Hat Linux</option>
+                      <option value="WebLogic / Tuxedo">Oracle Tuxedo / WebLogic Middleware</option>
+                    </select>
+                  </div>
                 </div>
 
                 <button
                   type="button"
                   onClick={handleGeneratePlan}
-                  className="btn-primary"
-                  style={{ alignSelf: "flex-start", marginTop: "0.5rem" }}
+                  style={{
+                    backgroundColor: "#2563eb",
+                    color: "#ffffff",
+                    border: "none",
+                    borderRadius: "8px",
+                    padding: "0.75rem 1.25rem",
+                    fontSize: "0.95rem",
+                    fontWeight: 700,
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "0.6rem",
+                    marginTop: "0.5rem",
+                    boxShadow: "0 4px 12px rgba(37,99,235,0.3)",
+                  }}
                 >
-                  Analyser &amp; Décomposer en Sous-Tâches →
+                  <span>⚡</span>
+                  <span>Générer la Solution Technique &amp; Code 4GL</span>
                 </button>
               </div>
             </div>
 
-            {/* RÈGLES D'OR & EXEMPLES */}
+            {/* Panneau d'informations & Table d'assistance */}
             <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-              <div className="card" style={{ borderLeft: "5px solid #e60028" }}>
-                <h4 style={{ fontSize: "0.95rem", fontWeight: 800, color: "#e60028" }}>
-                  ⚠️ Règle Impérative de Conception
+              {/* Carte Méthodologie Amplitude */}
+              <div style={{ backgroundColor: "#111827", borderRadius: "10px", border: "1px solid #1f2937", padding: "1.25rem" }}>
+                <h4 style={{ fontSize: "0.95rem", fontWeight: 700, margin: "0 0 0.5rem 0", color: "#38bdf8" }}>
+                  📐 Méthodologie de Conception Amplitude
                 </h4>
-                <p style={{ fontSize: "0.85rem", color: "#374151", marginTop: "0.4rem", lineHeight: "1.5" }}>
-                  Le code généré par le Copilot est une proposition technique à adapter à la version exacte d&apos;Amplitude, au dictionnaire de données et aux conventions du projet. Il ne doit <b>jamais être considéré comme prêt à déployer automatiquement</b> sans recette préalable.
-                </p>
+                <ul style={{ margin: 0, paddingLeft: "1.25rem", fontSize: "0.82rem", color: "#cbd5e1", lineHeight: "1.5" }}>
+                  <li><strong>Modèle Relationnel :</strong> Tables maîtresses BK* (BKCPT pour les comptes, BKCLI pour les tiers, BKTRA pour les transactions).</li>
+                  <li><strong>Contrôle Transactions :</strong> Encadrer les écritures DML par <code>BEGIN WORK</code> / <code>COMMIT WORK</code> avec <code>WHENEVER ERROR CONTINUE</code>.</li>
+                  <li><strong>Conventions 4GL :</strong> Déclaration obligatoire des variables avec <code>DEFINE</code>, normalisation des codes retours (0=Succès, &gt;0=Erreur).</li>
+                  <li><strong>IHM Formulaire :</strong> Masques <code>.per</code> compilés avec <code>form4gl</code> (format 24x80 terminal AIX Curses).</li>
+                </ul>
               </div>
 
-              <div className="card" style={{ background: "#f8fafc" }}>
-                <h4 style={{ fontSize: "0.9rem", fontWeight: 800 }}>Modèles de Besoins Prêts à l&apos;Emploi</h4>
-                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginTop: "0.5rem" }}>
+              {/* Carte Tables Clés Liées */}
+              <div style={{ backgroundColor: "#111827", borderRadius: "10px", border: "1px solid #1f2937", padding: "1.25rem" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
+                  <h4 style={{ fontSize: "0.95rem", fontWeight: 700, margin: 0, color: "#34d399" }}>
+                    🗃️ Tables Amplitude Maîtresses
+                  </h4>
                   <button
-                    type="button"
-                    onClick={() => {
-                      setNeedInput({
-                        title: "Blocage préventif d'un compte client sur alerte fraude",
-                        functionalDescription: "Permettre au service conformité d'appliquer immédiatement une opposition administrative sur un compte avec gel des débits et traçage dans la table d'audit.",
-                        bankingDomain: "Sécurité & Conformité",
-                        targetUsers: "Agent Conformité / Risques",
-                        knownBusinessRules: "Double signature obligatoire si solde > 50M FCFA.",
-                        inputData: "Numéro de compte, Motif du blocage, Code agent",
-                        expectedOutput: "Compte basculé en statut 'BLQ', accusé de réception imprimé",
-                        specialConstraints: "Interdiction d'annuler les écritures déjà compensées",
-                        amplitudeVersion: "v11.x",
-                        technicalEnvironment: "Informix / AIX",
-                        nominalExample: "Compte 00100456 -> Passage en statut 'BLQ'",
-                        errorExample: "Compte déjà clôturé -> Rejet",
-                      });
-                    }}
-                    className="btn-ghost"
-                    style={{ textAlign: "left", fontSize: "0.8rem", border: "1px solid #cbd5e1" }}
+                    onClick={() => setActiveTab("DICTIONARY")}
+                    style={{ background: "none", border: "none", color: "#38bdf8", fontSize: "0.75rem", cursor: "pointer", textDecoration: "underline" }}
                   >
-                    🛡️ Cas 1 : Blocage préventif de compte (Conformité)
+                    Voir toutes les tables →
                   </button>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setNeedInput({
-                        title: "Extraction nocturne des soldes débiteurs non autorisés",
-                        functionalDescription: "Programme batch exécuté lors de l'EOD pour identifier tous les comptes présentant un solde négatif sans autorisation de découvert et générer le fichier pour le recouvrement.",
-                        bankingDomain: "Engagements & Recouvrement",
-                        targetUsers: "Batch Automatique EOD / Direction des Risques",
-                        knownBusinessRules: "Exclure les comptes du personnel et comptes internes de la banque.",
-                        inputData: "Date valeur d'arrêté EOD",
-                        expectedOutput: "Fichier CSV normé déposé sur le serveur SFTP sécurisé",
-                        specialConstraints: "Temps de traitement batch < 5 minutes sur 500 000 comptes",
-                        amplitudeVersion: "v12.x",
-                        technicalEnvironment: "Oracle / Linux",
-                        nominalExample: "520 comptes débiteurs extraits",
-                        errorExample: "Aucun compte en anomalie",
-                      });
-                    }}
-                    className="btn-ghost"
-                    style={{ textAlign: "left", fontSize: "0.8rem", border: "1px solid #cbd5e1" }}
-                  >
-                    ⚙️ Cas 2 : Batch EOD d'extraction des découverts
-                  </button>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                  {CBS_SCHEMA_TABLES.slice(0, 4).map((t) => (
+                    <div
+                      key={t.tableName}
+                      onClick={() => {
+                        setSelectedDbTable(t);
+                        setActiveTab("DICTIONARY");
+                      }}
+                      style={{
+                        padding: "0.6rem 0.8rem",
+                        backgroundColor: "#0d1117",
+                        border: "1px solid #30363d",
+                        borderRadius: "6px",
+                        cursor: "pointer",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
+                    >
+                      <div>
+                        <span style={{ fontWeight: 700, color: "#f3f4f6", fontSize: "0.85rem" }}>{t.tableName}</span>
+                        <span style={{ fontSize: "0.75rem", color: "#9ca3af", marginLeft: "0.5rem" }}>({t.module})</span>
+                      </div>
+                      <span style={{ fontSize: "0.72rem", color: "#60a5fa", backgroundColor: "#1e3a8a", padding: "2px 6px", borderRadius: "4px" }}>
+                        PK: {t.primaryKey.join(", ")}
+                      </span>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
           </div>
         )}
 
-        {/* 2. ONGLET SOUS-TÂCHES & ANALYSE */}
+        {/* --------------------------------------------------------------------- */}
+        {/* ONGLET 2 : SOUS-TÂCHES & ANALYSE FONCTIONNELLE */}
+        {/* --------------------------------------------------------------------- */}
         {activeTab === "TASKS" && (
           <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
             {/* Synthèse fonctionnelle */}
-            <div className="card" style={{ background: "#f8fafc" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
-                <h3 style={{ fontSize: "1.1rem", fontWeight: 800 }}>Synthèse de l&apos;Analyse Fonctionnelle</h3>
-                <span style={{ fontSize: "0.75rem", background: "#e0e7ff", color: "#3730a3", padding: "0.2rem 0.6rem", borderRadius: "4px", fontWeight: 700 }}>
-                  Domaine : {generatedPlan.need.bankingDomain}
-                </span>
+            <div style={{ backgroundColor: "#111827", borderRadius: "10px", border: "1px solid #1f2937", padding: "1.5rem" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1rem" }}>
+                <div>
+                  <span style={{ fontSize: "0.75rem", color: "#38bdf8", textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 700 }}>
+                    SYNTHÈSE TECHNIQUE &amp; FONCTIONNELLE
+                  </span>
+                  <h3 style={{ fontSize: "1.25rem", fontWeight: 700, margin: "4px 0", color: "#f8fafc" }}>
+                    {generatedPlan.analysis.summary}
+                  </h3>
+                  <p style={{ fontSize: "0.85rem", color: "#cbd5e1", margin: 0 }}>
+                    {generatedPlan.analysis.businessObjective}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setActiveTab("CODE")}
+                  style={{
+                    backgroundColor: "#0284c7",
+                    color: "#ffffff",
+                    border: "none",
+                    borderRadius: "6px",
+                    padding: "0.5rem 1rem",
+                    fontSize: "0.85rem",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                  }}
+                >
+                  Voir le Code 4GL →
+                </button>
               </div>
-              <p style={{ fontSize: "0.9rem", color: "#334155", lineHeight: "1.5" }}>
-                {generatedPlan.analysis.businessObjective}
-              </p>
 
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1rem", marginTop: "1rem" }}>
-                <div style={{ background: "#ffffff", padding: "0.75rem", borderRadius: "6px", border: "1px solid #e2e8f0" }}>
-                  <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "#64748b" }}>Règles Métier Identifiées :</span>
-                  <ul style={{ margin: "0.3rem 0 0 1rem", padding: 0, fontSize: "0.8rem", color: "#0f172a" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1rem", marginTop: "1rem" }}>
+                <div style={{ backgroundColor: "#0d1117", padding: "0.85rem", borderRadius: "8px", border: "1px solid #21262d" }}>
+                  <div style={{ fontSize: "0.75rem", color: "#9ca3af", fontWeight: 700, marginBottom: "0.4rem" }}>PRÉCONDITIONS CBS</div>
+                  <ul style={{ margin: 0, paddingLeft: "1.1rem", fontSize: "0.8rem", color: "#e2e8f0" }}>
+                    {generatedPlan.analysis.preconditions.map((p, i) => (
+                      <li key={i}>{p}</li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div style={{ backgroundColor: "#0d1117", padding: "0.85rem", borderRadius: "8px", border: "1px solid #21262d" }}>
+                  <div style={{ fontSize: "0.75rem", color: "#9ca3af", fontWeight: 700, marginBottom: "0.4rem" }}>RÈGLES MÉTIER CONTRÔLÉES</div>
+                  <ul style={{ margin: 0, paddingLeft: "1.1rem", fontSize: "0.8rem", color: "#e2e8f0" }}>
                     {generatedPlan.analysis.businessRules.map((r, i) => (
                       <li key={i}>{r}</li>
                     ))}
                   </ul>
                 </div>
 
-                <div style={{ background: "#ffffff", padding: "0.75rem", borderRadius: "6px", border: "1px solid #e2e8f0" }}>
-                  <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "#b91c1c" }}>Points à Vérifier (Dictionnaire) :</span>
-                  <ul style={{ margin: "0.3rem 0 0 1rem", padding: 0, fontSize: "0.8rem", color: "#b91c1c" }}>
-                    {generatedPlan.analysis.unresolvedQuestions.map((q, i) => (
-                      <li key={i}>{q}</li>
+                <div style={{ backgroundColor: "#0d1117", padding: "0.85rem", borderRadius: "8px", border: "1px solid #21262d" }}>
+                  <div style={{ fontSize: "0.75rem", color: "#f87171", fontWeight: 700, marginBottom: "0.4rem" }}>RISQUES TECHNIQUES</div>
+                  <ul style={{ margin: 0, paddingLeft: "1.1rem", fontSize: "0.8rem", color: "#fca5a5" }}>
+                    {generatedPlan.analysis.technicalRisks.map((tr, i) => (
+                      <li key={i}>{tr}</li>
                     ))}
                   </ul>
                 </div>
               </div>
             </div>
 
-            {/* Liste ordonnée des sous-tâches */}
-            <div>
-              <h3 style={{ fontSize: "1.1rem", fontWeight: 800, marginBottom: "0.75rem" }}>
-                Plan de Décomposition Technique (Sous-Tâches Ordonnées)
+            {/* Liste des sous-tâches ordonnées */}
+            <div style={{ backgroundColor: "#111827", borderRadius: "10px", border: "1px solid #1f2937", padding: "1.5rem" }}>
+              <h3 style={{ fontSize: "1.1rem", fontWeight: 700, marginBottom: "1rem", color: "#f8fafc" }}>
+                Plan de Développement &amp; Sous-Tâches ({generatedPlan.subTasks.length} Tâches Ordonnées)
               </h3>
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.85rem" }}>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
                 {generatedPlan.subTasks.map((task) => (
                   <div
                     key={task.id}
-                    className="card"
                     style={{
-                      borderLeft: `5px solid ${
-                        task.priority === "BLOQUANTE" ? "#ef4444" : task.priority === "HAUTE" ? "#f59e0b" : "#3b82f6"
-                      }`,
+                      backgroundColor: "#0d1117",
+                      border: "1px solid #30363d",
+                      borderRadius: "8px",
+                      padding: "1rem",
+                      display: "grid",
+                      gridTemplateColumns: "100px 1.5fr 1fr 1fr",
+                      gap: "1rem",
+                      alignItems: "center",
                     }}
                   >
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "0.5rem" }}>
-                      <div>
-                        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                          <span style={{ fontWeight: 800, fontFamily: "monospace", color: "#1e3a8a" }}>{task.id}</span>
-                          <span style={{ fontSize: "0.72rem", background: "#f1f5f9", padding: "0.15rem 0.45rem", borderRadius: "4px", fontWeight: 700 }}>
-                            {task.type}
-                          </span>
-                          <h4 style={{ fontSize: "0.95rem", fontWeight: 800, margin: 0 }}>{task.title}</h4>
-                        </div>
-                        <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginTop: "0.3rem" }}>
-                          {task.description}
-                        </p>
-                      </div>
+                    <div>
+                      <span
+                        style={{
+                          backgroundColor: "#1e293b",
+                          color: "#38bdf8",
+                          border: "1px solid #334155",
+                          padding: "2px 8px",
+                          borderRadius: "4px",
+                          fontSize: "0.75rem",
+                          fontWeight: 700,
+                        }}
+                      >
+                        {task.id}
+                      </span>
+                      <div style={{ fontSize: "0.7rem", color: "#94a3b8", marginTop: "4px" }}>{task.estimation}</div>
+                    </div>
 
-                      <div style={{ textAlign: "right" }}>
-                        <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "#64748b" }}>
-                          Est : <b>{task.estimation}</b>
-                        </span>
+                    <div>
+                      <div style={{ fontWeight: 700, fontSize: "0.9rem", color: "#f1f5f9" }}>{task.title}</div>
+                      <div style={{ fontSize: "0.8rem", color: "#94a3b8", marginTop: "2px" }}>{task.description}</div>
+                    </div>
+
+                    <div>
+                      <div style={{ fontSize: "0.72rem", color: "#64748b" }}>CRITÈRES D&apos;ACCEPTATION</div>
+                      <div style={{ fontSize: "0.78rem", color: "#cbd5e1", marginTop: "2px" }}>
+                        {task.acceptanceCriteria[0]}
                       </div>
                     </div>
 
-                    <div style={{ marginTop: "0.75rem", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem", fontSize: "0.8rem", background: "#f8fafc", padding: "0.6rem", borderRadius: "6px" }}>
-                      <div>
-                        <b>Entrées :</b> {task.inputs} <br />
-                        <b>Sorties :</b> {task.outputs}
-                      </div>
-                      <div>
-                        <b>Fichiers :</b> <code>{task.concernedFiles.join(", ")}</code>
+                    <div>
+                      <div style={{ fontSize: "0.72rem", color: "#64748b" }}>FICHIERS CIBLES</div>
+                      <div style={{ fontSize: "0.78rem", color: "#a5b4fc", fontFamily: "monospace" }}>
+                        {task.concernedFiles.join(", ")}
                       </div>
                     </div>
                   </div>
@@ -509,313 +1077,610 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
           </div>
         )}
 
-        {/* 3. ONGLET CODE INFORMIX 4GL */}
+        {/* --------------------------------------------------------------------- */}
+        {/* ONGLET 3 : CODE INFORMIX 4GL (EDITEUR, COPIE, TELECHARGEMENT) */}
+        {/* --------------------------------------------------------------------- */}
         {activeTab === "CODE" && (
-          <div style={{ display: "grid", gridTemplateColumns: "1.3fr 1fr", gap: "1.5rem" }}>
-            <div className="card" style={{ background: "#0f172a", color: "#f8fafc" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
-                <span style={{ fontSize: "0.8rem", fontFamily: "monospace", color: "#38bdf8", fontWeight: 700 }}>
-                  SOURCE : {generatedPlan.code4GlProposal.entryPoint}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => {
-                    navigator.clipboard.writeText(generatedPlan.code4GlProposal.code4Gl);
-                    alert("Code 4GL copié !");
-                  }}
-                  className="btn-ghost"
-                  style={{ fontSize: "0.75rem", padding: "0.2rem 0.5rem", color: "#cbd5e1", border: "1px solid #475569" }}
-                >
-                  📋 Copier le 4GL
-                </button>
+          <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div>
+                <h3 style={{ fontSize: "1.15rem", fontWeight: 700, margin: 0, color: "#f8fafc" }}>
+                  Code Informix 4GL Généré (Sopra Banking Amplitude)
+                </h3>
+                <p style={{ fontSize: "0.8rem", color: "#94a3b8", margin: "2px 0 0 0" }}>
+                  Programme autonome exploitant les tables <code>BKCPT</code>, <code>BKCLI</code> et <code>BKTRA</code> avec gestion transactionnelle et contrôle <code>SQLCA.SQLCODE</code>.
+                </p>
               </div>
 
+              <div style={{ display: "flex", gap: "0.5rem" }}>
+                <button
+                  onClick={() => copyToClipboard(generatedPlan.code4GlProposal.code4Gl, "4gl")}
+                  style={{
+                    backgroundColor: "#1e293b",
+                    color: "#f8fafc",
+                    border: "1px solid #334155",
+                    borderRadius: "6px",
+                    padding: "0.45rem 0.85rem",
+                    fontSize: "0.82rem",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                  }}
+                >
+                  {copiedKey === "4gl" ? "✅ Copié !" : "📋 Copier le Code"}
+                </button>
+
+                <button
+                  onClick={() =>
+                    downloadFile(
+                      generatedPlan.code4GlProposal.code4Gl,
+                      `${generatedPlan.code4GlProposal.entryPoint.split(" ")[0].toLowerCase() || "p_cbs_traitement"}.4gl`,
+                      "text/plain"
+                    )
+                  }
+                  style={{
+                    backgroundColor: "#0284c7",
+                    color: "#ffffff",
+                    border: "none",
+                    borderRadius: "6px",
+                    padding: "0.45rem 0.85rem",
+                    fontSize: "0.82rem",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                  }}
+                >
+                  💾 Télécharger (.4gl)
+                </button>
+              </div>
+            </div>
+
+            <div
+              style={{
+                backgroundColor: "#0d1117",
+                border: "1px solid #30363d",
+                borderRadius: "8px",
+                padding: "1rem",
+                overflowX: "auto",
+              }}
+            >
               <pre
                 style={{
-                  fontFamily: "monospace",
-                  fontSize: "0.8rem",
-                  lineHeight: "1.4",
-                  overflowX: "auto",
-                  padding: "0.75rem",
-                  background: "#1e293b",
-                  borderRadius: "6px",
-                  maxHeight: "600px",
+                  margin: 0,
+                  fontSize: "0.85rem",
+                  lineHeight: "1.5",
+                  fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+                  color: "#e6edf3",
                 }}
               >
-                {generatedPlan.code4GlProposal.code4Gl}
+                <code>{generatedPlan.code4GlProposal.code4Gl}</code>
               </pre>
             </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-              <div className="card">
-                <h4 style={{ fontSize: "0.95rem", fontWeight: 800, marginBottom: "0.5rem" }}>
-                  Architecture &amp; Variables 4GL
-                </h4>
-                <div style={{ fontSize: "0.82rem", display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-                  <p><b>Type :</b> {generatedPlan.code4GlProposal.programType}</p>
-                  <p><b>Paramètres :</b> {generatedPlan.code4GlProposal.parameters.join(", ")}</p>
-                  <p><b>Gestion Erreurs :</b> {generatedPlan.code4GlProposal.errorHandling}</p>
-                  <p><b>Contrôle Transactions :</b> {generatedPlan.code4GlProposal.transactionControl}</p>
-                </div>
+            {/* Notes d'architecture */}
+            <div style={{ backgroundColor: "#111827", borderRadius: "8px", border: "1px solid #1f2937", padding: "1rem" }}>
+              <div style={{ fontSize: "0.8rem", fontWeight: 700, color: "#38bdf8", marginBottom: "0.4rem" }}>
+                RECOMMANDATIONS D&apos;EXPLOITATION RUN / BUILD AMPLITUDE
               </div>
-
-              <div className="card">
-                <h4 style={{ fontSize: "0.95rem", fontWeight: 800, marginBottom: "0.5rem" }}>
-                  Requête SQL Associée
-                </h4>
-                <pre
-                  style={{
-                    fontFamily: "monospace",
-                    fontSize: "0.78rem",
-                    padding: "0.6rem",
-                    background: "#f1f5f9",
-                    borderRadius: "6px",
-                    overflowX: "auto",
-                  }}
-                >
-                  {generatedPlan.sqlProposal.sqlCode}
-                </pre>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* 4. ONGLET ÉCRAN MASQUE (.PER) */}
-        {activeTab === "PER_SCREEN" && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-            {generatedPlan.perScreen ? (
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
-                <div className="card">
-                  <h3 style={{ fontSize: "1.1rem", fontWeight: 800, marginBottom: "0.5rem" }}>
-                    Maquette Visuelle Indicative (Terminal 24x80)
-                  </h3>
-                  <pre
-                    style={{
-                      fontFamily: "monospace",
-                      fontSize: "0.78rem",
-                      background: "#09090b",
-                      color: "#22c55e",
-                      padding: "1rem",
-                      borderRadius: "8px",
-                      overflowX: "auto",
-                      lineHeight: "1.3",
-                    }}
-                  >
-                    {generatedPlan.perScreen.visualMockupAscii}
-                  </pre>
-                </div>
-
-                <div className="card">
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
-                    <h3 style={{ fontSize: "1.1rem", fontWeight: 800 }}>Source Masque (.per)</h3>
-                    <span style={{ fontSize: "0.75rem", fontFamily: "monospace", color: "#64748b" }}>
-                      {generatedPlan.perScreen.screenName}
-                    </span>
-                  </div>
-                  <pre
-                    style={{
-                      fontFamily: "monospace",
-                      fontSize: "0.78rem",
-                      background: "#f8fafc",
-                      padding: "1rem",
-                      borderRadius: "8px",
-                      overflowX: "auto",
-                      border: "1px solid #e2e8f0",
-                    }}
-                  >
-                    {generatedPlan.perScreen.perCodeSnippet}
-                  </pre>
-                </div>
-              </div>
-            ) : (
-              <div className="card" style={{ textAlign: "center", padding: "3rem" }}>
-                <span style={{ fontSize: "2rem" }}>ℹ️</span>
-                <h4 style={{ marginTop: "0.5rem" }}>Aucune IHM requise pour ce besoin</h4>
-                <p style={{ fontSize: "0.85rem", color: "#64748b" }}>
-                  Ce traitement est qualifié comme service Batch ou API interne sans interaction écran .per.
-                </p>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* 5. ONGLET JEUX DE TESTS */}
-        {activeTab === "TESTS" && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-            <h3 style={{ fontSize: "1.1rem", fontWeight: 800 }}>Matrice des Scénarios de Test Unitaires</h3>
-            <div className="table-wrapper">
-              <table>
-                <thead>
-                  <tr>
-                    <th style={{ width: "90px" }}>ID</th>
-                    <th style={{ width: "120px" }}>Catégorie</th>
-                    <th>Intitulé du Test</th>
-                    <th>Préconditions</th>
-                    <th>Résultat Attendu</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {generatedPlan.testCases.map((tc) => (
-                    <tr key={tc.id}>
-                      <td style={{ fontWeight: 800, fontFamily: "monospace" }}>{tc.id}</td>
-                      <td>
-                        <span style={{ fontSize: "0.75rem", fontWeight: 700, padding: "0.2rem 0.5rem", borderRadius: "4px", background: "#f1f5f9" }}>
-                          {tc.category}
-                        </span>
-                      </td>
-                      <td style={{ fontWeight: 700 }}>{tc.title}</td>
-                      <td style={{ fontSize: "0.82rem", color: "#475569" }}>{tc.preconditions}</td>
-                      <td style={{ fontSize: "0.82rem", color: "#047857", fontWeight: 600 }}>{tc.expectedResult}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-        {/* 6. ONGLET DOSSIER DE LIVRAISON */}
-        {activeTab === "DELIVERY" && (
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
-            <div className="card">
-              <h3 style={{ fontSize: "1.1rem", fontWeight: 800, marginBottom: "0.75rem" }}>
-                Procédure de Déploiement &amp; Fichiers
-              </h3>
-              <div style={{ fontSize: "0.85rem", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                <p><b>Fichiers modifiés :</b></p>
-                <ul style={{ margin: "0 0 0 1rem", padding: 0 }}>
-                  {generatedPlan.deliveryPackage.modifiedFiles.map((f, i) => (
-                    <li key={i}><code>{f}</code></li>
-                  ))}
-                </ul>
-
-                <p style={{ marginTop: "0.5rem" }}><b>Ordre d&apos;installation séquentiel :</b></p>
-                <ol style={{ margin: "0 0 0 1rem", padding: 0 }}>
-                  {generatedPlan.deliveryPackage.installationOrder.map((step, i) => (
-                    <li key={i}>{step}</li>
-                  ))}
-                </ol>
-              </div>
-            </div>
-
-            <div className="card" style={{ borderLeft: "5px solid #dc2626" }}>
-              <h3 style={{ fontSize: "1.1rem", fontWeight: 800, color: "#dc2626", marginBottom: "0.75rem" }}>
-                Plan de Retour Arrière Immédiat (Rollback)
-              </h3>
-              <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginBottom: "0.75rem" }}>
-                En cas d&apos;anomalie bloquante constatée lors des tests pilotes en production, appliquer rigoureusement ce plan en moins de 10 minutes :
-              </p>
-              <ul style={{ margin: "0 0 0 1rem", padding: 0, fontSize: "0.85rem", color: "#991b1b", display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-                {generatedPlan.deliveryPackage.rollbackPlan.map((r, i) => (
-                  <li key={i}><b>{r}</b></li>
+              <ul style={{ margin: 0, paddingLeft: "1.25rem", fontSize: "0.82rem", color: "#cbd5e1", lineHeight: "1.5" }}>
+                {generatedPlan.code4GlProposal.importantNotes.map((note, i) => (
+                  <li key={i}>{note}</li>
                 ))}
               </ul>
             </div>
           </div>
         )}
 
-        {/* 7. ONGLET POINT DE RUPTURE (RUN) */}
-        {activeTab === "FAILURE" && (
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
-            <div className="card">
-              <h3 style={{ fontSize: "1.1rem", fontWeight: 800, marginBottom: "0.5rem" }}>
-                Diagnostic du Point de Rupture (Crash / Timeout)
-              </h3>
-              <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginBottom: "1rem" }}>
-                Collez un extrait de log, une erreur SQLCA ou le comportement anormal observé en production.
-              </p>
+        {/* --------------------------------------------------------------------- */}
+        {/* ONGLET 4 : ECRAN MASQUE (.PER) */}
+        {/* --------------------------------------------------------------------- */}
+        {activeTab === "PER_SCREEN" && (
+          <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+            {generatedPlan.perScreen ? (
+              <>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div>
+                    <h3 style={{ fontSize: "1.15rem", fontWeight: 700, margin: 0, color: "#f8fafc" }}>
+                      Conception du Masque d&apos;Écran Formulaire (.per)
+                    </h3>
+                    <p style={{ fontSize: "0.8rem", color: "#94a3b8", margin: "2px 0 0 0" }}>
+                      Masque terminal Curses 24x80 pour AIX / Linux avec mapping champs tables <code>BKCPT</code> et <code>BKCLI</code>.
+                    </p>
+                  </div>
 
-              <textarea
-                rows={4}
-                value={failureInput}
-                onChange={(e) => setFailureInput(e.target.value)}
-                className="input"
-                style={{ fontFamily: "monospace", fontSize: "0.8rem" }}
-              />
+                  <div style={{ display: "flex", gap: "0.5rem" }}>
+                    <button
+                      onClick={() => copyToClipboard(generatedPlan.perScreen!.perCodeSnippet, "per")}
+                      style={{
+                        backgroundColor: "#1e293b",
+                        color: "#f8fafc",
+                        border: "1px solid #334155",
+                        borderRadius: "6px",
+                        padding: "0.45rem 0.85rem",
+                        fontSize: "0.82rem",
+                        fontWeight: 600,
+                        cursor: "pointer",
+                      }}
+                    >
+                      {copiedKey === "per" ? "✅ Copié !" : "📋 Copier la Forme"}
+                    </button>
 
-              <button
-                type="button"
-                onClick={() => setFailureResult(analyzeCbsFailure(failureInput))}
-                className="btn-primary"
-                style={{ alignSelf: "flex-start", marginTop: "0.75rem", background: "#ef4444" }}
-              >
-                Diagnostiquer la Rupture →
-              </button>
-            </div>
-
-            {failureResult && (
-              <div className="card" style={{ background: "#fef2f2", border: "1px solid #fecaca" }}>
-                <h4 style={{ fontSize: "1rem", fontWeight: 800, color: "#991b1b", marginBottom: "0.5rem" }}>
-                  Résultat du Diagnostic RUN
-                </h4>
-                <div style={{ fontSize: "0.85rem", display: "flex", flexDirection: "column", gap: "0.4rem", color: "#7f1d1d" }}>
-                  <p><b>Étape concernée :</b> {failureResult.step}</p>
-                  <p><b>Programme probable :</b> <code>{failureResult.probableProgram}</code></p>
-                  <p><b>Cause racine possible :</b> {failureResult.rootCause}</p>
-                  <p><b>Correction proposée :</b> {failureResult.recommendedFix}</p>
-                  <p><b>Test de validation :</b> {failureResult.validationTest}</p>
+                    <button
+                      onClick={() =>
+                        downloadFile(
+                          generatedPlan.perScreen!.perCodeSnippet,
+                          generatedPlan.perScreen!.screenName,
+                          "text/plain"
+                        )
+                      }
+                      style={{
+                        backgroundColor: "#0284c7",
+                        color: "#ffffff",
+                        border: "none",
+                        borderRadius: "6px",
+                        padding: "0.45rem 0.85rem",
+                        fontSize: "0.82rem",
+                        fontWeight: 600,
+                        cursor: "pointer",
+                      }}
+                    >
+                      💾 Télécharger (.per)
+                    </button>
+                  </div>
                 </div>
+
+                {/* Rendu visuel ASCII du masque terminal */}
+                <div style={{ backgroundColor: "#111827", borderRadius: "8px", border: "1px solid #1f2937", padding: "1.25rem" }}>
+                  <div style={{ fontSize: "0.8rem", fontWeight: 700, color: "#a5b4fc", marginBottom: "0.6rem" }}>
+                    🖥️ MAQUETTE VISUELLE TERMINAL CURSES (24 LIGNES x 80 COLONNES)
+                  </div>
+                  <pre
+                    style={{
+                      margin: 0,
+                      backgroundColor: "#030712",
+                      border: "1px solid #1f2937",
+                      borderRadius: "6px",
+                      padding: "1rem",
+                      fontSize: "0.8rem",
+                      lineHeight: "1.3",
+                      fontFamily: "ui-monospace, monospace",
+                      color: "#34d399",
+                      overflowX: "auto",
+                    }}
+                  >
+                    {generatedPlan.perScreen.visualMockupAscii}
+                  </pre>
+                </div>
+
+                {/* Code source .per */}
+                <div style={{ backgroundColor: "#111827", borderRadius: "8px", border: "1px solid #1f2937", padding: "1.25rem" }}>
+                  <div style={{ fontSize: "0.8rem", fontWeight: 700, color: "#38bdf8", marginBottom: "0.6rem" }}>
+                    📄 SOURCE INFORMIX FORMULAIRE ({generatedPlan.perScreen.screenName})
+                  </div>
+                  <pre
+                    style={{
+                      margin: 0,
+                      backgroundColor: "#0d1117",
+                      border: "1px solid #30363d",
+                      borderRadius: "6px",
+                      padding: "1rem",
+                      fontSize: "0.85rem",
+                      lineHeight: "1.4",
+                      fontFamily: "ui-monospace, monospace",
+                      color: "#e6edf3",
+                      overflowX: "auto",
+                    }}
+                  >
+                    {generatedPlan.perScreen.perCodeSnippet}
+                  </pre>
+                </div>
+              </>
+            ) : (
+              <div style={{ padding: "3rem", textAlign: "center", color: "#94a3b8" }}>
+                Ce besoin ne requiert pas de masque d&apos;écran formulaire interactif (programme purement batch ou API).
               </div>
             )}
           </div>
         )}
 
-        {/* 8. ONGLET REVUE DE CODE 4GL */}
-        {activeTab === "REVIEW" && (
-          <div style={{ display: "grid", gridTemplateColumns: "1.1fr 1.2fr", gap: "1.5rem" }}>
-            <div className="card">
-              <h3 style={{ fontSize: "1.1rem", fontWeight: 800, marginBottom: "0.5rem" }}>
-                Revue Statique de Code 4GL
+        {/* --------------------------------------------------------------------- */}
+        {/* ONGLET 5 : REQUÊTES SQL & INDEX */}
+        {/* --------------------------------------------------------------------- */}
+        {activeTab === "SQL" && (
+          <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div>
+                <h3 style={{ fontSize: "1.15rem", fontWeight: 700, margin: 0, color: "#f8fafc" }}>
+                  Requêtes SQL &amp; Optimisation SGBD (Informix / Oracle)
+                </h3>
+                <p style={{ fontSize: "0.8rem", color: "#94a3b8", margin: "2px 0 0 0" }}>
+                  Requêtes indexées sur <code>BKCPT</code>, <code>BKCLI</code> et <code>BKTRA</code> garantissant l&apos;absence de Full Table Scan et respectant la concurrence.
+                </p>
+              </div>
+
+              <div style={{ display: "flex", gap: "0.5rem" }}>
+                <button
+                  onClick={() => copyToClipboard(generatedPlan.sqlProposal.sqlCode, "sql")}
+                  style={{
+                    backgroundColor: "#1e293b",
+                    color: "#f8fafc",
+                    border: "1px solid #334155",
+                    borderRadius: "6px",
+                    padding: "0.45rem 0.85rem",
+                    fontSize: "0.82rem",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                  }}
+                >
+                  {copiedKey === "sql" ? "✅ Copié !" : "📋 Copier SQL"}
+                </button>
+
+                <button
+                  onClick={() => downloadFile(generatedPlan.sqlProposal.sqlCode, "cbs_requetes_optimisees.sql", "text/plain")}
+                  style={{
+                    backgroundColor: "#0284c7",
+                    color: "#ffffff",
+                    border: "none",
+                    borderRadius: "6px",
+                    padding: "0.45rem 0.85rem",
+                    fontSize: "0.82rem",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                  }}
+                >
+                  💾 Télécharger (.sql)
+                </button>
+              </div>
+            </div>
+
+            <div style={{ backgroundColor: "#0d1117", border: "1px solid #30363d", borderRadius: "8px", padding: "1rem" }}>
+              <pre
+                style={{
+                  margin: 0,
+                  fontSize: "0.85rem",
+                  lineHeight: "1.5",
+                  fontFamily: "ui-monospace, monospace",
+                  color: "#67e8f9",
+                }}
+              >
+                <code>{generatedPlan.sqlProposal.sqlCode}</code>
+              </pre>
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+              <div style={{ backgroundColor: "#111827", borderRadius: "8px", border: "1px solid #1f2937", padding: "1rem" }}>
+                <div style={{ fontSize: "0.8rem", fontWeight: 700, color: "#f87171", marginBottom: "0.4rem" }}>
+                  ⚠️ RISQUES DE PERFORMANCE &amp; FULL TABLE SCAN
+                </div>
+                <ul style={{ margin: 0, paddingLeft: "1.25rem", fontSize: "0.8rem", color: "#cbd5e1", lineHeight: "1.5" }}>
+                  {generatedPlan.sqlProposal.performanceRisks.map((r, i) => (
+                    <li key={i}>{r}</li>
+                  ))}
+                </ul>
+              </div>
+
+              <div style={{ backgroundColor: "#111827", borderRadius: "8px", border: "1px solid #1f2937", padding: "1rem" }}>
+                <div style={{ fontSize: "0.8rem", fontWeight: 700, color: "#34d399", marginBottom: "0.4rem" }}>
+                  🔒 CONSIGNES DE SÉCURITÉ &amp; CONFIDENTIALITÉ
+                </div>
+                <ul style={{ margin: 0, paddingLeft: "1.25rem", fontSize: "0.8rem", color: "#cbd5e1", lineHeight: "1.5" }}>
+                  {generatedPlan.sqlProposal.securityPrecautions.map((s, i) => (
+                    <li key={i}>{s}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* --------------------------------------------------------------------- */}
+        {/* ONGLET 6 : JEUX DE TESTS & RECETTE */}
+        {/* --------------------------------------------------------------------- */}
+        {activeTab === "TESTS" && (
+          <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+            <h3 style={{ fontSize: "1.15rem", fontWeight: 700, margin: 0, color: "#f8fafc" }}>
+              Matrice de Qualification &amp; Recette Technique ({generatedPlan.testCases.length} Cas de Test)
+            </h3>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+              {generatedPlan.testCases.map((tc) => (
+                <div
+                  key={tc.id}
+                  style={{
+                    backgroundColor: "#111827",
+                    border: "1px solid #1f2937",
+                    borderRadius: "8px",
+                    padding: "1rem",
+                    display: "grid",
+                    gridTemplateColumns: "120px 1.5fr 1.5fr 120px",
+                    gap: "1rem",
+                    alignItems: "center",
+                  }}
+                >
+                  <div>
+                    <span
+                      style={{
+                        backgroundColor:
+                          tc.category === "NOMINAL"
+                            ? "#065f46"
+                            : tc.category === "ERREUR"
+                            ? "#7f1d1d"
+                            : tc.category === "DROITS"
+                            ? "#78350f"
+                            : "#1e1b4b",
+                        color: "#ffffff",
+                        padding: "2px 8px",
+                        borderRadius: "4px",
+                        fontSize: "0.72rem",
+                        fontWeight: 700,
+                      }}
+                    >
+                      {tc.id} • {tc.category}
+                    </span>
+                  </div>
+
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: "0.9rem", color: "#f8fafc" }}>{tc.title}</div>
+                    <div style={{ fontSize: "0.78rem", color: "#9ca3af", marginTop: "4px" }}>
+                      <strong>Préconditions :</strong> {tc.preconditions}
+                    </div>
+                  </div>
+
+                  <div>
+                    <div style={{ fontSize: "0.75rem", color: "#64748b" }}>RÉSULTAT ATTENDU</div>
+                    <div style={{ fontSize: "0.8rem", color: "#e2e8f0", marginTop: "2px" }}>{tc.expectedResult}</div>
+                  </div>
+
+                  <div style={{ textAlign: "right" }}>
+                    <span
+                      style={{
+                        backgroundColor: "#1e293b",
+                        color: "#38bdf8",
+                        border: "1px solid #334155",
+                        padding: "4px 10px",
+                        borderRadius: "6px",
+                        fontSize: "0.75rem",
+                        fontWeight: 600,
+                      }}
+                    >
+                      A_TESTER
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* --------------------------------------------------------------------- */}
+        {/* ONGLET 7 : DOSSIER DE LIVRAISON & PLAN DE ROLLBACK */}
+        {/* --------------------------------------------------------------------- */}
+        {activeTab === "DELIVERY" && (
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
+            <div style={{ backgroundColor: "#111827", borderRadius: "10px", border: "1px solid #1f2937", padding: "1.5rem" }}>
+              <h3 style={{ fontSize: "1.1rem", fontWeight: 700, marginBottom: "0.75rem", color: "#38bdf8" }}>
+                📦 Procédure d&apos;Installation &amp; Fiche MEP
               </h3>
-              <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginBottom: "0.75rem" }}>
-                Collez votre code 4GL pour détecter les erreurs de transactions, verrous et failles de sécurité :
+              <div style={{ fontSize: "0.82rem", color: "#9ca3af", marginBottom: "1rem" }}>
+                Ordre strict d&apos;exécution sur le serveur de production AIX / Linux :
+              </div>
+              <ol style={{ margin: 0, paddingLeft: "1.25rem", fontSize: "0.85rem", color: "#f1f5f9", lineHeight: "1.6" }}>
+                {generatedPlan.deliveryPackage.installationOrder.map((step, idx) => (
+                  <li key={idx} style={{ marginBottom: "0.4rem" }}>
+                    <code style={{ color: "#a5b4fc", backgroundColor: "#0d1117", padding: "2px 6px", borderRadius: "4px" }}>
+                      {step}
+                    </code>
+                  </li>
+                ))}
+              </ol>
+            </div>
+
+            <div style={{ backgroundColor: "#111827", borderRadius: "10px", border: "1px solid #1f2937", padding: "1.5rem" }}>
+              <h3 style={{ fontSize: "1.1rem", fontWeight: 700, marginBottom: "0.75rem", color: "#f87171" }}>
+                🚨 Plan de Retour Arrière Immédiat (Rollback)
+              </h3>
+              <div style={{ fontSize: "0.82rem", color: "#9ca3af", marginBottom: "1rem" }}>
+                À exécuter sous 10 minutes en cas d&apos;anomalie critique constatée :
+              </div>
+              <ul style={{ margin: 0, paddingLeft: "1.25rem", fontSize: "0.85rem", color: "#fca5a5", lineHeight: "1.6" }}>
+                {generatedPlan.deliveryPackage.rollbackPlan.map((r, idx) => (
+                  <li key={idx} style={{ marginBottom: "0.4rem" }}>
+                    {r}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        )}
+
+        {/* --------------------------------------------------------------------- */}
+        {/* ONGLET 8 : POINT DE RUPTURE RUN (DIAGNOSTIC D'INCIDENTS PRODUCTION) */}
+        {/* --------------------------------------------------------------------- */}
+        {activeTab === "FAILURE" && (
+          <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: "1.5rem" }}>
+            <div style={{ backgroundColor: "#111827", borderRadius: "10px", border: "1px solid #1f2937", padding: "1.5rem" }}>
+              <h3 style={{ fontSize: "1.15rem", fontWeight: 700, marginBottom: "0.5rem", color: "#f87171" }}>
+                🚨 Diagnostic d&apos;un Point de Rupture Core Banking (RUN)
+              </h3>
+              <p style={{ fontSize: "0.82rem", color: "#9ca3af", marginBottom: "1rem" }}>
+                Collez un message d&apos;erreur Informix (SQLCA.SQLCODE), Oracle (ORA-XXXXX) ou log batch. Le Copilot en identifiera la cause racine et la procédure de résolution.
+              </p>
+
+              <div style={{ marginBottom: "1rem" }}>
+                <span style={{ fontSize: "0.75rem", color: "#6b7280", fontWeight: 700 }}>Erreurs de production fréquentes :</span>
+                <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", marginTop: "0.4rem" }}>
+                  {[
+                    "SQLCODE = -143 (Deadlock detected on table bkcpt)",
+                    "SQLCODE = -154 (Lock Timeout on table bkcom)",
+                    "SQLCODE = 100 (Row Not Found)",
+                    "ORA-00054 (resource busy and acquire with NOWAIT specified)",
+                    "ORA-01555 (snapshot too old: rollback segment too small)",
+                  ].map((err, i) => (
+                    <button
+                      key={i}
+                      onClick={() => {
+                        setFailureInput(err);
+                        setFailureResult(analyzeCbsFailure(err));
+                      }}
+                      style={{
+                        padding: "0.3rem 0.6rem",
+                        backgroundColor: "#1f2937",
+                        color: "#fca5a5",
+                        border: "1px solid #374151",
+                        borderRadius: "4px",
+                        fontSize: "0.72rem",
+                        cursor: "pointer",
+                      }}
+                    >
+                      {err.split(" ")[0]} {err.split(" ")[1] || ""}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <textarea
+                rows={4}
+                value={failureInput}
+                onChange={(e) => setFailureInput(e.target.value)}
+                style={{
+                  width: "100%",
+                  backgroundColor: "#0d1117",
+                  border: "1px solid #30363d",
+                  borderRadius: "6px",
+                  padding: "0.75rem",
+                  color: "#f0f6fc",
+                  fontSize: "0.85rem",
+                  fontFamily: "monospace",
+                }}
+              />
+
+              <button
+                onClick={() => setFailureResult(analyzeCbsFailure(failureInput))}
+                style={{
+                  backgroundColor: "#dc2626",
+                  color: "#ffffff",
+                  border: "none",
+                  borderRadius: "6px",
+                  padding: "0.6rem 1.25rem",
+                  fontSize: "0.85rem",
+                  fontWeight: 700,
+                  marginTop: "0.75rem",
+                  cursor: "pointer",
+                }}
+              >
+                🔍 Lancer le Diagnostic
+              </button>
+            </div>
+
+            {/* Résultat du diagnostic */}
+            <div style={{ backgroundColor: "#111827", borderRadius: "10px", border: "1px solid #1f2937", padding: "1.5rem" }}>
+              <h4 style={{ fontSize: "1rem", fontWeight: 700, color: "#f87171", margin: "0 0 1rem 0" }}>
+                Rapport d&apos;Investigation d&apos;Incident
+              </h4>
+
+              {failureResult && (
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", fontSize: "0.85rem" }}>
+                  <div style={{ backgroundColor: "#0d1117", padding: "0.75rem", borderRadius: "6px" }}>
+                    <span style={{ fontSize: "0.72rem", color: "#64748b", fontWeight: 700 }}>CAUSE RACINE DÉTECTÉE</span>
+                    <div style={{ color: "#fca5a5", fontWeight: 700, marginTop: "2px" }}>{failureResult.rootCause}</div>
+                  </div>
+
+                  <div style={{ backgroundColor: "#0d1117", padding: "0.75rem", borderRadius: "6px" }}>
+                    <span style={{ fontSize: "0.72rem", color: "#64748b", fontWeight: 700 }}>PROCÉDURE DE RÉPARATION RECOMMANDÉE</span>
+                    <div style={{ color: "#34d399", marginTop: "2px" }}>{failureResult.recommendedFix}</div>
+                  </div>
+
+                  <div style={{ backgroundColor: "#0d1117", padding: "0.75rem", borderRadius: "6px" }}>
+                    <span style={{ fontSize: "0.72rem", color: "#64748b", fontWeight: 700 }}>CONTRÔLES SGBD À EXÉCUTER</span>
+                    <ul style={{ margin: "4px 0 0 0", paddingLeft: "1.2rem", color: "#cbd5e1" }}>
+                      {failureResult.checksToPerform.map((c: string, idx: number) => (
+                        <li key={idx}><code>{c}</code></li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* --------------------------------------------------------------------- */}
+        {/* ONGLET 9 : REVUE DE CODE 4GL AUTOMATISÉE */}
+        {/* --------------------------------------------------------------------- */}
+        {activeTab === "REVIEW" && (
+          <div style={{ display: "grid", gridTemplateColumns: "1.1fr 1fr", gap: "1.5rem" }}>
+            <div style={{ backgroundColor: "#111827", borderRadius: "10px", border: "1px solid #1f2937", padding: "1.5rem" }}>
+              <h3 style={{ fontSize: "1.15rem", fontWeight: 700, marginBottom: "0.5rem", color: "#fbbf24" }}>
+                🔍 Revue Automatique de Code Informix 4GL
+              </h3>
+              <p style={{ fontSize: "0.82rem", color: "#9ca3af", marginBottom: "1rem" }}>
+                Vérification statique : détection des requêtes SELECT sans INTO, transactions orphelines, absence de <code>WHENEVER ERROR</code> et suppressions non restreintes.
               </p>
 
               <textarea
                 rows={12}
                 value={codeReviewInput}
                 onChange={(e) => setCodeReviewInput(e.target.value)}
-                className="input"
-                style={{ fontFamily: "monospace", fontSize: "0.8rem", background: "#0f172a", color: "#f8fafc" }}
+                style={{
+                  width: "100%",
+                  backgroundColor: "#0d1117",
+                  border: "1px solid #30363d",
+                  borderRadius: "6px",
+                  padding: "0.75rem",
+                  color: "#f0f6fc",
+                  fontSize: "0.85rem",
+                  fontFamily: "monospace",
+                }}
               />
 
               <button
-                type="button"
                 onClick={() => setReviewFindings(review4GlCode(codeReviewInput))}
-                className="btn-primary"
-                style={{ alignSelf: "flex-start", marginTop: "0.75rem" }}
+                style={{
+                  backgroundColor: "#d97706",
+                  color: "#ffffff",
+                  border: "none",
+                  borderRadius: "6px",
+                  padding: "0.6rem 1.25rem",
+                  fontSize: "0.85rem",
+                  fontWeight: 700,
+                  marginTop: "0.75rem",
+                  cursor: "pointer",
+                }}
               >
-                Lancer la Revue de Code →
+                ⚡ Analyser le Code
               </button>
             </div>
 
-            <div className="card">
-              <h3 style={{ fontSize: "1.1rem", fontWeight: 800, marginBottom: "0.75rem" }}>
-                Anomalies &amp; Recommandations ({reviewFindings.length})
-              </h3>
+            {/* Constats de revue */}
+            <div style={{ backgroundColor: "#111827", borderRadius: "10px", border: "1px solid #1f2937", padding: "1.5rem" }}>
+              <h4 style={{ fontSize: "1rem", fontWeight: 700, color: "#fbbf24", margin: "0 0 1rem 0" }}>
+                Anomalies &amp; Failles Détectées ({reviewFindings.length})
+              </h4>
+
               <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
                 {reviewFindings.length === 0 ? (
-                  <p style={{ color: "#10b981", fontWeight: 700 }}>✓ Aucune anomalie bloquante détectée.</p>
+                  <div style={{ padding: "2rem", textAlign: "center", color: "#34d399" }}>
+                    ✅ Aucune anomalie critique détectée dans ce fragment de code 4GL !
+                  </div>
                 ) : (
                   reviewFindings.map((f) => (
                     <div
                       key={f.id}
                       style={{
-                        padding: "0.75rem",
+                        backgroundColor: "#0d1117",
+                        border: "1px solid #30363d",
                         borderRadius: "6px",
-                        background: f.severity === "BLOQUANTE" ? "#fef2f2" : "#fffbeb",
-                        border: `1px solid ${f.severity === "BLOQUANTE" ? "#f87171" : "#fcd34d"}`,
-                        fontSize: "0.82rem",
+                        padding: "0.85rem",
                       }}
                     >
-                      <div style={{ display: "flex", justifyContent: "space-between", fontWeight: 800 }}>
-                        <span style={{ color: f.severity === "BLOQUANTE" ? "#b91c1c" : "#b45309" }}>
-                          [{f.severity}] {f.description} ({f.location})
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <span style={{ fontWeight: 700, color: f.severity === "BLOQUANTE" ? "#f87171" : "#fbbf24", fontSize: "0.85rem" }}>
+                          [{f.severity}] {f.description}
                         </span>
-                        <span>{f.category}</span>
+                        <span style={{ fontSize: "0.72rem", color: "#9ca3af" }}>{f.location}</span>
                       </div>
-                      <p style={{ margin: "0.3rem 0", color: "#374151" }}>{f.explanation}</p>
-                      <p style={{ margin: 0, color: "#047857", fontWeight: 700 }}>👉 {f.proposedFix}</p>
+                      <div style={{ fontSize: "0.8rem", color: "#cbd5e1", marginTop: "4px" }}>{f.explanation}</div>
+                      <div style={{ fontSize: "0.78rem", color: "#34d399", marginTop: "6px" }}>
+                        <strong>Correction :</strong> {f.proposedFix}
+                      </div>
                     </div>
                   ))
                 )}
@@ -823,7 +1688,246 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
             </div>
           </div>
         )}
-      </div>
-    </AppShell>
+
+        {/* --------------------------------------------------------------------- */}
+        {/* ONGLET 10 : EXPLORATEUR DICTIONNAIRE BD AMPLITUDE */}
+        {/* --------------------------------------------------------------------- */}
+        {activeTab === "DICTIONARY" && (
+          <div style={{ display: "grid", gridTemplateColumns: "340px 1fr", gap: "1.5rem" }}>
+            {/* Colonne latérale : Liste des tables */}
+            <div style={{ backgroundColor: "#111827", borderRadius: "10px", border: "1px solid #1f2937", padding: "1.25rem", height: "calc(100vh - 180px)", display: "flex", flexDirection: "column" }}>
+              <div style={{ marginBottom: "1rem" }}>
+                <h4 style={{ fontSize: "1rem", fontWeight: 700, color: "#38bdf8", margin: "0 0 0.5rem 0" }}>
+                  Tables Maîtresses Amplitude
+                </h4>
+                <input
+                  type="text"
+                  placeholder="Filtrer (ex: BKCPT, BKTRA, soldes)..."
+                  value={dbSearch}
+                  onChange={(e) => setDbSearch(e.target.value)}
+                  style={{
+                    width: "100%",
+                    backgroundColor: "#0d1117",
+                    border: "1px solid #30363d",
+                    borderRadius: "6px",
+                    padding: "0.5rem 0.75rem",
+                    color: "#f0f6fc",
+                    fontSize: "0.8rem",
+                  }}
+                />
+              </div>
+
+              <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                {filteredTables.map((tbl) => {
+                  const isSel = selectedDbTable.tableName === tbl.tableName;
+                  return (
+                    <div
+                      key={tbl.tableName}
+                      onClick={() => setSelectedDbTable(tbl)}
+                      style={{
+                        padding: "0.6rem 0.75rem",
+                        backgroundColor: isSel ? "#1e293b" : "#0d1117",
+                        border: isSel ? "1px solid #38bdf8" : "1px solid #21262d",
+                        borderRadius: "6px",
+                        cursor: "pointer",
+                        transition: "all 0.1s ease",
+                      }}
+                    >
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <span style={{ fontWeight: 700, color: isSel ? "#38bdf8" : "#f1f5f9", fontSize: "0.85rem" }}>
+                          {tbl.tableName}
+                        </span>
+                        <span style={{ fontSize: "0.7rem", color: "#94a3b8" }}>{tbl.columns.length} col.</span>
+                      </div>
+                      <div style={{ fontSize: "0.75rem", color: "#9ca3af", marginTop: "2px" }}>{tbl.module}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Panneau principal : Détail de la table sélectionnée */}
+            <div style={{ backgroundColor: "#111827", borderRadius: "10px", border: "1px solid #1f2937", padding: "1.5rem" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1rem" }}>
+                <div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                    <h3 style={{ fontSize: "1.4rem", fontWeight: 800, margin: 0, color: "#f8fafc" }}>
+                      {selectedDbTable.tableName}
+                    </h3>
+                    <span style={{ backgroundColor: "#1e3a8a", color: "#93c5fd", padding: "2px 8px", borderRadius: "4px", fontSize: "0.75rem", fontWeight: 600 }}>
+                      {selectedDbTable.module}
+                    </span>
+                  </div>
+                  <p style={{ fontSize: "0.85rem", color: "#cbd5e1", margin: "4px 0 0 0" }}>
+                    {selectedDbTable.description}
+                  </p>
+                </div>
+
+                <div style={{ textAlign: "right" }}>
+                  <span style={{ fontSize: "0.75rem", color: "#9ca3af", display: "block" }}>CLÉ PRIMAIRE (PK)</span>
+                  <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "#38bdf8", fontFamily: "monospace" }}>
+                    ({selectedDbTable.primaryKey.join(", ")})
+                  </span>
+                </div>
+              </div>
+
+              {/* Colonnes de la table */}
+              <div style={{ marginBottom: "1.5rem" }}>
+                <div style={{ fontSize: "0.85rem", fontWeight: 700, color: "#d1d5db", marginBottom: "0.6rem" }}>
+                  Structure des Colonnes ({selectedDbTable.columns.length} champs réels)
+                </div>
+                <div style={{ maxHeight: "320px", overflowY: "auto", border: "1px solid #30363d", borderRadius: "6px" }}>
+                  <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.8rem", textAlign: "left" }}>
+                    <thead style={{ backgroundColor: "#0d1117", borderBottom: "1px solid #30363d", color: "#9ca3af" }}>
+                      <tr>
+                        <th style={{ padding: "0.5rem 0.75rem" }}>Colonne</th>
+                        <th style={{ padding: "0.5rem 0.75rem" }}>Type SGBD</th>
+                        <th style={{ padding: "0.5rem 0.75rem" }}>Description Amplitude</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {selectedDbTable.columns.map((col, idx) => (
+                        <tr
+                          key={col.name}
+                          style={{
+                            borderBottom: "1px solid #1f2937",
+                            backgroundColor: idx % 2 === 0 ? "transparent" : "#0b0f19",
+                          }}
+                        >
+                          <td style={{ padding: "0.5rem 0.75rem", fontWeight: 700, color: selectedDbTable.primaryKey.includes(col.name) ? "#38bdf8" : "#f1f5f9", fontFamily: "monospace" }}>
+                            {col.name} {selectedDbTable.primaryKey.includes(col.name) ? "🔑" : ""}
+                          </td>
+                          <td style={{ padding: "0.5rem 0.75rem", color: "#a5b4fc", fontFamily: "monospace" }}>
+                            {col.type}
+                          </td>
+                          <td style={{ padding: "0.5rem 0.75rem", color: "#cbd5e1" }}>
+                            {col.description}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Requête SQL de consultation de référence */}
+              <div>
+                <div style={{ fontSize: "0.85rem", fontWeight: 700, color: "#d1d5db", marginBottom: "0.4rem" }}>
+                  Requête SQL Type d&apos;Exploitation
+                </div>
+                <div style={{ backgroundColor: "#0d1117", border: "1px solid #30363d", borderRadius: "6px", padding: "0.85rem", position: "relative" }}>
+                  <pre style={{ margin: 0, fontSize: "0.82rem", color: "#67e8f9", fontFamily: "monospace", overflowX: "auto" }}>
+                    {selectedDbTable.sampleQuery}
+                  </pre>
+                </div>
+                <div style={{ fontSize: "0.75rem", color: "#f87171", marginTop: "6px" }}>
+                  ⚠️ {selectedDbTable.criticalNotes}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </main>
+
+      {/* ========================================================================= */}
+      {/* 4. MODALE DE GESTION DES PROJETS SAUVEGARDÉS */}
+      {/* ========================================================================= */}
+      {showProjectsModal && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0, 0, 0, 0.75)",
+            backdropFilter: "blur(4px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000,
+          }}
+          onClick={() => setShowProjectsModal(false)}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              width: "700px",
+              maxHeight: "80vh",
+              backgroundColor: "#111827",
+              border: "1px solid #374151",
+              borderRadius: "12px",
+              padding: "1.5rem",
+              display: "flex",
+              flexDirection: "column",
+              boxShadow: "0 20px 40px rgba(0,0,0,0.6)",
+            }}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+              <h3 style={{ fontSize: "1.2rem", fontWeight: 700, margin: 0, color: "#f8fafc" }}>
+                📂 Projets de Développement Enregistrés ({savedProjects.length})
+              </h3>
+              <button
+                onClick={() => setShowProjectsModal(false)}
+                style={{ background: "none", border: "none", color: "#9ca3af", fontSize: "1.2rem", cursor: "pointer" }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+              {savedProjects.length === 0 ? (
+                <div style={{ padding: "3rem", textAlign: "center", color: "#9ca3af" }}>
+                  Aucun projet sauvegardé pour le moment. Cliquez sur <strong>💾 Sauvegarder (BD)</strong> pour conserver vos développements.
+                </div>
+              ) : (
+                savedProjects.map((p) => (
+                  <div
+                    key={p.id}
+                    onClick={() => handleLoadProject(p)}
+                    style={{
+                      padding: "1rem",
+                      backgroundColor: "#0d1117",
+                      border: "1px solid #30363d",
+                      borderRadius: "8px",
+                      cursor: "pointer",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      transition: "border-color 0.15s ease",
+                    }}
+                  >
+                    <div>
+                      <div style={{ fontWeight: 700, color: "#f8fafc", fontSize: "0.95rem" }}>{p.name}</div>
+                      <div style={{ fontSize: "0.78rem", color: "#9ca3af", marginTop: "4px" }}>
+                        Domaine : <span style={{ color: "#38bdf8" }}>{p.domain}</span> • Mis à jour le : {new Date(p.updatedAt).toLocaleString("fr-FR")}
+                      </div>
+                    </div>
+
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                      <span style={{ fontSize: "0.8rem", color: "#38bdf8", fontWeight: 600 }}>Ouvrir →</span>
+                      <button
+                        onClick={(e) => handleDeleteProject(p.id, e)}
+                        style={{
+                          background: "none",
+                          border: "none",
+                          color: "#ef4444",
+                          cursor: "pointer",
+                          fontSize: "1rem",
+                          padding: "4px",
+                        }}
+                        title="Supprimer ce projet"
+                      >
+                        🗑️
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
