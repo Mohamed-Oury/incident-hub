@@ -43,7 +43,7 @@ class AppDatabase {
 
     return await openDatabase(
       path,
-      version: 2,
+      version: 3,
       onCreate: (db, version) async {
         await _createTables(db);
         await _seedInitialData(db);
@@ -57,10 +57,9 @@ class AppDatabase {
       },
       onOpen: (db) async {
         try {
-          // Vérification que la colonne raw_json existe et est peuplée
-          final testRow = await db.query('incidents', limit: 1);
-          if (testRow.isEmpty || !testRow.first.containsKey('raw_json') || testRow.first['raw_json'] == null) {
-            debugPrint('Détection d\'une base obsolète ou vide : réinitialisation et re-seeding...');
+          final countRes = Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM incidents')) ?? 0;
+          if (countRes < 1000) {
+            debugPrint('Base locale incomplète ($countRes incidents) : re-seeding des 1000 incidents...');
             await db.execute('DROP TABLE IF EXISTS incidents');
             await db.execute('DROP TABLE IF EXISTS de39');
             await _createTables(db);
