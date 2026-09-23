@@ -5,15 +5,10 @@ import Link from "next/link";
 import {
   DevelopmentNeedInput,
   CopilotFullPlan,
-  CodeReviewFinding,
   CopilotProject,
 } from "@/modules/cbs/copilot/types";
-import {
-  generateCopilotPlan,
-  analyzeCbsFailure,
-  review4GlCode,
-} from "@/modules/cbs/copilot/engine";
-import { CBS_SCHEMA_TABLES, CbsTableDefinition } from "@/modules/cbs/cbs-advanced-data";
+import { generateCopilotPlan } from "@/modules/cbs/copilot/engine";
+import { CBS_SCHEMA_TABLES } from "@/modules/cbs/cbs-advanced-data";
 
 // Préréglages de besoins bancaires courants
 const PRESET_NEEDS: { label: string; icon: string; input: DevelopmentNeedInput }[] = [
@@ -116,41 +111,18 @@ const EMPTY_NEED: DevelopmentNeedInput = {
 
 export default function CbsCopilotPage() {
   const [activeTab, setActiveTab] = useState<
-    "NEED" | "TASKS" | "CODE" | "PER_SCREEN" | "SQL" | "TESTS" | "DELIVERY" | "FAILURE" | "REVIEW" | "DICTIONARY"
+    "NEED" | "TASKS" | "CODE" | "PER_SCREEN" | "SQL"
   >("NEED");
 
   // Formulaire Saisie du besoin (Vide par défaut, aucune donnée d'exemple pré-remplie)
   const [needInput, setNeedInput] = useState<DevelopmentNeedInput>(EMPTY_NEED);
   const [generatedPlan, setGeneratedPlan] = useState<CopilotFullPlan>(() => generateCopilotPlan(EMPTY_NEED));
 
-  // Onglet Analyse Point de Rupture
-  const [failureInput, setFailureInput] = useState<string>(
-    "Erreur SQLCA.SQLCODE = -143 (Deadlock detected on table bkcpt during batch UPDATE) - Transaction aborted"
-  );
-  const [failureResult, setFailureResult] = useState<any>(() => analyzeCbsFailure(failureInput));
-
-  // Onglet Revue de Code 4GL
-  const [codeReviewInput, setCodeReviewInput] = useState<string>(`MAIN
-    DEFINE v_age VARCHAR(5)
-    DEFINE v_ncp VARCHAR(11)
-    DEFINE v_sol DECIMAL(19,4)
-
-    SELECT sol
-      FROM bkcpt
-     WHERE ncp = v_ncp
-
-    BEGIN WORK
-    DELETE FROM bkcpt
-END MAIN`);
-  const [reviewFindings, setReviewFindings] = useState<CodeReviewFinding[]>(() => review4GlCode(codeReviewInput));
-
   // Projets enregistrés & Persistance
   const [savedProjects, setSavedProjects] = useState<CopilotProject[]>([]);
   const [showProjectsModal, setShowProjectsModal] = useState<boolean>(false);
   const [saveStatus, setSaveStatus] = useState<string | null>(null);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
-  const [dbSearch, setDbSearch] = useState<string>("");
-  const [selectedDbTable, setSelectedDbTable] = useState<CbsTableDefinition>(CBS_SCHEMA_TABLES[1]); // BKCPT par défaut
 
   // Charger les projets enregistrés depuis l'API et le localStorage
   useEffect(() => {
@@ -372,14 +344,6 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
     downloadFile(markdown, `DOSSIER_DEV_CBS_${p.need.title.replace(/\s+/g, "_")}.md`, "text/markdown");
   };
 
-  // Filtrage du dictionnaire de tables
-  const filteredTables = CBS_SCHEMA_TABLES.filter(
-    (t) =>
-      t.tableName.toLowerCase().includes(dbSearch.toLowerCase()) ||
-      t.module.toLowerCase().includes(dbSearch.toLowerCase()) ||
-      t.description.toLowerCase().includes(dbSearch.toLowerCase())
-  );
-
   return (
     <div
       style={{
@@ -473,7 +437,6 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
         <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", flexWrap: "wrap" }}>
           {/* Badge BD active */}
           <div
-            onClick={() => setActiveTab("DICTIONARY")}
             style={{
               display: "flex",
               alignItems: "center",
@@ -484,10 +447,9 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
               padding: "0.4rem 0.75rem",
               fontSize: "0.75rem",
               color: "#047857",
-              cursor: "pointer",
               fontWeight: 600,
             }}
-            title="Cliquez pour consulter le dictionnaire des tables Amplitude"
+            title="Dictionnaire des 220 tables Amplitude connecté"
           >
             <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#10b981" }} />
             <span>Dictionnaire BK* Connecté ({CBS_SCHEMA_TABLES.length} tables)</span>
@@ -603,30 +565,11 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
           { key: "CODE", label: "3. Code Informix 4GL", icon: "💻" },
           { key: "PER_SCREEN", label: "4. Écran Masque (.per)", icon: "🖥️" },
           { key: "SQL", label: "5. Requêtes SQL & Index", icon: "🗄️" },
-          { key: "TESTS", label: "6. Jeux de Tests", icon: "🧪" },
-          { key: "DELIVERY", label: "7. Dossier de Livraison", icon: "🚀" },
-          { key: "FAILURE", label: "8. Point de Rupture RUN", icon: "🚨", alert: true },
-          { key: "REVIEW", label: "9. Revue de Code 4GL", icon: "🔍", warning: true },
-          { key: "DICTIONARY", label: "10. Dictionnaire BD", icon: "🗃️", success: true },
         ].map((tab) => {
           const isActive = activeTab === tab.key;
-          let bg = isActive ? "#0284c7" : "#f8fafc";
-          let color = isActive ? "#ffffff" : "#475569";
-          let border = isActive ? "1px solid #0284c7" : "1px solid #e2e8f0";
-
-          if (!isActive && tab.alert) {
-            color = "#b91c1c";
-            bg = "#fef2f2";
-            border = "1px solid #fecaca";
-          } else if (!isActive && tab.warning) {
-            color = "#b45309";
-            bg = "#fffbeb";
-            border = "1px solid #fde68a";
-          } else if (!isActive && tab.success) {
-            color = "#047857";
-            bg = "#ecfdf5";
-            border = "1px solid #a7f3d0";
-          }
+          const bg = isActive ? "#0284c7" : "#f8fafc";
+          const color = isActive ? "#ffffff" : "#475569";
+          const border = isActive ? "1px solid #0284c7" : "1px solid #e2e8f0";
 
           return (
             <button
@@ -1020,27 +963,22 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                   <h4 style={{ fontSize: "0.95rem", fontWeight: 700, margin: 0, color: "#047857" }}>
                     🗃️ Tables Amplitude Maîtresses
                   </h4>
-                  <button
-                    onClick={() => setActiveTab("DICTIONARY")}
+                  <Link
+                    href="/cbs/schema"
                     style={{ background: "none", border: "none", color: "#0284c7", fontSize: "0.78rem", cursor: "pointer", fontWeight: 600, textDecoration: "underline" }}
                   >
-                    Voir toutes les tables →
-                  </button>
+                    Voir toutes les tables (Schéma) →
+                  </Link>
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                   {CBS_SCHEMA_TABLES.slice(0, 4).map((t) => (
                     <div
                       key={t.tableName}
-                      onClick={() => {
-                        setSelectedDbTable(t);
-                        setActiveTab("DICTIONARY");
-                      }}
                       style={{
                         padding: "0.6rem 0.8rem",
                         backgroundColor: "#f8fafc",
                         border: "1px solid #e2e8f0",
                         borderRadius: "8px",
-                        cursor: "pointer",
                         display: "flex",
                         justifyContent: "space-between",
                         alignItems: "center",
@@ -1513,479 +1451,6 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
         )}
 
         {/* --------------------------------------------------------------------- */}
-        {/* ONGLET 6 : JEUX DE TESTS & RECETTE */}
-        {/* --------------------------------------------------------------------- */}
-        {activeTab === "TESTS" && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "1rem", width: "100%", boxSizing: "border-box" }}>
-            <h3 style={{ fontSize: "1.15rem", fontWeight: 700, margin: 0, color: "#0f172a" }}>
-              Matrice de Qualification &amp; Recette Technique ({generatedPlan.testCases.length} Cas de Test)
-            </h3>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-              {generatedPlan.testCases.map((tc) => (
-                <div
-                  key={tc.id}
-                  style={{
-                    backgroundColor: "#ffffff",
-                    border: "1px solid #e2e8f0",
-                    borderRadius: "8px",
-                    padding: "1rem",
-                    display: "grid",
-                    gridTemplateColumns: "130px 1.4fr 1.2fr 100px",
-                    gap: "1rem",
-                    alignItems: "center",
-                    boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
-                    overflow: "hidden",
-                    boxSizing: "border-box",
-                  }}
-                >
-                  <div style={{ minWidth: 0 }}>
-                    <span
-                      style={{
-                        backgroundColor:
-                          tc.category === "NOMINAL"
-                            ? "#ecfdf5"
-                            : tc.category === "ERREUR"
-                            ? "#fef2f2"
-                            : tc.category === "DROITS"
-                            ? "#fffbeb"
-                            : "#eff6ff",
-                        color:
-                          tc.category === "NOMINAL"
-                            ? "#047857"
-                            : tc.category === "ERREUR"
-                            ? "#b91c1c"
-                            : tc.category === "DROITS"
-                            ? "#b45309"
-                            : "#1d4ed8",
-                        border: "1px solid currentColor",
-                        padding: "2px 8px",
-                        borderRadius: "4px",
-                        fontSize: "0.72rem",
-                        fontWeight: 700,
-                        display: "inline-block",
-                        maxWidth: "100%",
-                        wordBreak: "break-all",
-                      }}
-                    >
-                      {tc.id} • {tc.category}
-                    </span>
-                  </div>
-
-                  <div style={{ minWidth: 0, wordBreak: "break-word" }}>
-                    <div style={{ fontWeight: 700, fontSize: "0.9rem", color: "#0f172a" }}>{tc.title}</div>
-                    <div style={{ fontSize: "0.78rem", color: "#64748b", marginTop: "4px" }}>
-                      <strong>Préconditions :</strong> {tc.preconditions}
-                    </div>
-                  </div>
-
-                  <div style={{ minWidth: 0, wordBreak: "break-word" }}>
-                    <div style={{ fontSize: "0.72rem", color: "#64748b", fontWeight: 600 }}>RÉSULTAT ATTENDU</div>
-                    <div style={{ fontSize: "0.82rem", color: "#334155", marginTop: "2px" }}>{tc.expectedResult}</div>
-                  </div>
-
-                  <div style={{ minWidth: 0, textAlign: "right" }}>
-                    <span
-                      style={{
-                        backgroundColor: "#f1f5f9",
-                        color: "#0284c7",
-                        border: "1px solid #cbd5e1",
-                        padding: "4px 10px",
-                        borderRadius: "6px",
-                        fontSize: "0.75rem",
-                        fontWeight: 700,
-                      }}
-                    >
-                      A_TESTER
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* --------------------------------------------------------------------- */}
-        {/* ONGLET 7 : DOSSIER DE LIVRAISON & PLAN DE ROLLBACK */}
-        {/* --------------------------------------------------------------------- */}
-        {activeTab === "DELIVERY" && (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "1.5rem", width: "100%", boxSizing: "border-box" }}>
-            <div style={{ backgroundColor: "#ffffff", borderRadius: "12px", border: "1px solid #e2e8f0", padding: "1.5rem", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
-              <h3 style={{ fontSize: "1.1rem", fontWeight: 700, marginBottom: "0.75rem", color: "#0369a1" }}>
-                📦 Procédure d&apos;Installation &amp; Fiche MEP
-              </h3>
-              <div style={{ fontSize: "0.82rem", color: "#64748b", marginBottom: "1rem" }}>
-                Ordre strict d&apos;exécution sur le serveur de production AIX / Linux :
-              </div>
-              <ol style={{ margin: 0, paddingLeft: "1.25rem", fontSize: "0.85rem", color: "#1e293b", lineHeight: "1.6" }}>
-                {generatedPlan.deliveryPackage.installationOrder.map((step, idx) => (
-                  <li key={idx} style={{ marginBottom: "0.5rem" }}>
-                    <code style={{ color: "#1d4ed8", backgroundColor: "#f1f5f9", padding: "3px 6px", borderRadius: "4px", border: "1px solid #e2e8f0" }}>
-                      {step}
-                    </code>
-                  </li>
-                ))}
-              </ol>
-            </div>
-
-            <div style={{ backgroundColor: "#ffffff", borderRadius: "12px", border: "1px solid #fecaca", padding: "1.5rem", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
-              <h3 style={{ fontSize: "1.1rem", fontWeight: 700, marginBottom: "0.75rem", color: "#b91c1c" }}>
-                🚨 Plan de Retour Arrière Immédiat (Rollback)
-              </h3>
-              <div style={{ fontSize: "0.82rem", color: "#64748b", marginBottom: "1rem" }}>
-                À exécuter sous 10 minutes en cas d&apos;anomalie critique constatée :
-              </div>
-              <ul style={{ margin: 0, paddingLeft: "1.25rem", fontSize: "0.85rem", color: "#991b1b", lineHeight: "1.6" }}>
-                {generatedPlan.deliveryPackage.rollbackPlan.map((r, idx) => (
-                  <li key={idx} style={{ marginBottom: "0.4rem" }}>
-                    {r}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        )}
-
-        {/* --------------------------------------------------------------------- */}
-        {/* ONGLET 8 : POINT DE RUPTURE RUN (DIAGNOSTIC D'INCIDENTS PRODUCTION) */}
-        {/* --------------------------------------------------------------------- */}
-        {activeTab === "FAILURE" && (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "1.5rem", width: "100%", boxSizing: "border-box" }}>
-            <div style={{ backgroundColor: "#ffffff", borderRadius: "12px", border: "1px solid #fecaca", padding: "1.5rem", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
-              <h3 style={{ fontSize: "1.15rem", fontWeight: 700, marginBottom: "0.5rem", color: "#b91c1c" }}>
-                🚨 Diagnostic d&apos;un Point de Rupture Core Banking (RUN)
-              </h3>
-              <p style={{ fontSize: "0.82rem", color: "#64748b", marginBottom: "1rem" }}>
-                Collez un message d&apos;erreur Informix (SQLCA.SQLCODE), Oracle (ORA-XXXXX) ou log batch. Le Copilot en identifiera la cause racine et la procédure de résolution.
-              </p>
-
-              <div style={{ marginBottom: "1rem" }}>
-                <span style={{ fontSize: "0.75rem", color: "#64748b", fontWeight: 700 }}>Erreurs de production fréquentes :</span>
-                <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap", marginTop: "0.4rem" }}>
-                  {[
-                    "SQLCODE = -143 (Deadlock detected on table bkcpt)",
-                    "SQLCODE = -154 (Lock Timeout on table bkcom)",
-                    "SQLCODE = 100 (Row Not Found)",
-                    "ORA-00054 (resource busy and acquire with NOWAIT specified)",
-                    "ORA-01555 (snapshot too old: rollback segment too small)",
-                  ].map((err, i) => (
-                    <button
-                      key={i}
-                      onClick={() => {
-                        setFailureInput(err);
-                        setFailureResult(analyzeCbsFailure(err));
-                      }}
-                      style={{
-                        padding: "0.3rem 0.6rem",
-                        backgroundColor: "#fef2f2",
-                        color: "#991b1b",
-                        border: "1px solid #fecaca",
-                        borderRadius: "4px",
-                        fontSize: "0.72rem",
-                        cursor: "pointer",
-                        fontWeight: 600,
-                      }}
-                    >
-                      {err.split(" ")[0]} {err.split(" ")[1] || ""}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <textarea
-                rows={4}
-                value={failureInput}
-                onChange={(e) => setFailureInput(e.target.value)}
-                style={{
-                  width: "100%",
-                  backgroundColor: "#ffffff",
-                  border: "1px solid #cbd5e1",
-                  borderRadius: "6px",
-                  padding: "0.75rem",
-                  color: "#0f172a",
-                  fontSize: "0.85rem",
-                  fontFamily: "monospace",
-                  boxSizing: "border-box",
-                }}
-              />
-
-              <button
-                onClick={() => setFailureResult(analyzeCbsFailure(failureInput))}
-                style={{
-                  backgroundColor: "#dc2626",
-                  color: "#ffffff",
-                  border: "none",
-                  borderRadius: "6px",
-                  padding: "0.6rem 1.25rem",
-                  fontSize: "0.85rem",
-                  fontWeight: 700,
-                  marginTop: "0.75rem",
-                  cursor: "pointer",
-                }}
-              >
-                🔍 Lancer le Diagnostic
-              </button>
-            </div>
-
-            {/* Résultat du diagnostic */}
-            <div style={{ backgroundColor: "#ffffff", borderRadius: "12px", border: "1px solid #e2e8f0", padding: "1.5rem", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
-              <h4 style={{ fontSize: "1rem", fontWeight: 700, color: "#b91c1c", margin: "0 0 1rem 0" }}>
-                Rapport d&apos;Investigation d&apos;Incident
-              </h4>
-
-              {failureResult && (
-                <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", fontSize: "0.85rem" }}>
-                  <div style={{ backgroundColor: "#fef2f2", border: "1px solid #fecaca", padding: "0.75rem", borderRadius: "6px" }}>
-                    <span style={{ fontSize: "0.72rem", color: "#991b1b", fontWeight: 700 }}>CAUSE RACINE DÉTECTÉE</span>
-                    <div style={{ color: "#7f1d1d", fontWeight: 700, marginTop: "2px" }}>{failureResult.rootCause}</div>
-                  </div>
-
-                  <div style={{ backgroundColor: "#ecfdf5", border: "1px solid #a7f3d0", padding: "0.75rem", borderRadius: "6px" }}>
-                    <span style={{ fontSize: "0.72rem", color: "#047857", fontWeight: 700 }}>PROCÉDURE DE RÉPARATION RECOMMANDÉE</span>
-                    <div style={{ color: "#065f46", marginTop: "2px" }}>{failureResult.recommendedFix}</div>
-                  </div>
-
-                  <div style={{ backgroundColor: "#f8fafc", border: "1px solid #e2e8f0", padding: "0.75rem", borderRadius: "6px" }}>
-                    <span style={{ fontSize: "0.72rem", color: "#64748b", fontWeight: 700 }}>CONTRÔLES SGBD À EXÉCUTER</span>
-                    <ul style={{ margin: "4px 0 0 0", paddingLeft: "1.2rem", color: "#334155" }}>
-                      {failureResult.checksToPerform.map((c: string, idx: number) => (
-                        <li key={idx}><code>{c}</code></li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* --------------------------------------------------------------------- */}
-        {/* ONGLET 9 : REVUE DE CODE 4GL AUTOMATISÉE */}
-        {/* --------------------------------------------------------------------- */}
-        {activeTab === "REVIEW" && (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "1.5rem", width: "100%", boxSizing: "border-box" }}>
-            <div style={{ backgroundColor: "#ffffff", borderRadius: "12px", border: "1px solid #fde68a", padding: "1.5rem", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
-              <h3 style={{ fontSize: "1.15rem", fontWeight: 700, marginBottom: "0.5rem", color: "#b45309" }}>
-                🔍 Revue Automatique de Code Informix 4GL
-              </h3>
-              <p style={{ fontSize: "0.82rem", color: "#64748b", marginBottom: "1rem" }}>
-                Vérification statique : détection des requêtes SELECT sans INTO, transactions orphelines, absence de <code>WHENEVER ERROR</code> et suppressions non restreintes.
-              </p>
-
-              <textarea
-                rows={12}
-                value={codeReviewInput}
-                onChange={(e) => setCodeReviewInput(e.target.value)}
-                style={{
-                  width: "100%",
-                  backgroundColor: "#ffffff",
-                  border: "1px solid #cbd5e1",
-                  borderRadius: "6px",
-                  padding: "0.75rem",
-                  color: "#0f172a",
-                  fontSize: "0.85rem",
-                  fontFamily: "monospace",
-                  boxSizing: "border-box",
-                }}
-              />
-
-              <button
-                onClick={() => setReviewFindings(review4GlCode(codeReviewInput))}
-                style={{
-                  backgroundColor: "#d97706",
-                  color: "#ffffff",
-                  border: "none",
-                  borderRadius: "6px",
-                  padding: "0.6rem 1.25rem",
-                  fontSize: "0.85rem",
-                  fontWeight: 700,
-                  marginTop: "0.75rem",
-                  cursor: "pointer",
-                }}
-              >
-                ⚡ Analyser le Code
-              </button>
-            </div>
-
-            {/* Constats de revue */}
-            <div style={{ backgroundColor: "#ffffff", borderRadius: "12px", border: "1px solid #e2e8f0", padding: "1.5rem", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
-              <h4 style={{ fontSize: "1rem", fontWeight: 700, color: "#b45309", margin: "0 0 1rem 0" }}>
-                Anomalies &amp; Failles Détectées ({reviewFindings.length})
-              </h4>
-
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-                {reviewFindings.length === 0 ? (
-                  <div style={{ padding: "2rem", textAlign: "center", color: "#047857", fontWeight: 600 }}>
-                    ✅ Aucune anomalie critique détectée dans ce fragment de code 4GL !
-                  </div>
-                ) : (
-                  reviewFindings.map((f) => (
-                    <div
-                      key={f.id}
-                      style={{
-                        backgroundColor: f.severity === "BLOQUANTE" ? "#fef2f2" : "#fffbeb",
-                        border: f.severity === "BLOQUANTE" ? "1px solid #fecaca" : "1px solid #fde68a",
-                        borderRadius: "6px",
-                        padding: "0.85rem",
-                      }}
-                    >
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <span style={{ fontWeight: 700, color: f.severity === "BLOQUANTE" ? "#b91c1c" : "#b45309", fontSize: "0.85rem" }}>
-                          [{f.severity}] {f.description}
-                        </span>
-                        <span style={{ fontSize: "0.72rem", color: "#64748b" }}>{f.location}</span>
-                      </div>
-                      <div style={{ fontSize: "0.8rem", color: "#334155", marginTop: "4px" }}>{f.explanation}</div>
-                      <div style={{ fontSize: "0.78rem", color: "#047857", marginTop: "6px", fontWeight: 600 }}>
-                        Correction : {f.proposedFix}
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* --------------------------------------------------------------------- */}
-        {/* ONGLET 10 : EXPLORATEUR DICTIONNAIRE BD AMPLITUDE */}
-        {/* --------------------------------------------------------------------- */}
-        {activeTab === "DICTIONARY" && (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "1.5rem", width: "100%", boxSizing: "border-box" }}>
-            {/* Colonne latérale : Liste des tables */}
-            <div style={{ backgroundColor: "#ffffff", borderRadius: "12px", border: "1px solid #e2e8f0", padding: "1.25rem", height: "calc(100vh - 200px)", display: "flex", flexDirection: "column", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
-              <div style={{ marginBottom: "1rem" }}>
-                <h4 style={{ fontSize: "1rem", fontWeight: 700, color: "#0284c7", margin: "0 0 0.5rem 0" }}>
-                  Tables Maîtresses Amplitude
-                </h4>
-                <input
-                  type="text"
-                  placeholder="Filtrer (ex: BKCPT, BKTRA, soldes)..."
-                  value={dbSearch}
-                  onChange={(e) => setDbSearch(e.target.value)}
-                  style={{
-                    width: "100%",
-                    backgroundColor: "#ffffff",
-                    border: "1px solid #cbd5e1",
-                    borderRadius: "6px",
-                    padding: "0.5rem 0.75rem",
-                    color: "#0f172a",
-                    fontSize: "0.8rem",
-                    boxSizing: "border-box",
-                  }}
-                />
-              </div>
-
-              <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-                {filteredTables.map((tbl) => {
-                  const isSel = selectedDbTable.tableName === tbl.tableName;
-                  return (
-                    <div
-                      key={tbl.tableName}
-                      onClick={() => setSelectedDbTable(tbl)}
-                      style={{
-                        padding: "0.6rem 0.75rem",
-                        backgroundColor: isSel ? "#eff6ff" : "#f8fafc",
-                        border: isSel ? "1px solid #3b82f6" : "1px solid #e2e8f0",
-                        borderRadius: "6px",
-                        cursor: "pointer",
-                        transition: "all 0.1s ease",
-                      }}
-                    >
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <span style={{ fontWeight: 700, color: isSel ? "#1d4ed8" : "#0f172a", fontSize: "0.85rem" }}>
-                          {tbl.tableName}
-                        </span>
-                        <span style={{ fontSize: "0.7rem", color: "#64748b" }}>{tbl.columns.length} col.</span>
-                      </div>
-                      <div style={{ fontSize: "0.75rem", color: "#64748b", marginTop: "2px" }}>{tbl.module}</div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Panneau principal : Détail de la table sélectionnée */}
-            <div style={{ backgroundColor: "#ffffff", borderRadius: "12px", border: "1px solid #e2e8f0", padding: "1.5rem", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1rem", flexWrap: "wrap", gap: "0.5rem" }}>
-                <div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                    <h3 style={{ fontSize: "1.4rem", fontWeight: 800, margin: 0, color: "#0f172a" }}>
-                      {selectedDbTable.tableName}
-                    </h3>
-                    <span style={{ backgroundColor: "#eff6ff", color: "#1d4ed8", border: "1px solid #bfdbfe", padding: "2px 8px", borderRadius: "4px", fontSize: "0.75rem", fontWeight: 600 }}>
-                      {selectedDbTable.module}
-                    </span>
-                  </div>
-                  <p style={{ fontSize: "0.85rem", color: "#475569", margin: "4px 0 0 0" }}>
-                    {selectedDbTable.description}
-                  </p>
-                </div>
-
-                <div style={{ textAlign: "right" }}>
-                  <span style={{ fontSize: "0.72rem", color: "#64748b", display: "block" }}>CLÉ PRIMAIRE (PK)</span>
-                  <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "#0284c7", fontFamily: "monospace" }}>
-                    ({selectedDbTable.primaryKey.join(", ")})
-                  </span>
-                </div>
-              </div>
-
-              {/* Colonnes de la table */}
-              <div style={{ marginBottom: "1.5rem" }}>
-                <div style={{ fontSize: "0.85rem", fontWeight: 700, color: "#0f172a", marginBottom: "0.6rem" }}>
-                  Structure des Colonnes ({selectedDbTable.columns.length} champs réels)
-                </div>
-                <div style={{ maxHeight: "320px", overflowY: "auto", border: "1px solid #e2e8f0", borderRadius: "6px" }}>
-                  <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.8rem", textAlign: "left" }}>
-                    <thead style={{ backgroundColor: "#f8fafc", borderBottom: "1px solid #e2e8f0", color: "#475569" }}>
-                      <tr>
-                        <th style={{ padding: "0.5rem 0.75rem" }}>Colonne</th>
-                        <th style={{ padding: "0.5rem 0.75rem" }}>Type SGBD</th>
-                        <th style={{ padding: "0.5rem 0.75rem" }}>Description Amplitude</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {selectedDbTable.columns.map((col, idx) => (
-                        <tr
-                          key={col.name}
-                          style={{
-                            borderBottom: "1px solid #e2e8f0",
-                            backgroundColor: idx % 2 === 0 ? "#ffffff" : "#f8fafc",
-                          }}
-                        >
-                          <td style={{ padding: "0.5rem 0.75rem", fontWeight: 700, color: selectedDbTable.primaryKey.includes(col.name) ? "#0284c7" : "#0f172a", fontFamily: "monospace" }}>
-                            {col.name} {selectedDbTable.primaryKey.includes(col.name) ? "🔑" : ""}
-                          </td>
-                          <td style={{ padding: "0.5rem 0.75rem", color: "#4338ca", fontFamily: "monospace" }}>
-                            {col.type}
-                          </td>
-                          <td style={{ padding: "0.5rem 0.75rem", color: "#334155" }}>
-                            {col.description}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              {/* Requête SQL de consultation de référence */}
-              <div>
-                <div style={{ fontSize: "0.85rem", fontWeight: 700, color: "#0f172a", marginBottom: "0.4rem" }}>
-                  Requête SQL Type d&apos;Exploitation
-                </div>
-                <div style={{ backgroundColor: "#f8fafc", border: "1px solid #cbd5e1", borderRadius: "6px", padding: "0.85rem", position: "relative" }}>
-                  <pre style={{ margin: 0, fontSize: "0.82rem", color: "#0369a1", fontFamily: "monospace", overflowX: "auto" }}>
-                    {selectedDbTable.sampleQuery}
-                  </pre>
-                </div>
-                <div style={{ fontSize: "0.75rem", color: "#b91c1c", marginTop: "6px" }}>
-                  ⚠️ {selectedDbTable.criticalNotes}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
       </main>
 
       {/* ========================================================================= */}
