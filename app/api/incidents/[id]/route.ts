@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/modules/auth/auth-service";
+import { getIncidentByReference } from "@/modules/incidents/data-store";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -9,22 +10,7 @@ interface RouteParams {
 export async function GET(_req: Request, { params }: RouteParams) {
   try {
     const { id } = await params;
-    const incident = await prisma.incident.findFirst({
-      where: {
-        OR: [{ id }, { reference: id }],
-      },
-      include: {
-        author: true,
-        observations: true,
-        flowSteps: { orderBy: { position: "asc" } },
-        isoMessages: true,
-        hypotheses: true,
-        evidence: true,
-        rootCause: true,
-        resolution: true,
-        prevention: true,
-      },
-    });
+    const incident = await getIncidentByReference(id);
 
     if (!incident) {
       return NextResponse.json({ error: "Incident introuvable" }, { status: 404 });

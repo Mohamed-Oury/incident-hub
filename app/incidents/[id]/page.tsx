@@ -97,6 +97,13 @@ export default async function IncidentDetailPage({ params }: IncidentDetailPageP
                 ✏️ Traiter & Valider l'incident
               </Link>
             )}
+            <Link
+              href={`/post-mortem?ref=${incident.reference}`}
+              className="btn-primary"
+              style={{ fontSize: "0.85rem", padding: "0.5rem 1rem", background: "#0f172a" }}
+            >
+              📑 Générer le Post-Mortem
+            </Link>
             <Link href="/diagnostic" className="btn-secondary" style={{ fontSize: "0.85rem" }}>
               ⚡ Analyser un cas similaire
             </Link>
