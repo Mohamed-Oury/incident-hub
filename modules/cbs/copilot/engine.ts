@@ -13,29 +13,47 @@ import {
 } from "./types";
 
 export function generateCopilotPlan(input: DevelopmentNeedInput): CopilotFullPlan {
+  const title = input?.title?.trim() || "Nouveau Besoin Métier";
+  const bankingDomain = input?.bankingDomain?.trim() || "Général Core Banking";
+  const functionalDescription = input?.functionalDescription?.trim() || "Traitement bancaire standard";
+  const amplitudeVersion = input?.amplitudeVersion || "v11.x";
+  const technicalEnvironment = input?.technicalEnvironment || "Informix / AIX";
+  const targetUsers = input?.targetUsers?.trim() || "Opérateur / Gestionnaire CBS";
+  const inputData = input?.inputData?.trim() || "Paramètres de requête";
+  const expectedOutput = input?.expectedOutput?.trim() || "Compte-rendu et données traitées";
+  const knownBusinessRules = input?.knownBusinessRules?.trim() || "Vérification des habilitations et de l'intégrité référentielle";
+
+  const domainLower = bankingDomain.toLowerCase();
+  const descLower = functionalDescription.toLowerCase();
+  const titleLower = title.toLowerCase();
+
   const isAccountOrClient =
-    input.bankingDomain.toLowerCase().includes("compte") ||
-    input.functionalDescription.toLowerCase().includes("compte") ||
-    input.title.toLowerCase().includes("compte");
+    domainLower.includes("compte") ||
+    descLower.includes("compte") ||
+    titleLower.includes("compte") ||
+    descLower.includes("solde") ||
+    descLower.includes("client");
 
   const isVirementOrFlux =
-    input.bankingDomain.toLowerCase().includes("virement") ||
-    input.functionalDescription.toLowerCase().includes("virement") ||
-    input.functionalDescription.toLowerCase().includes("transfert");
+    domainLower.includes("virement") ||
+    descLower.includes("virement") ||
+    descLower.includes("transfert") ||
+    descLower.includes("flux");
 
   const needsIhm =
-    input.functionalDescription.toLowerCase().includes("écran") ||
-    input.functionalDescription.toLowerCase().includes("ihm") ||
-    input.functionalDescription.toLowerCase().includes("formulaire") ||
-    input.functionalDescription.toLowerCase().includes("gestionnaire") ||
-    input.functionalDescription.toLowerCase().includes("consulter") ||
-    input.functionalDescription.toLowerCase().includes("rechercher");
+    descLower.includes("écran") ||
+    descLower.includes("ihm") ||
+    descLower.includes("formulaire") ||
+    descLower.includes("gestionnaire") ||
+    descLower.includes("consulter") ||
+    descLower.includes("rechercher") ||
+    descLower.includes("saisie");
 
   // 1. Analyse fonctionnelle
   const analysis: FunctionalAnalysis = {
-    summary: `Développement et intégration pour '${input.title}' sur le domaine '${input.bankingDomain}' (Amplitude ${input.amplitudeVersion}).`,
-    businessObjective: `Offrir aux ${input.targetUsers || "utilisateurs autorisés"} la capacité de ${input.functionalDescription.slice(0, 120)}... de manière sécurisée et tracée dans le CBS.`,
-    actors: [input.targetUsers || "Gestionnaire Bancaire / Exploitant", "Superviseur d'Agence", "Système CBS Amplitude"],
+    summary: `Développement et intégration pour '${title}' sur le domaine '${bankingDomain}' (Amplitude ${amplitudeVersion}).`,
+    businessObjective: `Offrir aux ${targetUsers} la capacité de ${functionalDescription.slice(0, 120)}... de manière sécurisée et tracée dans le CBS.`,
+    actors: [targetUsers, "Superviseur d'Agence", "Système CBS Amplitude"],
     preconditions: [
       "Session opérateur active et authentifiée avec profil habilité sur le module.",
       "Journée comptable BOD (Beginning of Day) ouverte et non clôturée.",
@@ -187,7 +205,7 @@ export function generateCopilotPlan(input: DevelopmentNeedInput): CopilotFullPla
   // 3. Proposition de Code 4GL
   const progName = isAccountOrClient ? "p_cbs_cpt_consult" : "p_cbs_traitement_flux";
   const code4GlProposal: Generated4GlProposal = {
-    programObjective: `Assurer le traitement métier pour '${input.title}' avec contrôles stricts de solvabilité sur BKCPT, contrôle KYC tiers BKCLI et gestion des erreurs SQLCA.`,
+    programObjective: `Assurer le traitement métier pour '${title}' avec contrôles stricts de solvabilité sur BKCPT, contrôle KYC tiers BKCLI et gestion des erreurs SQLCA.`,
     programType: needsIhm ? "Programme Interactif avec Écran Formulaire (.per)" : "Programme Batch / Fonction Métier (C4GL)",
     entryPoint: `MAIN ou FUNCTION ${progName}()`,
     parameters: ["p_agence CHAR(5)", "p_ncp CHAR(11)", "p_user_login CHAR(10)"],
@@ -212,10 +230,10 @@ export function generateCopilotPlan(input: DevelopmentNeedInput): CopilotFullPla
     loggingStrategy: "Journalisation dans la table d'audit CBS des tentatives frauduleuses ou erreurs critiques",
     code4Gl: `###############################################################################
 # Programme : ${progName}.4gl
-# Objet     : ${input.title}
+# Objet     : ${title}
 # Auteur    : M.Oury (CBS 4GL Development Copilot)
-# Système   : Sopra Banking Amplitude (${input.amplitudeVersion})
-# SGBD      : ${input.technicalEnvironment} (Tables BKCPT, BKCLI, BKTRA)
+# Système   : Sopra Banking Amplitude (${amplitudeVersion})
+# SGBD      : ${technicalEnvironment} (Tables BKCPT, BKCLI, BKTRA)
 ###############################################################################
 
 DATABASE amplitude_db
@@ -348,7 +366,7 @@ END MAIN`,
   if (needsIhm) {
     perScreen = {
       screenName: isAccountOrClient ? "f_cbs_cpt_rech.per" : "f_cbs_oper_saisie.per",
-      title: `Consultation & Traitement - ${input.title}`,
+      title: `Consultation & Traitement - ${title}`,
       screenType: "Formulaire Transactionnel Interactif",
       dimensions: "24 lignes x 80 colonnes (Standard terminal Curses/AIX)",
       inputFieldList: [
@@ -441,7 +459,7 @@ END`,
 
   // 5. Proposition SQL
   const sqlProposal: GeneratedSqlQuery = {
-    objective: `Extraction performante des soldes et historique des mouvements pour '${input.title}'.`,
+    objective: `Extraction performante des soldes et historique des mouvements pour '${title}'.`,
     targetTables: ["BKCPT (Comptes & Soldes)", "BKCLI (Référentiel Tiers KYC)", "BKTRA (Journal des Mouvements)"],
     joins: "INNER JOIN BKCLI k ON c.CLI = k.CLI",
     parameters: [":p_age (VARCHAR 5)", ":p_ncp (VARCHAR 11)", ":p_date_j (DATE)"],

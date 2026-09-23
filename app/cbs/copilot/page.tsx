@@ -99,14 +99,29 @@ const PRESET_NEEDS: { label: string; icon: string; input: DevelopmentNeedInput }
   },
 ];
 
+const EMPTY_NEED: DevelopmentNeedInput = {
+  title: "",
+  functionalDescription: "",
+  bankingDomain: "",
+  targetUsers: "",
+  knownBusinessRules: "",
+  inputData: "",
+  expectedOutput: "",
+  specialConstraints: "",
+  amplitudeVersion: "v11.x",
+  technicalEnvironment: "Informix / AIX",
+  nominalExample: "",
+  errorExample: "",
+};
+
 export default function CbsCopilotPage() {
   const [activeTab, setActiveTab] = useState<
     "NEED" | "TASKS" | "CODE" | "PER_SCREEN" | "SQL" | "TESTS" | "DELIVERY" | "FAILURE" | "REVIEW" | "DICTIONARY"
   >("NEED");
 
-  // Formulaire Saisie du besoin
-  const [needInput, setNeedInput] = useState<DevelopmentNeedInput>(PRESET_NEEDS[0].input);
-  const [generatedPlan, setGeneratedPlan] = useState<CopilotFullPlan>(() => generateCopilotPlan(PRESET_NEEDS[0].input));
+  // Formulaire Saisie du besoin (Vide par défaut, aucune donnée d'exemple pré-remplie)
+  const [needInput, setNeedInput] = useState<DevelopmentNeedInput>(EMPTY_NEED);
+  const [generatedPlan, setGeneratedPlan] = useState<CopilotFullPlan>(() => generateCopilotPlan(EMPTY_NEED));
 
   // Onglet Analyse Point de Rupture
   const [failureInput, setFailureInput] = useState<string>(
@@ -712,6 +727,29 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                       </button>
                     );
                   })}
+                  <button
+                    onClick={() => {
+                      setNeedInput(EMPTY_NEED);
+                      setGeneratedPlan(generateCopilotPlan(EMPTY_NEED));
+                    }}
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "0.35rem",
+                      padding: "0.35rem 0.75rem",
+                      backgroundColor: "#fff1f2",
+                      color: "#be123c",
+                      border: "1px dashed #f43f5e",
+                      borderRadius: "6px",
+                      fontSize: "0.78rem",
+                      fontWeight: 600,
+                      cursor: "pointer",
+                    }}
+                    title="Vider tous les champs d'expression du besoin"
+                  >
+                    <span>🗑️</span>
+                    <span>Vider les champs</span>
+                  </button>
                 </div>
               </div>
 
