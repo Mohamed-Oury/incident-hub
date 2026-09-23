@@ -90,7 +90,7 @@ export function generateCopilotPlan(input: DevelopmentNeedInput): CopilotFullPla
         "Tous les champs nécessaires sont identifiés dans le schéma cible.",
         "Les règles de validation métier sont formellement validées par la MOA.",
       ],
-      concernedFiles: ["DOC_FONCT_" + input.title.replace(/\s+/g, "_") + ".md"],
+      concernedFiles: ["docs/spec_" + (isAccountOrClient ? "cpt_consult.md" : "oper_flux.md")],
       status: "VALIDE",
     },
     {
@@ -179,7 +179,7 @@ export function generateCopilotPlan(input: DevelopmentNeedInput): CopilotFullPla
       acceptanceCriteria: [
         "Procédure de rollback testée et réalisable en moins de 10 minutes en cas d'anomalie.",
       ],
-      concernedFiles: ["delivery/MEP_CBS_" + input.title.replace(/\s+/g, "_") + ".txt"],
+      concernedFiles: ["delivery/mep_cbs_" + (isAccountOrClient ? "cpt_consult.txt" : "oper_flux.txt")],
       status: "A_FAIRE",
     },
   ];

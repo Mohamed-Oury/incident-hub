@@ -1095,22 +1095,24 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                 Plan de Développement &amp; Sous-Tâches ({generatedPlan.subTasks.length} Tâches Ordonnées)
               </h3>
 
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", width: "100%", boxSizing: "border-box" }}>
                 {generatedPlan.subTasks.map((task) => (
                   <div
                     key={task.id}
                     style={{
                       backgroundColor: "#f8fafc",
                       border: "1px solid #e2e8f0",
-                      borderRadius: "8px",
-                      padding: "1rem",
+                      borderRadius: "10px",
+                      padding: "1rem 1.25rem",
                       display: "grid",
-                      gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-                      gap: "1rem",
-                      alignItems: "center",
+                      gridTemplateColumns: "100px 1.5fr 1.2fr 1fr",
+                      gap: "1.25rem",
+                      alignItems: "start",
+                      width: "100%",
+                      boxSizing: "border-box",
                     }}
                   >
-                    <div>
+                    <div style={{ minWidth: 0 }}>
                       <span
                         style={{
                           backgroundColor: "#eff6ff",
@@ -1120,6 +1122,7 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                           borderRadius: "4px",
                           fontSize: "0.75rem",
                           fontWeight: 700,
+                          display: "inline-block",
                         }}
                       >
                         {task.id}
@@ -1127,22 +1130,42 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                       <div style={{ fontSize: "0.75rem", color: "#64748b", marginTop: "4px" }}>{task.estimation}</div>
                     </div>
 
-                    <div>
-                      <div style={{ fontWeight: 700, fontSize: "0.9rem", color: "#0f172a" }}>{task.title}</div>
-                      <div style={{ fontSize: "0.8rem", color: "#475569", marginTop: "2px" }}>{task.description}</div>
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ fontWeight: 700, fontSize: "0.92rem", color: "#0f172a", wordBreak: "break-word" }}>{task.title}</div>
+                      <div style={{ fontSize: "0.82rem", color: "#475569", marginTop: "4px", lineHeight: "1.4", wordBreak: "break-word" }}>{task.description}</div>
                     </div>
 
-                    <div>
-                      <div style={{ fontSize: "0.72rem", color: "#64748b", fontWeight: 600 }}>CRITÈRES D&apos;ACCEPTATION</div>
-                      <div style={{ fontSize: "0.78rem", color: "#334155", marginTop: "2px" }}>
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ fontSize: "0.72rem", color: "#64748b", fontWeight: 700, textTransform: "uppercase" }}>CRITÈRES D&apos;ACCEPTATION</div>
+                      <div style={{ fontSize: "0.8rem", color: "#334155", marginTop: "4px", lineHeight: "1.4", wordBreak: "break-word" }}>
                         {task.acceptanceCriteria[0]}
                       </div>
                     </div>
 
-                    <div>
-                      <div style={{ fontSize: "0.72rem", color: "#64748b", fontWeight: 600 }}>FICHIERS CIBLES</div>
-                      <div style={{ fontSize: "0.78rem", color: "#4338ca", fontFamily: "monospace" }}>
-                        {task.concernedFiles.join(", ")}
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ fontSize: "0.72rem", color: "#64748b", fontWeight: 700, textTransform: "uppercase", marginBottom: "4px" }}>FICHIERS CIBLES</div>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: "0.35rem" }}>
+                        {task.concernedFiles.map((file, fIdx) => (
+                          <span
+                            key={fIdx}
+                            style={{
+                              display: "inline-block",
+                              maxWidth: "100%",
+                              fontSize: "0.74rem",
+                              color: "#4338ca",
+                              fontFamily: "monospace",
+                              backgroundColor: "#e0e7ff",
+                              border: "1px solid #c7d2fe",
+                              padding: "2px 6px",
+                              borderRadius: "4px",
+                              wordBreak: "break-all",
+                              overflowWrap: "anywhere",
+                              whiteSpace: "normal",
+                            }}
+                          >
+                            {file}
+                          </span>
+                        ))}
                       </div>
                     </div>
                   </div>
@@ -1470,13 +1493,15 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                     borderRadius: "8px",
                     padding: "1rem",
                     display: "grid",
-                    gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+                    gridTemplateColumns: "130px 1.4fr 1.2fr 100px",
                     gap: "1rem",
                     alignItems: "center",
                     boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
+                    overflow: "hidden",
+                    boxSizing: "border-box",
                   }}
                 >
-                  <div>
+                  <div style={{ minWidth: 0 }}>
                     <span
                       style={{
                         backgroundColor:
@@ -1500,25 +1525,28 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                         borderRadius: "4px",
                         fontSize: "0.72rem",
                         fontWeight: 700,
+                        display: "inline-block",
+                        maxWidth: "100%",
+                        wordBreak: "break-all",
                       }}
                     >
                       {tc.id} • {tc.category}
                     </span>
                   </div>
 
-                  <div>
+                  <div style={{ minWidth: 0, wordBreak: "break-word" }}>
                     <div style={{ fontWeight: 700, fontSize: "0.9rem", color: "#0f172a" }}>{tc.title}</div>
                     <div style={{ fontSize: "0.78rem", color: "#64748b", marginTop: "4px" }}>
                       <strong>Préconditions :</strong> {tc.preconditions}
                     </div>
                   </div>
 
-                  <div>
+                  <div style={{ minWidth: 0, wordBreak: "break-word" }}>
                     <div style={{ fontSize: "0.72rem", color: "#64748b", fontWeight: 600 }}>RÉSULTAT ATTENDU</div>
                     <div style={{ fontSize: "0.82rem", color: "#334155", marginTop: "2px" }}>{tc.expectedResult}</div>
                   </div>
 
-                  <div style={{ textAlign: "right" }}>
+                  <div style={{ minWidth: 0, textAlign: "right" }}>
                     <span
                       style={{
                         backgroundColor: "#f1f5f9",
