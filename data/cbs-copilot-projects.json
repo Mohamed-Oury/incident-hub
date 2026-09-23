@@ -1,0 +1,396 @@
+[
+  {
+    "id": "PROJ-1790199810950",
+    "name": "Opposition et Blocage d'Urgence Carte Monétique Fraude",
+    "domain": "Monétique / Cartes",
+    "amplitudeVersion": "v11.x",
+    "input": {
+      "title": "Opposition et Blocage d'Urgence Carte Monétique Fraude",
+      "functionalDescription": "Permettre à l'opérateur du Desk Fraude ou du Service Cartes de bloquer immédiatement une carte bancaire suite à la détection de transactions suspectes. Le module doit vérifier l'existence de la carte, contrôler que son statut n'est pas déjà clôturé, mettre à jour le statut d'opposition dans la table des cartes et insérer un événement d'audit dans l'historique des oppositions avec le motif et l'identifiant de l'agent.\n",
+      "bankingDomain": "Monétique / Cartes",
+      "targetUsers": "",
+      "knownBusinessRules": "1. Vérifier que le PAN existe dans la table des cartes et que le statut actuel est actif (statut 'O' ou 'N').\n2. Refuser l'opération si la carte est déjà en opposition totale ou clôturée.\n3. Poser un verrou exclusif sur l'enregistrement de la carte pour éviter les conflits d'autorisation GAB/TPE simultanés.\n4. Mettre à jour le statut à 'B' (Bloqué/Opposition Fraude) dans BKCARR / BKMVT.\n5. Enregistrer la trace d'audit et libérer le verrou dans une transaction unitaire.",
+      "inputData": "Numéro de Carte (PAN), Code Motif d'Opposition, Commentaire Opérateur, Identifiant Utilisateur",
+      "expectedOutput": "Écran de saisie opérateur avec confirmation immédiate, rejet instantané de toute demande d'autorisation ISO 8583 sur le Switch, et mise à jour temps réel des bases CBS Amplitude.",
+      "specialConstraints": "",
+      "amplitudeVersion": "v11.x",
+      "technicalEnvironment": "Informix / AIX",
+      "nominalExample": "",
+      "errorExample": ""
+    },
+    "plan": {
+      "need": {
+        "title": "Opposition et Blocage d'Urgence Carte Monétique Fraude",
+        "functionalDescription": "Permettre à l'opérateur du Desk Fraude ou du Service Cartes de bloquer immédiatement une carte bancaire suite à la détection de transactions suspectes. Le module doit vérifier l'existence de la carte, contrôler que son statut n'est pas déjà clôturé, mettre à jour le statut d'opposition dans la table des cartes et insérer un événement d'audit dans l'historique des oppositions avec le motif et l'identifiant de l'agent.\n",
+        "bankingDomain": "Monétique / Cartes",
+        "targetUsers": "",
+        "knownBusinessRules": "1. Vérifier que le PAN existe dans la table des cartes et que le statut actuel est actif (statut 'O' ou 'N').\n2. Refuser l'opération si la carte est déjà en opposition totale ou clôturée.\n3. Poser un verrou exclusif sur l'enregistrement de la carte pour éviter les conflits d'autorisation GAB/TPE simultanés.\n4. Mettre à jour le statut à 'B' (Bloqué/Opposition Fraude) dans BKCARR / BKMVT.\n5. Enregistrer la trace d'audit et libérer le verrou dans une transaction unitaire.",
+        "inputData": "Numéro de Carte (PAN), Code Motif d'Opposition, Commentaire Opérateur, Identifiant Utilisateur",
+        "expectedOutput": "Écran de saisie opérateur avec confirmation immédiate, rejet instantané de toute demande d'autorisation ISO 8583 sur le Switch, et mise à jour temps réel des bases CBS Amplitude.",
+        "specialConstraints": "",
+        "amplitudeVersion": "v11.x",
+        "technicalEnvironment": "Informix / AIX",
+        "nominalExample": "",
+        "errorExample": ""
+      },
+      "analysis": {
+        "summary": "Développement et intégration du module 'Opposition et Blocage d'Urgence Carte Monétique Fraude' (MODIFICATION) sur le domaine 'Monétique / Cartes' (Amplitude v11.x).",
+        "businessObjective": "Permettre aux Opérateur / Gestionnaire CBS d'exécuter : Permettre à l'opérateur du Desk Fraude ou du Service Cartes de bloquer immédiatement une carte bancaire suite à la détection de transactions... avec intégrité transactionnelle garantie sur BKCPT.",
+        "actors": [
+          "Opérateur / Gestionnaire CBS",
+          "Superviseur d'Agence",
+          "Moteur de Transactions Amplitude",
+          "SGBD Informix / AIX"
+        ],
+        "preconditions": [
+          "Session opérateur authentifiée avec habilitation sur le module (Comptes & Soldes).",
+          "Journée comptable BOD (Beginning of Day) active et accessible en écriture.",
+          "Disponibilité de la table maîtresse BKCPT avec index (AGE, NCP)."
+        ],
+        "postconditions": [
+          "Table BKCPT mise à jour ou consultée sans aucun verrou résiduel orphelin.",
+          "Piste d'audit légale renseignée dans la table de sécurité des accès.",
+          "Code retour normalisé (0=Succès, >0=Erreur métier) transmis au programme appelant."
+        ],
+        "businessRules": [
+          "1. Vérifier que le PAN existe dans la table des cartes et que le statut actuel est actif (statut 'O' ou 'N').\n2. Refuser l'opération si la carte est déjà en opposition totale ou clôturée.\n3. Poser un verrou exclusif sur l'enregistrement de la carte pour éviter les conflits d'autorisation GAB/TPE simultanés.\n4. Mettre à jour le statut à 'B' (Bloqué/Opposition Fraude) dans BKCARR / BKMVT.\n5. Enregistrer la trace d'audit et libérer le verrou dans une transaction unitaire.",
+          "Vérification préalable de l'existence de la clé primaire sur BKCPT (AGE, NCP).",
+          "Encadrement obligatoire sous transaction atomique BEGIN WORK / COMMIT WORK avec protection anti-deadlock (LOCK MODE WAIT 15).",
+          "Vérification de la conformité du profil opérateur et contrôle de double validation si montant au-delà du seuil réglementaire."
+        ],
+        "requiredData": [
+          "Numéro de Carte (PAN), Code Motif d'Opposition, Commentaire Opérateur, Identifiant Utilisateur",
+          "Identifiants clés : AGE, NCP",
+          "Colonnes de référence : AGE, NCP, CLI, DEV",
+          "Métadonnées de sécurité (Agence, Opérateur, Horodatage système)"
+        ],
+        "cbsDependencies": [
+          "Table maîtresse principale : BKCPT (Comptes à vue, comptes d'épargne et comptes techniques d'agences.)",
+          "Table liée secondaire : BKTRA (Mouvements unitaires et journal de saisie des transactions bancaires.)",
+          "Gestionnaire de transactions Informix/Oracle (BEGIN WORK / COMMIT WORK)",
+          "Middleware d'échanges Tuxedo / Référentiel de sécurité CBS"
+        ],
+        "unresolvedQuestions": [
+          "Comportement exigé en cas d'accès concurrent sur BKCPT pendant les heures d'affluence agence ?",
+          "Les habilitations doivent-elles restreindre les données au code agence de l'opérateur connecté ?",
+          "Faut-il générer un extrait comptable dématérialisé (spool d'impression ou flux XML/JSON) ?"
+        ],
+        "technicalRisks": [
+          "Risque de verrouillage bloquant sur BKCPT si la transaction reste ouverte sans COMMIT immédiat.",
+          "Altération des performances SGBD si la clause WHERE n'utilise pas l'index primaire (AGE, NCP).",
+          "Perte de traçabilité en cas d'interruption inattendue du batch ou de la session Curses."
+        ]
+      },
+      "subTasks": [
+        {
+          "id": "TASK-01",
+          "title": "Analyse fonctionnelle & mapping dictionnaire (BKCPT)",
+          "description": "Valider les champs requis pour 'Opposition et Blocage d'Urgence Carte Monétique Fraude' avec les colonnes de la table BKCPT (AGE, NCP, CLI, DEV, CHA).",
+          "type": "FONCTIONNEL",
+          "priority": "HAUTE",
+          "dependencies": [],
+          "estimation": "0.5 jour",
+          "inputs": "Numéro de Carte (PAN), Code Motif d'Opposition, Commentaire Opérateur, Identifiant Utilisateur",
+          "outputs": "Matrice de spécification détaillée et plan d'imputation SGBD",
+          "acceptanceCriteria": [
+            "Toutes les colonnes requises existent dans BKCPT et respectent les types Informix.",
+            "Les règles de gestion sont validées par la maîtrise d'ouvrage (MOA)."
+          ],
+          "concernedFiles": [
+            "docs/spec_bkcpt_maj.md"
+          ],
+          "status": "VALIDE"
+        },
+        {
+          "id": "TASK-02",
+          "title": "Modélisation des requêtes SGBD & Index (BKCPT)",
+          "description": "Rédiger et optimiser les requêtes SQL (MODIFICATION) sur BKCPT avec utilisation stricte des index primaires.",
+          "type": "SQL",
+          "priority": "HAUTE",
+          "dependencies": [
+            "TASK-01"
+          ],
+          "estimation": "0.5 jour",
+          "inputs": "Dictionnaire SGBD Amplitude (Informix / AIX)",
+          "outputs": "Script SQL optimisé pour BKCPT",
+          "acceptanceCriteria": [
+            "Temps de réponse < 20ms garanti par l'index PK_BKCPT.",
+            "Absence de Full Table Scan sur les tables volumineuses."
+          ],
+          "concernedFiles": [
+            "src/sql/bkcpt_maj.sql"
+          ],
+          "status": "A_FAIRE"
+        },
+        {
+          "id": "TASK-03",
+          "title": "Conception du masque écran Curses (.per) [f_cbs_bkcpt_maj.per]",
+          "description": "Créer le formulaire terminal 24x80 format Curses avec zones de saisie (AGE, NCP) et touches de fonction.",
+          "type": "IHM_PER",
+          "priority": "MOYENNE",
+          "dependencies": [
+            "TASK-01"
+          ],
+          "estimation": "1 jour",
+          "inputs": "Paramètres IHM : Numéro de Carte (PAN), Code Motif d'Opposition, Commentaire Opérateur, Identifiant Utilisateur",
+          "outputs": "Fichier source f_cbs_bkcpt_maj.per compilé en f_cbs_bkcpt_maj.frm",
+          "acceptanceCriteria": [
+            "Ergonomie conforme à la charte terminal Amplitude (Touches F1, F5, F10, F12).",
+            "Champs protégés NOENTRY pour les données calculées ou confidentielles."
+          ],
+          "concernedFiles": [
+            "src/forms/f_cbs_bkcpt_maj.per"
+          ],
+          "status": "A_FAIRE"
+        },
+        {
+          "id": "TASK-04",
+          "title": "Développement applicatif Informix 4GL [p_cbs_bkcpt_maj.4gl]",
+          "description": "Programmer la logique métier MODIFICATION, les contrôles WHENEVER ERROR, la capture SQLCA.SQLCODE et les transactions.",
+          "type": "4GL",
+          "priority": "BLOQUANTE",
+          "dependencies": [
+            "TASK-02",
+            "TASK-03"
+          ],
+          "estimation": "1.5 jour",
+          "inputs": "Spécifications techniques & scripts SQL (BKCPT)",
+          "outputs": "Programme source p_cbs_bkcpt_maj.4gl compilé en binaire exécutable",
+          "acceptanceCriteria": [
+            "Gestion systématique de SQLCA.SQLCODE après chaque accès SGBD.",
+            "Blocs transactionnels BEGIN WORK / COMMIT WORK avec ROLLBACK sécurisé.",
+            "Codes retours normalisés (0=Succès, 1=Validation, 2=Inexistant, 99=Crash)."
+          ],
+          "concernedFiles": [
+            "src/prog/p_cbs_bkcpt_maj.4gl"
+          ],
+          "status": "A_FAIRE"
+        },
+        {
+          "id": "TASK-05",
+          "title": "Plan de qualification unitaire & scénarios aux limites (Opposition et Blocage d'Urgence Carte Monétique Fraude)",
+          "description": "Rédiger et exécuter la campagne de tests pour les cas nominaux, rejets métier et tentatives non autorisées.",
+          "type": "TEST",
+          "priority": "HAUTE",
+          "dependencies": [
+            "TASK-04"
+          ],
+          "estimation": "1 jour",
+          "inputs": "Jeux d'essais en base de Recette / Sandbox bancaire",
+          "outputs": "PV de recette technique et procès-verbal de non-régression",
+          "acceptanceCriteria": [
+            "100% des cas d'erreurs interceptés proprement sans crash du binaire.",
+            "L'intégrité des soldes et des tables de contrôle est rigoureusement confirmée."
+          ],
+          "concernedFiles": [
+            "tests/tu_bkcpt_maj.sh"
+          ],
+          "status": "A_FAIRE"
+        },
+        {
+          "id": "TASK-06",
+          "title": "Dossier de mise en production (MEP) & Rollback",
+          "description": "Constituer le package de déploiement, l'ordre de compilation C4GL/FORM4GL et le protocole de retour arrière sous 10 minutes.",
+          "type": "DOCUMENTATION",
+          "priority": "HAUTE",
+          "dependencies": [
+            "TASK-05"
+          ],
+          "estimation": "0.5 jour",
+          "inputs": "Binaires compilés, masques .frm et scripts SQL validés",
+          "outputs": "Package de livraison zippé avec bordereau d'exploitation",
+          "acceptanceCriteria": [
+            "Procédure de rollback testée et réalisable en moins de 10 minutes en production."
+          ],
+          "concernedFiles": [
+            "delivery/mep_p_cbs_bkcpt_maj.txt"
+          ],
+          "status": "A_FAIRE"
+        }
+      ],
+      "code4GlProposal": {
+        "programObjective": "Exécuter le traitement métier pour 'Opposition et Blocage d'Urgence Carte Monétique Fraude' avec accès contrôlé sur la table BKCPT (Comptes à vue, comptes d'épargne et comptes techniques d'agences.).",
+        "programType": "Programme Interactif Formulaire Curses (.per)",
+        "entryPoint": "MAIN ou FUNCTION p_cbs_bkcpt_maj()",
+        "parameters": [
+          "p_age CHAR(15)",
+          "p_ncp CHAR(15)"
+        ],
+        "variables": [
+          "DEFINE v_user_id      VARCHAR(10)",
+          "DEFINE v_code_retour  INTEGER",
+          "DEFINE v_message      VARCHAR(255)",
+          "DEFINE v_age       VARCHAR(15)",
+          "DEFINE v_ncp       VARCHAR(15)",
+          "DEFINE v_cli       VARCHAR(35)",
+          "DEFINE v_dev       VARCHAR(35)",
+          "DEFINE v_cha       VARCHAR(35)",
+          "DEFINE v_sol       DECIMAL(19,4)"
+        ],
+        "dataStructures": [
+          "RECORD LIKE bkcpt.*",
+          "RECORD LIKE bktra.*"
+        ],
+        "errorHandling": "Interception systématique WHENEVER ERROR CONTINUE et analyse rigoureuse de SQLCA.SQLCODE.",
+        "transactionControl": "BEGIN WORK / COMMIT WORK avec protection ROLLBACK et verrous exclusifs contrôlés.",
+        "loggingStrategy": "Enregistrement systématique dans la table trace_audit_cbs des rejets et succès.",
+        "code4Gl": "###############################################################################\n# Programme : p_cbs_bkcpt_maj.4gl\n# Objet     : Opposition et Blocage d'Urgence Carte Monétique Fraude\n# Domaine   : Monétique / Cartes (Table centrale : BKCPT)\n# Système   : Sopra Banking Amplitude (v11.x)\n# SGBD      : Informix / AIX\n# Compilateur : Informix 4GL (c4gl) / Curses Standard AIX\n###############################################################################\n\nDATABASE amplitude_db\n\nGLOBALS\n    DEFINE g_user_id      VARCHAR(10),\n    DEFINE g_code_agence  VARCHAR(5)\nEND GLOBALS\n\nMAIN\n    DEFINE v_user_id      VARCHAR(10)\n    DEFINE v_code_retour  INTEGER\n    DEFINE v_message      VARCHAR(255)\n    DEFINE v_age       VARCHAR(15)\n    DEFINE v_ncp       VARCHAR(15)\n    DEFINE v_cli       VARCHAR(35)\n    DEFINE v_dev       VARCHAR(35)\n    DEFINE v_cha       VARCHAR(35)\n    DEFINE v_sol       DECIMAL(19,4)\n\n    -- Initialisation des variables de travail\n    LET v_code_retour = 0\n    LET v_message     = NULL\n\n    -- En-tête d'exécution\n    DISPLAY \"=================================================================\" AT 1, 2\n    DISPLAY \"    SOPRA BANKING AMPLITUDE - MODULE : OPPOSITION ET BLOCAGE D'URGENCE CAR\" AT 2, 2\n    DISPLAY \"=================================================================\" AT 3, 2\n\n    -- Ouverture du masque d'écran interactif\n    OPEN WINDOW w_bkcpt AT 4, 2 WITH FORM \"f_cbs_bkcpt_maj\"\n\n    INPUT BY NAME v_age, v_ncp WITHOUT DEFAULTS\n        BEFORE FIELD v_age\n            MESSAGE \"Saisissez AGE ou F12 pour quitter\"\n        AFTER FIELD v_age\n            IF v_age IS NULL THEN\n                ERROR \"Champ obligatoire : AGE\"\n                NEXT FIELD v_age\n            END IF\n        BEFORE FIELD v_ncp\n            MESSAGE \"Saisissez NCP ou F12 pour quitter\"\n        AFTER FIELD v_ncp\n            IF v_ncp IS NULL THEN\n                ERROR \"Champ obligatoire : NCP\"\n                NEXT FIELD v_ncp\n            END IF\n    END INPUT\n\n    -- 1. Contrôle des paramètres obligatoires\n    IF v_age IS NULL OR v_ncp IS NULL THEN\n        LET v_code_retour = 1\n        LET v_message = \"Parametres obligatoires manquants (AGE, NCP).\"\n        ERROR v_message\n        EXIT PROGRAM (v_code_retour)\n    END IF\n\n    -- 2. Exécution de la logique métier bancaire\n    -- Début du bloc transactionnel atomique avec protection anti-deadlock\n    BEGIN WORK\n\n    DISPLAY \"--- VERIFICATION DU VERROU & LECTURE PREALABLE --- \" AT 8, 2\n    WHENEVER ERROR CONTINUE\n    SELECT age, ncp, cli, dev, cha, sol\n      INTO v_age, v_ncp, v_cli, v_dev, v_cha, v_sol\n      FROM bkcpt\n     WHERE age = v_age AND ncp = v_ncp\n       FOR UPDATE\n\n    IF SQLCA.SQLCODE = 100 THEN\n        ROLLBACK WORK\n        LET v_code_retour = 2\n        LET v_message = \"Rejet : Enregistrement cible introuvable sur table BKCPT.\"\n        ERROR v_message\n    ELSE\n        IF SQLCA.SQLCODE < 0 THEN\n            ROLLBACK WORK\n            LET v_code_retour = 99\n            LET v_message = \"Erreur SGBD verrouillage : \", SQLCA.SQLCODE USING \"-<<<<<<\"\n            ERROR v_message\n        ELSE\n            -- Mise à jour métier sécurisée\n            UPDATE bkcpt\n               SET cli = v_cli, dev = v_dev\n             WHERE age = v_age AND ncp = v_ncp\n\n            IF SQLCA.SQLCODE < 0 THEN\n                ROLLBACK WORK\n                LET v_code_retour = 98\n                LET v_message = \"Erreur UPDATE DML : \", SQLCA.SQLCODE USING \"-<<<<<<\"\n                ERROR v_message\n            ELSE\n                COMMIT WORK\n                LET v_code_retour = 0\n                LET v_message = \"Mise a jour validee avec succes dans BKCPT.\"\n                DISPLAY v_message AT 20, 2\n            END IF\n        END IF\n    END IF\n    WHENEVER ERROR STOP\n\n    -- 3. Traçabilité dans la piste d'audit Core Banking\n    INSERT INTO trace_audit_cbs (prog_nom, user_id, date_oper, action_desc, code_ret)\n    VALUES (\"p_cbs_bkcpt_maj\", g_user_id, CURRENT YEAR TO SECOND, v_message, v_code_retour)\n\n    PROMPT \"Appuyez sur Entree pour continuer...\" FOR CHAR v_message\n    CLOSE WINDOW w_bkcpt\n\n    EXIT PROGRAM (v_code_retour)\nEND MAIN",
+        "importantNotes": [
+          "Table maîtresse ciblée : 'BKCPT' (Comptes & Soldes).",
+          "Clé primaire impérative pour les recherches et écritures : (AGE, NCP).",
+          "Statut des codes retours : 0=Succès, 1=Paramètre manquant, 2=Inexistant, 3=Doublon, 99=Erreur SGBD."
+        ]
+      },
+      "perScreen": {
+        "screenName": "f_cbs_bkcpt_maj.per",
+        "title": "Formulaire Curses - Opposition et Blocage d'Urgence Carte Mo",
+        "screenType": "Formulaire Transactionnel Interactif Curses 24x80",
+        "dimensions": "24 lignes x 80 colonnes (Standard terminal Curses/AIX)",
+        "inputFieldList": [
+          "v_age (Clé primaire, obligatoire)",
+          "v_ncp (Clé primaire, obligatoire)"
+        ],
+        "readOnlyFieldList": [
+          "bkcpt.cli (Code du client titulaire du compte.)",
+          "bkcpt.dev (Code devise ISO du compte (ex: XOF, EUR, USD).)",
+          "bkcpt.cha (Chapitre comptable du plan de comptes.)",
+          "bkcpt.sol (Solde comptable en devise du compte.)"
+        ],
+        "buttons": [
+          "F1 = Aide contextuelle",
+          "F5 = Réinitialiser",
+          "F10 = Valider",
+          "F12 = Quitter l'écran"
+        ],
+        "messages": [
+          "Ligne 23 : Guidage utilisateur et statuts opérationnels",
+          "Ligne 24 : Erreurs bloquantes et alertes SGBD"
+        ],
+        "visualMockupAscii": "+------------------------------------------------------------------------------+\n|            SOPRA BANKING AMPLITUDE - MODULE BKCPT                    |\n+------------------------------------------------------------------------------+\n|                                                                              |\n|  [ CRITÈRES D'IDENTIFICATION ]                                               |\n|  AGE         : [f000     ]  NCP         : [f001     ]\n|                                                                              |\n|  [ DONNÉES ENREGISTRÉES ]                                                    |\n|  CLI         : [f010                        ]\n|  DEV         : [f011                        ]\n|  CHA         : [f012                        ]\n|                                                                              |\n|  [F1] Aide    [F5] Recharger    [F10] Valider    [F12] Quitter               |\n+------------------------------------------------------------------------------+\n| MESSAGE : Saisissez les critères puis appuyez sur Entrée                     |\n+------------------------------------------------------------------------------+",
+        "perCodeSnippet": "DATABASE amplitude_db\nSCREEN SIZE 24 BY 80\n{\n================================================================================\n           SOPRA BANKING AMPLITUDE - BKCPT (MODIFICATION)\n================================================================================\n\n AGE       : [f000       ]  NCP       : [f001       ]\n--------------------------------------------------------------------------------\n CLI         : [f010                             ]\n DEV         : [f011                             ]\n CHA         : [f012                             ]\n SOL         : [f013                             ]\n================================================================================\n [F1] Aide   [F5] Recharger   [F10] Valider   [F12] Quitter\n}\nEND\nTABLES\n    bkcpt, bktra\nATTRIBUTES\n    f000 = bkcpt.age, REQUIRED, UPSHIFT, COMMENTS = \"Saisissez AGE\";\n    f001 = bkcpt.ncp, REQUIRED, UPSHIFT, COMMENTS = \"Saisissez NCP\";\n    f010 = bkcpt.cli, NOENTRY;\n    f011 = bkcpt.dev, NOENTRY;\n    f012 = bkcpt.cha, NOENTRY;\n    f013 = bkcpt.sol, NOENTRY;\nINSTRUCTIONS\n    DELIMITERS \"[]\"\nEND",
+        "amplitudeIntegrationNotes": [
+          "Compiler le masque avec : 'form4gl f_cbs_bkcpt_maj.per' (génère f_cbs_bkcpt_maj.frm).",
+          "Le binaire .frm compilé doit résider dans le répertoire $FORMPATH sur le serveur Informix / AIX.",
+          "Validation stricte des longueurs de champs selon les attributs de la table BKCPT."
+        ]
+      },
+      "sqlProposal": {
+        "objective": "Exécution optimisée de l'opération 'MODIFICATION' sur la table BKCPT pour 'Opposition et Blocage d'Urgence Carte Monétique Fraude'.",
+        "targetTables": [
+          "BKCPT (Comptes à vue, comptes d'épargne et comptes techniques d'agences.)",
+          "BKTRA (Mouvements unitaires et journal de saisie des transactions bancaires.)"
+        ],
+        "joins": "LEFT OUTER JOIN BKTRA s ON p.AGE = s.AGE",
+        "parameters": [
+          ":p_age (VARCHAR)",
+          ":p_ncp (VARCHAR)"
+        ],
+        "filters": "WHERE t.AGE = :p_age AND t.NCP = :p_ncp",
+        "performanceRisks": [
+          "Vérifier que l'index PK_BKCPT (AGE, NCP) est scrupuleusement exploité.",
+          "Sur Informix, utiliser 'LOCK MODE WAIT 15' pour prévenir l'erreur -154 (Deadlock / Lock Timeout).",
+          "En cas de grand volume, limiter la restitution ou paginer les curseurs."
+        ],
+        "securityPrecautions": [
+          "Contrôler le filtrage par code agence pour respecter le cloisonnement des données.",
+          "Vérifier les privilèges d'exécution DML dans la table des autorisations applicatives."
+        ],
+        "sqlCode": "-- 1. Requête principale MODIFICATION sur BKCPT\nSELECT t.AGE, t.NCP, t.CLI, t.DEV, t.CHA, t.SOL\nFROM BKCPT t\nWHERE t.AGE = :p_age\n  AND t.NCP = :p_ncp;\n\n-- 2. Index utilisé pour cette requête :\n-- Index PK_BKCPT ON BKCPT (AGE, NCP)"
+      },
+      "testCases": [
+        {
+          "id": "TC-01",
+          "category": "NOMINAL",
+          "title": "Exécution nominale de 'Opposition et Blocage d'Urgence Carte Monétique Fraude' sur BKCPT",
+          "preconditions": "Enregistrement valide présent dans BKCPT, opérateur habilité profil gestionnaire.",
+          "testSteps": [
+            "1. Saisir les critères clés (AGE, NCP).",
+            "2. Valider par F10 ou soumettre l'ordre.",
+            "3. Vérifier les données retournées."
+          ],
+          "expectedResult": "Opération validée avec succès, code retour 0, intégrité de BKCPT préservée.",
+          "actualStatus": "A_TESTER"
+        },
+        {
+          "id": "TC-02",
+          "category": "ERREUR",
+          "title": "Rejet sur clé primaire inexistante dans BKCPT",
+          "preconditions": "Clé (99999, 99999) absente du dictionnaire.",
+          "testSteps": [
+            "1. Saisir une référence erronée.",
+            "2. Valider par F10."
+          ],
+          "expectedResult": "Message bloquant explicite 'Rejet : Enregistrement introuvable dans BKCPT', code retour 2.",
+          "actualStatus": "A_TESTER"
+        },
+        {
+          "id": "TC-03",
+          "category": "LIMITES",
+          "title": "Contrôle de concurrence ou saturation transactionnelle",
+          "preconditions": "Deux sessions concurrentes tentant une écriture simultanée sur la même ressource.",
+          "testSteps": [
+            "1. Ouvrir deux sessions 4GL.",
+            "2. Initier l'écriture concurrente."
+          ],
+          "expectedResult": "Capture du code retour SGBD sans blocage fatal (ROLLBACK ordonné).",
+          "actualStatus": "A_TESTER"
+        },
+        {
+          "id": "TC-04",
+          "category": "DROITS",
+          "title": "Tentative d'accès non autorisé sur module Comptes & Soldes",
+          "preconditions": "Opérateur non rattaché au profil d'habilitation requis.",
+          "testSteps": [
+            "1. Connexion avec compte utilisateur restreint.",
+            "2. Appel du programme."
+          ],
+          "expectedResult": "Rejet immédiat 'Habilitation insuffisante' avec journalisation dans l'audit de sécurité.",
+          "actualStatus": "A_TESTER"
+        }
+      ],
+      "deliveryPackage": {
+        "modifiedFiles": [
+          "src/prog/p_cbs_bkcpt_maj.4gl",
+          "src/forms/f_cbs_bkcpt_maj.per",
+          "src/sql/bkcpt_maj.sql",
+          "config/menus/amplitude_menu_comptes___soldes.xml"
+        ],
+        "parametersToDeclare": [
+          "Variable d'environnement $AMPLITUDE_FORMS pointant sur le dossier compilé .frm",
+          "Habilitation profil 'P_CBS_BKCPT_MAJ' dans la table de sécurité CBS (BKSEC)"
+        ],
+        "installationScripts": [
+          "c4gl -o bin/p_cbs_bkcpt_maj src/prog/p_cbs_bkcpt_maj.4gl",
+          "form4gl src/forms/f_cbs_bkcpt_maj.per",
+          "chmod 750 bin/p_cbs_bkcpt_maj"
+        ],
+        "installationOrder": [
+          "1. Sauvegarde des binaires existants dans /backup/cbs/bin/.",
+          "2. Compilation des masques d'écran .per vers .frm (form4gl).",
+          "3. Compilation des programmes sources .4gl vers exécutables .4ge / binaires C4GL.",
+          "4. Déclaration des entrées de menu et habilitations en base de recette.",
+          "5. Validation des tests unitaires et procès-verbal de recette."
+        ],
+        "preDeliveryChecklist": [
+          "✓ Code source inspecté sans identifiant en clair ni mot de passe en dur.",
+          "✓ Plan d'exécution SQL validé sur index PK_BKCPT.",
+          "✓ Sauvegarde de sécurité de la base de données validée avant déploiement."
+        ],
+        "postDeliveryChecklist": [
+          "✓ Contrôle de l'absence d'erreurs 4GL dans les logs système.",
+          "✓ Validation du test pilote nominal avec retour code 0.",
+          "✓ Vérification de l'absence de verrous exclusifs résiduels (onstat -k / V$LOCK)."
+        ],
+        "rollbackPlan": [
+          "Étape 1 : Remplacer immédiatement le binaire déployé par la copie de sauvegarde : 'cp /backup/cbs/bin/p_cbs_bkcpt_maj $AMPLITUDE_BIN/'",
+          "Étape 2 : Réactiver l'ancien masque écran si modifié.",
+          "Étape 3 : Purger le cache applicatif Tuxedo / WebLogic : 'tmadmin -c; shutdown -y; boot -y'",
+          "Étape 4 : Confirmer le retour nominal du service sous 10 minutes maximum."
+        ]
+      },
+      "generatedDate": "2026-09-23T21:41:13.787Z"
+    },
+    "createdAt": "2026-09-23T21:43:30.989Z",
+    "updatedAt": "2026-09-23T21:43:30.989Z"
+  }
+]
