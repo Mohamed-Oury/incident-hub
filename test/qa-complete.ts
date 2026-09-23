@@ -13,6 +13,7 @@ import { MONETIQUE_GRADES, MONETIQUE_LESSONS } from "../modules/training-monetiq
 import { MONETIQUE_EXAMS } from "../modules/training-monetique/exams-data";
 import { referenceIncidents } from "../app/reference-incidents";
 import { computeEmvCryptograms } from "../modules/crypto/emv-arqc";
+import { generateCopilotPlan } from "../modules/cbs/copilot/engine";
 
 function runQaAll() {
   console.log("=================================================");
@@ -98,6 +99,30 @@ function runQaAll() {
   assert("TEST 25 - Moteur Cryptographique ARQC / ARPC & Clés EMV", 
     arqcRes.arqcHex.length === 16 && arqcRes.arpcHex.length === 16 && arqcRes.verificationStatus === "VERIFIED",
     `ARQC ${arqcRes.arqcHex}, ARPC ${arqcRes.arpcHex}, Statut ${arqcRes.verificationStatus}`
+  );
+
+  // --- CBS 4GL DEVELOPMENT COPILOT ---
+  const copilotPlan = generateCopilotPlan({
+    title: "Consultation du solde compte client",
+    functionalDescription: "Permettre au gestionnaire de consulter le solde disponible et l historique d un compte.",
+    bankingDomain: "Comptes & Relation Client",
+    targetUsers: "Gestionnaire de compte",
+    knownBusinessRules: "Contrôle d existence et contrôle d habilitation",
+    inputData: "Numéro de compte",
+    expectedOutput: "Solde et mouvements",
+    specialConstraints: "Temps < 300ms",
+    amplitudeVersion: "v11.x",
+    technicalEnvironment: "Informix / AIX",
+    nominalExample: "Compte 001001234567",
+    errorExample: "Compte inexistant",
+  });
+  assert("TEST 26 - CBS 4GL Development Copilot (Plan, Sous-tâches, 4GL, .per, SQL, Tests)",
+    copilotPlan.subTasks.length >= 5 &&
+    copilotPlan.code4GlProposal.code4Gl.includes("MAIN") &&
+    copilotPlan.perScreen !== null &&
+    copilotPlan.testCases.length >= 4 &&
+    copilotPlan.deliveryPackage.rollbackPlan.length >= 3,
+    `${copilotPlan.subTasks.length} sous-tâches ordonnées, code 4GL, masque .per, SQL, ${copilotPlan.testCases.length} tests et plan de rollback`
   );
 
   console.log("\n=================================================");

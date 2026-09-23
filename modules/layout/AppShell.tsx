@@ -128,6 +128,7 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
       icon: "🖥️",
       roleRequired: "ROLE_EXPERTISE",
       items: [
+        { href: "/cbs/copilot", label: "4GL Development Copilot", icon: "🤖" },
         { href: "/cbs/databases", label: "SGBD Oracle & Informix", icon: "🗄️" },
         { href: "/cbs/sql-playbooks", label: "Requêtes & Playbooks SQL", icon: "⚡" },
         { href: "/cbs/reconciliation", label: "Réconciliation Monétique ↔ CBS", icon: "🌉" },
