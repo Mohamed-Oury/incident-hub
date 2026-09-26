@@ -81,7 +81,7 @@ export function GeneroGuiWindow({ data, title = "Consultation & Opérations Guic
 
   const statusBar = data?.statusBar || {
     user: "OPR_AG01",
-    agency: "01001 (DAKAR CENTRAL)",
+    agency: "01001 (ABIDJAN PLATEAU)",
     accountingDate: "26/09/2026",
     environment: "Amplitude v11.x - Genero GWC/GDC Runtime"
   };

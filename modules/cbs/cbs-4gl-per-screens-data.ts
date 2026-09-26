@@ -853,7 +853,7 @@ END MAIN`,
   +-------------+------------+----------------------------------+-------------+
   | MVT-2609-01 | 26/09/2026 | VIREMENT REÇU SALAIRE MENSUEL    | +850,000.00 |
   | MVT-2609-02 | 25/09/2026 | RETRAIT GAB AGENCE CENTRALE      |  -70,000.00 |
-  | MVT-2609-03 | 24/09/2026 | PAIEMENT TPE HYPERMARCHE DAKAR   |  -42,300.00 |
+  | MVT-2609-03 | 24/09/2026 | PAIEMENT TPE HYPERMARCHE ABIDJAN |  -42,300.00 |
   +-------------+------------+----------------------------------+-------------+
   [Boutons d'action GUI] : [Export Excel] [Imprimer Relevé] [Aide F1] [Fermer]`,
     detailedAnalysis: `Dans les environnements modernes Amplitude CBS propulsés par Four Js Genero (BDL) :

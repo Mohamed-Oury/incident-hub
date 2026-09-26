@@ -755,7 +755,7 @@ function buildGuiMockupData(
     ],
     statusBar: {
       user: "OPR_AG01",
-      agency: "01001 (DAKAR CENTRAL)",
+      agency: "01001 (ABIDJAN PLATEAU)",
       accountingDate: "26/09/2026",
       environment: "Amplitude v11.x - Genero GWC/GDC Runtime"
     }
@@ -904,7 +904,7 @@ END`;
   ----------------------------------------------------------------------------
   [N° ] [Référence        ] [Libellé / Désignation             ] [Montant XOF   ]
   [ 1 ] [REF-2026-0091    ] [VIREMENT SALAIRE GESTIONNAIRE     ] [    450,000.00]
-  [ 2 ] [REF-2026-0092    ] [RETRAIT GAB DAKAR PLATEAU         ] [     50,000.00]
+  [ 2 ] [REF-2026-0092    ] [RETRAIT GAB ABIDJAN PLATEAU       ] [     50,000.00]
   [ 3 ] [REF-2026-0093    ] [PRELEVEMENT ASSURANCE AUTO        ] [     25,000.00]
   [ 4 ] [REF-2026-0094    ] [FRAIS TENUE DE COMPTE T3          ] [      3,500.00]
   [ 5 ] [REF-2026-0095    ] [REGLEMENT FACTURE TELECOM         ] [     42,000.00]
@@ -1417,7 +1417,7 @@ END`;
     visualMockup = `+------------------------------------------------------------------------------+
 |          SOPRA BANKING AMPLITUDE - TABLEAU DE BORD OPÉRATIONNEL & KPIS       |
 +------------------------------------------------------------------------------+
-  Date de Situation: [26/09/2026]           Agence / Périmètre : [01001] [SIEGE DAKAR]
+  Date de Situation: [26/09/2026]           Agence / Périmètre : [01001] [SIEGE ABIDJAN]
 --------------------------------------------------------------------------------
   SYNTHÈSE VOLUMÉTRIE TRANSACTIONS       |  INDICATEURS DE RISQUE & SUSPENS
   ---------------------------------------+--------------------------------------
