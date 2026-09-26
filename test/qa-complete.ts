@@ -9,6 +9,7 @@ import { parseAtmElectronicJournal } from "../modules/knowledge-base/data/atm-ej
 import { CBS_4GL_GRADES, CBS_4GL_LESSONS, CBS_4GL_EXAMS } from "../modules/cbs/cbs-4gl-data";
 import { CBS_4GL_KEYWORDS_CHEAT_SHEET } from "../modules/cbs/cbs-4gl-cheat-sheet";
 import { CBS_4GL_PER_COURSES } from "../modules/cbs/cbs-4gl-per-screens-data";
+import { generateCustomPerScreen } from "../modules/cbs/cbs-screen-builder";
 
 import { MONETIQUE_GRADES, MONETIQUE_LESSONS } from "../modules/training-monetique/data";
 import { MONETIQUE_EXAMS } from "../modules/training-monetique/exams-data";
@@ -74,6 +75,20 @@ function runQaAll() {
   assert("TEST 20 - Banque d'Examens de Passage de Grade CBS 4GL", CBS_4GL_EXAMS.length >= 75 && [1, 2, 3, 4, 5].every(lvl => CBS_4GL_EXAMS.filter(q => q.gradeLevel === lvl).length >= 15), `${CBS_4GL_EXAMS.length} questions officielles (au moins 15 questions par grade)`);
   assert("TEST 21 - Fiche Mémento Mots-Clés Informix 4GL", CBS_4GL_KEYWORDS_CHEAT_SHEET.length >= 200, `${CBS_4GL_KEYWORDS_CHEAT_SHEET.length} cartes de révision détaillées`);
   assert("TEST 21 bis - Cursus Dédié Conception Écrans .per (Form-4GL)", CBS_4GL_PER_COURSES.length === 4 && CBS_4GL_PER_COURSES.every(c => c.perSourceCode.length > 0 && c.terminalMockup.length > 0), `${CBS_4GL_PER_COURSES.length} cours exhaustifs Débutant à Expert avec masques, 4GL, VT100 et form4gl`);
+  
+  const customScreenSample = generateCustomPerScreen({
+    title: "Gestion Guichet Retrait Espèces",
+    description: "Écran de retrait guichet avec numéro de compte, vérification du solde disponible et code secret PIN invisible",
+    domain: "Comptes & Guichet",
+    screenLayoutType: "SECURE_AUTH"
+  });
+  assert("TEST 21 ter - Studio Créateur Écrans .per & Liaison Base", 
+    customScreenSample.perSourceCode.includes("DATABASE amplitude_db") &&
+    customScreenSample.perSourceCode.includes("ATTRIBUTES") &&
+    customScreenSample.terminalMockup.includes("AMPLITUDE") &&
+    customScreenSample.fourGlSourceCode.includes("MAIN"),
+    `Masque dynamique généré (${customScreenSample.primaryTable}), terminal VT100 et code 4GL fonctionnels`
+  );
 
   // --- NOUVEAU CURSUS FORMATION & CERTIFICATION MONÉTIQUE (150 EXAMENS) ---
   assert("TEST 22 - Cursus Monétique 5 Niveaux de Qualification", MONETIQUE_GRADES.length === 5 && MONETIQUE_GRADES.every(g => g.recommendedResources && g.recommendedResources.length >= 3), `${MONETIQUE_GRADES.length} grades monétique avec normes & specs`);
