@@ -11,6 +11,29 @@ export type CbsPerScreenLayoutType =
   | "SPLIT_DASHBOARD" 
   | "SEARCH_FILTER";
 
+export type CbsPerSyntaxMode = "GUI_GENERO" | "TERMINAL_LEGACY";
+export type CbsPerSchemaHeader = "SCHEMA" | "DATABASE";
+
+export interface GuiMockupData {
+  windowTitle: string;
+  headerFields: { label: string; value: string; type?: string; tag?: string }[];
+  leftPanel?: { title: string; fields: { label: string; value: string; tag?: string }[] };
+  rightPanel?: { title: string; fields: { label: string; value: string; tag?: string; highlight?: boolean }[] };
+  activeTab?: string;
+  tabs?: {
+    id: string;
+    label: string;
+    type: "table" | "form";
+    table?: {
+      columns: string[];
+      rows: string[][];
+    };
+    fields?: { label: string; value: string; tag?: string }[];
+  }[];
+  actions: { label: string; keyShortcut?: string; style: "primary" | "secondary" | "danger"; icon?: string }[];
+  statusBar: { user: string; agency: string; accountingDate: string; environment: string };
+}
+
 export interface CustomPerScreen {
   id: string;
   name: string;
@@ -22,6 +45,9 @@ export interface CustomPerScreen {
   perSourceCode: string;
   fourGlSourceCode: string;
   terminalMockup: string;
+  guiMockupData?: GuiMockupData;
+  syntaxMode?: CbsPerSyntaxMode;
+  schemaHeaderType?: CbsPerSchemaHeader;
   fieldsConfig: PerFieldConfig[];
   screenLayoutType: CbsPerScreenLayoutType;
   createdAt: string;
@@ -115,6 +141,628 @@ export function matchTablesFromPrompt(description: string, domain?: string): { p
 }
 
 /**
+ * Générateur de code source .per en IHM Graphique Moderne (Four Js Genero Form Layout)
+ */
+function buildGuiGeneroPerCode(
+  title: string,
+  primary: CbsTableDefinition,
+  secondary: CbsTableDefinition | undefined,
+  fieldsConfig: PerFieldConfig[],
+  layoutType: CbsPerScreenLayoutType,
+  schemaHeaderType: CbsPerSchemaHeader = "SCHEMA"
+): string {
+  const header = `${schemaHeaderType} amplitude_db\n\n`;
+  const pk = primary.primaryKey[0] || "CODE";
+  const table = primary.tableName.toLowerCase();
+
+  switch (layoutType) {
+    case "TABLE_ARRAY":
+      return `${header}LAYOUT (TEXT = "${title.replace(/"/g, "'")}", STYLE = "main_window")
+VBOX
+  GRID
+  {
+  Filtre Sélection [${pk}] : [f001           ]  Statut : [f002 ]
+  }
+  END -- GRID
+
+  TABLE (DOUBLECLICK = detail_row)
+  {
+  N° Ligne  Référence       Libellé Opération                   Montant (XOF)
+  [f10    ] [f11          ] [f12                               ] [f13           ]
+  [f10    ] [f11          ] [f12                               ] [f13           ]
+  [f10    ] [f11          ] [f12                               ] [f13           ]
+  [f10    ] [f11          ] [f12                               ] [f13           ]
+  [f10    ] [f11          ] [f12                               ] [f13           ]
+  }
+  END -- TABLE
+
+  GRID
+  {
+  Total Enregistrements : [f99 ]         Cumul Général : [f98               ]
+  }
+  END -- GRID
+END -- VBOX
+
+TABLES
+  ${table}
+
+ATTRIBUTES
+  f001 = ${table}.${pk.toLowerCase()}, REQUIRED, UPSHIFT, COMMENTS = "Critère de filtrage principal";
+  f002 = FORMONLY.filtre_statut TYPE CHAR(1), UPSHIFT;
+  f10  = FORMONLY.num_ligne TYPE SMALLINT, NOENTRY;
+  f11  = ${table}.${fieldsConfig[1]?.column || "ref"}, UPSHIFT;
+  f12  = ${table}.${fieldsConfig[2]?.column || "lib"}, UPSHIFT;
+  f13  = ${table}.${fieldsConfig[3]?.column || "mnt"}, FORMAT = "---,---,---,--&.&&";
+  f99  = FORMONLY.tot_lignes TYPE INTEGER, NOENTRY;
+  f98  = FORMONLY.cumul_mnt TYPE DECIMAL(16,2), FORMAT = "---,---,---,--&.&&", NOENTRY;
+
+INSTRUCTIONS
+  SCREEN RECORD s_arr (num_ligne, ${fieldsConfig[1]?.column || "ref"}, ${fieldsConfig[2]?.column || "lib"}, ${fieldsConfig[3]?.column || "mnt"})
+END`;
+
+    case "MASTER_DETAIL":
+      return `${header}LAYOUT (TEXT = "${title.replace(/"/g, "'")}", STYLE = "main_window")
+VBOX
+  GRID
+  {
+  <G "En-tête Dossier (Master Record)"                                           >
+  N° Dossier : [f001           ]   Date Valeur : [f002      ]   Statut : [f003 ]
+  Titulaire  : [f004                                                             ]
+  }
+  END -- GRID
+
+  HBOX (SPLITTER)
+    GRID
+    {
+    <G "Agences & Paramètres"                             >
+    Agence Gestion : [f005 ]  Devise : [f006 ]
+    Code Produit   : [f007 ]
+    }
+    END -- GRID
+
+    GRID
+    {
+    <G "Soldes & Équilibre Financier"                     >
+    Montant Global : [f008               ] XOF
+    Total Lignes   : [f009               ] XOF
+    }
+    END -- GRID
+  END -- HBOX
+
+  TABLE (DOUBLECLICK = zoom_detail)
+  {
+  Ligne  Réf Écriture    Libellé Détail                     Débit          Crédit
+  [d01 ] [d02          ] [d03                             ] [d04         ] [d05         ]
+  [d01 ] [d02          ] [d03                             ] [d04         ] [d05         ]
+  [d01 ] [d02          ] [d03                             ] [d04         ] [d05         ]
+  }
+  END -- TABLE
+END -- VBOX
+
+TABLES
+  ${table}${secondary ? ",\n  " + secondary.tableName.toLowerCase() : ""}
+
+ATTRIBUTES
+  f001 = ${table}.${pk.toLowerCase()}, REQUIRED, UPSHIFT, STYLE = "primary_key";
+  f002 = FORMONLY.dat_val TYPE DATE, DEFAULT = TODAY, NOENTRY;
+  f003 = FORMONLY.statut TYPE CHAR(3), NOENTRY, STYLE = "badge_active";
+  f004 = FORMONLY.nom_titulaire TYPE VARCHAR(50), NOENTRY;
+  f005 = FORMONLY.code_age TYPE CHAR(5), NOENTRY;
+  f006 = FORMONLY.devise TYPE CHAR(3), DEFAULT = "XOF", NOENTRY;
+  f007 = FORMONLY.code_prod TYPE CHAR(4), NOENTRY;
+  f008 = FORMONLY.mnt_global TYPE DECIMAL(16,2), FORMAT = "---,---,---,--&.&&", NOENTRY, STYLE = "kpi_main";
+  f009 = FORMONLY.tot_details TYPE DECIMAL(16,2), FORMAT = "---,---,---,--&.&&", NOENTRY;
+
+  d01  = FORMONLY.num_ligne TYPE SMALLINT, NOENTRY;
+  d02  = FORMONLY.ref_ecr TYPE CHAR(14), NOENTRY;
+  d03  = FORMONLY.lib_ecr TYPE VARCHAR(35), NOENTRY;
+  d04  = FORMONLY.mnt_deb TYPE DECIMAL(14,2), FORMAT = "---,---,--&.&&", NOENTRY;
+  d05  = FORMONLY.mnt_cre TYPE DECIMAL(14,2), FORMAT = "---,---,--&.&&", NOENTRY;
+
+INSTRUCTIONS
+  SCREEN RECORD s_det (num_ligne, ref_ecr, lib_ecr, mnt_deb, mnt_cre)
+END`;
+
+    case "WIZARD_STEPS":
+      return `${header}LAYOUT (TEXT = "${title.replace(/"/g, "'")}", STYLE = "wizard_dialog")
+VBOX
+  FOLDER
+    PAGE step1 (TEXT = "1. Identification & KYC")
+      GRID
+      {
+      Numéro Client  : [f001      ]  Raison Sociale : [f002                           ]
+      Type Tiers     : [f003 ]       Pièce Identité : [f004                ]
+      }
+      END -- GRID
+    END -- PAGE
+
+    PAGE step2 (TEXT = "2. Paramètres & Montants")
+      GRID
+      {
+      Produit / Cpt  : [f005 ] [lib_prod                               ]
+      Montant Sollicité: [f006               ] XOF   Durée (Mois) : [f007 ]
+      Taux Applicable: [f008  ] %                    Échéance Est.: [f009         ]
+      }
+      END -- GRID
+    END -- PAGE
+
+    PAGE step3 (TEXT = "3. Garanties & Double Visa")
+      GRID
+      {
+      Type Garantie  : [f010                                            ]
+      Valeur Nette   : [f011               ] XOF
+      Visa Contrôle  : [f012      ]  Statut Accord : [f013      ]
+      }
+      END -- GRID
+    END -- PAGE
+  END -- FOLDER
+
+  HBOX
+    GRID
+    {
+    [btn_prec    ] [btn_suiv    ] [btn_valider             ] [btn_annuler ]
+    }
+    END -- GRID
+  END -- HBOX
+END -- VBOX
+
+TABLES
+  ${table}
+
+ATTRIBUTES
+  f001 = ${table}.${pk.toLowerCase()}, REQUIRED, UPSHIFT;
+  f002 = FORMONLY.nom_client TYPE VARCHAR(40), REQUIRED, UPSHIFT;
+  f003 = FORMONLY.typ_client TYPE CHAR(3), UPSHIFT;
+  f004 = FORMONLY.piece_id TYPE CHAR(20), UPSHIFT;
+  f005 = FORMONLY.code_prod TYPE CHAR(4), REQUIRED, UPSHIFT;
+  lib_prod = FORMONLY.lib_produit TYPE VARCHAR(30), NOENTRY;
+  f006 = FORMONLY.mnt_demande TYPE DECIMAL(16,2), FORMAT = "---,---,---,--&.&&", REQUIRED;
+  f007 = FORMONLY.duree_mois TYPE SMALLINT, REQUIRED;
+  f008 = FORMONLY.taux_nom TYPE DECIMAL(5,2), FORMAT = "##&.&&", REQUIRED;
+  f009 = FORMONLY.ech_estimee TYPE DECIMAL(14,2), FORMAT = "---,---,--&.&&", NOENTRY;
+  f010 = FORMONLY.lib_garantie TYPE VARCHAR(45), UPSHIFT;
+  f011 = FORMONLY.val_garantie TYPE DECIMAL(16,2), FORMAT = "---,---,---,--&.&&";
+  f012 = FORMONLY.visa_agent TYPE CHAR(8), REQUIRED, UPSHIFT;
+  f013 = FORMONLY.statut_comite TYPE CHAR(10), NOENTRY;
+
+  BUTTON btn_prec    : previous, TEXT = "< Précédent";
+  BUTTON btn_suiv    : next, TEXT = "Suivant >";
+  BUTTON btn_valider : accept, TEXT = "Valider Dossier", STYLE = "primary";
+  BUTTON btn_annuler : cancel, TEXT = "Annuler", STYLE = "danger";
+
+INSTRUCTIONS
+  DELIMITERS "[]"
+END`;
+
+    case "SPLIT_DASHBOARD":
+      return `${header}LAYOUT (TEXT = "${title.replace(/"/g, "'")}", STYLE = "dashboard_window")
+VBOX
+  HBOX (SPLITTER)
+    GRID
+    {
+    <G "Périmètre & Filtres Agence"                        >
+    Code Agence : [f001 ]  Date Début : [f002      ]
+    Segment     : [f003 ]  Date Fin   : [f004      ]
+    }
+    END -- GRID
+
+    GRID
+    {
+    <G "Indicateurs Clés de Performance (KPIs Temps Réel)" >
+    Transactions Traitées: [k01     ]
+    Volume Global (XOF)  : [k02                    ]
+    Taux de Succès       : [k03   ] %
+    Alertes Détectées    : [k04     ]
+    }
+    END -- GRID
+  END -- HBOX
+
+  TABLE (DOUBLECLICK = zoom_incident)
+  {
+  Horodatage  Canal  Description Événement                  Statut     Montant (XOF)
+  [h01      ] [h02 ] [h03                                 ] [h04     ] [h05           ]
+  [h01      ] [h02 ] [h03                                 ] [h04     ] [h05           ]
+  [h01      ] [h02 ] [h03                                 ] [h04     ] [h05           ]
+  }
+  END -- TABLE
+END -- VBOX
+
+TABLES
+  ${table}
+
+ATTRIBUTES
+  f001 = FORMONLY.code_age TYPE CHAR(5), DEFAULT = "01001", UPSHIFT;
+  f002 = FORMONLY.dat_deb TYPE DATE, DEFAULT = TODAY;
+  f003 = FORMONLY.segment TYPE CHAR(4), UPSHIFT;
+  f004 = FORMONLY.dat_fin TYPE DATE, DEFAULT = TODAY;
+  k01  = FORMONLY.kpi_nb_tx TYPE INTEGER, NOENTRY, STYLE = "kpi_count";
+  k02  = FORMONLY.kpi_vol_xof TYPE DECIMAL(18,2), FORMAT = "---,---,---,---,--&.&&", NOENTRY, STYLE = "kpi_main";
+  k03  = FORMONLY.kpi_tx_succes TYPE DECIMAL(5,2), FORMAT = "##&.&&", NOENTRY, STYLE = "kpi_positive";
+  k04  = FORMONLY.kpi_alertes TYPE SMALLINT, NOENTRY, STYLE = "kpi_danger";
+
+  h01  = FORMONLY.evt_horodate TYPE DATETIME HOUR TO SECOND, NOENTRY;
+  h02  = FORMONLY.evt_canal TYPE CHAR(5), NOENTRY;
+  h03  = FORMONLY.evt_libelle TYPE VARCHAR(40), NOENTRY;
+  h04  = FORMONLY.evt_statut TYPE VARCHAR(10), NOENTRY, STYLE = "badge_status";
+  h05  = FORMONLY.evt_montant TYPE DECIMAL(14,2), FORMAT = "---,---,--&.&&", NOENTRY;
+
+INSTRUCTIONS
+  SCREEN RECORD s_dash (evt_horodate, evt_canal, evt_libelle, evt_statut, evt_montant)
+END`;
+
+    case "SEARCH_FILTER":
+      return `${header}LAYOUT (TEXT = "${title.replace(/"/g, "'")}", STYLE = "search_window")
+VBOX
+  GRID
+  {
+  <G "Critères de Recherche (CONSTRUCT Dynamique)"                                 >
+  Code / Identifiant : [f001           ]  Désignation / Nom : [f002                ]
+  Période du         : [f003      ]       au                : [f004      ]
+  Statut Dossier     : [f005 ]            Devise Opération  : [f006 ]
+  }
+  END -- GRID
+
+  HBOX
+    GRID
+    {
+    [btn_rechercher            ] [btn_reinitialiser      ] [btn_export_calc       ]
+    }
+    END -- GRID
+  END -- HBOX
+
+  TABLE (DOUBLECLICK = open_record)
+  {
+  Identifiant     Raison Sociale / Libellé        Date Événement  Montant (XOF)    Statut
+  [r01          ] [r02                          ] [r03          ] [r04           ] [r05   ]
+  [r01          ] [r02                          ] [r03          ] [r04           ] [r05   ]
+  [r01          ] [r02                          ] [r03          ] [r04           ] [r05   ]
+  }
+  END -- TABLE
+END -- VBOX
+
+TABLES
+  ${table}
+
+ATTRIBUTES
+  f001 = ${table}.${pk.toLowerCase()}, UPSHIFT;
+  f002 = FORMONLY.nom_crit TYPE VARCHAR(35), UPSHIFT;
+  f003 = FORMONLY.dco_min TYPE DATE;
+  f004 = FORMONLY.dco_max TYPE DATE;
+  f005 = FORMONLY.eta_crit TYPE CHAR(2), UPSHIFT;
+  f006 = FORMONLY.dev_crit TYPE CHAR(3), DEFAULT = "XOF", UPSHIFT;
+
+  BUTTON btn_rechercher   : search, TEXT = "Lancer Recherche", STYLE = "primary";
+  BUTTON btn_reinitialiser: reset, TEXT = "Réinitialiser", STYLE = "secondary";
+  BUTTON btn_export_calc  : export, TEXT = "Exporter Table", STYLE = "secondary";
+
+  r01  = FORMONLY.res_id TYPE CHAR(15), NOENTRY;
+  r02  = FORMONLY.res_nom TYPE VARCHAR(35), NOENTRY;
+  r03  = FORMONLY.res_dat TYPE DATE, NOENTRY;
+  r04  = FORMONLY.res_mnt TYPE DECIMAL(16,2), FORMAT = "---,---,---,--&.&&", NOENTRY;
+  r05  = FORMONLY.res_eta TYPE CHAR(6), NOENTRY;
+
+INSTRUCTIONS
+  SCREEN RECORD s_res (res_id, res_nom, res_dat, res_mnt, res_eta)
+END`;
+
+    case "SECURE_AUTH":
+      return `${header}LAYOUT (TEXT = "${title.replace(/"/g, "'")}", STYLE = "security_dialog")
+VBOX
+  GRID
+  {
+  <G "Opération Soumise à Contrôle & Double Visa"                                  >
+  Type Transaction   : [f001                                                ]
+  Compte Débiteur    : [f002           ]   Agence : [f003 ]
+  Montant Total      : [f004               ] XOF
+  }
+  END -- GRID
+
+  HBOX (SPLITTER)
+    GRID
+    {
+    <G "Saisie Sécurisée Opérateur"                        >
+    Matricule Guichet  : [f005      ]
+    Code Secret PIN    : [f006    ] (NOECHO / PCI-DSS)
+    }
+    END -- GRID
+
+    GRID
+    {
+    <G "Validation Superviseur (Double Visa)"              >
+    Visa Superviseur   : [f007      ]
+    Mot de Passe Sup.  : [f008        ]
+    Motif Dérogation   : [f009                               ]
+    }
+    END -- GRID
+  END -- HBOX
+END -- VBOX
+
+TABLES
+  ${table}
+
+ATTRIBUTES
+  f001 = FORMONLY.lib_operation TYPE VARCHAR(50), NOENTRY;
+  f002 = ${table}.${pk.toLowerCase()}, NOENTRY;
+  f003 = FORMONLY.code_age TYPE CHAR(5), NOENTRY;
+  f004 = FORMONLY.mnt_tx TYPE DECIMAL(16,2), FORMAT = "---,---,---,--&.&&", NOENTRY, STYLE = "kpi_alert";
+  f005 = FORMONLY.user_mat TYPE CHAR(8), REQUIRED, UPSHIFT;
+  f006 = FORMONLY.user_pin TYPE CHAR(4), REQUIRED, INVISIBLE;
+  f007 = FORMONLY.sup_mat TYPE CHAR(8), REQUIRED, UPSHIFT;
+  f008 = FORMONLY.sup_pwd TYPE CHAR(10), REQUIRED, INVISIBLE;
+  f009 = FORMONLY.motif_derog TYPE VARCHAR(50), REQUIRED, UPSHIFT;
+
+INSTRUCTIONS
+  DELIMITERS "[]"
+END`;
+
+    case "MODAL_POPUP":
+      return `${header}LAYOUT (TEXT = "${title.replace(/"/g, "'")}", STYLE = "dialog_modal")
+VBOX
+  GRID
+  {
+  Recherche Filtre Rapide : [f001           ]
+  }
+  END -- GRID
+
+  TABLE (DOUBLECLICK = valider_selection)
+  {
+  Code Identifiant  Désignation / Intitulé Commercial              Statut
+  [c01            ] [c02                                         ] [c03      ]
+  [c01            ] [c02                                         ] [c03      ]
+  [c01            ] [c02                                         ] [c03      ]
+  [c01            ] [c02                                         ] [c03      ]
+  }
+  END -- TABLE
+
+  HBOX
+    GRID
+    {
+    [btn_choisir           ] [btn_annuler          ]
+    }
+    END -- GRID
+  END -- HBOX
+END -- VBOX
+
+TABLES
+  ${table}
+
+ATTRIBUTES
+  f001 = FORMONLY.filtre_val TYPE CHAR(15), UPSHIFT;
+  c01  = ${table}.${pk.toLowerCase()}, NOENTRY, UPSHIFT;
+  c02  = ${table}.${fieldsConfig[1]?.column || "lib"}, NOENTRY, UPSHIFT;
+  c03  = FORMONLY.statut_lib TYPE CHAR(10), NOENTRY;
+
+  BUTTON btn_choisir: accept, TEXT = "Sélectionner (ENTRÉE)", STYLE = "primary";
+  BUTTON btn_annuler: cancel, TEXT = "Annuler (ESC)", STYLE = "secondary";
+
+INSTRUCTIONS
+  SCREEN RECORD s_lov (code, ${fieldsConfig[1]?.column || "lib"}, statut_lib)
+END`;
+
+    default: // STANDARD_FORM
+      return `${header}LAYOUT (TEXT = "${title.replace(/"/g, "'")}", STYLE = "main_window")
+VBOX
+  GRID
+  {
+  Code Identifiant : [f001           ]  Statut : [f002 ]
+  }
+  END -- GRID
+
+  HBOX (SPLITTER)
+    GRID
+    {
+    <G "Données Générales & Fiche Métier"                                        >
+    Libellé / Titre  : [f010                                                   ]
+    Paramètre 1      : [f011                ]
+    Paramètre 2      : [f012                ]
+    }
+    END -- GRID
+
+    GRID
+    {
+    <G "Soldes & Indicateurs Chiffrés"                                           >
+    Montant Principal: [f013               ] XOF
+    Date Arrêté      : [f014      ]
+    Gestionnaire     : [f015      ]
+    }
+    END -- GRID
+  END -- HBOX
+END -- VBOX
+
+TABLES
+  ${table}${secondary ? ",\n  " + secondary.tableName.toLowerCase() : ""}
+
+ATTRIBUTES
+  f001 = ${table}.${pk.toLowerCase()}, REQUIRED, UPSHIFT, STYLE = "primary_key";
+  f002 = FORMONLY.statut TYPE CHAR(3), DEFAULT = "ACT", NOENTRY, STYLE = "badge_active";
+  f010 = ${table}.${fieldsConfig[1]?.column || "lib"}, UPSHIFT;
+  f011 = ${table}.${fieldsConfig[2]?.column || "val1"}, UPSHIFT;
+  f012 = ${table}.${fieldsConfig[3]?.column || "val2"}, UPSHIFT;
+  f013 = FORMONLY.solde_calc TYPE DECIMAL(16,2), FORMAT = "---,---,---,--&.&&", NOENTRY, STYLE = "kpi_main";
+  f014 = FORMONLY.dco_sys TYPE DATE, DEFAULT = TODAY, NOENTRY;
+  f015 = FORMONLY.user_id TYPE CHAR(8), NOENTRY;
+
+INSTRUCTIONS
+  DELIMITERS "[]"
+END`;
+  }
+}
+
+/**
+ * Programme Genero BDL moderne pour IHM Graphique (DIALOG, ON ACTION, ui.Interface)
+ */
+function buildGuiGenero4GlCode(
+  title: string,
+  primary: CbsTableDefinition,
+  fieldsConfig: PerFieldConfig[],
+  layoutType: CbsPerScreenLayoutType,
+  baseName: string,
+  schemaHeaderType: CbsPerSchemaHeader = "SCHEMA"
+): string {
+  const header = `${schemaHeaderType} amplitude_db\n\n`;
+  const table = primary.tableName.toLowerCase();
+
+  return `###############################################################################
+# Programme Genero BDL moderne pour IHM Graphique : ${baseName}.4gl
+# Table principale : ${primary.tableName}
+###############################################################################
+${header}DEFINE g_rec RECORD LIKE ${table}.*
+
+MAIN
+    -- Chargement du profil d'actions graphiques (barre d'outils, icônes et styles)
+    CALL ui.Interface.loadActionDefaults("amplitude_actions")
+
+    OPEN FORM f_main FROM "${baseName}"
+    DISPLAY FORM f_main
+
+    -- Boucle événementielle moderne DIALOG multi-interactions
+    DIALOG ATTRIBUTES(UNBUFFERED)
+        INPUT BY NAME g_rec.*
+            BEFORE FIELD ${fieldsConfig[0]?.column || "id"}
+                MESSAGE "Saisie ou consultation des informations bancaires..."
+
+            AFTER FIELD ${fieldsConfig[0]?.column || "id"}
+                IF g_rec.${fieldsConfig[0]?.column || "id"} IS NULL THEN
+                    ERROR "La clé d'identification est obligatoire."
+                    NEXT FIELD ${fieldsConfig[0]?.column || "id"}
+                END IF
+        END INPUT
+
+        ON ACTION accept
+            MESSAGE "Enregistrement validé avec succès."
+            ACCEPT DIALOG
+
+        ON ACTION cancel
+            EXIT DIALOG
+
+        ON ACTION print_report
+            CALL imprimer_etat_pdf("${baseName}")
+
+        ON ACTION export_calc
+            CALL exporter_donnees_office("${baseName}")
+    END DIALOG
+
+    CLOSE FORM f_main
+END MAIN`;
+}
+
+/**
+ * Aperçu ASCII Terminal VT100 représentant la fenêtre GUI Genero
+ */
+function buildGuiTerminalAscii(title: string, primary: CbsTableDefinition, layoutType: CbsPerScreenLayoutType): string {
+  const pk = primary.primaryKey[0] || "CODE";
+  return `+==============================================================================+
+| [GENERO GUI WINDOW] ${title.slice(0, 52).padEnd(52)} [-][o][x] |
++==============================================================================+
+| [Actions] [F1: Aide] [F2: Rechercher] [F10: Valider] [Export Calc] [Fermer]  |
++------------------------------------------------------------------------------+
+  [VBOX / GRID: En-tête Global]
+  Agence : [01001]              Date Arrêté : [26/09/2026]
+  ${pk.padEnd(8)}: [01001009845]         Statut      : [ACTIF / NORMAL   ]
+  +-------------------------------------+--------------------------------------+
+  | [HBOX Gauche: Informations Tiers]   | [HBOX Droite: Synthèse Soldes]       |
+  | Nom / Raison : [SOCIETE AGRO SARL ] | Solde Comptable : [   28,450,000.00] |
+  | Code Client  : [CLI-99201         ] | Montant Bloqué  : [    1,200,000.00] |
+  | Segment      : [ENTREPRISE PRIVEE ] | Disponible Réel : [   27,250,000.00] |
+  +-------------------------------------+--------------------------------------+
+  [FOLDER: Onglets Multi-Vues]
+  ===[ Page 1: Grille Principale (TABLE) ]=== ( Page 2: Paramètres Complémentaires )
+  +-------------+------------+----------------------------------+-------------+
+  | Réf Ligne   | Date Opér. | Libellé Opération                | Montant XOF |
+  +-------------+------------+----------------------------------+-------------+
+  | REF-2609-01 | 26/09/2026 | VIREMENT SALAIRES COMPENSES      | 4,500,000.00|
+  | REF-2609-02 | 25/09/2026 | ENCAISSEMENT EFFET COMMERCE      | 7,200,000.00|
+  | REF-2609-03 | 24/09/2026 | PAIEMENT FOURNISSEUR MATERIEL    | 1,150,000.00|
+  +-------------+------------+----------------------------------+-------------+
+  Total Enregistrements : [3]             Cumul Lignes : [12,850,000.00 XOF]
++------------------------------------------------------------------------------+
+| [Status Bar] User: OPR_AG01 | Agence: 01001 | Date: 26/09/2026 | Genero GWC  |
++==============================================================================+`;
+}
+
+/**
+ * Données structurées pour le composant de prévisualisation IHM Graphique Moderne (GDC/GWC)
+ */
+function buildGuiMockupData(
+  title: string,
+  domain: string,
+  primary: CbsTableDefinition,
+  fieldsConfig: PerFieldConfig[],
+  layoutType: CbsPerScreenLayoutType
+): GuiMockupData {
+  const pk = primary.primaryKey[0] || "CODE";
+  const pkVal = "01001009845";
+
+  return {
+    windowTitle: `Banque Amplitude - ${title}`,
+    headerFields: [
+      { label: "Code Agence", value: "01001", tag: "f001" },
+      { label: "Date Système", value: "26/09/2026", tag: "f002" },
+      { label: pk, value: pkVal, tag: "f003" },
+      { label: "Statut", value: "ACTIF", type: "badge", tag: "f004" }
+    ],
+    leftPanel: {
+      title: "Informations Métier & Tiers",
+      fields: [
+        { label: "Identifiant / Code", value: pkVal, tag: "f010" },
+        { label: "Raison Sociale / Nom", value: "SOCIETE COMMERCIALE SA", tag: "f011" },
+        { label: "Segment Clientèle", value: "ENTREPRISES CORPORATE", tag: "f012" },
+        { label: "Gestionnaire Compte", value: "GEST_AG01 (M. DIOP)", tag: "f013" }
+      ]
+    },
+    rightPanel: {
+      title: "Synthèse Financière & Soldes",
+      fields: [
+        { label: "Solde Comptable (XOF)", value: "28,450,000.00", highlight: true, tag: "f014" },
+        { label: "Montant Bloqué / Réserve", value: "1,200,000.00", tag: "f015" },
+        { label: "Disponible Immédiat", value: "27,250,000.00", highlight: true, tag: "f016" },
+        { label: "Autorisation Découvert", value: "5,000,000.00", tag: "f017" }
+      ]
+    },
+    tabs: [
+      {
+        id: "tab_mvt",
+        label: "Derniers Mouvements",
+        type: "table",
+        table: {
+          columns: ["Réf Écriture", "Date Valeur", "Libellé Opération", "Débit (XOF)", "Crédit (XOF)"],
+          rows: [
+            ["MVT-2026-0901", "26/09/2026", "VIREMENT COMMERCIAL EMIS", "4,500,000.00", "-"],
+            ["MVT-2026-0902", "25/09/2026", "REMISE CHEQUE BANQUE NATIONALE", "-", "12,000,000.00"],
+            ["MVT-2026-0903", "25/09/2026", "PRELEVEMENT COMMISSION TRIMESTRIELLE", "125,000.00", "-"],
+            ["MVT-2026-0904", "24/09/2026", "REGLEMENT FACTURE TELECOM", "340,000.00", "-"]
+          ]
+        }
+      },
+      {
+        id: "tab_params",
+        label: "Paramètres & Sécurité",
+        type: "form",
+        fields: [
+          { label: "Devise Tenue", value: "XOF - Franc CFA", tag: "c01" },
+          { label: "Type Produit", value: "COMPTE COURANT COMMERCIAL", tag: "c02" },
+          { label: "Contrôle Double Visa", value: "OUI (Seuil > 5M XOF)", tag: "c03" },
+          { label: "Mode Clôture EOD", value: "AUTOMATIQUE BATCH JOUR", tag: "c04" }
+        ]
+      }
+    ],
+    actions: [
+      { label: "Valider (F10)", keyShortcut: "F10", style: "primary", icon: "✓" },
+      { label: "Nouveau (F2)", keyShortcut: "F2", style: "secondary", icon: "➕" },
+      { label: "Export Excel", keyShortcut: "Ctrl+E", style: "secondary", icon: "📊" },
+      { label: "Imprimer (Ctrl+P)", keyShortcut: "Ctrl+P", style: "secondary", icon: "🖨️" },
+      { label: "Fermer (ESC)", keyShortcut: "ESC", style: "danger", icon: "✕" }
+    ],
+    statusBar: {
+      user: "OPR_AG01",
+      agency: "01001 (DAKAR CENTRAL)",
+      accountingDate: "26/09/2026",
+      environment: "Amplitude v11.x - Genero GWC/GDC Runtime"
+    }
+  };
+}
+
+/**
  * 2. Générateur automatique d'écran .per à partir d'un besoin fonctionnel
  */
 export function generateCustomPerScreen(params: {
@@ -122,9 +770,13 @@ export function generateCustomPerScreen(params: {
   description: string;
   domain?: string;
   screenLayoutType?: CbsPerScreenLayoutType;
+  syntaxMode?: CbsPerSyntaxMode;
+  schemaHeaderType?: CbsPerSchemaHeader;
 }): CustomPerScreen {
   const { title, description } = params;
   const domain = params.domain || "Comptes & Guichet";
+  const syntaxMode: CbsPerSyntaxMode = params.syntaxMode || "GUI_GENERO";
+  const schemaHeaderType: CbsPerSchemaHeader = params.schemaHeaderType || "SCHEMA";
   const layoutType: CbsPerScreenLayoutType = params.screenLayoutType || (
     description.toLowerCase().includes("tableau") || description.toLowerCase().includes("liste") || description.toLowerCase().includes("grille")
       ? "TABLE_ARRAY"
@@ -196,8 +848,13 @@ export function generateCustomPerScreen(params: {
   let perSourceCode = "";
   let visualMockup = "";
   let fourGlSource = "";
+  const guiMockupData = buildGuiMockupData(title, domain, primary, fieldsConfig, layoutType);
 
-  if (layoutType === "TABLE_ARRAY") {
+  if (syntaxMode === "GUI_GENERO") {
+    perSourceCode = buildGuiGeneroPerCode(title, primary, secondary, fieldsConfig, layoutType, schemaHeaderType);
+    fourGlSource = buildGuiGenero4GlCode(title, primary, fieldsConfig, layoutType, baseName, schemaHeaderType);
+    visualMockup = buildGuiTerminalAscii(title, primary, layoutType);
+  } else if (layoutType === "TABLE_ARRAY") {
     // Mode tableau défilant (SCREEN RECORD)
     perSourceCode = `DATABASE amplitude_db
 
@@ -996,6 +1653,9 @@ END MAIN`;
     perSourceCode,
     fourGlSourceCode: fourGlSource,
     terminalMockup: visualMockup,
+    guiMockupData,
+    syntaxMode,
+    schemaHeaderType,
     fieldsConfig,
     screenLayoutType: layoutType,
     createdAt: now.toISOString(),

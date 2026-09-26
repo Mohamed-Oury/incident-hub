@@ -3,7 +3,7 @@ import { Cbs4GlResource } from "./cbs-4gl-data";
 
 export interface Cbs4GlPerScreenCourse {
   id: string;
-  level: "DEBUTANT" | "INTERMEDIAIRE" | "AVANCE" | "EXPERT";
+  level: "DEBUTANT" | "INTERMEDIAIRE" | "AVANCE" | "EXPERT" | "IHM_GRAPHIQUE";
   levelOrder: number;
   title: string;
   summary: string;
@@ -11,6 +11,8 @@ export interface Cbs4GlPerScreenCourse {
   perSourceCode: string;
   fourGlSourceCode: string;
   terminalMockup: string;
+  guiMockup?: string;
+  isGuiModern?: boolean;
   detailedAnalysis: string;
   keyDirectives: { directive: string; role: string; example: string }[];
   goldenRules: string[];
@@ -672,6 +674,242 @@ END FUNCTION`,
         type: "GUIDE_TECHNIQUE",
         urlOrRef: "AIX-TERM-WAN-OPTIM",
         description: "Optimisation des buffers terminfo, réduction du jitter et compression des trames d'affichage VT100."
+      }
+    ]
+  },
+
+  // =========================================================================
+  // NIVEAU 5 : IHM GRAPHIQUE MODERNE (GENERO BDL, SCHEMA, LAYOUT, HBOX, VBOX, GRID)
+  // =========================================================================
+  {
+    id: "per_gui_05",
+    level: "IHM_GRAPHIQUE",
+    levelOrder: 5,
+    title: "5. IHM Graphique Moderne Genero (SCHEMA, LAYOUT, GRID, HBOX, VBOX, FOLDER, TABLE)",
+    summary: "Concevez des écrans graphiques riches (Desktop GDC & Web GWC) : SCHEMA logique, conteneurs dynamiques HBOX/VBOX, grilles GRID et tables TABLE avec double-clic.",
+    isGuiModern: true,
+    objectives: [
+      "Employer systématiquement la directive SCHEMA plutôt que DATABASE pour découpler la compilation des instances physiques",
+      "Organiser l'IHM avec des conteneurs responsives modernes : LAYOUT, VBOX, HBOX (SPLITTER) et GRID",
+      "Structurer la navigation multi-vues via FOLDER et PAGE (onglets graphiques)",
+      "Définir des composants TABLE avec double-clic interactif (DOUBLECLICK) et colonnes redimensionnables",
+      "Compiler en binaire .42f exécutable avec le client lourd GDC ou le client Web GWC d'Amplitude"
+    ],
+    perSourceCode: `SCHEMA amplitude_db
+
+LAYOUT (TEXT = "Banque Amplitude - Fiche 360° Client & Soldes Temps Réel", STYLE = "main_window")
+VBOX
+  GRID
+  {
+  Code Agence : [f001 ]               Date Système : [f002      ]
+  Numéro Cpt  : [f003       ]         Statut Compte: [f004] [lib_statut        ]
+  }
+  END -- GRID
+
+  HBOX (SPLITTER)
+    GRID
+    {
+    <G "Informations Tiers & KYC"                                                >
+    Code Client : [f005      ]  Type Tiers : [f006 ]
+    Raison/Nom  : [f007                                                        ]
+    Nationalité : [f008 ]       Segment    : [f009           ]
+    }
+    END -- GRID
+
+    GRID
+    {
+    <G "Synthèse Soldes & Risques (XOF)"                                        >
+    Solde Comptable  : [f010               ]
+    Montant Bloqué   : [f011               ]
+    Disponible Réel  : [f012               ]
+    Autorisation Dév.: [f013               ]
+    }
+    END -- GRID
+  END -- HBOX
+
+  FOLDER
+    PAGE tab_mvt (TEXT = "Derniers Mouvements Bancaires")
+      TABLE (DOUBLECLICK = detail_mouvement)
+      {
+      Réf Écriture    Date Val.    Libellé Opération                   Débit          Crédit
+      [t01          ] [t02       ] [t03                              ] [t04         ] [t05         ]
+      [t01          ] [t02       ] [t03                              ] [t04         ] [t05         ]
+      [t01          ] [t02       ] [t03                              ] [t04         ] [t05         ]
+      }
+      END -- TABLE
+    END -- PAGE
+
+    PAGE tab_cards (TEXT = "Cartes & Moyens de Paiement")
+      GRID
+      {
+      PAN Porteur     : [c01                 ] Type Carte : [c02        ]
+      Date Expiration : [c03  ] Statut : [c04      ] Plafond Retrait : [c05        ]
+      }
+      END -- GRID
+    END -- PAGE
+  END -- FOLDER
+END -- VBOX
+
+TABLES
+  bkcpt
+  bkcli
+
+ATTRIBUTES
+  f001 = bkcpt.age, UPSHIFT, STYLE = "mandatory", COMMENTS = "Code agence 5 caractères";
+  f002 = FORMONLY.dco_ecran TYPE DATE, DEFAULT = TODAY, NOENTRY;
+  f003 = bkcpt.ncp, PICTURE = "###########", REQUIRED, STYLE = "account_no";
+  f004 = bkcpt.eta, UPSHIFT, INCLUDE = ("A", "F", "D", "B");
+  lib_statut = FORMONLY.lib_eta TYPE VARCHAR(20), NOENTRY, STYLE = "badge_active";
+  f005 = bkcli.cli, NOENTRY;
+  f006 = bkcli.typ, NOENTRY;
+  f007 = bkcli.nom, NOENTRY, STYLE = "bold_label";
+  f008 = bkcli.nat, NOENTRY;
+  f009 = FORMONLY.segment_client TYPE VARCHAR(20), NOENTRY;
+  f010 = bkcpt.sol, FORMAT = "---,---,---,##&.&&", NOENTRY;
+  f011 = bkcpt.sind, FORMAT = "---,---,---,##&.&&", NOENTRY;
+  f012 = FORMONLY.solde_dispo TYPE DECIMAL(19,4), FORMAT = "---,---,---,##&.&&", NOENTRY, STYLE = "kpi_positive";
+  f013 = FORMONLY.aut_decouvert TYPE DECIMAL(16,2), FORMAT = "---,---,---,##&.&&", NOENTRY;
+
+  t01  = FORMONLY.ref_mvt TYPE CHAR(14), NOENTRY;
+  t02  = FORMONLY.dat_val TYPE DATE, NOENTRY;
+  t03  = FORMONLY.lib_mvt TYPE VARCHAR(35), NOENTRY;
+  t04  = FORMONLY.mnt_deb TYPE DECIMAL(14,2), FORMAT = "---,---,--&.&&", NOENTRY;
+  t05  = FORMONLY.mnt_cre TYPE DECIMAL(14,2), FORMAT = "---,---,--&.&&", NOENTRY;
+
+  c01  = FORMONLY.pan_masque TYPE CHAR(19), NOENTRY;
+  c02  = FORMONLY.card_type TYPE VARCHAR(15), NOENTRY;
+  c03  = FORMONLY.exp_date TYPE CHAR(5), NOENTRY;
+  c04  = FORMONLY.card_status TYPE VARCHAR(12), NOENTRY;
+  c05  = FORMONLY.card_plafond TYPE DECIMAL(12,2), FORMAT = "---,---,--&.&&", NOENTRY;
+
+INSTRUCTIONS
+  SCREEN RECORD s_mvt (ref_mvt, dat_val, lib_mvt, mnt_deb, mnt_cre)
+END`,
+    fourGlSourceCode: `###############################################################################
+# Programme Genero BDL moderne pour IHM Graphique : cpt_consult_gui.4gl
+###############################################################################
+SCHEMA amplitude_db
+
+DEFINE g_rec RECORD LIKE bkcpt.*,
+       g_cli RECORD LIKE bkcli.*,
+       g_mvt DYNAMIC ARRAY OF RECORD
+           ref_mvt  CHAR(14),
+           dat_val  DATE,
+           lib_mvt  VARCHAR(35),
+           mnt_deb  DECIMAL(14,2),
+           mnt_cre  DECIMAL(14,2)
+       END RECORD
+
+MAIN
+    -- Chargement du profil d'actions graphiques (barre d'outils, raccourcis)
+    CALL ui.Interface.loadActionDefaults("amplitude_actions")
+    
+    OPEN FORM f_gui FROM "cpt_consult_gui"
+    DISPLAY FORM f_gui
+
+    -- Saisie interactive via la boucle événementielle moderne DIALOG (multi-interactions)
+    DIALOG ATTRIBUTES(UNBUFFERED)
+        INPUT BY NAME g_rec.age, g_rec.ncp
+            AFTER FIELD ncp
+                CALL charger_dossier_client(g_rec.age, g_rec.ncp)
+                CALL charger_mouvements(g_rec.age, g_rec.ncp)
+                DISPLAY ARRAY g_mvt TO s_mvt.*
+        END INPUT
+
+        DISPLAY ARRAY g_mvt TO s_mvt.*
+            ON ACTION detail_mouvement
+                CALL afficher_zoom_ecriture(g_mvt[ARR_CURR()].ref_mvt)
+        END DISPLAY
+
+        ON ACTION export_excel
+            CALL exporter_grille_vers_calc(g_rec.ncp)
+
+        ON ACTION imprimer_releve
+            CALL generer_pdf_releve(g_rec.age, g_rec.ncp)
+
+        ON ACTION close
+            EXIT DIALOG
+    END DIALOG
+
+    CLOSE FORM f_gui
+END MAIN`,
+    terminalMockup: `+------------------------------------------------------------------------------+
+| [GUI CLIENT WEB/GDC] BANQUE AMPLITUDE - FICHE 360° CLIENT & SOLDES           |
++------------------------------------------------------------------------------+
+  [VBOX: En-tête Agence & Compte]
+  Agence : [01001]                     Date Système : [26/09/2026]
+  Compte : [01001009845]               Statut       : [A] [ACTIF / NORMAL   ]
+  +-------------------------------------+--------------------------------------+
+  | [HBOX Gauche: Tiers & KYC]          | [HBOX Droite: Soldes & Risques]      |
+  | Client : [CLI-008472]  (Particulier)| Solde Comptable : [   14,850,000.00] |
+  | Nom    : [DIOP AMADOU MAMADOU     ] | Montant Bloqué  : [      350,000.00] |
+  | Pays   : [SN] SÉNÉGAL               | Disponible Réel : [   14,500,000.00] |
+  | Segment: [PREMIUM PRIVATE BANK    ] | Aut. Découvert  : [    2,000,000.00] |
+  +-------------------------------------+--------------------------------------+
+  [FOLDER: Onglets Graphiques]
+  ===[ Page 1: Derniers Mouvements ]=== ( Page 2: Cartes & Moyens de Paiement )
+  +-------------+------------+----------------------------------+-------------+
+  | Réf Mvt     | Date Val.  | Libellé Écriture                 | Débit / Cr. |
+  +-------------+------------+----------------------------------+-------------+
+  | MVT-2609-01 | 26/09/2026 | VIREMENT REÇU SALAIRE MENSUEL    | +850,000.00 |
+  | MVT-2609-02 | 25/09/2026 | RETRAIT GAB AGENCE CENTRALE      |  -70,000.00 |
+  | MVT-2609-03 | 24/09/2026 | PAIEMENT TPE HYPERMARCHE DAKAR   |  -42,300.00 |
+  +-------------+------------+----------------------------------+-------------+
+  [Boutons d'action GUI] : [Export Excel] [Imprimer Relevé] [Aide F1] [Fermer]`,
+    detailedAnalysis: `Dans les environnements modernes Amplitude CBS propulsés par Four Js Genero (BDL) :
+1. Supériorité de SCHEMA sur DATABASE :
+   - 'DATABASE nom_base' exigeait la présence physique d'une base active du même nom lors de la compilation avec 'form4gl'.
+   - 'SCHEMA nom_schema' utilise un schéma extrait au format XML/schéma logique, permettant de compiler le masque .per sur n'importe quel serveur ou conteneur CI/CD sans dépendre d'une instance de base active. Le binaire .42f devient totalement portable entre les environnements DEV, HOMOLOGATION et PRODUCTION.
+2. Conteneurs d'agencement Graphique (LAYOUT, VBOX, HBOX, GRID) :
+   - VBOX (Vertical Box) : empile les sections les unes sous les autres. En redimensionnant la fenêtre, les sections s'adaptent automatiquement sans déborder.
+   - HBOX (Horizontal Box) : dispose deux ou plusieurs panneaux côte à côte. Avec l'option (SPLITTER), l'utilisateur final peut déplacer la barre de séparation pour agrandir la vue de son choix.
+   - GRID : aligne les étiquettes et les champs sous forme de grille adaptative, supprimant le besoin de compter les coordonnées (lignes/colonnes) des anciens écrans terminaux 80x24.
+3. Composants d'enrichissement GUI (FOLDER, PAGE, TABLE) :
+   - FOLDER et PAGE matérialisent des onglets cliquables natifs permettant d'organiser une multitude de données sans surcharger l'écran.
+   - TABLE remplace les blocs d'itérations SCREEN RECORD par un vrai composant de grille avec en-têtes cliquables pour le tri, redimensionnement des colonnes et événement DOUBLECLICK.`,
+    keyDirectives: [
+      { directive: "SCHEMA nom_schema", role: "Spécifie le schéma logique de données sans exiger de connexion SGBD physique à la compilation", example: "SCHEMA amplitude_db" },
+      { directive: "LAYOUT (TEXT = \"...\", STYLE = \"...\")", role: "Conteneur racine pour la définition d'un formulaire graphique Genero", example: "LAYOUT (TEXT = \"Gestion de Caisse\", STYLE = \"main_win\")" },
+      { directive: "VBOX / END -- VBOX", role: "Conteneur d'empilement vertical automatique", example: "VBOX ... END" },
+      { directive: "HBOX (SPLITTER) / END", role: "Conteneur de disposition horizontale avec séparateur ajustable", example: "HBOX (SPLITTER) ... END" },
+      { directive: "GRID / END -- GRID", role: "Grille tabulaire adaptative pour aligner labels et champs", example: "GRID ... END" },
+      { directive: "FOLDER / PAGE ... END", role: "Gestionnaire d'onglets graphiques avec libellés", example: "FOLDER PAGE tab1 (TEXT=\"Infos\") ... END FOLDER" },
+      { directive: "TABLE (DOUBLECLICK = action)", role: "Grille graphique riche avec gestion du double-clic utilisateur", example: "TABLE (DOUBLECLICK = zoom_row) ... END" }
+    ],
+    goldenRules: [
+      "Préférer toujours 'SCHEMA' à 'DATABASE' pour garantir la portabilité des binaires compilés .42f sur l'ensemble des environnements bancaires.",
+      "Ne plus fixer de dimensions rigides 80x24 quand l'écran est destiné au client graphique : utiliser les conteneurs VBOX et HBOX.",
+      "Associer des styles sémantiques (STYLE=\"mandatory\", STYLE=\"kpi_positive\") pour tirer parti des thèmes graphiques GDC/GWC d'Amplitude.",
+      "Utiliser la structure événementielle DIALOG en 4GL moderne pour gérer simultanément la saisie d'en-tête et le tableau dans une seule boucle unifiée."
+    ],
+    compilationAndRuntime: {
+      commandAix: "fglform -M ecran_gui.per  # Compilateur Genero Form produisant le binaire graphique .42f",
+      generatedBinary: "ecran_gui.42f (binaire graphique Genero)",
+      environmentVariables: [
+        "$FGLPROFILE : Configuration de l'interface graphique et styles Genero",
+        "$FGLGUI : Forçage du mode graphique (1) vs mode texte (0)",
+        "$FGLDIR : Répertoire racine du runtime Four Js Genero"
+      ],
+      troubleshooting: "Erreur -8412 : Erreur de syntaxe dans l'imbrication des conteneurs LAYOUT / VBOX / HBOX / GRID. Vérifier que chaque conteneur possède son END correspondant."
+    },
+    resources: [
+      {
+        title: "Manuel de Référence des Formulaires Graphiques Four Js Genero BDL",
+        type: "MANUEL_INFORMIX",
+        urlOrRef: "FOURJS-GENERO-FORMS-LAYOUT",
+        description: "Documentation officielle complète de la syntaxe LAYOUT, VBOX, HBOX, GRID, FOLDER et TABLE."
+      },
+      {
+        title: "Guide de Migration des Masques Informix 4GL vers Genero GUI (Amplitude)",
+        type: "GUIDE_TECHNIQUE",
+        urlOrRef: "AMPLITUDE-MIGRATION-4GL-TO-GUI",
+        description: "Règles de passage de DATABASE à SCHEMA et transformation des SCREEN records en composants graphiques."
+      },
+      {
+        title: "Architecture Événementielle DIALOG & Actions Graphiques Genero",
+        type: "MANUEL_INFORMIX",
+        urlOrRef: "GENERO-DIALOG-MULTI-INPUT",
+        description: "Contrôle unifié des interactions multi-dialogues et liaisons avec l'IHM Web / Desktop."
       }
     ]
   }

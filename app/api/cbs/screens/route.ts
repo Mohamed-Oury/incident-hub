@@ -93,7 +93,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { action, description, title, domain, screenLayoutType, screen } = body;
+    const { action, description, title, domain, screenLayoutType, syntaxMode, schemaHeaderType, screen } = body;
 
     // 1. Action : Génération automatique à partir de la description
     if (action === "GENERATE") {
@@ -105,6 +105,8 @@ export async function POST(request: Request) {
         description,
         domain: domain || "Comptes & Guichet",
         screenLayoutType,
+        syntaxMode,
+        schemaHeaderType,
       });
       return NextResponse.json({ success: true, screen: generated });
     }

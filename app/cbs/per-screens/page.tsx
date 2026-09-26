@@ -6,10 +6,11 @@ import {
   CBS_4GL_PER_COURSES,
   Cbs4GlPerScreenCourse
 } from "@/modules/cbs/cbs-4gl-per-screens-data";
+import { GeneroGuiWindow } from "@/modules/cbs/GeneroGuiWindow";
 
 export default function PerScreensPage() {
   const [selectedPerCourse, setSelectedPerCourse] = useState<Cbs4GlPerScreenCourse>(CBS_4GL_PER_COURSES[0]);
-  const [activePerSubTab, setActivePerSubTab] = useState<"per" | "4gl" | "terminal" | "directives">("per");
+  const [activePerSubTab, setActivePerSubTab] = useState<"gui" | "per" | "4gl" | "terminal" | "directives">("gui");
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
 
   const handleCopy = (code: string, id: string) => {
@@ -51,7 +52,7 @@ export default function PerScreensPage() {
               Cursus Spécialiste : Conception & Maîtrise des Écrans Form-4GL (.per)
             </h2>
             <p style={{ fontSize: "13px", color: "#a7f3d0", maxWidth: "750px", lineHeight: "1.5", margin: 0 }}>
-              Dans les systèmes bancaires sous Unix / AIX (ex: Amplitude Core Banking), les masques d&apos;écran <code>.per</code> sont compilés avec <code>form4gl</code> en fichiers <code>.frm</code>. Découvrez la structure complète (DATABASE, SCREEN, TABLES, ATTRIBUTES, INSTRUCTIONS) du niveau débutant au niveau expert.
+              Découvrez la structure complète des écrans bancaires : du mode caractère terminal classique (VT100 80x24 avec <code>DATABASE</code> & <code>SCREEN</code>) à l&apos;IHM Graphique moderne Four Js Genero (<code>SCHEMA</code>, <code>LAYOUT</code>, <code>GRID</code>, <code>HBOX</code>, <code>VBOX</code>, <code>FOLDER</code>, <code>TABLE</code>) pour clients Desktop GDC et Web GWC d&apos;Amplitude.
             </p>
           </div>
           <div style={{
@@ -68,10 +69,10 @@ export default function PerScreensPage() {
           </div>
         </div>
 
-        {/* SÉLECTEUR DE NIVEAU (4 NIVEAUX DE FORMATION) */}
+        {/* SÉLECTEUR DE NIVEAU (5 NIVEAUX DE FORMATION) */}
         <div style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+          gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
           gap: "14px"
         }}>
           {CBS_4GL_PER_COURSES.map((course) => {
@@ -110,10 +111,10 @@ export default function PerScreensPage() {
                   <span style={{
                     fontSize: "12px",
                     color: isSelected ? "#6ee7b7" : "#94a3b8",
-                    fontWeight: isSelected ? 800 : 500,
+                    fontWeight: 800,
                     fontFamily: "monospace"
                   }}>
-                    Niveau {course.levelOrder}/4
+                    Niveau {course.levelOrder}/5
                   </span>
                 </div>
                 <div style={{
@@ -243,7 +244,26 @@ export default function PerScreensPage() {
           </div>
 
           {/* SOUS-ONGLETS DE VUE DU CODE ET DU RENDU */}
-          <div style={{ display: "flex", gap: "8px", borderBottom: "1px solid #334155", paddingBottom: "12px" }}>
+          <div style={{ display: "flex", gap: "8px", borderBottom: "1px solid #334155", paddingBottom: "12px", flexWrap: "wrap" }}>
+            <button
+              onClick={() => setActivePerSubTab("gui")}
+              style={{
+                padding: "6px 14px",
+                borderRadius: "6px",
+                fontSize: "12px",
+                fontWeight: 800,
+                border: activePerSubTab === "gui" ? "2px solid #34d399" : "1px solid #334155",
+                background: activePerSubTab === "gui" ? "#064e3b" : "#1e293b",
+                color: activePerSubTab === "gui" ? "#34d399" : "#94a3b8",
+                boxShadow: activePerSubTab === "gui" ? "0 2px 10px rgba(16, 185, 129, 0.4)" : "none",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px"
+              }}
+            >
+              <span>🖥️</span> Rendu IHM Graphique (Client Web / GDC)
+            </button>
             <button
               onClick={() => setActivePerSubTab("per")}
               style={{
@@ -287,7 +307,7 @@ export default function PerScreensPage() {
                 cursor: "pointer"
               }}
             >
-              🖥️ Rendu Terminal VT100
+              📟 Rendu Terminal VT100
             </button>
             <button
               onClick={() => setActivePerSubTab("directives")}
@@ -305,6 +325,21 @@ export default function PerScreensPage() {
               💡 Guide & Analyse Détaillée
             </button>
           </div>
+
+          {/* VUE 0 : RENDU IHM GRAPHIQUE MODERNE (GENERO GDC / WEB) */}
+          {activePerSubTab === "gui" && (
+            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "8px" }}>
+                <span style={{ fontSize: "12px", color: "#34d399", fontWeight: 700 }}>
+                  Aperçu IHM Graphique Genero (Four Js / Amplitude Desktop GDC & Web GWC)
+                </span>
+                <span style={{ fontSize: "11px", color: "#38bdf8", fontWeight: 600 }}>
+                  Architecture Conteneurs : SCHEMA • LAYOUT • VBOX • HBOX (SPLITTER) • GRID • TABLE
+                </span>
+              </div>
+              <GeneroGuiWindow title={selectedPerCourse.title} />
+            </div>
+          )}
 
           {/* VUE 1 : CODE SOURCE DU .PER */}
           {activePerSubTab === "per" && (

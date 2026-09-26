@@ -5,14 +5,20 @@ import { AppShell } from "@/modules/layout/AppShell";
 import {
   CustomPerScreen,
   CbsPerScreenLayoutType,
+  CbsPerSyntaxMode,
+  CbsPerSchemaHeader,
   generateCustomPerScreen
 } from "@/modules/cbs/cbs-screen-builder";
+import { GeneroGuiWindow } from "@/modules/cbs/GeneroGuiWindow";
 
 export default function PerStudioPage() {
   const [studioPrompt, setStudioPrompt] = useState<string>("");
   const [studioTitle, setStudioTitle] = useState<string>("Écran Consultation Guichet & Soldes");
   const [studioDomain, setStudioDomain] = useState<string>("Comptes & Guichet");
   const [studioLayoutType, setStudioLayoutType] = useState<CbsPerScreenLayoutType>("STANDARD_FORM");
+  const [studioSyntaxMode, setStudioSyntaxMode] = useState<CbsPerSyntaxMode>("GUI_GENERO");
+  const [studioSchemaHeader, setStudioSchemaHeader] = useState<CbsPerSchemaHeader>("SCHEMA");
+  const [activeStudioPreviewTab, setActiveStudioPreviewTab] = useState<"gui" | "per" | "4gl" | "terminal" | "fields">("gui");
   const [currentCustomScreen, setCurrentCustomScreen] = useState<CustomPerScreen | null>(null);
   const [savedScreensList, setSavedScreensList] = useState<CustomPerScreen[]>([]);
   const [isGeneratingScreen, setIsGeneratingScreen] = useState<boolean>(false);
@@ -57,6 +63,8 @@ export default function PerStudioPage() {
           description: studioPrompt,
           domain: studioDomain,
           screenLayoutType: studioLayoutType,
+          syntaxMode: studioSyntaxMode,
+          schemaHeaderType: studioSchemaHeader,
         }),
       });
 
@@ -64,6 +72,7 @@ export default function PerStudioPage() {
         const data = await res.json();
         if (data.screen) {
           setCurrentCustomScreen(data.screen);
+          setActiveStudioPreviewTab("gui");
           setStudioStatusMessage("✓ Écran généré avec succès ! Vous pouvez le modifier et le sauvegarder en base.");
         }
       } else {
@@ -72,8 +81,11 @@ export default function PerStudioPage() {
           description: studioPrompt,
           domain: studioDomain,
           screenLayoutType: studioLayoutType,
+          syntaxMode: studioSyntaxMode,
+          schemaHeaderType: studioSchemaHeader,
         });
         setCurrentCustomScreen(localGenerated);
+        setActiveStudioPreviewTab("gui");
         setStudioStatusMessage("✓ Écran généré avec succès (moteur local) !");
       }
     } catch (_) {
@@ -82,8 +94,11 @@ export default function PerStudioPage() {
         description: studioPrompt,
         domain: studioDomain,
         screenLayoutType: studioLayoutType,
+        syntaxMode: studioSyntaxMode,
+        schemaHeaderType: studioSchemaHeader,
       });
       setCurrentCustomScreen(localGenerated);
+      setActiveStudioPreviewTab("gui");
       setStudioStatusMessage("✓ Écran généré avec succès !");
     } finally {
       setIsGeneratingScreen(false);
@@ -332,6 +347,127 @@ export default function PerStudioPage() {
                 </div>
               </div>
 
+              {/* SÉLECTEUR DE MODE SYNTAXE & EN-TÊTE FORM-4GL */}
+              <div style={{
+                background: "#0f172a",
+                border: "1px solid #334155",
+                borderRadius: "8px",
+                padding: "14px 16px",
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+                gap: "14px"
+              }}>
+                <div>
+                  <label style={{ display: "block", fontSize: "12px", color: "#38bdf8", marginBottom: "6px", fontWeight: 700 }}>
+                    Architecture & Rendu Form
+                  </label>
+                  <div style={{ display: "flex", gap: "8px" }}>
+                    <button
+                      type="button"
+                      onClick={() => setStudioSyntaxMode("GUI_GENERO")}
+                      style={{
+                        flex: 1,
+                        padding: "8px 10px",
+                        borderRadius: "6px",
+                        fontSize: "12px",
+                        fontWeight: 700,
+                        cursor: "pointer",
+                        border: studioSyntaxMode === "GUI_GENERO" ? "1px solid #10b981" : "1px solid #334155",
+                        background: studioSyntaxMode === "GUI_GENERO" ? "#064e3b" : "#1e293b",
+                        color: studioSyntaxMode === "GUI_GENERO" ? "#34d399" : "#94a3b8",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "6px"
+                      }}
+                    >
+                      <span>🖥️</span> IHM Graphique Genero
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setStudioSyntaxMode("TERMINAL_LEGACY")}
+                      style={{
+                        flex: 1,
+                        padding: "8px 10px",
+                        borderRadius: "6px",
+                        fontSize: "12px",
+                        fontWeight: 700,
+                        cursor: "pointer",
+                        border: studioSyntaxMode === "TERMINAL_LEGACY" ? "1px solid #f59e0b" : "1px solid #334155",
+                        background: studioSyntaxMode === "TERMINAL_LEGACY" ? "#78350f" : "#1e293b",
+                        color: studioSyntaxMode === "TERMINAL_LEGACY" ? "#fcd34d" : "#94a3b8",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "6px"
+                      }}
+                    >
+                      <span>📟</span> Terminal VT100
+                    </button>
+                  </div>
+                  <div style={{ fontSize: "11px", color: "#64748b", marginTop: "5px" }}>
+                    {studioSyntaxMode === "GUI_GENERO"
+                      ? "✓ Utilise LAYOUT, VBOX, HBOX (SPLITTER), GRID, FOLDER, TABLE"
+                      : "✓ Utilise la grille fixe ASCII 80x24 et la section SCREEN standard"}
+                  </div>
+                </div>
+
+                <div>
+                  <label style={{ display: "block", fontSize: "12px", color: "#34d399", marginBottom: "6px", fontWeight: 700 }}>
+                    Directive d&apos;En-tête de Schéma
+                  </label>
+                  <div style={{ display: "flex", gap: "8px" }}>
+                    <button
+                      type="button"
+                      onClick={() => setStudioSchemaHeader("SCHEMA")}
+                      style={{
+                        flex: 1,
+                        padding: "8px 10px",
+                        borderRadius: "6px",
+                        fontSize: "12px",
+                        fontWeight: 700,
+                        cursor: "pointer",
+                        border: studioSchemaHeader === "SCHEMA" ? "1px solid #10b981" : "1px solid #334155",
+                        background: studioSchemaHeader === "SCHEMA" ? "#064e3b" : "#1e293b",
+                        color: studioSchemaHeader === "SCHEMA" ? "#34d399" : "#94a3b8",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "6px"
+                      }}
+                    >
+                      <span>SCHEMA</span> (Amplitude)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setStudioSchemaHeader("DATABASE")}
+                      style={{
+                        flex: 1,
+                        padding: "8px 10px",
+                        borderRadius: "6px",
+                        fontSize: "12px",
+                        fontWeight: 700,
+                        cursor: "pointer",
+                        border: studioSchemaHeader === "DATABASE" ? "1px solid #475569" : "1px solid #334155",
+                        background: studioSchemaHeader === "DATABASE" ? "#334155" : "#1e293b",
+                        color: studioSchemaHeader === "DATABASE" ? "#f1f5f9" : "#94a3b8",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "6px"
+                      }}
+                    >
+                      <span>DATABASE</span> (Informix Legacy)
+                    </button>
+                  </div>
+                  <div style={{ fontSize: "11px", color: "#64748b", marginTop: "5px" }}>
+                    {studioSchemaHeader === "SCHEMA"
+                      ? "✓ Découplage de compilation garanti sans connexion SGBD active"
+                      : "Exige la présence physique de la base lors du form4gl"}
+                  </div>
+                </div>
+              </div>
+
               <div>
                 <label style={{ display: "block", fontSize: "12px", color: "#94a3b8", marginBottom: "6px", fontWeight: 600 }}>
                   Description libre de votre besoin (champs souhaités, règles de gestion, contrôles obligatoires, montants...)
@@ -530,88 +666,236 @@ export default function PerStudioPage() {
                   </div>
                 </div>
 
-                {/* ZONE D'ÉDITION DU CODE .PER */}
-                <div>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
-                    <label style={{ fontSize: "13px", fontWeight: 700, color: "#34d399", display: "flex", alignItems: "center", gap: "6px" }}>
-                      <span>📄</span> Masque Form-4GL (.per) — Entièrement Éditable
-                    </label>
-                    <span style={{ fontSize: "11px", color: "#64748b" }}>
-                      Modifiez directement les libellés, champs ou directives ci-dessous
-                    </span>
-                  </div>
-                  <textarea
-                    rows={16}
-                    value={currentCustomScreen.perSourceCode}
-                    onChange={(e) => setCurrentCustomScreen({ ...currentCustomScreen, perSourceCode: e.target.value })}
+                {/* BARRE D'ONGLETS DE PRÉVISUALISATION ET ÉDITION */}
+                <div style={{ display: "flex", gap: "8px", borderBottom: "1px solid #334155", paddingBottom: "12px", flexWrap: "wrap" }}>
+                  <button
+                    type="button"
+                    onClick={() => setActiveStudioPreviewTab("gui")}
                     style={{
-                      width: "100%",
-                      padding: "16px",
-                      borderRadius: "8px",
-                      background: "#020617",
-                      border: "1px solid #334155",
-                      color: "#e2e8f0",
-                      fontFamily: "Consolas, Monaco, 'Courier New', monospace",
-                      fontSize: "13px",
-                      lineHeight: "1.45"
+                      padding: "6px 14px",
+                      borderRadius: "6px",
+                      fontSize: "12px",
+                      fontWeight: 800,
+                      border: activeStudioPreviewTab === "gui" ? "2px solid #34d399" : "1px solid #334155",
+                      background: activeStudioPreviewTab === "gui" ? "#064e3b" : "#1e293b",
+                      color: activeStudioPreviewTab === "gui" ? "#34d399" : "#94a3b8",
+                      boxShadow: activeStudioPreviewTab === "gui" ? "0 2px 10px rgba(16, 185, 129, 0.4)" : "none",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "6px"
                     }}
-                  />
+                  >
+                    <span>🖥️</span> Rendu IHM Graphique (Client Web / GDC)
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setActiveStudioPreviewTab("per")}
+                    style={{
+                      padding: "6px 14px",
+                      borderRadius: "6px",
+                      fontSize: "12px",
+                      fontWeight: 700,
+                      border: activeStudioPreviewTab === "per" ? "1px solid #10b981" : "1px solid #334155",
+                      background: activeStudioPreviewTab === "per" ? "#064e3b" : "#1e293b",
+                      color: activeStudioPreviewTab === "per" ? "#34d399" : "#94a3b8",
+                      cursor: "pointer"
+                    }}
+                  >
+                    📄 Masque .per Éditable
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setActiveStudioPreviewTab("4gl")}
+                    style={{
+                      padding: "6px 14px",
+                      borderRadius: "6px",
+                      fontSize: "12px",
+                      fontWeight: 700,
+                      border: activeStudioPreviewTab === "4gl" ? "1px solid #38bdf8" : "1px solid #334155",
+                      background: activeStudioPreviewTab === "4gl" ? "#0c4a6e" : "#1e293b",
+                      color: activeStudioPreviewTab === "4gl" ? "#7dd3fc" : "#94a3b8",
+                      cursor: "pointer"
+                    }}
+                  >
+                    ⚙️ Programme 4GL Associé
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setActiveStudioPreviewTab("terminal")}
+                    style={{
+                      padding: "6px 14px",
+                      borderRadius: "6px",
+                      fontSize: "12px",
+                      fontWeight: 700,
+                      border: activeStudioPreviewTab === "terminal" ? "1px solid #f59e0b" : "1px solid #334155",
+                      background: activeStudioPreviewTab === "terminal" ? "#78350f" : "#1e293b",
+                      color: activeStudioPreviewTab === "terminal" ? "#fcd34d" : "#94a3b8",
+                      cursor: "pointer"
+                    }}
+                  >
+                    📟 Rendu Terminal VT100
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setActiveStudioPreviewTab("fields")}
+                    style={{
+                      padding: "6px 14px",
+                      borderRadius: "6px",
+                      fontSize: "12px",
+                      fontWeight: 700,
+                      border: activeStudioPreviewTab === "fields" ? "1px solid #a855f7" : "1px solid #334155",
+                      background: activeStudioPreviewTab === "fields" ? "#581c87" : "#1e293b",
+                      color: activeStudioPreviewTab === "fields" ? "#d8b4fe" : "#94a3b8",
+                      cursor: "pointer"
+                    }}
+                  >
+                    🔍 Champs & Dictionnaire ({currentCustomScreen.fieldsConfig?.length || 0})
+                  </button>
                 </div>
 
-                {/* APERÇU LIVE VT100 / TERMINAL BANCAIRE */}
-                <div>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
-                    <label style={{ fontSize: "13px", fontWeight: 700, color: "#f59e0b", display: "flex", alignItems: "center", gap: "6px" }}>
-                      <span>📺</span> Rendu Écran Terminal VT100 (Format Écran 80x24)
-                    </label>
-                    <span style={{ fontSize: "11px", color: "#94a3b8" }}>
-                      Aperçu fidèle de la compilation sous Unix
-                    </span>
+                {/* VUE 1 : RENDU IHM GRAPHIQUE GENERO GDC / WEB */}
+                {activeStudioPreviewTab === "gui" && (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "8px" }}>
+                      <span style={{ fontSize: "12px", color: "#34d399", fontWeight: 700 }}>
+                        Aperçu IHM Graphique Genero (Four Js / Amplitude Desktop GDC & Web GWC)
+                      </span>
+                      <span style={{ fontSize: "11px", color: "#38bdf8", fontWeight: 600 }}>
+                        Architecture Conteneurs : {currentCustomScreen.schemaHeaderType || "SCHEMA"} • LAYOUT • VBOX • HBOX (SPLITTER) • GRID • TABLE
+                      </span>
+                    </div>
+                    <GeneroGuiWindow data={currentCustomScreen.guiMockupData} title={currentCustomScreen.title} domain={currentCustomScreen.domain} />
                   </div>
-                  <pre style={{
-                    margin: 0,
-                    background: "#000000",
-                    border: "2px solid #334155",
-                    borderRadius: "8px",
-                    padding: "20px",
-                    color: "#4ade80",
-                    fontFamily: "'Courier New', Courier, monospace",
-                    fontSize: "13px",
-                    lineHeight: "1.3",
-                    overflowX: "auto",
-                    boxShadow: "inset 0 0 20px rgba(0, 255, 0, 0.05)"
-                  }}>
-                    {currentCustomScreen.terminalMockup}
-                  </pre>
-                </div>
+                )}
 
-                {/* SQUELETTE DE CODE 4GL DE PILOTAGE */}
-                <div>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
-                    <label style={{ fontSize: "13px", fontWeight: 700, color: "#38bdf8", display: "flex", alignItems: "center", gap: "6px" }}>
-                      <span>⚙️</span> Squelette Informix 4GL Associé (Contrôles, ON KEY, Saisie)
-                    </label>
-                    <span style={{ fontSize: "11px", color: "#64748b" }}>
-                      Modifiable avant intégration dans vos modules
-                    </span>
+                {/* VUE 2 : ZONE D'ÉDITION DU CODE .PER */}
+                {activeStudioPreviewTab === "per" && (
+                  <div>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                      <label style={{ fontSize: "13px", fontWeight: 700, color: "#34d399", display: "flex", alignItems: "center", gap: "6px" }}>
+                        <span>📄</span> Masque Form-4GL (.per) — Entièrement Éditable
+                      </label>
+                      <span style={{ fontSize: "11px", color: "#64748b" }}>
+                        Modifiez directement les libellés, champs ou directives ci-dessous
+                      </span>
+                    </div>
+                    <textarea
+                      rows={16}
+                      value={currentCustomScreen.perSourceCode}
+                      onChange={(e) => setCurrentCustomScreen({ ...currentCustomScreen, perSourceCode: e.target.value })}
+                      style={{
+                        width: "100%",
+                        padding: "16px",
+                        borderRadius: "8px",
+                        background: "#020617",
+                        border: "1px solid #334155",
+                        color: "#e2e8f0",
+                        fontFamily: "Consolas, Monaco, 'Courier New', monospace",
+                        fontSize: "13px",
+                        lineHeight: "1.45"
+                      }}
+                    />
                   </div>
-                  <textarea
-                    rows={12}
-                    value={currentCustomScreen.fourGlSourceCode}
-                    onChange={(e) => setCurrentCustomScreen({ ...currentCustomScreen, fourGlSourceCode: e.target.value })}
-                    style={{
-                      width: "100%",
-                      padding: "16px",
+                )}
+
+                {/* VUE 3 : RENDU TERMINAL VT100 */}
+                {activeStudioPreviewTab === "terminal" && (
+                  <div>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                      <label style={{ fontSize: "13px", fontWeight: 700, color: "#f59e0b", display: "flex", alignItems: "center", gap: "6px" }}>
+                        <span>📟</span> Rendu Écran Terminal VT100 (Format Écran 80x24)
+                      </label>
+                      <span style={{ fontSize: "11px", color: "#94a3b8" }}>
+                        Aperçu fidèle de la compilation sous Unix
+                      </span>
+                    </div>
+                    <pre style={{
+                      margin: 0,
+                      background: "#000000",
+                      border: "2px solid #334155",
                       borderRadius: "8px",
-                      background: "#020617",
-                      border: "1px solid #334155",
-                      color: "#7dd3fc",
-                      fontFamily: "Consolas, Monaco, 'Courier New', monospace",
+                      padding: "20px",
+                      color: "#4ade80",
+                      fontFamily: "'Courier New', Courier, monospace",
                       fontSize: "13px",
-                      lineHeight: "1.45"
-                    }}
-                  />
-                </div>
+                      lineHeight: "1.3",
+                      overflowX: "auto",
+                      boxShadow: "inset 0 0 20px rgba(0, 255, 0, 0.05)"
+                    }}>
+                      {currentCustomScreen.terminalMockup}
+                    </pre>
+                  </div>
+                )}
+
+                {/* VUE 4 : SQUELETTE DE CODE 4GL */}
+                {activeStudioPreviewTab === "4gl" && (
+                  <div>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                      <label style={{ fontSize: "13px", fontWeight: 700, color: "#38bdf8", display: "flex", alignItems: "center", gap: "6px" }}>
+                        <span>⚙️</span> Squelette Informix 4GL Associé (Contrôles, DIALOG, Saisie)
+                      </label>
+                      <span style={{ fontSize: "11px", color: "#64748b" }}>
+                        Modifiable avant intégration dans vos modules
+                      </span>
+                    </div>
+                    <textarea
+                      rows={14}
+                      value={currentCustomScreen.fourGlSourceCode}
+                      onChange={(e) => setCurrentCustomScreen({ ...currentCustomScreen, fourGlSourceCode: e.target.value })}
+                      style={{
+                        width: "100%",
+                        padding: "16px",
+                        borderRadius: "8px",
+                        background: "#020617",
+                        border: "1px solid #334155",
+                        color: "#7dd3fc",
+                        fontFamily: "Consolas, Monaco, 'Courier New', monospace",
+                        fontSize: "13px",
+                        lineHeight: "1.45"
+                      }}
+                    />
+                  </div>
+                )}
+
+                {/* VUE 5 : LISTE DES CHAMPS ET DICTIONNAIRE */}
+                {activeStudioPreviewTab === "fields" && (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                    <div style={{ fontSize: "12px", color: "#d8b4fe", fontWeight: 700 }}>
+                      Champs détectés et liés au dictionnaire de données Amplitude CBS
+                    </div>
+                    <div style={{ overflowX: "auto" }}>
+                      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "12px" }}>
+                        <thead>
+                          <tr style={{ background: "#1e293b", borderBottom: "1px solid #334155", textAlign: "left" }}>
+                            <th style={{ padding: "8px 10px", color: "#94a3b8" }}>Tag</th>
+                            <th style={{ padding: "8px 10px", color: "#94a3b8" }}>Table</th>
+                            <th style={{ padding: "8px 10px", color: "#94a3b8" }}>Colonne</th>
+                            <th style={{ padding: "8px 10px", color: "#94a3b8" }}>Type</th>
+                            <th style={{ padding: "8px 10px", color: "#94a3b8" }}>Attributs Form-4GL</th>
+                            <th style={{ padding: "8px 10px", color: "#94a3b8" }}>Commentaires</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {currentCustomScreen.fieldsConfig?.map((f, idx) => (
+                            <tr key={idx} style={{ borderBottom: "1px solid #1e293b", background: idx % 2 === 0 ? "#0f172a" : "#172554" }}>
+                              <td style={{ padding: "8px 10px", fontFamily: "monospace", color: "#34d399", fontWeight: 700 }}>{f.tag}</td>
+                              <td style={{ padding: "8px 10px", color: "#f1f5f9" }}>{f.table}</td>
+                              <td style={{ padding: "8px 10px", fontFamily: "monospace", color: "#38bdf8" }}>{f.column}</td>
+                              <td style={{ padding: "8px 10px", color: "#cbd5e1" }}>{f.type}</td>
+                              <td style={{ padding: "8px 10px", color: "#fbbf24", fontFamily: "monospace", fontSize: "11px" }}>{f.attributes.join(", ") || "-"}</td>
+                              <td style={{ padding: "8px 10px", color: "#94a3b8", fontSize: "11px" }}>{f.comments || "-"}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
 
               </div>
             )}
