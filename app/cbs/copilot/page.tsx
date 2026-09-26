@@ -140,11 +140,23 @@ export default function CbsCopilotPage() {
         console.warn("Échec lecture API copilot, bascule sur localStorage:", e);
       }
 
-      // Fallback localStorage
+      // Fallback localStorage (filtrer les écrans .per et vérifier l'intégrité)
       try {
         const local = localStorage.getItem("cbs_copilot_projects");
         if (local) {
-          setSavedProjects(JSON.parse(local));
+          const parsed = JSON.parse(local);
+          if (Array.isArray(parsed)) {
+            const valid = parsed.filter(
+              (p: any) =>
+                p &&
+                !p.input?.isPerScreen &&
+                !p.isPerScreen &&
+                p.plan &&
+                p.plan.analysis &&
+                p.plan.code4GlProposal
+            );
+            setSavedProjects(valid);
+          }
         }
       } catch (err) {
         console.error("Erreur localStorage:", err);
@@ -212,10 +224,10 @@ export default function CbsCopilotPage() {
   // Charger un projet sauvegardé
   const handleLoadProject = (proj: CopilotProject) => {
     setNeedInput(proj.input);
-    if (proj.plan) {
+    if (proj.plan && proj.plan.analysis && Array.isArray(proj.plan.subTasks)) {
       setGeneratedPlan(proj.plan);
     } else {
-      setGeneratedPlan(generateCopilotPlan(proj.input));
+      setGeneratedPlan(generateCopilotPlan(proj.input || EMPTY_NEED));
     }
     setShowProjectsModal(false);
     setActiveTab("TASKS");
@@ -343,6 +355,15 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
 
     downloadFile(markdown, `DOSSIER_DEV_CBS_${p.need.title.replace(/\s+/g, "_")}.md`, "text/markdown");
   };
+
+  const safePlan =
+    generatedPlan &&
+    generatedPlan.analysis &&
+    generatedPlan.code4GlProposal &&
+    generatedPlan.sqlProposal &&
+    Array.isArray(generatedPlan.subTasks)
+      ? generatedPlan
+      : generateCopilotPlan(needInput || EMPTY_NEED);
 
   return (
     <div
@@ -1012,10 +1033,10 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                     SYNTHÈSE TECHNIQUE &amp; FONCTIONNELLE
                   </span>
                   <h3 style={{ fontSize: "1.25rem", fontWeight: 700, margin: "4px 0", color: "#0f172a" }}>
-                    {generatedPlan.analysis.summary}
+                    {safePlan.analysis.summary}
                   </h3>
                   <p style={{ fontSize: "0.88rem", color: "#475569", margin: 0 }}>
-                    {generatedPlan.analysis.businessObjective}
+                    {safePlan.analysis.businessObjective}
                   </p>
                 </div>
                 <button
@@ -1039,7 +1060,7 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                 <div style={{ backgroundColor: "#f8fafc", padding: "0.85rem", borderRadius: "8px", border: "1px solid #e2e8f0" }}>
                   <div style={{ fontSize: "0.75rem", color: "#64748b", fontWeight: 700, marginBottom: "0.4rem" }}>PRÉCONDITIONS CBS</div>
                   <ul style={{ margin: 0, paddingLeft: "1.1rem", fontSize: "0.82rem", color: "#334155", lineHeight: "1.5" }}>
-                    {generatedPlan.analysis.preconditions.map((p, i) => (
+                    {safePlan.analysis.preconditions.map((p, i) => (
                       <li key={i}>{p}</li>
                     ))}
                   </ul>
@@ -1048,7 +1069,7 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                 <div style={{ backgroundColor: "#f8fafc", padding: "0.85rem", borderRadius: "8px", border: "1px solid #e2e8f0" }}>
                   <div style={{ fontSize: "0.75rem", color: "#64748b", fontWeight: 700, marginBottom: "0.4rem" }}>RÈGLES MÉTIER CONTRÔLÉES</div>
                   <ul style={{ margin: 0, paddingLeft: "1.1rem", fontSize: "0.82rem", color: "#334155", lineHeight: "1.5" }}>
-                    {generatedPlan.analysis.businessRules.map((r, i) => (
+                    {safePlan.analysis.businessRules.map((r, i) => (
                       <li key={i}>{r}</li>
                     ))}
                   </ul>
@@ -1057,7 +1078,7 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                 <div style={{ backgroundColor: "#fef2f2", padding: "0.85rem", borderRadius: "8px", border: "1px solid #fecaca" }}>
                   <div style={{ fontSize: "0.75rem", color: "#b91c1c", fontWeight: 700, marginBottom: "0.4rem" }}>RISQUES TECHNIQUES</div>
                   <ul style={{ margin: 0, paddingLeft: "1.1rem", fontSize: "0.82rem", color: "#991b1b", lineHeight: "1.5" }}>
-                    {generatedPlan.analysis.technicalRisks.map((tr, i) => (
+                    {safePlan.analysis.technicalRisks.map((tr, i) => (
                       <li key={i}>{tr}</li>
                     ))}
                   </ul>
@@ -1068,11 +1089,11 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
             {/* Liste des sous-tâches ordonnées */}
             <div style={{ backgroundColor: "#ffffff", borderRadius: "12px", border: "1px solid #e2e8f0", padding: "1.5rem", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
               <h3 style={{ fontSize: "1.1rem", fontWeight: 700, marginBottom: "1rem", color: "#0f172a" }}>
-                Plan de Développement &amp; Sous-Tâches ({generatedPlan.subTasks.length} Tâches Ordonnées)
+                Plan de Développement &amp; Sous-Tâches ({safePlan.subTasks.length} Tâches Ordonnées)
               </h3>
 
               <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", width: "100%", boxSizing: "border-box" }}>
-                {generatedPlan.subTasks.map((task) => (
+                {safePlan.subTasks.map((task) => (
                   <div
                     key={task.id}
                     style={{
@@ -1168,7 +1189,7 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
 
               <div style={{ display: "flex", gap: "0.5rem" }}>
                 <button
-                  onClick={() => copyToClipboard(generatedPlan.code4GlProposal.code4Gl, "4gl")}
+                  onClick={() => copyToClipboard(safePlan.code4GlProposal.code4Gl, "4gl")}
                   style={{
                     backgroundColor: "#ffffff",
                     color: "#334155",
@@ -1186,8 +1207,8 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                 <button
                   onClick={() =>
                     downloadFile(
-                      generatedPlan.code4GlProposal.code4Gl,
-                      `${generatedPlan.code4GlProposal.entryPoint.split(" ")[0].toLowerCase() || "p_cbs_traitement"}.4gl`,
+                      safePlan.code4GlProposal.code4Gl,
+                      `${safePlan.code4GlProposal.entryPoint.split(" ")[0].toLowerCase() || "p_cbs_traitement"}.4gl`,
                       "text/plain"
                     )
                   }
@@ -1226,7 +1247,7 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                   color: "#0f172a",
                 }}
               >
-                <code>{generatedPlan.code4GlProposal.code4Gl}</code>
+                <code>{safePlan.code4GlProposal.code4Gl}</code>
               </pre>
             </div>
 
@@ -1236,7 +1257,7 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                 RECOMMANDATIONS D&apos;EXPLOITATION RUN / BUILD AMPLITUDE
               </div>
               <ul style={{ margin: 0, paddingLeft: "1.25rem", fontSize: "0.82rem", color: "#334155", lineHeight: "1.6" }}>
-                {generatedPlan.code4GlProposal.importantNotes.map((note, i) => (
+                {safePlan.code4GlProposal.importantNotes.map((note, i) => (
                   <li key={i}>{note}</li>
                 ))}
               </ul>
@@ -1249,7 +1270,7 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
         {/* --------------------------------------------------------------------- */}
         {activeTab === "PER_SCREEN" && (
           <div style={{ display: "flex", flexDirection: "column", gap: "1rem", width: "100%", boxSizing: "border-box" }}>
-            {generatedPlan.perScreen ? (
+            {safePlan.perScreen ? (
               <>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.75rem" }}>
                   <div>
@@ -1263,7 +1284,7 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
 
                   <div style={{ display: "flex", gap: "0.5rem" }}>
                     <button
-                      onClick={() => copyToClipboard(generatedPlan.perScreen!.perCodeSnippet, "per")}
+                      onClick={() => copyToClipboard(safePlan.perScreen!.perCodeSnippet, "per")}
                       style={{
                         backgroundColor: "#ffffff",
                         color: "#334155",
@@ -1281,8 +1302,8 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                     <button
                       onClick={() =>
                         downloadFile(
-                          generatedPlan.perScreen!.perCodeSnippet,
-                          generatedPlan.perScreen!.screenName,
+                          safePlan.perScreen!.perCodeSnippet,
+                          safePlan.perScreen!.screenName,
                           "text/plain"
                         )
                       }
@@ -1323,14 +1344,14 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                       boxSizing: "border-box",
                     }}
                   >
-                    {generatedPlan.perScreen.visualMockupAscii}
+                    {safePlan.perScreen.visualMockupAscii}
                   </pre>
                 </div>
 
                 {/* Code source .per */}
                 <div style={{ backgroundColor: "#ffffff", borderRadius: "8px", border: "1px solid #e2e8f0", padding: "1.25rem", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
                   <div style={{ fontSize: "0.82rem", fontWeight: 700, color: "#0284c7", marginBottom: "0.6rem" }}>
-                    📄 SOURCE INFORMIX FORMULAIRE ({generatedPlan.perScreen.screenName})
+                    📄 SOURCE INFORMIX FORMULAIRE ({safePlan.perScreen.screenName})
                   </div>
                   <pre
                     style={{
@@ -1348,7 +1369,7 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                       boxSizing: "border-box",
                     }}
                   >
-                    {generatedPlan.perScreen.perCodeSnippet}
+                    {safePlan.perScreen.perCodeSnippet}
                   </pre>
                 </div>
               </>
@@ -1377,7 +1398,7 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
 
               <div style={{ display: "flex", gap: "0.5rem" }}>
                 <button
-                  onClick={() => copyToClipboard(generatedPlan.sqlProposal.sqlCode, "sql")}
+                  onClick={() => copyToClipboard(safePlan.sqlProposal.sqlCode, "sql")}
                   style={{
                     backgroundColor: "#ffffff",
                     color: "#334155",
@@ -1393,7 +1414,7 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                 </button>
 
                 <button
-                  onClick={() => downloadFile(generatedPlan.sqlProposal.sqlCode, "cbs_requetes_optimisees.sql", "text/plain")}
+                  onClick={() => downloadFile(safePlan.sqlProposal.sqlCode, "cbs_requetes_optimisees.sql", "text/plain")}
                   style={{
                     backgroundColor: "#0284c7",
                     color: "#ffffff",
@@ -1420,7 +1441,7 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                   color: "#0369a1",
                 }}
               >
-                <code>{generatedPlan.sqlProposal.sqlCode}</code>
+                <code>{safePlan.sqlProposal.sqlCode}</code>
               </pre>
             </div>
 
@@ -1430,7 +1451,7 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                   ⚠️ RISQUES DE PERFORMANCE &amp; FULL TABLE SCAN
                 </div>
                 <ul style={{ margin: 0, paddingLeft: "1.25rem", fontSize: "0.82rem", color: "#475569", lineHeight: "1.5" }}>
-                  {generatedPlan.sqlProposal.performanceRisks.map((r, i) => (
+                  {safePlan.sqlProposal.performanceRisks.map((r, i) => (
                     <li key={i}>{r}</li>
                   ))}
                 </ul>
@@ -1441,7 +1462,7 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                   🔒 CONSIGNES DE SÉCURITÉ &amp; CONFIDENTIALITÉ
                 </div>
                 <ul style={{ margin: 0, paddingLeft: "1.25rem", fontSize: "0.82rem", color: "#475569", lineHeight: "1.5" }}>
-                  {generatedPlan.sqlProposal.securityPrecautions.map((s, i) => (
+                  {safePlan.sqlProposal.securityPrecautions.map((s, i) => (
                     <li key={i}>{s}</li>
                   ))}
                 </ul>

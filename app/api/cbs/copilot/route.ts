@@ -64,16 +64,18 @@ export async function GET(request: Request) {
         const rows = await prisma.cbsCopilotProject.findMany({
           orderBy: { updatedAt: "desc" },
         });
-        projects = rows.map((r) => ({
-          id: r.id,
-          name: r.name,
-          domain: r.domain,
-          amplitudeVersion: r.amplitudeVersion,
-          input: r.inputData as any,
-          plan: r.planData as any,
-          createdAt: r.createdAt.toISOString(),
-          updatedAt: r.updatedAt.toISOString(),
-        }));
+        projects = rows
+          .filter((r) => !r.inputData || !(r.inputData as any).isPerScreen)
+          .map((r) => ({
+            id: r.id,
+            name: r.name,
+            domain: r.domain,
+            amplitudeVersion: r.amplitudeVersion,
+            input: r.inputData as any,
+            plan: r.planData as any,
+            createdAt: r.createdAt.toISOString(),
+            updatedAt: r.updatedAt.toISOString(),
+          }));
         isDbConnected = true;
       }
     } catch (dbErr) {
