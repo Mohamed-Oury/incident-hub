@@ -81,12 +81,10 @@ export default function PerScreensPage() {
                 key={course.id}
                 onClick={() => setSelectedPerCourse(course)}
                 style={{
-                  background: isSelected
-                    ? "linear-gradient(135deg, rgba(16, 185, 129, 0.18) 0%, rgba(6, 78, 59, 0.28) 100%)"
-                    : "#1e293b",
-                  border: isSelected ? "2px solid #10b981" : "1px solid #334155",
+                  background: isSelected ? "#064e3b" : "#1e293b",
+                  border: isSelected ? "2px solid #34d399" : "1px solid #334155",
                   boxShadow: isSelected
-                    ? "0 0 20px rgba(16, 185, 129, 0.35), inset 0 0 12px rgba(16, 185, 129, 0.15)"
+                    ? "0 4px 20px rgba(16, 185, 129, 0.4), inset 0 0 0 1px #34d399"
                     : "none",
                   borderRadius: "10px",
                   padding: "16px",
@@ -98,20 +96,21 @@ export default function PerScreensPage() {
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
                   <span style={{
                     fontSize: "11px",
-                    fontWeight: 800,
-                    padding: "4px 9px",
+                    fontWeight: 900,
+                    padding: "4px 10px",
                     borderRadius: "4px",
-                    background: isSelected ? "#059669" : "#334155",
-                    color: "#ffffff",
-                    boxShadow: isSelected ? "0 2px 6px rgba(5, 150, 105, 0.4)" : "none",
-                    letterSpacing: "0.03em"
+                    background: isSelected ? "#022c22" : "#334155",
+                    color: isSelected ? "#34d399" : "#ffffff",
+                    border: isSelected ? "1px solid #10b981" : "none",
+                    boxShadow: isSelected ? "0 2px 6px rgba(0, 0, 0, 0.4)" : "none",
+                    letterSpacing: "0.04em"
                   }}>
                     {course.level}
                   </span>
                   <span style={{
                     fontSize: "12px",
-                    color: isSelected ? "#34d399" : "#94a3b8",
-                    fontWeight: isSelected ? 700 : 500,
+                    color: isSelected ? "#6ee7b7" : "#94a3b8",
+                    fontWeight: isSelected ? 800 : 500,
                     fontFamily: "monospace"
                   }}>
                     Niveau {course.levelOrder}/4
@@ -119,8 +118,8 @@ export default function PerScreensPage() {
                 </div>
                 <div style={{
                   fontSize: "14px",
-                  fontWeight: 800,
-                  color: isSelected ? "#ffffff" : "#f1f5f9",
+                  fontWeight: 900,
+                  color: "#ffffff",
                   marginBottom: "6px",
                   lineHeight: "1.4"
                 }}>
@@ -128,8 +127,9 @@ export default function PerScreensPage() {
                 </div>
                 <div style={{
                   fontSize: "12px",
-                  color: isSelected ? "#cbd5e1" : "#94a3b8",
-                  lineHeight: "1.45"
+                  color: isSelected ? "#d1fae5" : "#94a3b8",
+                  fontWeight: isSelected ? 600 : 400,
+                  lineHeight: "1.5"
                 }}>
                   {course.summary}
                 </div>

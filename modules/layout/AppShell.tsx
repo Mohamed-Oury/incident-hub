@@ -117,8 +117,6 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
       items: [
         { href: "/cbs", label: "Tableau de bord CBS", icon: "⊞" },
         { href: "/cbs/domains", label: "Domaines Métier", icon: "📑" },
-        //{ href: "/cbs/batch", label: "Run & Batch EOD / BOD", icon: "⚙️" },
-        //{ href: "/cbs/batch-diagnostic", label: "Diagnostic Blocage EOD", icon: "🎛️" },
         { href: "/cbs/schema", label: "Dictionnaire de Données", icon: "🔍" },
       ],
     },
@@ -129,11 +127,7 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
       roleRequired: "ROLE_EXPERTISE",
       items: [
         { href: "/cbs/copilot", label: "4GL Development Copilot", icon: "🤖" },
-        // { href: "/cbs/databases", label: "SGBD Oracle & Informix", icon: "🗄️" },
-        //{ href: "/cbs/sql-playbooks", label: "Requêtes & Playbooks SQL", icon: "⚡" },
-        //{ href: "/cbs/reconciliation", label: "Réconciliation Monétique ↔ CBS", icon: "🌉" },
         { href: "/cbs/log-analyzer", label: "Analyseur de Logs & Traces", icon: "📜" },
-        //{ href: "/cbs/handover", label: "Handover & Checklist BOD", icon: "🛡️" },
         { href: "/cbs/unix", label: "Commandes AIX/Unix", icon: "💻" },
         { href: "/cbs/incidents", label: "Incidents RCA & Run", icon: "🚨" },
       ],
