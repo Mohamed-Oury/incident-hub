@@ -1,5 +1,5 @@
-// modules/cbs/cbs-4gl-data.ts
 import { CBS_4GL_EXTENDED_LESSONS } from "./cbs-4gl-extended-lessons";
+import { CBS_4GL_PER_LESSONS } from "./cbs-4gl-per-lessons";
 import { CBS_4GL_ALL_EXAMS } from "./cbs-4gl-exams-data";
 
 export interface Cbs4GlResource {
@@ -75,6 +75,18 @@ export const CBS_4GL_GRADES: Cbs4GlGrade[] = [
         type: "GUIDE_TECHNIQUE",
         urlOrRef: "AIX-C4GL-BUILD-101",
         description: "Variables d'environnement indispensables : $INFORMIXDIR, $INFORMIXSERVER, $PATH et options de compilation -c / -o."
+      },
+      {
+        title: "Manuel des Formulaires Écrans Informix Form-4GL (.per)",
+        type: "MANUEL_INFORMIX",
+        urlOrRef: "IBM-4GL-FORMS-BASICS",
+        description: "Spécifications de la matrice SCREEN 80x24, des délimiteurs de champs et compilation form4gl."
+      },
+      {
+        title: "Aide-Mémoire des Commandes Shell AIX pour Développeur CBS",
+        type: "AIX_SCRIPT",
+        urlOrRef: "AIX-SHELL-DEV-CHEAT",
+        description: "Variables obligatoires ($DBPATH, $FGLGUI), scripts de packaging et analyse des core dumps."
       }
     ]
   },
@@ -104,6 +116,18 @@ export const CBS_4GL_GRADES: Cbs4GlGrade[] = [
         type: "GUIDE_TECHNIQUE",
         urlOrRef: "INFORMIX-ERROR-MESSAGES",
         description: "Guide exhaustif d'analyse de la zone sqlca.sqlcode et des erreurs du moteur ISAM sqlca.sqlerrd[1]."
+      },
+      {
+        title: "Manuel des Attributs Déclaratifs Écrans (PICTURE, INCLUDE, AUTONEXT)",
+        type: "MANUEL_INFORMIX",
+        urlOrRef: "IBM-FORM4GL-ATTRIBUTES",
+        description: "Règles d'intégrité de saisie terminal, formatage monétaire et masques de validation sans code."
+      },
+      {
+        title: "Référentiel des Transactions Comptables & Schémas d'Écritures Amplitude",
+        type: "NORMES_BANCAIRES",
+        urlOrRef: "CBS-ACCOUNTING-POSTINGS-V6",
+        description: "Règles d'imputation dans BKTRA, gestion des devises multiples et cohérence du Grand Livre BKCOM."
       }
     ]
   },
@@ -133,6 +157,18 @@ export const CBS_4GL_GRADES: Cbs4GlGrade[] = [
         type: "NORMES_BANCAIRES",
         urlOrRef: "CBS-FRONT-OFFICE-EVENT-GUIDE",
         description: "Patterns événementiels BEFORE/AFTER FIELD et contrôles temps réel de découvert bancaire."
+      },
+      {
+        title: "Ingénierie des Tableaux Défilants Screen Record & Input Array",
+        type: "MANUEL_INFORMIX",
+        urlOrRef: "IBM-SCREEN-RECORDS-GRID",
+        description: "Architecture des blocs répétitifs, pagination en mémoire, ARR_CURR() et gestion dynamique des lignes."
+      },
+      {
+        title: "Spécifications des Écrans de Saisie Guichet & Télécompensation",
+        type: "NORMES_BANCAIRES",
+        urlOrRef: "CBS-TELLER-CHECK-CLEARING",
+        description: "Masques de bordereaux de chèques, effets de commerce et validation de remise à l'encaissement."
       }
     ]
   },
@@ -162,6 +198,18 @@ export const CBS_4GL_GRADES: Cbs4GlGrade[] = [
         type: "DOC_OFFICIELLE",
         urlOrRef: "AUDIT-TRAIL-PCI-DSS",
         description: "Sécurisation des opérations sensibles sur BKAUD et exigences de conformité réglementaire."
+      },
+      {
+        title: "Fenêtrage Modale & Sous-Écrans Superposés (OPEN WINDOW WITH FORM)",
+        type: "MANUEL_INFORMIX",
+        urlOrRef: "IBM-MODAL-WINDOWS-LOV",
+        description: "Gestion des popups d'aide contextuelle F1 (List of Values), fenêtres encadrées et restauration d'état."
+      },
+      {
+        title: "Runbook de Supervision des Verrous en Heure de Pointe Agence",
+        type: "GUIDE_TECHNIQUE",
+        urlOrRef: "CBS-LOCK-MONITORING-PEAK",
+        description: "Commandes onstat -k / onstat -u, identification des verrous exclusifs bloquants et déblocage d'urgence."
       }
     ]
   },
@@ -191,6 +239,18 @@ export const CBS_4GL_GRADES: Cbs4GlGrade[] = [
         type: "GUIDE_TECHNIQUE",
         urlOrRef: "4GL-HIGH-VELOCITY-IO",
         description: "Architecture de flux en écriture tamponnée et réduction des allers-retours client-serveur SGBD."
+      },
+      {
+        title: "Sécurité Bancaire PCI-DSS, Attribut INVISIBLE & Tuning WAN Agences",
+        type: "NORMES_BANCAIRES",
+        urlOrRef: "PCI-DSS-AMPLITUDE-WAN",
+        description: "Saisie confidentielle sans écho (code PIN, superviseur), chiffrement et compression de flux VT100 sous VSAT."
+      },
+      {
+        title: "Guide d'Optimisation des Tables Temporaires Batch (WITH NO LOG)",
+        type: "GUIDE_TECHNIQUE",
+        urlOrRef: "INFORMIX-TEMP-TABLES-PERF",
+        description: "Stratégies d'élimination des goulots I/O sur disques temporaires et parallélisation AIX multi-threads."
       }
     ]
   }
@@ -606,6 +666,7 @@ END FUNCTION`,
     ]
   },
   ...CBS_4GL_EXTENDED_LESSONS,
+  ...CBS_4GL_PER_LESSONS,
 ];
 
 // ----------------------------------------------------

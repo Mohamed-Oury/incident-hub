@@ -13,11 +13,17 @@ import {
   CBS_4GL_KEYWORDS_CHEAT_SHEET,
   Cbs4GlKeywordCard
 } from "@/modules/cbs/cbs-4gl-cheat-sheet";
+import {
+  CBS_4GL_PER_COURSES,
+  Cbs4GlPerScreenCourse
+} from "@/modules/cbs/cbs-4gl-per-screens-data";
 
 export default function Cbs4GlTrainingPage() {
   const [unlockedLevel, setUnlockedLevel] = useState<number>(1);
   const [selectedGradeLevel, setSelectedGradeLevel] = useState<number>(1);
-  const [activeTab, setActiveTab] = useState<"cours" | "simulateur" | "examen" | "fiche" | "certificat">("cours");
+  const [activeTab, setActiveTab] = useState<"cours" | "simulateur" | "examen" | "per_screens" | "fiche" | "certificat">("cours");
+  const [selectedPerCourse, setSelectedPerCourse] = useState<Cbs4GlPerScreenCourse>(CBS_4GL_PER_COURSES[0]);
+  const [activePerSubTab, setActivePerSubTab] = useState<"per" | "4gl" | "terminal" | "directives">("per");
   const [cheatSheetCategory, setCheatSheetCategory] = useState<string>("ALL");
   const [cheatSheetSearch, setCheatSheetSearch] = useState<string>("");
   const [currentUserName, setCurrentUserName] = useState<string>("Mohamed Oury Diallo");
@@ -326,6 +332,21 @@ export default function Cbs4GlTrainingPage() {
             }}
           >
             🎓 3. Examen de Passage ({currentGrade.minPassScorePct}% Requis)
+          </button>
+          <button
+            onClick={() => setActiveTab("per_screens")}
+            style={{
+              padding: "8px 18px",
+              borderRadius: "8px",
+              fontSize: "13px",
+              fontWeight: 700,
+              border: activeTab === "per_screens" ? "1px solid #10b981" : "1px solid #334155",
+              background: activeTab === "per_screens" ? "#059669" : "#1e293b",
+              color: "#ffffff",
+              cursor: "pointer"
+            }}
+          >
+            🖥️ 4. Conception Écrans .per (Form-4GL)
           </button>
           <button
             onClick={() => setActiveTab("fiche")}
@@ -959,6 +980,416 @@ export default function Cbs4GlTrainingPage() {
                   </div>
                 </div>
               ))}
+            </div>
+
+          </div>
+        )}
+
+        {/* CONTENU ONGLET 4 : CONCEPTION D'ÉCRANS .PER (FORM-4GL) - DÉBUTANT À EXPERT */}
+        {activeTab === "per_screens" && (
+          <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+
+            {/* BANNIÈRE DE PRÉSENTATION DU CURSUS .PER */}
+            <div style={{
+              background: "linear-gradient(135deg, #064e3b, #047857)",
+              border: "1px solid #10b981",
+              borderRadius: "12px",
+              padding: "20px 24px",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              flexWrap: "wrap",
+              gap: "16px"
+            }}>
+              <div>
+                <span style={{
+                  background: "#022c22",
+                  color: "#34d399",
+                  fontSize: "11px",
+                  fontWeight: 700,
+                  padding: "4px 10px",
+                  borderRadius: "9999px",
+                  border: "1px solid #059669",
+                  textTransform: "uppercase"
+                }}>
+                  Cursus Spécialisé IHM Form-4GL
+                </span>
+                <h3 style={{ fontSize: "20px", fontWeight: 800, color: "#f8fafc", margin: "6px 0 2px" }}>
+                  Maîtrise Complète des Masques de Saisie (.per) Informix
+                </h3>
+                <p style={{ fontSize: "13px", color: "#a7f3d0", margin: 0 }}>
+                  Du positionnement canonique sur grille VT100 80x24 aux tableaux défilants SCREEN RECORD et fenêtres modales haute sécurité.
+                </p>
+              </div>
+
+              <div style={{ display: "flex", gap: "8px" }}>
+                <span style={{ background: "rgba(0,0,0,0.3)", border: "1px solid #10b981", padding: "6px 12px", borderRadius: "8px", fontSize: "12px", color: "#ecfdf5", fontWeight: 600 }}>
+                  ⚡ form4gl / fglform
+                </span>
+                <span style={{ background: "rgba(0,0,0,0.3)", border: "1px solid #10b981", padding: "6px 12px", borderRadius: "8px", fontSize: "12px", color: "#ecfdf5", fontWeight: 600 }}>
+                  🖥️ Grille 80x24 ASCII
+                </span>
+                <span style={{ background: "rgba(0,0,0,0.3)", border: "1px solid #10b981", padding: "6px 12px", borderRadius: "8px", fontSize: "12px", color: "#ecfdf5", fontWeight: 600 }}>
+                  🔒 PCI-DSS Compliant
+                </span>
+              </div>
+            </div>
+
+            {/* SÉLECTEUR DES 4 NIVEAUX DE FORMATION .PER */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "12px" }}>
+              {CBS_4GL_PER_COURSES.map((course) => {
+                const isSelected = selectedPerCourse.id === course.id;
+                const levelColors: Record<string, string> = {
+                  DEBUTANT: "#38bdf8",
+                  INTERMEDIAIRE: "#3b82f6",
+                  AVANCE: "#a855f7",
+                  EXPERT: "#f43f5e"
+                };
+                const color = levelColors[course.level] || "#10b981";
+
+                return (
+                  <button
+                    key={course.id}
+                    onClick={() => {
+                      setSelectedPerCourse(course);
+                      setActivePerSubTab("per");
+                    }}
+                    style={{
+                      padding: "16px",
+                      borderRadius: "10px",
+                      border: isSelected ? `2px solid ${color}` : "1px solid #334155",
+                      background: isSelected ? "rgba(15, 23, 42, 0.9)" : "#0f172a",
+                      color: "#f8fafc",
+                      cursor: "pointer",
+                      textAlign: "left",
+                      boxShadow: isSelected ? `0 0 15px ${color}33` : "none",
+                      transition: "all 0.15s ease"
+                    }}
+                  >
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+                      <span style={{
+                        fontSize: "10px",
+                        fontWeight: 800,
+                        color: color,
+                        textTransform: "uppercase",
+                        background: `${color}15`,
+                        padding: "2px 8px",
+                        borderRadius: "4px",
+                        border: `1px solid ${color}40`
+                      }}>
+                        Niveau {course.levelOrder} : {course.level}
+                      </span>
+                      {isSelected && <span style={{ color: color, fontSize: "12px" }}>● Actif</span>}
+                    </div>
+                    <div style={{ fontSize: "13px", fontWeight: 700, color: "#f8fafc", lineHeight: "1.3" }}>
+                      {course.title.split(":")[0]}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* CORPS DU COURS .PER : EN-TÊTE ET OBJECTIFS */}
+            <div style={{ background: "#1e293b", borderRadius: "12px", border: "1px solid #334155", padding: "24px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "16px", marginBottom: "16px" }}>
+                <div>
+                  <h3 style={{ fontSize: "18px", fontWeight: 800, color: "#f8fafc", marginBottom: "6px" }}>
+                    {selectedPerCourse.title}
+                  </h3>
+                  <p style={{ fontSize: "13px", color: "#94a3b8", margin: 0 }}>
+                    {selectedPerCourse.summary}
+                  </p>
+                </div>
+
+                <button
+                  onClick={() => handleCopy(selectedPerCourse.perSourceCode)}
+                  style={{
+                    background: copied ? "#22c55e" : "#059669",
+                    color: "#ffffff",
+                    border: "none",
+                    borderRadius: "6px",
+                    padding: "8px 16px",
+                    fontSize: "12px",
+                    fontWeight: 700,
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px"
+                  }}
+                >
+                  {copied ? "✓ Code .per Copié !" : "📋 Copier Masque .per"}
+                </button>
+              </div>
+
+              {/* OBJECTIFS PÉDAGOGIQUES */}
+              <div style={{
+                background: "#0f172a",
+                borderRadius: "8px",
+                border: "1px solid #334155",
+                padding: "16px",
+                marginBottom: "20px"
+              }}>
+                <div style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", color: "#38bdf8", marginBottom: "8px" }}>
+                  🎯 Objectifs Clés du Module :
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "8px" }}>
+                  {selectedPerCourse.objectives.map((obj, i) => (
+                    <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: "8px", fontSize: "12px", color: "#cbd5e1" }}>
+                      <span style={{ color: "#10b981", fontWeight: 800 }}>✓</span>
+                      <span>{obj}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* SOUS-ONGLETS DE VISUALISATION : .PER / 4GL / TERMINAL / DIRECTIVES */}
+              <div style={{ display: "flex", gap: "8px", borderBottom: "1px solid #334155", paddingBottom: "12px", marginBottom: "16px" }}>
+                <button
+                  onClick={() => setActivePerSubTab("per")}
+                  style={{
+                    padding: "6px 14px",
+                    borderRadius: "6px",
+                    fontSize: "12px",
+                    fontWeight: 700,
+                    border: activePerSubTab === "per" ? "1px solid #10b981" : "1px solid #334155",
+                    background: activePerSubTab === "per" ? "#059669" : "#0f172a",
+                    color: "#ffffff",
+                    cursor: "pointer"
+                  }}
+                >
+                  📄 1. Code Masque (.per)
+                </button>
+                <button
+                  onClick={() => setActivePerSubTab("4gl")}
+                  style={{
+                    padding: "6px 14px",
+                    borderRadius: "6px",
+                    fontSize: "12px",
+                    fontWeight: 700,
+                    border: activePerSubTab === "4gl" ? "1px solid #6366f1" : "1px solid #334155",
+                    background: activePerSubTab === "4gl" ? "#4f46e5" : "#0f172a",
+                    color: "#ffffff",
+                    cursor: "pointer"
+                  }}
+                >
+                  ⚡ 2. Code 4GL Associé (OPEN/INPUT)
+                </button>
+                <button
+                  onClick={() => setActivePerSubTab("terminal")}
+                  style={{
+                    padding: "6px 14px",
+                    borderRadius: "6px",
+                    fontSize: "12px",
+                    fontWeight: 700,
+                    border: activePerSubTab === "terminal" ? "1px solid #f59e0b" : "1px solid #334155",
+                    background: activePerSubTab === "terminal" ? "#d97706" : "#0f172a",
+                    color: "#ffffff",
+                    cursor: "pointer"
+                  }}
+                >
+                  🖥️ 3. Rendu Terminal ASCII VT100
+                </button>
+                <button
+                  onClick={() => setActivePerSubTab("directives")}
+                  style={{
+                    padding: "6px 14px",
+                    borderRadius: "6px",
+                    fontSize: "12px",
+                    fontWeight: 700,
+                    border: activePerSubTab === "directives" ? "1px solid #38bdf8" : "1px solid #334155",
+                    background: activePerSubTab === "directives" ? "#0284c7" : "#0f172a",
+                    color: "#ffffff",
+                    cursor: "pointer"
+                  }}
+                >
+                  🔍 4. Directives, Compilation &amp; Règles d&apos;Or
+                </button>
+              </div>
+
+              {/* VUE 1 : CODE MASQUE .PER */}
+              {activePerSubTab === "per" && (
+                <div>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                    <span style={{ fontSize: "12px", color: "#94a3b8" }}>
+                      Fichier source form-4GL canonique : <code style={{ color: "#34d399" }}>masque_{selectedPerCourse.id}.per</code>
+                    </span>
+                    <button
+                      onClick={() => handleCopy(selectedPerCourse.perSourceCode)}
+                      style={{ background: "#334155", color: "#f8fafc", border: "none", padding: "4px 10px", borderRadius: "4px", fontSize: "11px", cursor: "pointer" }}
+                    >
+                      Copier
+                    </button>
+                  </div>
+                  <pre style={{
+                    background: "#090d16",
+                    padding: "16px",
+                    borderRadius: "8px",
+                    border: "1px solid #10b981",
+                    color: "#34d399",
+                    fontFamily: "monospace",
+                    fontSize: "12px",
+                    lineHeight: "1.45",
+                    whiteSpace: "pre-wrap",
+                    overflowX: "auto"
+                  }}>
+                    {selectedPerCourse.perSourceCode}
+                  </pre>
+                </div>
+              )}
+
+              {/* VUE 2 : CODE 4GL ASSOCIÉ */}
+              {activePerSubTab === "4gl" && (
+                <div>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                    <span style={{ fontSize: "12px", color: "#94a3b8" }}>
+                      Code 4GL d&apos;activation, saisie et gestion événementielle :
+                    </span>
+                    <button
+                      onClick={() => handleCopy(selectedPerCourse.fourGlSourceCode)}
+                      style={{ background: "#334155", color: "#f8fafc", border: "none", padding: "4px 10px", borderRadius: "4px", fontSize: "11px", cursor: "pointer" }}
+                    >
+                      Copier
+                    </button>
+                  </div>
+                  <pre style={{
+                    background: "#090d16",
+                    padding: "16px",
+                    borderRadius: "8px",
+                    border: "1px solid #6366f1",
+                    color: "#a5b4fc",
+                    fontFamily: "monospace",
+                    fontSize: "12px",
+                    lineHeight: "1.45",
+                    whiteSpace: "pre-wrap",
+                    overflowX: "auto"
+                  }}>
+                    {selectedPerCourse.fourGlSourceCode}
+                  </pre>
+                </div>
+              )}
+
+              {/* VUE 3 : RENDU TERMINAL ASCII VT100 */}
+              {activePerSubTab === "terminal" && (
+                <div>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                    <span style={{ fontSize: "12px", color: "#94a3b8" }}>
+                      Simulation fidèle du terminal bancaire 80x24 (Putty / Reflection AIX) :
+                    </span>
+                    <span style={{ fontSize: "11px", color: "#f59e0b", background: "rgba(245, 158, 11, 0.1)", padding: "2px 8px", borderRadius: "4px", border: "1px solid #f59e0b" }}>
+                      Grille 80 Colonnes
+                    </span>
+                  </div>
+                  <div style={{
+                    background: "#000000",
+                    border: "2px solid #22c55e",
+                    borderRadius: "8px",
+                    padding: "16px",
+                    boxShadow: "0 0 20px rgba(34, 197, 94, 0.2)"
+                  }}>
+                    <pre style={{
+                      color: "#22c55e",
+                      fontFamily: "monospace",
+                      fontSize: "12px",
+                      lineHeight: "1.25",
+                      margin: 0,
+                      whiteSpace: "pre",
+                      overflowX: "auto"
+                    }}>
+                      {selectedPerCourse.terminalMockup}
+                    </pre>
+                  </div>
+                </div>
+              )}
+
+              {/* VUE 4 : DIRECTIVES, COMPILATION & RÈGLES */}
+              {activePerSubTab === "directives" && (
+                <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+                  {/* DIRECTIVES CLÉS */}
+                  <div>
+                    <h4 style={{ fontSize: "14px", fontWeight: 700, color: "#38bdf8", marginBottom: "10px" }}>
+                      📌 Directives Clés et Rôles dans ce Masque :
+                    </h4>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "10px" }}>
+                      {selectedPerCourse.keyDirectives.map((d, i) => (
+                        <div key={i} style={{ background: "#0f172a", border: "1px solid #334155", borderRadius: "8px", padding: "12px" }}>
+                          <code style={{ fontSize: "12px", color: "#facc15", fontWeight: 700 }}>{d.directive}</code>
+                          <div style={{ fontSize: "12px", color: "#cbd5e1", marginTop: "4px", lineHeight: "1.4" }}>{d.role}</div>
+                          <div style={{ fontSize: "11px", color: "#94a3b8", marginTop: "4px", fontFamily: "monospace", background: "#090d16", padding: "4px 8px", borderRadius: "4px" }}>
+                            {d.example}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* COMPILATION & EXÉCUTION AIX */}
+                  <div style={{ background: "#0f172a", border: "1px solid #334155", borderRadius: "8px", padding: "16px" }}>
+                    <h4 style={{ fontSize: "14px", fontWeight: 700, color: "#10b981", margin: "0 0 10px" }}>
+                      ⚙️ Compilation AIX (form4gl / fglform) :
+                    </h4>
+                    <pre style={{ background: "#090d16", padding: "10px", borderRadius: "6px", border: "1px solid #334155", color: "#34d399", fontSize: "12px", fontFamily: "monospace", margin: "0 0 10px" }}>
+                      {selectedPerCourse.compilationAndRuntime.commandAix}
+                    </pre>
+                    <div style={{ fontSize: "12px", color: "#94a3b8", marginBottom: "8px" }}>
+                      Fichier binaire produit : <code style={{ color: "#facc15" }}>{selectedPerCourse.compilationAndRuntime.generatedBinary}</code>
+                    </div>
+                    <div style={{ fontSize: "12px", color: "#cbd5e1", lineHeight: "1.5" }}>
+                      <strong>Dépannage &amp; Résolution d&apos;erreurs :</strong> {selectedPerCourse.compilationAndRuntime.troubleshooting}
+                    </div>
+                  </div>
+
+                  {/* RÈGLES D'OR DU DÉVELOPPEUR */}
+                  <div style={{ background: "rgba(239, 68, 68, 0.08)", border: "1px solid #ef4444", borderRadius: "8px", padding: "16px" }}>
+                    <h4 style={{ fontSize: "14px", fontWeight: 700, color: "#f87171", margin: "0 0 10px" }}>
+                      🛡️ Règles d&apos;Or &amp; Bonnes Pratiques Bancaires :
+                    </h4>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                      {selectedPerCourse.goldenRules.map((rule, i) => (
+                        <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: "8px", fontSize: "12px", color: "#fca5a5" }}>
+                          <span>⚠️</span>
+                          <span>{rule}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* RESSOURCES ASSOCIÉES */}
+                  <div>
+                    <h4 style={{ fontSize: "13px", fontWeight: 700, color: "#94a3b8", marginBottom: "8px" }}>
+                      📚 Manuels &amp; Normes Associées :
+                    </h4>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "8px" }}>
+                      {selectedPerCourse.resources.map((res, i) => (
+                        <div key={i} style={{ background: "#0f172a", border: "1px solid #334155", borderRadius: "6px", padding: "10px" }}>
+                          <div style={{ fontSize: "12px", fontWeight: 700, color: "#38bdf8" }}>{res.title}</div>
+                          <div style={{ fontSize: "11px", color: "#64748b" }}>{res.type} • {res.urlOrRef}</div>
+                          <div style={{ fontSize: "11px", color: "#94a3b8", marginTop: "2px" }}>{res.description}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* ANALYSE DÉTAILLÉE DU COURS */}
+              <div style={{ marginTop: "24px", paddingTop: "20px", borderTop: "1px solid #334155" }}>
+                <h4 style={{ fontSize: "14px", fontWeight: 700, color: "#f8fafc", marginBottom: "8px" }}>
+                  📖 Guide Didactique Détaillé :
+                </h4>
+                <div style={{
+                  background: "#0f172a",
+                  padding: "16px",
+                  borderRadius: "8px",
+                  border: "1px solid #334155",
+                  fontSize: "13px",
+                  color: "#e2e8f0",
+                  lineHeight: "1.6",
+                  whiteSpace: "pre-line"
+                }}>
+                  {selectedPerCourse.detailedAnalysis}
+                </div>
+              </div>
+
             </div>
 
           </div>
