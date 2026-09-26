@@ -146,6 +146,8 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
       items: [
         { href: "/cbs/academy", label: "CBS Academy (240 QCM)", icon: "🎯" },
         { href: "/cbs/training-4gl", label: "Formation Informix 4GL", icon: "👨‍💻" },
+        { href: "/cbs/per-screens", label: "Cursus Écrans .per", icon: "🖥️" },
+        { href: "/cbs/per-studio", label: "Studio Créateur .per", icon: "✨" },
       ],
     },
   ];
