@@ -407,67 +407,78 @@ export default function Cbs4GlTrainingPage() {
           </div>
         </div>
 
-        {/* ONGLETS INTERNES : COURS / SANDBOX / EXAMEN */}
-        <div className="no-print" style={{ display: "flex", gap: "12px", borderBottom: "1px solid #334155", paddingBottom: "12px" }}>
+        {/* ONGLETS INTERNES : COURS / SANDBOX / EXAMEN / FORM-4GL / STUDIO / FICHE / CERTIFICAT */}
+        <div className="no-print" style={{
+          display: "flex",
+          flexWrap: "wrap",
+          alignItems: "center",
+          gap: "10px",
+          borderBottom: "1px solid #334155",
+          paddingBottom: "14px"
+        }}>
           <button
             onClick={() => setActiveTab("cours")}
             style={{
-              padding: "8px 18px",
+              padding: "8px 16px",
               borderRadius: "8px",
               fontSize: "13px",
               fontWeight: 700,
               border: activeTab === "cours" ? "1px solid #6366f1" : "1px solid #334155",
               background: activeTab === "cours" ? "#4f46e5" : "#1e293b",
               color: "#ffffff",
-              cursor: "pointer"
+              cursor: "pointer",
+              transition: "all 0.15s ease"
             }}
           >
-            📖 1. Fiches de Cours & Ressources
+            📖 1. Cours &amp; Ressources
           </button>
           <button
             onClick={() => setActiveTab("simulateur")}
             style={{
-              padding: "8px 18px",
+              padding: "8px 16px",
               borderRadius: "8px",
               fontSize: "13px",
               fontWeight: 700,
               border: activeTab === "simulateur" ? "1px solid #6366f1" : "1px solid #334155",
               background: activeTab === "simulateur" ? "#4f46e5" : "#1e293b",
               color: "#ffffff",
-              cursor: "pointer"
+              cursor: "pointer",
+              transition: "all 0.15s ease"
             }}
           >
-            💻 2. Sandbox 4GL Interactive
+            💻 2. Sandbox 4GL
           </button>
           <button
             onClick={() => setActiveTab("examen")}
             style={{
-              padding: "8px 18px",
+              padding: "8px 16px",
               borderRadius: "8px",
               fontSize: "13px",
               fontWeight: 700,
               border: activeTab === "examen" ? `1px solid ${currentGrade.color}` : "1px solid #334155",
               background: activeTab === "examen" ? currentGrade.color : "#1e293b",
               color: "#ffffff",
-              cursor: "pointer"
+              cursor: "pointer",
+              transition: "all 0.15s ease"
             }}
           >
-            🎓 3. Examen de Passage ({currentGrade.minPassScorePct}% Requis)
+            🎓 3. Examen ({currentGrade.minPassScorePct}%)
           </button>
           <button
             onClick={() => setActiveTab("per_screens")}
             style={{
-              padding: "8px 18px",
+              padding: "8px 16px",
               borderRadius: "8px",
               fontSize: "13px",
               fontWeight: 700,
               border: activeTab === "per_screens" ? "1px solid #10b981" : "1px solid #334155",
               background: activeTab === "per_screens" ? "#059669" : "#1e293b",
               color: "#ffffff",
-              cursor: "pointer"
+              cursor: "pointer",
+              transition: "all 0.15s ease"
             }}
           >
-            🖥️ 4. Conception Écrans .per (Form-4GL)
+            🖥️ 4. Cursus Écrans .per
           </button>
           <button
             onClick={() => {
@@ -478,20 +489,21 @@ export default function Cbs4GlTrainingPage() {
               padding: "8px 18px",
               borderRadius: "8px",
               fontSize: "13px",
-              fontWeight: 700,
-              border: activeTab === "studio_per" ? "1px solid #f59e0b" : "1px solid #334155",
-              background: activeTab === "studio_per" ? "#d97706" : "#1e293b",
-              color: "#ffffff",
+              fontWeight: 800,
+              border: activeTab === "studio_per" ? "2px solid #fbbf24" : "1px solid #f59e0b",
+              background: activeTab === "studio_per" ? "#d97706" : "rgba(217, 119, 6, 0.15)",
+              color: activeTab === "studio_per" ? "#ffffff" : "#fbbf24",
               cursor: "pointer",
-              boxShadow: activeTab === "studio_per" ? "0 0 12px rgba(245, 158, 11, 0.4)" : "none"
+              boxShadow: activeTab === "studio_per" ? "0 0 16px rgba(245, 158, 11, 0.5)" : "none",
+              transition: "all 0.15s ease"
             }}
           >
-            ✨ 5. Studio Créateur d&apos;Écrans .per
+            ✨ 5. Studio Créateur .per
           </button>
           <button
             onClick={() => setActiveTab("fiche")}
             style={{
-              padding: "8px 18px",
+              padding: "8px 16px",
               borderRadius: "8px",
               fontSize: "13px",
               fontWeight: 700,
@@ -499,15 +511,15 @@ export default function Cbs4GlTrainingPage() {
               background: activeTab === "fiche" ? "#0284c7" : "#1e293b",
               color: "#ffffff",
               cursor: "pointer",
-              marginLeft: "auto"
+              transition: "all 0.15s ease"
             }}
           >
-            📋 Fiche Mémento & Mots-Clés
+            📋 Fiche Mémento
           </button>
           <button
             onClick={() => setActiveTab("certificat")}
             style={{
-              padding: "8px 18px",
+              padding: "8px 16px",
               borderRadius: "8px",
               fontSize: "13px",
               fontWeight: 700,
@@ -515,10 +527,11 @@ export default function Cbs4GlTrainingPage() {
               background: activeTab === "certificat" ? "linear-gradient(135deg, #ca8a04, #a16207)" : "#1e293b",
               color: "#ffffff",
               cursor: "pointer",
-              boxShadow: activeTab === "certificat" ? "0 0 15px rgba(234, 179, 8, 0.4)" : "none"
+              boxShadow: activeTab === "certificat" ? "0 0 15px rgba(234, 179, 8, 0.4)" : "none",
+              transition: "all 0.15s ease"
             }}
           >
-            🏆 Certificat d&apos;Expert 4GL
+            🏆 Certificat 4GL
           </button>
         </div>
 
