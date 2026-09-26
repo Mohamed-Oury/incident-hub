@@ -857,24 +857,72 @@ END MAIN`,
   +-------------+------------+----------------------------------+-------------+
   [Boutons d'action GUI] : [Export Excel] [Imprimer Relevé] [Aide F1] [Fermer]`,
     detailedAnalysis: `Dans les environnements modernes Amplitude CBS propulsés par Four Js Genero (BDL) :
-1. Supériorité de SCHEMA sur DATABASE :
-   - 'DATABASE nom_base' exigeait la présence physique d'une base active du même nom lors de la compilation avec 'form4gl'.
-   - 'SCHEMA nom_schema' utilise un schéma extrait au format XML/schéma logique, permettant de compiler le masque .per sur n'importe quel serveur ou conteneur CI/CD sans dépendre d'une instance de base active. Le binaire .42f devient totalement portable entre les environnements DEV, HOMOLOGATION et PRODUCTION.
-2. Conteneurs d'agencement Graphique (LAYOUT, VBOX, HBOX, GRID) :
-   - VBOX (Vertical Box) : empile les sections les unes sous les autres. En redimensionnant la fenêtre, les sections s'adaptent automatiquement sans déborder.
-   - HBOX (Horizontal Box) : dispose deux ou plusieurs panneaux côte à côte. Avec l'option (SPLITTER), l'utilisateur final peut déplacer la barre de séparation pour agrandir la vue de son choix.
-   - GRID : aligne les étiquettes et les champs sous forme de grille adaptative, supprimant le besoin de compter les coordonnées (lignes/colonnes) des anciens écrans terminaux 80x24.
-3. Composants d'enrichissement GUI (FOLDER, PAGE, TABLE) :
-   - FOLDER et PAGE matérialisent des onglets cliquables natifs permettant d'organiser une multitude de données sans surcharger l'écran.
-   - TABLE remplace les blocs d'itérations SCREEN RECORD par un vrai composant de grille avec en-têtes cliquables pour le tri, redimensionnement des colonnes et événement DOUBLECLICK.`,
+
+================================================================================
+1. DIRECTIVE SCHEMA VS DATABASE : LE DÉCOUPLAGE FONDAMENTAL
+================================================================================
+• 'DATABASE nom_base' (Syntaxe Informix Legacy) :
+  Exigeait impérativement la présence d'une base de données physique en ligne portant le même nom lors de la compilation avec 'form4gl'. Si la base était inaccessible, la compilation échouait.
+• 'SCHEMA nom_schema' (Standard Moderne Amplitude Genero) :
+  Génère le masque en utilisant le schéma logique abstrait (extrait XML ou dictionnaire de schéma compilé). La compilation est 100% autonome et déconnectée de la base physique. Le fichier binaire produit (.42f) est strictement identique et portable entre les serveurs de DÉVELOPPEMENT, de RECETTE/HOMOLOGATION et de PRODUCTION.
+
+================================================================================
+2. LES CONTENEURS D'AGENCEMENT GRAPHIQUE (RESPONSIVE & FLUIDE)
+================================================================================
+• LAYOUT (TEXT = "...", STYLE = "...") :
+  - Rôle : Conteneur racine unique remplaçant l'ancienne section 'SCREEN'.
+  - Fonctionnalités : Définit les propriétés globales de la fenêtre (titre de la barre de fenêtre avec TEXT, thème graphique via STYLE, icône de l'application via IMAGE).
+
+• VBOX (Vertical Box) :
+  - Rôle : Conteneur d'empilement vertical automatique de haut en bas.
+  - Comportement : Les éléments enfants (ex: GRID d'en-tête, HBOX centrale, TABLE de détail) s'empilent naturellement. En cas de redimensionnement de la fenêtre, la VBOX alloue l'espace vertical excédentaire aux composants extensibles (comme la TABLE).
+
+• HBOX (Horizontal Box) & Option (SPLITTER) :
+  - Rôle : Conteneur de disposition horizontale côte à côte (gauche à droite).
+  - Cas d'usage bancaire : Placer par exemple les informations Tiers & KYC sur le panneau de gauche et la synthèse financière & alertes sur le panneau de droite.
+  - Option (SPLITTER) : Insère une barre de séparation manipulable à la souris par l'opérateur d'agence pour élargir ou rétrécir l'un des deux panneaux selon son confort.
+
+• GRID :
+  - Rôle : Grille adaptative pour disposer les libellés et les champs de saisie.
+  - Avantage : Supprime définitivement la contrainte rigide des terminaux 80 colonnes x 24 lignes. Les champs s'alignent automatiquement en matrice fluide avec un espacement typographique régulier.
+
+• GROUP (<G "Titre du Cadre"> ... >) :
+  - Rôle : Cadre de regroupement visuel (Fieldset) au sein d'une GRID, délimitant des sous-ensembles fonctionnels (ex: <G "Informations Tiers">).
+
+================================================================================
+3. NAVIGATION MULTI-VUES ET COMPOSANTS RICHES (FOLDER, PAGE, TABLE)
+================================================================================
+• FOLDER & PAGE :
+  - Rôle : Gestionnaire natif d'onglets graphiques.
+  - Structure : Le conteneur FOLDER regroupe plusieurs conteneurs 'PAGE nom_page (TEXT = "Libellé de l'onglet")'.
+  - Avantage bancaire : Permet de condenser sur une même fiche 360° les Mouvements, les Cartes, les Prêts et les Garanties sans saturer l'écran ni multiplier les fenêtres pop-up.
+
+• TABLE (Composant de Grille Défilante) :
+  - Rôle : Remplace les boucles statiques SCREEN RECORD par un vrai composant de table graphique.
+  - Fonctionnalités :
+    * Tri automatique : L'utilisateur peut cliquer sur n'importe quel en-tête de colonne pour trier les données (ascendant/descendant).
+    * Redimensionnement : Largeur des colonnes ajustable à la souris.
+    * Défilement fluide (Scrollbar) : Navigation instantanée dans des milliers d'enregistrements bancaires.
+    * Attribut DOUBLECLICK : Déclenche une action 4GL spécifique lors d'un double-clic (ex: ouvrir le zoom sur une écriture comptable).
+
+================================================================================
+4. ATTRIBUTS GRAPHIQUES MODERNES (STYLES, WIDGETS & CONTRÔLES)
+================================================================================
+• STYLE : Applique des feuilles de styles (.4st) pour colorer les champs (ex: STYLE="mandatory" pour surbrillance jaune/rouge, STYLE="kpi_positive" pour vert bancaire).
+• COMBOBOX : Transforme un champ code en liste déroulante avec libellés conviviaux.
+• BUTTONEDIT : Champ texte avec bouton loupe intégré pour recherche rapide (LOV).
+• DATEEDIT : Calendrier contextuel pop-up pour sélection intuitive des dates.
+• INVISIBLE / NOECHO : Masquage strict des caractères saisis pour conformité PCI-DSS (codes PIN, mots de passe superviseur).`,
     keyDirectives: [
-      { directive: "SCHEMA nom_schema", role: "Spécifie le schéma logique de données sans exiger de connexion SGBD physique à la compilation", example: "SCHEMA amplitude_db" },
-      { directive: "LAYOUT (TEXT = \"...\", STYLE = \"...\")", role: "Conteneur racine pour la définition d'un formulaire graphique Genero", example: "LAYOUT (TEXT = \"Gestion de Caisse\", STYLE = \"main_win\")" },
-      { directive: "VBOX / END -- VBOX", role: "Conteneur d'empilement vertical automatique", example: "VBOX ... END" },
-      { directive: "HBOX (SPLITTER) / END", role: "Conteneur de disposition horizontale avec séparateur ajustable", example: "HBOX (SPLITTER) ... END" },
-      { directive: "GRID / END -- GRID", role: "Grille tabulaire adaptative pour aligner labels et champs", example: "GRID ... END" },
-      { directive: "FOLDER / PAGE ... END", role: "Gestionnaire d'onglets graphiques avec libellés", example: "FOLDER PAGE tab1 (TEXT=\"Infos\") ... END FOLDER" },
-      { directive: "TABLE (DOUBLECLICK = action)", role: "Grille graphique riche avec gestion du double-clic utilisateur", example: "TABLE (DOUBLECLICK = zoom_row) ... END" }
+      { directive: "SCHEMA nom_schema", role: "Déclare le schéma logique sans connexion SGBD physique obligatoire à la compilation", example: "SCHEMA amplitude_db" },
+      { directive: "LAYOUT (TEXT = \"...\", STYLE = \"...\")", role: "Conteneur racine d'interface graphique remplaçant SCREEN", example: "LAYOUT (TEXT = \"Fiche Client 360°\", STYLE = \"main_win\")" },
+      { directive: "VBOX / END -- VBOX", role: "Conteneur vertical qui empile les composants de haut en bas", example: "VBOX ... END -- VBOX" },
+      { directive: "HBOX (SPLITTER) / END", role: "Conteneur horizontal côte à côte avec séparateur redimensionnable", example: "HBOX (SPLITTER) ... END -- HBOX" },
+      { directive: "GRID / END -- GRID", role: "Grille responsive alignant étiquettes et champs sans coordonnées fixes", example: "GRID ... END -- GRID" },
+      { directive: "<G \"Titre\"> ... >", role: "Cadre de regroupement visuel (Group Box / Fieldset) dans une GRID", example: "<G \"Synthèse Risques\"> ... >" },
+      { directive: "FOLDER / PAGE ... END", role: "Conteneur d'onglets graphiques natifs cliquables", example: "FOLDER PAGE tab1 (TEXT=\"Mouvements\") ... END FOLDER" },
+      { directive: "TABLE (DOUBLECLICK = action)", role: "Tableau graphique avec tri, colonnes ajustables et double-clic", example: "TABLE (DOUBLECLICK = zoom_mvt) ... END -- TABLE" },
+      { directive: "STYLE = \"nom_style\"", role: "Liaison avec la feuille de style graphique (.4st) pour thèmes d'agence", example: "f010 = bkcpt.sol, STYLE = \"kpi_positive\"" }
     ],
     goldenRules: [
       "Préférer toujours 'SCHEMA' à 'DATABASE' pour garantir la portabilité des binaires compilés .42f sur l'ensemble des environnements bancaires.",
