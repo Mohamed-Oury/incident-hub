@@ -9,7 +9,7 @@ import {
 import { GeneroGuiWindow } from "@/modules/cbs/GeneroGuiWindow";
 
 export default function PerScreensPage() {
-  const [selectedPerCourse, setSelectedPerCourse] = useState<Cbs4GlPerScreenCourse>(CBS_4GL_PER_COURSES[0]);
+  const [selectedPerCourse, setSelectedPerCourse] = useState<Cbs4GlPerScreenCourse>(CBS_4GL_PER_COURSES[4] || CBS_4GL_PER_COURSES[0]);
   const [activePerSubTab, setActivePerSubTab] = useState<"gui" | "per" | "4gl" | "terminal" | "directives">("gui");
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
 

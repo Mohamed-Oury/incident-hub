@@ -74,7 +74,7 @@ function runQaAll() {
   assert("TEST 19 - Modules de Cours Informix 4GL Détaillés", CBS_4GL_LESSONS.length >= 23, `${CBS_4GL_LESSONS.length} chapitres de formation approfondis (incluant 5 leçons écrans .per)`);
   assert("TEST 20 - Banque d'Examens de Passage de Grade CBS 4GL", CBS_4GL_EXAMS.length >= 75 && [1, 2, 3, 4, 5].every(lvl => CBS_4GL_EXAMS.filter(q => q.gradeLevel === lvl).length >= 15), `${CBS_4GL_EXAMS.length} questions officielles (au moins 15 questions par grade)`);
   assert("TEST 21 - Fiche Mémento Mots-Clés Informix 4GL", CBS_4GL_KEYWORDS_CHEAT_SHEET.length >= 200, `${CBS_4GL_KEYWORDS_CHEAT_SHEET.length} cartes de révision détaillées`);
-  assert("TEST 21 bis - Cursus Dédié Conception Écrans .per (Form-4GL)", CBS_4GL_PER_COURSES.length === 4 && CBS_4GL_PER_COURSES.every(c => c.perSourceCode.length > 0 && c.terminalMockup.length > 0), `${CBS_4GL_PER_COURSES.length} cours exhaustifs Débutant à Expert avec masques, 4GL, VT100 et form4gl`);
+  assert("TEST 21 bis - Cursus Dédié Conception Écrans .per (Form-4GL & IHM Graphique Genero)", CBS_4GL_PER_COURSES.length === 5 && CBS_4GL_PER_COURSES.every(c => c.perSourceCode.length > 0 && (c.terminalMockup.length > 0 || c.isGuiModern)), `${CBS_4GL_PER_COURSES.length} cours exhaustifs Débutant à IHM Graphique Moderne (SCHEMA, LAYOUT, VBOX, HBOX, GRID, FOLDER, TABLE)`);
   
   const customScreenSample = generateCustomPerScreen({
     title: "Gestion Guichet Retrait Espèces",
@@ -82,12 +82,12 @@ function runQaAll() {
     domain: "Comptes & Guichet",
     screenLayoutType: "SECURE_AUTH"
   });
-  assert("TEST 21 ter - Studio Créateur Écrans .per & Liaison Base", 
-    customScreenSample.perSourceCode.includes("DATABASE amplitude_db") &&
+  assert("TEST 21 ter - Studio Créateur Écrans .per & IHM Graphique Genero par défaut", 
+    customScreenSample.perSourceCode.includes("SCHEMA amplitude_db") &&
+    customScreenSample.perSourceCode.includes("LAYOUT") &&
     customScreenSample.perSourceCode.includes("ATTRIBUTES") &&
-    customScreenSample.terminalMockup.includes("AMPLITUDE") &&
     customScreenSample.fourGlSourceCode.includes("MAIN"),
-    `Masque dynamique généré (${customScreenSample.primaryTable}), terminal VT100 et code 4GL fonctionnels`
+    `Masque graphique Genero généré (${customScreenSample.primaryTable}) avec SCHEMA, LAYOUT, DIALOG et code 4GL fonctionnels`
   );
 
   // --- NOUVEAU CURSUS FORMATION & CERTIFICATION MONÉTIQUE (150 EXAMENS) ---
