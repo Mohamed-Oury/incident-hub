@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { AppShell } from "@/modules/layout/AppShell";
 import {
   CustomPerScreen,
+  CbsPerScreenLayoutType,
   generateCustomPerScreen
 } from "@/modules/cbs/cbs-screen-builder";
 
@@ -11,7 +12,7 @@ export default function PerStudioPage() {
   const [studioPrompt, setStudioPrompt] = useState<string>("");
   const [studioTitle, setStudioTitle] = useState<string>("Écran Consultation Guichet & Soldes");
   const [studioDomain, setStudioDomain] = useState<string>("Comptes & Guichet");
-  const [studioLayoutType, setStudioLayoutType] = useState<"STANDARD_FORM" | "TABLE_ARRAY" | "MODAL_POPUP" | "SECURE_AUTH">("STANDARD_FORM");
+  const [studioLayoutType, setStudioLayoutType] = useState<CbsPerScreenLayoutType>("STANDARD_FORM");
   const [currentCustomScreen, setCurrentCustomScreen] = useState<CustomPerScreen | null>(null);
   const [savedScreensList, setSavedScreensList] = useState<CustomPerScreen[]>([]);
   const [isGeneratingScreen, setIsGeneratingScreen] = useState<boolean>(false);
@@ -289,11 +290,16 @@ export default function PerStudioPage() {
                     }}
                   >
                     <option value="Comptes & Guichet">Comptes, Soldes & Guichet Agence</option>
-                    <option value="Virements & Transferts">Virements, Transferts & Compensation</option>
-                    <option value="Monétique & Cartes">Monétique, Cartes & Terminaux GAB</option>
-                    <option value="Crédits & Prêts">Crédits, Engagements & Découverts</option>
-                    <option value="Sécurité & Habilitations">Habilitations, Double Validation & Risque</option>
-                    <option value="Comptabilité & Balance">Comptabilité Générale & Déclaratif</option>
+                    <option value="Clientèle & KYC">Clientèle, Tiers & Conformité KYC/PPE</option>
+                    <option value="Virements & Transferts">Virements, Transferts & Compensation (SEPA/RTGS)</option>
+                    <option value="Monétique & Cartes">Monétique, Cartes & Terminaux GAB/ATM</option>
+                    <option value="Chèques & Effets">Chèques, Chéquiers, Effets & Compensation</option>
+                    <option value="Crédits & Prêts">Crédits, Engagements, Prêts & Échéanciers</option>
+                    <option value="Sécurité & Habilitations">Sécurité, Habilitations, Double Visa & Risques</option>
+                    <option value="Comptabilité & Balance">Comptabilité Générale, Grand Livre & Balance EOD</option>
+                    <option value="Opérations Internationales & Credoc">Opérations Internationales, Crédoc & Remdoc</option>
+                    <option value="Trésorerie & Change Devises">Trésorerie, Forex & Arbitrage Devises</option>
+                    <option value="Contentieux & Recouvrement">Contentieux, Douteux & Recouvrement</option>
                   </select>
                 </div>
 
@@ -314,10 +320,14 @@ export default function PerStudioPage() {
                       fontSize: "13px"
                     }}
                   >
-                    <option value="STANDARD_FORM">Formulaire Standard 80x24 (Saisie mono-enregistrement)</option>
-                    <option value="TABLE_ARRAY">Écran Mixte avec Grille Défilante (DISPLAY ARRAY)</option>
-                    <option value="MODAL_POPUP">Fenêtre Modale / Confirmation (Encadré centré)</option>
-                    <option value="SECURE_AUTH">Écran Sécurisé (Masquage NOECHO & Double Clé)</option>
+                    <option value="STANDARD_FORM">Formulaire Standard 80x24 (Saisie fiche mono-enregistrement)</option>
+                    <option value="TABLE_ARRAY">Grille Défilante Scrollable (SCREEN RECORD & DISPLAY ARRAY)</option>
+                    <option value="MODAL_POPUP">Fenêtre Modale Pop-up / Liste de Valeurs (LOV & ATTRIBUTE BORDER)</option>
+                    <option value="SECURE_AUTH">Écran Haute Sécurité (NOECHO, Saisie PIN & Double Visa)</option>
+                    <option value="MASTER_DETAIL">Master-Détail (En-tête Dossier + Lignes d'écritures avec solde)</option>
+                    <option value="WIZARD_STEPS">Assistant Guidé Multi-Étapes (Instruction par étapes F7/F8)</option>
+                    <option value="SPLIT_DASHBOARD">Tableau de Bord / Split KPIs (Synthèse + Événements récents)</option>
+                    <option value="SEARCH_FILTER">Moteur de Recherche Multi-critères (CONSTRUCT dynamique & filtres)</option>
                   </select>
                 </div>
               </div>
@@ -383,6 +393,54 @@ export default function PerStudioPage() {
                   style={{ background: "#1e293b", border: "1px solid #334155", color: "#cbd5e1", fontSize: "11px", padding: "4px 8px", borderRadius: "4px", cursor: "pointer" }}
                 >
                   ⚡ Sécurité & NOECHO
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setStudioTitle("Saisie Dossier & Imputations Comptables Multi-Lignes");
+                    setStudioDomain("Comptabilité & Balance");
+                    setStudioLayoutType("MASTER_DETAIL");
+                    setStudioPrompt("Écran en-tête de dossier comptable avec référence, date de valeur et devise, relié à une grille de lignes de débit et crédit avec contrôle strict de l'écart à zéro.");
+                  }}
+                  style={{ background: "#1e293b", border: "1px solid #334155", color: "#cbd5e1", fontSize: "11px", padding: "4px 8px", borderRadius: "4px", cursor: "pointer" }}
+                >
+                  ⚡ Master-Détail
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setStudioTitle("Instruction Prêt Immobilier & Simulation");
+                    setStudioDomain("Crédits & Prêts");
+                    setStudioLayoutType("WIZARD_STEPS");
+                    setStudioPrompt("Assistant guidé pour prêt bancaire en 3 étapes : identification du tiers, calcul de la mensualité et amortissement, et validation du comité de crédit.");
+                  }}
+                  style={{ background: "#1e293b", border: "1px solid #334155", color: "#cbd5e1", fontSize: "11px", padding: "4px 8px", borderRadius: "4px", cursor: "pointer" }}
+                >
+                  ⚡ Assistant Multi-Étapes
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setStudioTitle("Supervision Temps Réel Flux Monétique & Agence");
+                    setStudioDomain("Monétique & Cartes");
+                    setStudioLayoutType("SPLIT_DASHBOARD");
+                    setStudioPrompt("Tableau de bord partagé entre indicateurs volumétriques de compensation, alertes de risque/GAB en panne et liste des derniers événements survenus.");
+                  }}
+                  style={{ background: "#1e293b", border: "1px solid #334155", color: "#cbd5e1", fontSize: "11px", padding: "4px 8px", borderRadius: "4px", cursor: "pointer" }}
+                >
+                  ⚡ Dashboard KPIs
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setStudioTitle("Recherche Multi-critères Tiers & Comptes");
+                    setStudioDomain("Clientèle & KYC");
+                    setStudioLayoutType("SEARCH_FILTER");
+                    setStudioPrompt("Formulaire de recherche dynamique avec directive CONSTRUCT 4GL sur le code tiers, nom, compte et agence avec affichage immédiat de la liste de résultats.");
+                  }}
+                  style={{ background: "#1e293b", border: "1px solid #334155", color: "#cbd5e1", fontSize: "11px", padding: "4px 8px", borderRadius: "4px", cursor: "pointer" }}
+                >
+                  ⚡ Recherche CONSTRUCT
                 </button>
               </div>
 
