@@ -909,10 +909,21 @@ END MAIN`,
 4. ATTRIBUTS GRAPHIQUES MODERNES (STYLES, WIDGETS & CONTRÔLES)
 ================================================================================
 • STYLE : Applique des feuilles de styles (.4st) pour colorer les champs (ex: STYLE="mandatory" pour surbrillance jaune/rouge, STYLE="kpi_positive" pour vert bancaire).
-• COMBOBOX : Transforme un champ code en liste déroulante avec libellés conviviaux.
-• BUTTONEDIT : Champ texte avec bouton loupe intégré pour recherche rapide (LOV).
-• DATEEDIT : Calendrier contextuel pop-up pour sélection intuitive des dates.
-• INVISIBLE / NOECHO : Masquage strict des caractères saisis pour conformité PCI-DSS (codes PIN, mots de passe superviseur).`,
+• COMBOBOX : Transforme un champ code en liste déroulante avec libellés conviviaux (ex: ITEMS=(("A","Actif"),("F","Fermé"),("B","Bloqué"))).
+• BUTTONEDIT : Champ texte avec bouton loupe intégré pour recherche rapide (LOV) et action graphique associée (ACTION=zoom_tiers, IMAGE="zoom.png").
+• DATEEDIT : Calendrier contextuel pop-up pour sélection intuitive des dates (FORMAT="dd/mm/yyyy", CENTURY="2000").
+• CHECKBOX : Case à cocher booléenne pour validations bancaires immédiates (ex: VALUECHECKED="O", VALUEUNCHECKED="N", NOT NULL).
+• RADIOGROUP : Boutons radio à choix exclusif (ex: ITEMS=(("M","Mensuel"),("T","Trimestriel"),("A","Annuel"))).
+• PROGRESSBAR : Jauge visuelle de progression pour les traitements batch EOD, calculs d'intérêts ou exports de fichiers (VALUEMIN=0, VALUEMAX=100).
+• INVISIBLE / NOECHO : Masquage strict des caractères saisis pour conformité PCI-DSS (codes PIN, mots de passe superviseur).
+• PLACEHOLDER : Texte indicatif en filigrane grisé guidant l'utilisateur avant la saisie (ex: PLACEHOLDER="Ex: 01001004589").
+• TABINDEX : Ordre précis de tabulation personnalisé indépendamment de l'ordre géométrique dans la GRID (ex: TABINDEX=1, TABINDEX=2).
+• NOT NULL : Empêche la validation si la zone reste vide ou indéfinie au niveau du formulaire.
+• DEFAULT : Pré-remplissage automatique (DEFAULT=TODAY pour date, DEFAULT="XOF" pour devise agence).
+• VALIDATE LIKE : Règle de validation d'intégrité héritée directement de la colonne du schéma logique SGBD (ex: VALIDATE LIKE bkcpt.age).
+• WANTFIXEDPAGESIZE = NO : Permet aux TABLE graphiques d'adapter dynamiquement leur nombre de lignes affichées à la taille de la fenêtre écran au lieu d'une pagination figée.
+• SCROLLBARS = BOTH / VERTICAL / NONE : Contrôle précis des ascenseurs de défilement des panneaux ou des tableaux.
+• WEBCOMPONENT : Intégration d'un composant HTML5 / JavaScript tiers dans le formulaire Genero (ex: signature électronique sur tablette, graphiques interactifs Chart.js).`,
     keyDirectives: [
       { directive: "SCHEMA nom_schema", role: "Déclare le schéma logique sans connexion SGBD physique obligatoire à la compilation", example: "SCHEMA amplitude_db" },
       { directive: "LAYOUT (TEXT = \"...\", STYLE = \"...\")", role: "Conteneur racine d'interface graphique remplaçant SCREEN", example: "LAYOUT (TEXT = \"Fiche Client 360°\", STYLE = \"main_win\")" },
@@ -922,6 +933,13 @@ END MAIN`,
       { directive: "<G \"Titre\"> ... >", role: "Cadre de regroupement visuel (Group Box / Fieldset) dans une GRID", example: "<G \"Synthèse Risques\"> ... >" },
       { directive: "FOLDER / PAGE ... END", role: "Conteneur d'onglets graphiques natifs cliquables", example: "FOLDER PAGE tab1 (TEXT=\"Mouvements\") ... END FOLDER" },
       { directive: "TABLE (DOUBLECLICK = action)", role: "Tableau graphique avec tri, colonnes ajustables et double-clic", example: "TABLE (DOUBLECLICK = zoom_mvt) ... END -- TABLE" },
+      { directive: "BUTTONEDIT (ACTION = zoom)", role: "Champ texte assisté avec icône loupe de recherche ou zoom", example: "b01 = bkcpt.cli, BUTTONEDIT, ACTION = zoom_tiers" },
+      { directive: "COMBOBOX (ITEMS = (...))", role: "Liste déroulante ergonomique alimentée en dur ou par dictionnaire", example: "c01 = bkcpt.eta, COMBOBOX, ITEMS = ((\"A\",\"Actif\"), (\"B\",\"Bloqué\"))" },
+      { directive: "CHECKBOX", role: "Case à cocher booléenne pour options et bascules fonctionnelles", example: "k01 = FORMONLY.is_resident, CHECKBOX, VALUECHECKED = \"O\", VALUEUNCHECKED = \"N\"" },
+      { directive: "DATEEDIT", role: "Sélecteur de calendrier graphique contextuel pop-up", example: "d01 = FORMONLY.dat_val, DATEEDIT, FORMAT = \"dd/mm/yyyy\"" },
+      { directive: "PROGRESSBAR", role: "Indicateur graphique de chargement ou d'exécution", example: "p01 = FORMONLY.pct_progression, PROGRESSBAR, VALUEMIN = 0, VALUEMAX = 100" },
+      { directive: "TABINDEX = n", role: "Définit la séquence de navigation au clavier touche Tab", example: "f001 = bkcpt.ncp, TABINDEX = 1" },
+      { directive: "PLACEHOLDER = \"...\"", role: "Texte d'aide grisé affiché dans le champ avant saisie", example: "f003 = bkcpt.rib, PLACEHOLDER = \"Saisir 24 caractères IBAN/RIB\"" },
       { directive: "STYLE = \"nom_style\"", role: "Liaison avec la feuille de style graphique (.4st) pour thèmes d'agence", example: "f010 = bkcpt.sol, STYLE = \"kpi_positive\"" }
     ],
     goldenRules: [

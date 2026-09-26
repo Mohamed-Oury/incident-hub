@@ -121,29 +121,31 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
       ],
     },
     {
-      key: "cbs_ops",
-      title: "IT BANKING OPS",
-      icon: "🖥️",
-      roleRequired: "ROLE_EXPERTISE",
-      items: [
-        { href: "/cbs/copilot", label: "4GL Development Copilot", icon: "🤖" },
-        { href: "/cbs/log-analyzer", label: "Analyseur de Logs & Traces", icon: "📜" },
-        { href: "/cbs/unix", label: "Commandes AIX/Unix", icon: "💻" },
-        { href: "/cbs/incidents", label: "Incidents RCA & Run", icon: "🚨" },
-      ],
-    },
-    {
       key: "cbs_academy",
       title: "FORMATION & CERTIF",
       icon: "🎓",
       roleRequired: "ROLE_REFERENTIELS",
       items: [
-        { href: "/cbs/academy", label: "CBS Academy (240 QCM)", icon: "🎯" },
-        { href: "/cbs/training-4gl", label: "Formation Informix 4GL", icon: "👨‍💻" },
-        { href: "/cbs/per-screens", label: "Cursus Écrans .per", icon: "🖥️" },
+        { href: "/cbs/copilot", label: "4GL Development Copilot", icon: "🤖" },
+        { href: "/cbs/training-4gl", label: "Développement 4GL", icon: "👨‍💻" },
+        { href: "/cbs/per-screens", label: "Écrans .per", icon: "🖥️" },
         { href: "/cbs/per-studio", label: "Studio Créateur .per", icon: "✨" },
+        { href: "/cbs/academy", label: "CBS Academy", icon: "🎯" },
+
       ],
     },
+    {
+      key: "cbs_ops",
+      title: "IT BANKING OPS",
+      icon: "🖥️",
+      roleRequired: "ROLE_EXPERTISE",
+      items: [
+        { href: "/cbs/log-analyzer", label: "Analyseur de Logs & Traces", icon: "📜" },
+        { href: "/cbs/unix", label: "Commandes AIX/Unix", icon: "💻" },
+        { href: "/cbs/incidents", label: "Incidents RCA & Run", icon: "🚨" },
+      ],
+    },
+
   ];
 
   const currentNavSections = isCbsUniverse ? cbsNavSections : monetiqueNavSections;
