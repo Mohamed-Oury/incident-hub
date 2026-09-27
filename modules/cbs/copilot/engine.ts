@@ -112,7 +112,6 @@ export function generateCopilotPlan(input: DevelopmentNeedInput): CopilotFullPla
   const technicalEnvironment = input?.technicalEnvironment || "Informix / AIX";
   const targetUsers = input?.targetUsers?.trim() || "Opérateur / Gestionnaire CBS";
   const inputData = input?.inputData?.trim() || "Paramètres de recherche et d'exécution";
-  const expectedOutput = input?.expectedOutput?.trim() || "Statut d'exécution et enregistrements comptables";
   const knownBusinessRules = input?.knownBusinessRules?.trim() || "Contrôle d'intégrité référentielle et d'habilitation";
 
   const allText = title + " " + bankingDomain + " " + functionalDescription + " " + inputData + " " + knownBusinessRules;

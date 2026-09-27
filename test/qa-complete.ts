@@ -126,12 +126,9 @@ function runQaAll() {
     targetUsers: "Gestionnaire de compte",
     knownBusinessRules: "Contrôle d existence et contrôle d habilitation",
     inputData: "Numéro de compte",
-    expectedOutput: "Solde et mouvements",
     specialConstraints: "Temps < 300ms",
     amplitudeVersion: "v11.x",
     technicalEnvironment: "Informix / AIX",
-    nominalExample: "Compte 001001234567",
-    errorExample: "Compte inexistant",
   });
   assert("TEST 26 - CBS 4GL Development Copilot (Plan, Sous-tâches, 4GL, .per, SQL, Tests)",
     copilotPlan.subTasks.length >= 5 &&

@@ -24,12 +24,9 @@ const PRESET_NEEDS: { label: string; icon: string; input: DevelopmentNeedInput }
       knownBusinessRules:
         "Contrôle d'existence du compte dans BKCPT, contrôle d'habilitation agence, interdiction de consultation sur compte sous séquestre ou contentieux (ETA='D') sans profil Superviseur.",
       inputData: "Code agence (5 car.) et numéro de compte racine (11 chiffres)",
-      expectedOutput: "Nom/Prénom titulaire (BKCLI), solde comptable, indisponibilités, solde disponible, historique 10 derniers mouvements",
       specialConstraints: "Temps de réponse inférieur à 300ms, masquage des informations confidentielles non nécessaires",
       amplitudeVersion: "v11.x",
       technicalEnvironment: "Informix / AIX",
-      nominalExample: "Agence 00100, Compte 001001234567 -> Affiche 'M. DIOP - Solde 1 540 000 XOF - Actif'",
-      errorExample: "Compte 999999999999 -> Rejet 'Compte introuvable dans le référentiel BKCPT'",
     },
   },
   {
@@ -44,12 +41,9 @@ const PRESET_NEEDS: { label: string; icon: string; input: DevelopmentNeedInput }
       knownBusinessRules:
         "Solde disponible suffisant (SOL - SIND >= Montant), même devise pour les deux comptes ou appel au module de change, interdiction si compte donneur d'ordre clôturé (ETA='F').",
       inputData: "Compte émetteur, Compte destinataire, Montant, Devise, Motif",
-      expectedOutput: "Numéro d'événement BKTRA généré, solde après écriture, accusé d'imputation comptable",
       specialConstraints: "Exécution dans une transaction unique (BEGIN WORK / COMMIT WORK) avec ROLLBACK immédiat en cas d'incident.",
       amplitudeVersion: "v11.x",
       technicalEnvironment: "Informix / AIX",
-      nominalExample: "Débit 500 000 XOF sur CPT-A, Crédit 500 000 XOF sur CPT-B -> Statut SUCCÈS",
-      errorExample: "CPT-A solde insuffisant -> Rejet 'Provision insuffisante (Solde dispo < Montant)'",
     },
   },
   {
@@ -64,12 +58,9 @@ const PRESET_NEEDS: { label: string; icon: string; input: DevelopmentNeedInput }
       knownBusinessRules:
         "Augmenter BKCPT.SIND de la valeur autorisée. Si délai d'expiration de 7 jours dépassé sans présentation de compensation, libérer la provision réservée.",
       inputData: "Identifiant compte BKCPT, Numéro d'autorisation (STAN/RRN), Montant de la réservation",
-      expectedOutput: "Nouveau SIND calculé, confirmation de prise de garantie",
       specialConstraints: "Latence maximale 120ms pour respecter le SLA Switch monétique.",
       amplitudeVersion: "v11.x",
       technicalEnvironment: "Informix / AIX",
-      nominalExample: "Autorisation 50 000 XOF GAB -> SIND passe de 10 000 à 60 000 XOF",
-      errorExample: "Dépassement du découvert autorisé -> Code réponse monétique 51 (Fonds insuffisants)",
     },
   },
   {
@@ -84,12 +75,9 @@ const PRESET_NEEDS: { label: string; icon: string; input: DevelopmentNeedInput }
       knownBusinessRules:
         "Somme(SDC) = Somme(SCC) pour chaque devise gérée dans BKDEV. Tolérance d'écart = 0.0000.",
       inputData: "Code devise, Date de journée comptable",
-      expectedOutput: "Rapport d'équilibre de balance, code retour 0 (GO BOD) ou 99 (NO GO BOD)",
       specialConstraints: "Exécution sans IHM en mode CLI Unix AIX, journalisation détaillée des comptes déséquilibrés.",
       amplitudeVersion: "v11.x",
       technicalEnvironment: "Informix / AIX",
-      nominalExample: "Total Débit XOF = Total Crédit XOF -> Basculement EOD autorisé",
-      errorExample: "Écart de 1 250 XOF détecté sur chapitre 4110 -> Blocage immédiat de la chaîne EOD",
     },
   },
 ];
@@ -101,12 +89,9 @@ const EMPTY_NEED: DevelopmentNeedInput = {
   targetUsers: "",
   knownBusinessRules: "",
   inputData: "",
-  expectedOutput: "",
   specialConstraints: "",
   amplitudeVersion: "v11.x",
   technicalEnvironment: "Informix / AIX",
-  nominalExample: "",
-  errorExample: "",
 };
 
 export default function CbsCopilotPage() {
@@ -835,27 +820,6 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                       type="text"
                       value={needInput.inputData}
                       onChange={(e) => setNeedInput({ ...needInput, inputData: e.target.value })}
-                      style={{
-                        width: "100%",
-                        backgroundColor: "#ffffff",
-                        border: "1px solid #cbd5e1",
-                        borderRadius: "6px",
-                        padding: "0.55rem 0.75rem",
-                        color: "#0f172a",
-                        fontSize: "0.85rem",
-                        boxSizing: "border-box",
-                      }}
-                    />
-                  </div>
-
-                  <div style={{ minWidth: 0 }}>
-                    <label style={{ fontSize: "0.82rem", fontWeight: 600, color: "#334155", display: "block", marginBottom: "4px" }}>
-                      Données en Sortie Attendues
-                    </label>
-                    <input
-                      type="text"
-                      value={needInput.expectedOutput}
-                      onChange={(e) => setNeedInput({ ...needInput, expectedOutput: e.target.value })}
                       style={{
                         width: "100%",
                         backgroundColor: "#ffffff",

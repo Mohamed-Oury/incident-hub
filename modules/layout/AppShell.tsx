@@ -127,6 +127,7 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
       roleRequired: "ROLE_REFERENTIELS",
       items: [
         { href: "/cbs/copilot", label: "4GL Development Copilot", icon: "🤖" },
+        { href: "/cbs/memo-conception", label: "Antisèche 4GL & .PER", icon: "🧠" },
         { href: "/cbs/training-4gl", label: "Développement 4GL", icon: "👨‍💻" },
         { href: "/cbs/per-screens", label: "Écrans .per", icon: "🖥️" },
         { href: "/cbs/per-studio", label: "Studio Créateur .per", icon: "✨" },

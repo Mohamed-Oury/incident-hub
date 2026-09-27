@@ -32,6 +32,15 @@ export default function CbsDashboardPage() {
       badgeColor: "#8b5cf6",
     },
     {
+      title: "Antisèche Conception 4GL & .PER",
+      count: "17 Règles & Patterns",
+      desc: "Fiche mémo pratique : décomposition besoin, IHM .per, flux 4GL, transactions et tests",
+      href: "/cbs/memo-conception",
+      icon: "🧠",
+      badge: "Antisèche",
+      badgeColor: "#059669",
+    },
+    {
       title: "8 Domaines Métier",
       count: `${CBS_DOMAINS.length} domaines`,
       desc: "Comptabilité, Soldes, Virements, Crédits, Épargne, Monétique CBS",

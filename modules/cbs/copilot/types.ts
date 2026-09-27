@@ -9,12 +9,9 @@ export interface DevelopmentNeedInput {
   targetUsers: string;
   knownBusinessRules: string;
   inputData: string;
-  expectedOutput: string;
   specialConstraints: string;
   amplitudeVersion: AmplitudeVersion;
   technicalEnvironment: "Informix / AIX" | "Oracle / Linux" | "WebLogic / Tuxedo";
-  nominalExample: string;
-  errorExample: string;
 }
 
 export interface FunctionalAnalysis {

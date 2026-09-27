@@ -13,11 +13,12 @@ import {
   CBS_4GL_KEYWORDS_CHEAT_SHEET,
   Cbs4GlKeywordCard
 } from "@/modules/cbs/cbs-4gl-cheat-sheet";
+import { CbsConceptionCheatSheet } from "@/modules/cbs/CbsConceptionCheatSheet";
 
 export default function Cbs4GlTrainingPage() {
   const [unlockedLevel, setUnlockedLevel] = useState<number>(1);
   const [selectedGradeLevel, setSelectedGradeLevel] = useState<number>(1);
-  const [activeTab, setActiveTab] = useState<"cours" | "simulateur" | "examen" | "fiche" | "certificat">("cours");
+  const [activeTab, setActiveTab] = useState<"cours" | "simulateur" | "examen" | "antiseche" | "fiche" | "certificat">("cours");
   const [cheatSheetCategory, setCheatSheetCategory] = useState<string>("ALL");
   const [cheatSheetSearch, setCheatSheetSearch] = useState<string>("");
   const [currentUserName, setCurrentUserName] = useState<string>("Mohamed Oury Diallo");
@@ -321,6 +322,22 @@ export default function Cbs4GlTrainingPage() {
             🎓 3. Examen ({currentGrade.minPassScorePct}%)
           </button>
           <button
+            onClick={() => setActiveTab("antiseche")}
+            style={{
+              padding: "8px 16px",
+              borderRadius: "8px",
+              fontSize: "13px",
+              fontWeight: 700,
+              border: activeTab === "antiseche" ? "1px solid #10b981" : "1px solid #334155",
+              background: activeTab === "antiseche" ? "#059669" : "#1e293b",
+              color: "#ffffff",
+              cursor: "pointer",
+              transition: "all 0.15s ease"
+            }}
+          >
+            🧠 4. Antisèche Conception (4GL &amp; .PER)
+          </button>
+          <button
             onClick={() => setActiveTab("fiche")}
             style={{
               padding: "8px 16px",
@@ -334,7 +351,7 @@ export default function Cbs4GlTrainingPage() {
               transition: "all 0.15s ease"
             }}
           >
-            📋 4. Fiche Mémento
+            📋 5. Fiche Mots-Clés
           </button>
           <button
             onClick={() => setActiveTab("certificat")}
@@ -351,7 +368,7 @@ export default function Cbs4GlTrainingPage() {
               transition: "all 0.15s ease"
             }}
           >
-            🏆 5. Certificat 4GL
+            🏆 6. Certificat 4GL
           </button>
         </div>
 
@@ -738,7 +755,12 @@ export default function Cbs4GlTrainingPage() {
           </div>
         )}
 
-        {/* CONTENU ONGLET 4 : FICHE DE RÉVISION & MÉMENTO DES MOTS-CLÉS 4GL */}
+        {/* CONTENU ONGLET 4 : ANTISÈCHE DE CONCEPTION 4GL & .PER */}
+        {activeTab === "antiseche" && (
+          <CbsConceptionCheatSheet />
+        )}
+
+        {/* CONTENU ONGLET 5 : FICHE DE RÉVISION & MÉMENTO DES MOTS-CLÉS 4GL */}
         {activeTab === "fiche" && (
           <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
 
