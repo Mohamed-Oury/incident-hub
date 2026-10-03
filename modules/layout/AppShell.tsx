@@ -65,6 +65,9 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
       roleRequired: "ROLE_EXPLOITATION",
       items: [
         { href: "/", label: "Vue d'ensemble", icon: "⊞" },
+        { href: "/training-monetique/antiseche", label: "Antisèche Monétique", icon: "🧠" },
+        { href: "/mti", label: "Référentiel MTI", icon: "📬" },
+        { href: "/de39", label: "Référentiel DE39", icon: "🏷️" },
         { href: "/run-supervision", label: "Supervision & Runbook", icon: "🖥️" },
         { href: "/knowledge", label: "Base de connaissance", icon: "📚" },
         { href: "/diagnostic", label: "Diagnostic Assistant", icon: "⚡" },
@@ -89,9 +92,6 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
       roleRequired: "ROLE_REFERENTIELS",
       items: [
         { href: "/training-monetique", label: "Formation Monétique & Certif", icon: "💳" },
-        { href: "/training-monetique/antiseche", label: "Antisèche Monétique", icon: "🧠" },
-        { href: "/mti", label: "Référentiel MTI", icon: "📬" },
-        { href: "/de39", label: "Référentiel DE39", icon: "🏷️" },
         //{ href: "/audit", label: "Piste d'audit", icon: "🛡️" },
       ],
     },
@@ -165,16 +165,16 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
         <div className="brand">
           <img
             src="/logo.png"
-            alt="M.OURY Logo"
+            alt="BANKING CBS & MONÉTIQUE HUB Logo"
             className="brand-logo-img"
             style={{
               width: "42px",
               height: "42px",
-              borderRadius: "50%",
+              borderRadius: "10px",
               objectFit: "cover",
-              border: "2px solid #e60028",
-              boxShadow: "0 0 10px rgba(230, 0, 40, 0.4)",
-              background: "#ffffff",
+              border: "1px solid #10b981",
+              boxShadow: "0 0 12px rgba(16, 185, 129, 0.35)",
+              background: "#0f172a",
               flexShrink: 0,
             }}
           />
@@ -411,11 +411,11 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
             <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
               <img
                 src="/logo.png"
-                alt="Logo M.OURY"
-                style={{ width: "24px", height: "24px", borderRadius: "50%", border: "1px solid #e60028" }}
+                alt="BANKING CBS & MONÉTIQUE HUB Logo"
+                style={{ width: "24px", height: "24px", borderRadius: "6px", border: "1px solid #10b981", background: "#0f172a" }}
               />
               <span>
-                Plateforme d&apos;exploitation monétique avancée
+                Plateforme globale d&apos;ingénierie &amp; exploitation Banking Core (CBS Amplitude 4GL) et Monétique (ISO 8583, EMV, GAB, HSM)
               </span>
             </div>
             <div style={{ textAlign: "right" }}>

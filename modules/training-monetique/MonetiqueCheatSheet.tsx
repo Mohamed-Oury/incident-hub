@@ -64,8 +64,8 @@ function Note({
 
 function Table({ headers, rows }: { headers: string[]; rows: React.ReactNode[][] }) {
   return (
-    <div style={{ overflowX: "auto", border: "1px solid #334155", borderRadius: "8px" }}>
-      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.83rem" }}>
+    <div style={{ overflowX: "auto", border: "1px solid #334155", borderRadius: "8px", maxHeight: "450px" }}>
+      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.83rem", background: "#090d16" }}>
         <thead>
           <tr style={{ background: "#0f172a" }}>
             {headers.map((h, idx) => (
@@ -73,11 +73,15 @@ function Table({ headers, rows }: { headers: string[]; rows: React.ReactNode[][]
                 key={`${h}-${idx}`}
                 style={{
                   textAlign: "left",
-                  padding: "8px 12px",
+                  padding: "10px 12px",
                   color: "#38bdf8",
                   fontWeight: 700,
-                  borderBottom: "1px solid #334155",
+                  borderBottom: "2px solid #334155",
                   whiteSpace: "nowrap",
+                  background: "#0f172a",
+                  position: "sticky",
+                  top: 0,
+                  zIndex: 3,
                 }}
               >
                 {h}
@@ -87,13 +91,19 @@ function Table({ headers, rows }: { headers: string[]; rows: React.ReactNode[][]
         </thead>
         <tbody>
           {rows.map((row, i) => (
-            <tr key={i} style={{ background: i % 2 === 0 ? "#090d16" : "#111827" }}>
+            <tr
+              key={i}
+              style={{
+                background: i % 2 === 0 ? "#090d16" : "#111827",
+                transition: "background 0.15s ease",
+              }}
+            >
               {row.map((cell, j) => (
                 <td
                   key={j}
                   style={{
-                    padding: "7px 12px",
-                    color: j === 0 ? "#f8fafc" : "#cbd5e1",
+                    padding: "8px 12px",
+                    color: j === 0 ? "#ffffff" : "#e2e8f0",
                     fontWeight: j === 0 ? 700 : 400,
                     fontFamily: j === 0 ? "monospace" : "inherit",
                     borderBottom: "1px solid #1e293b",

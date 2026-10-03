@@ -54,25 +54,25 @@ export default function LoginPage() {
         <div style={{ textAlign: "center", marginBottom: "1.25rem" }}>
           <img
             src="/logo.png"
-            alt="M.OURY Logo"
+            alt="BANKING CBS & MONÉTIQUE HUB Logo"
             style={{
               width: "68px",
               height: "68px",
-              borderRadius: "50%",
+              borderRadius: "16px",
               objectFit: "cover",
-              border: "2px solid #e60028",
-              boxShadow: "0 6px 16px rgba(230, 0, 40, 0.3)",
-              background: "#ffffff",
+              border: "1px solid #10b981",
+              boxShadow: "0 6px 20px rgba(16, 185, 129, 0.25)",
+              background: "#0f172a",
               marginBottom: "0.5rem",
               display: "inline-block",
             }}
           />
           <h1 style={{ fontSize: "1.4rem", fontWeight: 800, color: "#111827", letterSpacing: "0.02em" }}>BANKING</h1>
-          <p style={{ fontSize: "0.8rem", fontWeight: 700, letterSpacing: "0.06em", color: "#e60028", textTransform: "uppercase" }}>
-            CBS & MONÉTIQUE HUB
+          <p style={{ fontSize: "0.8rem", fontWeight: 700, letterSpacing: "0.06em", color: "#10b981", textTransform: "uppercase" }}>
+            CBS &amp; MONÉTIQUE HUB
           </p>
-          <p style={{ fontSize: "0.8rem", color: "#6b7280", marginTop: "0.15rem" }}>
-            Plateforme d&apos;exploitation et diagnostic d&apos;incidents monétiques & CBS
+          <p style={{ fontSize: "0.82rem", color: "#6b7280", marginTop: "0.15rem" }}>
+            Plateforme globale d&apos;ingénierie &amp; exploitation Banking Core (CBS Amplitude 4GL) et Monétique (ISO 8583, EMV, GAB, HSM)
           </p>
         </div>
 
