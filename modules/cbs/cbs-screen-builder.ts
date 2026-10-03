@@ -1674,13 +1674,13 @@ export function parsePerToGuiMockupData(
   if (!perSourceCode || !perSourceCode.trim()) {
     const { primary } = matchTablesFromPrompt(defaultTitle, defaultDomain);
     const fieldsConfig: PerFieldConfig[] = (primary.columns || []).map((col) => ({
-      tag: col.columnName.toLowerCase(),
+      tag: col.name.toLowerCase(),
       table: primary.tableName.toLowerCase(),
-      column: col.columnName.toLowerCase(),
-      label: col.description || col.columnName,
-      type: col.dataType,
+      column: col.name.toLowerCase(),
+      label: col.description || col.name,
+      type: col.type,
       length: 15,
-      attributes: col.isPrimaryKey ? ["REQUIRED", "UPSHIFT"] : ["UPSHIFT"],
+      attributes: primary.primaryKey.includes(col.name) ? ["REQUIRED", "UPSHIFT"] : ["UPSHIFT"],
     }));
     return buildGuiMockupData(defaultTitle, defaultDomain, primary, fieldsConfig, "STANDARD_FORM");
   }
