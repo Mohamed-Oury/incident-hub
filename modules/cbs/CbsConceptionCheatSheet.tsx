@@ -1862,6 +1862,7 @@ Populate GRID`}</pre>
           <a
             key={s.id}
             href={`#section-${s.id}`}
+            suppressHydrationWarning
             style={{
               fontSize: "0.75rem",
               color: "#38bdf8",
@@ -1873,7 +1874,7 @@ Populate GRID`}</pre>
               display: "inline-block",
             }}
           >
-            {s.id}. {s.title.split(":")[0].replace(/^\d+\.\s*/, "").replace(/[🧩⚙️🧠📐🏗️📊🧱🔄🧪🗃️🔐🧯🖥️⚡]/g, "").trim()}
+            {s.id}. {s.title.split(":")[0].replace(/^\d+\.\s*/, "").replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{FE00}-\u{FE0F}\u{200D}]/gu, "").trim()}
           </a>
         ))}
       </div>
