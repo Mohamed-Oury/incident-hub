@@ -271,7 +271,15 @@ export default function CbsCopilotPage() {
 
       if (!promptRes.ok) {
         const err = await promptRes.json().catch(() => ({}));
-        throw new Error(err.detail || err.error || "Erreur lors de la génération du prompt agent.");
+        let msg = "Erreur lors de la génération du prompt agent.";
+        if (typeof err.detail === "string") {
+          msg = err.detail;
+        } else if (Array.isArray(err.detail)) {
+          msg = err.detail.map((d: any) => `${d.loc ? d.loc.filter((x: any) => x !== 'body').join('.') : ''}: ${d.msg}`).join(" ; ");
+        } else if (err.error) {
+          msg = typeof err.error === "string" ? err.error : JSON.stringify(err.error);
+        }
+        throw new Error(msg);
       }
 
       const promptData = await promptRes.json();
@@ -298,7 +306,15 @@ export default function CbsCopilotPage() {
         historyData = existingHistory.history || [];
       } else if (!analysisRes.ok) {
         const err = await analysisRes.json().catch(() => ({}));
-        throw new Error(err.detail || err.error || "Erreur lors de l'analyse par l'agent IA.");
+        let msg = "Erreur lors de l'analyse par l'agent IA.";
+        if (typeof err.detail === "string") {
+          msg = err.detail;
+        } else if (Array.isArray(err.detail)) {
+          msg = err.detail.map((d: any) => `${d.loc ? d.loc.filter((x: any) => x !== 'body').join('.') : ''}: ${d.msg}`).join(" ; ");
+        } else if (err.error) {
+          msg = typeof err.error === "string" ? err.error : JSON.stringify(err.error);
+        }
+        throw new Error(msg);
       } else {
         analysisData = await analysisRes.json();
         historyData = [
