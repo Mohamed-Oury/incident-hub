@@ -1662,3 +1662,190 @@ END MAIN`;
     updatedAt: now.toISOString(),
   };
 }
+
+/**
+ * Analyser/Compilateur syntaxique pour convertir du code source .per Genero en structure GuiMockupData interactif
+ */
+export function parsePerToGuiMockupData(
+  perSourceCode: string,
+  defaultTitle: string = "Écran Formulaire Genero Web GUI",
+  defaultDomain: string = "CBS Amplitude"
+): GuiMockupData {
+  if (!perSourceCode || !perSourceCode.trim()) {
+    const { primary } = matchTablesFromPrompt(defaultTitle, defaultDomain);
+    const fieldsConfig: PerFieldConfig[] = (primary.columns || []).map((col) => ({
+      tag: col.columnName.toLowerCase(),
+      table: primary.tableName.toLowerCase(),
+      column: col.columnName.toLowerCase(),
+      label: col.description || col.columnName,
+      type: col.dataType,
+      length: 15,
+      attributes: col.isPrimaryKey ? ["REQUIRED", "UPSHIFT"] : ["UPSHIFT"],
+    }));
+    return buildGuiMockupData(defaultTitle, defaultDomain, primary, fieldsConfig, "STANDARD_FORM");
+  }
+
+  // 1. Extraire le titre du LAYOUT s'il existe
+  let windowTitle = defaultTitle;
+  const layoutMatch = perSourceCode.match(/LAYOUT\s*\(\s*TEXT\s*=\s*["']([^"']+)["']/i);
+  if (layoutMatch && layoutMatch[1]) {
+    windowTitle = layoutMatch[1];
+  }
+
+  // 2. Extraire les paires (tag = label / type / field) de la section ATTRIBUTES
+  const attributesSection = perSourceCode.split(/ATTRIBUTES/i)[1]?.split(/INSTRUCTIONS|END/i)[0] || perSourceCode;
+
+  const extractedFields: { tag: string; label: string; value: string; isHighlight?: boolean }[] = [];
+  const extractedButtons: { label: string; keyShortcut?: string; style: "primary" | "secondary" | "danger"; icon?: string }[] = [];
+
+  // Chercher les lignes d'attributs de type `f001 = table.col ...` ou `tag = FORMONLY...`
+  const attrLines = attributesSection.split("\n");
+  for (const line of attrLines) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#") || trimmed.startsWith("--")) continue;
+
+    // Détection des BOUTONS
+    if (trimmed.toUpperCase().startsWith("BUTTON")) {
+      const btnMatch = trimmed.match(/BUTTON\s+(\w+)\s*:\s*([^,]+),\s*TEXT\s*=\s*["']([^"']+)["']/i);
+      if (btnMatch) {
+        const actionName = btnMatch[2].trim();
+        const btnText = btnMatch[3].trim();
+        const style = actionName.toLowerCase() === "accept" || btnText.toLowerCase().includes("valid") ? "primary" : actionName.toLowerCase() === "cancel" ? "danger" : "secondary";
+        const icon = style === "primary" ? "✓" : style === "danger" ? "✕" : "⚡";
+        extractedButtons.push({
+          label: btnText,
+          keyShortcut: actionName.toUpperCase() === "ACCEPT" ? "F10" : actionName.toUpperCase() === "CANCEL" ? "ESC" : undefined,
+          style,
+          icon
+        });
+      }
+      continue;
+    }
+
+    // Détection des CHAMPS
+    const fieldMatch = trimmed.match(/^([a-zA-Z0-9_]+)\s*=\s*([^;]+);?/);
+    if (fieldMatch) {
+      const tag = fieldMatch[1];
+      const rightDef = fieldMatch[2];
+
+      // Extraction du label si spécifié avec TEXT = "..." ou calculé depuis le nom
+      let label = tag.toUpperCase();
+      const textMatch = rightDef.match(/TEXT\s*=\s*["']([^"']+)["']/i) || rightDef.match(/TITLE\s*=\s*["']([^"']+)["']/i);
+      if (textMatch) {
+        label = textMatch[1];
+      } else {
+        const colParts = rightDef.split(/[\s,]+/)[0].split(".");
+        const colName = colParts.length > 1 ? colParts[1] : colParts[0];
+        if (colName && colName.toUpperCase() !== "FORMONLY") {
+          label = colName.toUpperCase().replace(/_/g, " ");
+        }
+      }
+
+      // Valeur par défaut
+      let val = "Donnée " + tag;
+      if (rightDef.toUpperCase().includes("TODAY") || rightDef.toUpperCase().includes("DATE")) {
+        val = new Date().toLocaleDateString("fr-FR");
+      } else if (rightDef.toUpperCase().includes("DECIMAL") || rightDef.toUpperCase().includes("FORMAT")) {
+        val = "1,500,000.00 XOF";
+      } else if (tag.toLowerCase().includes("ncp") || label.toLowerCase().includes("compte")) {
+        val = "01001009845";
+      } else if (tag.toLowerCase().includes("cli") || label.toLowerCase().includes("tiers")) {
+        val = "CLI-008472";
+      } else if (label.toLowerCase().includes("statut")) {
+        val = "ACTIF / NORMAL";
+      }
+
+      extractedFields.push({
+        tag,
+        label,
+        value: val,
+        isHighlight: rightDef.toUpperCase().includes("KPI") || rightDef.toUpperCase().includes("PRIMARY_KEY") || label.toLowerCase().includes("solde")
+      });
+    }
+  }
+
+  // Organiser les champs extraits dans le mockup
+  const headerFields = extractedFields.slice(0, 4).map((f) => ({
+    label: f.label,
+    value: f.value,
+    tag: f.tag,
+    type: f.label.toLowerCase().includes("statut") ? "badge" : undefined
+  }));
+
+  if (headerFields.length === 0) {
+    headerFields.push(
+      { label: "Code Agence", value: "01001", tag: "f001" },
+      { label: "Date Système", value: new Date().toLocaleDateString("fr-FR"), tag: "f002" },
+      { label: "N° Compte / Réf", value: "01001009845", tag: "f003" },
+      { label: "Statut Opération", value: "ACTIF / OK", type: "badge", tag: "f004" }
+    );
+  }
+
+  const leftFields = extractedFields.length > 4 ? extractedFields.slice(4, 8) : [
+    { label: "Identifiant Tiers", value: "CLI-008472", tag: "f010" },
+    { label: "Raison Sociale", value: "SOCIETE COMMERCIALE SARL", tag: "f011" },
+    { label: "Segment Client", value: "ENTREPRISES CORPORATE", tag: "f012" },
+    { label: "Gestionnaire", value: "GEST_AG01 (M. DIOP)", tag: "f013" }
+  ];
+
+  const rightFields = extractedFields.length > 8 ? extractedFields.slice(8, 12) : [
+    { label: "Solde Comptable", value: "28,450,000.00 XOF", isHighlight: true, tag: "f014" },
+    { label: "Montant Indisponible", value: "1,200,000.00 XOF", isHighlight: false, tag: "f015" },
+    { label: "Disponible Réel", value: "27,250,000.00 XOF", isHighlight: true, tag: "f016" },
+    { label: "Autorisation Découvert", value: "5,000,000.00 XOF", isHighlight: false, tag: "f017" }
+  ];
+
+  const actions = extractedButtons.length > 0 ? extractedButtons : [
+    { label: "Valider (F10)", keyShortcut: "F10", style: "primary" as const, icon: "✓" },
+    { label: "Nouveau (F2)", keyShortcut: "F2", style: "secondary" as const, icon: "➕" },
+    { label: "Export Calc", keyShortcut: "Ctrl+E", style: "secondary" as const, icon: "📊" },
+    { label: "Imprimer", keyShortcut: "Ctrl+P", style: "secondary" as const, icon: "🖨️" },
+    { label: "Fermer (ESC)", keyShortcut: "ESC", style: "danger" as const, icon: "✕" }
+  ];
+
+  return {
+    windowTitle: `Banque Amplitude — ${windowTitle}`,
+    headerFields,
+    leftPanel: {
+      title: "Données Générales & Acteurs",
+      fields: leftFields.map(f => ({ label: f.label, value: f.value, tag: f.tag }))
+    },
+    rightPanel: {
+      title: "Indicateurs Financiers & Métriques",
+      fields: rightFields.map(f => ({ label: f.label, value: f.value, tag: f.tag, highlight: f.isHighlight }))
+    },
+    tabs: [
+      {
+        id: "tab_mvt",
+        label: "Derniers Mouvements / Journal",
+        type: "table",
+        table: {
+          columns: ["Réf Écriture", "Date Valeur", "Libellé Opération", "Montant Débit", "Montant Crédit"],
+          rows: [
+            ["MVT-2026-0901", new Date().toLocaleDateString("fr-FR"), "VIREMENT COMMERCIAL SALAIRES", "4,500,000.00 XOF", "-"],
+            ["MVT-2026-0902", new Date().toLocaleDateString("fr-FR"), "REMISE CHEQUE COMPENSABLE", "-", "12,000,000.00 XOF"],
+            ["MVT-2026-0903", new Date().toLocaleDateString("fr-FR"), "COMMISSION DE TENUE COMPTE", "125,000.00 XOF", "-"],
+            ["MVT-2026-0904", new Date().toLocaleDateString("fr-FR"), "REGLEMENT FACTURE EQUIPEMENT", "340,000.00 XOF", "-"]
+          ]
+        }
+      },
+      {
+        id: "tab_params",
+        label: "Paramètres & Règles Métier",
+        type: "form",
+        fields: extractedFields.length > 12 ? extractedFields.slice(12).map(f => ({ label: f.label, value: f.value, tag: f.tag })) : [
+          { label: "Devise Principale", value: "XOF — Franc CFA UEMOA", tag: "c01" },
+          { label: "Contrôle Habilitation", value: "OUI — Niveau Superviseur Requis", tag: "c02" },
+          { label: "Type Transaction", value: "COMPTABLE TEMPS REEL (BEGIN/COMMIT)", tag: "c03" }
+        ]
+      }
+    ],
+    actions,
+    statusBar: {
+      user: "OPR_AG01",
+      agency: "01001 (ABIDJAN PLATEAU)",
+      accountingDate: new Date().toLocaleDateString("fr-FR"),
+      environment: "Amplitude v11.x — Genero Web GUI Runtime"
+    }
+  };
+}

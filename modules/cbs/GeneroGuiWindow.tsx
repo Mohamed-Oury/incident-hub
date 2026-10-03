@@ -13,6 +13,28 @@ export function GeneroGuiWindow({ data, title = "Consultation & Opérations Guic
   const [activeTabId, setActiveTabId] = useState<string>(data?.tabs?.[0]?.id || "tab_mvt");
   const [selectedRowIndex, setSelectedRowIndex] = useState<number>(0);
   const [isMaximized, setIsMaximized] = useState<boolean>(false);
+  const [runtimeFeedback, setRuntimeFeedback] = useState<string | null>(null);
+
+  // État interactif des champs de formulaire
+  const [formValues, setFormValues] = useState<Record<string, string>>({});
+
+  const handleFieldChange = (key: string, val: string) => {
+    setFormValues((prev) => ({ ...prev, [key]: val }));
+  };
+
+  const triggerAction = (actionLabel: string, shortcut?: string) => {
+    const timeStr = new Date().toLocaleTimeString("fr-FR");
+    let msg = `⚡ [${timeStr}] ON ACTION ${shortcut || actionLabel} : Action "${actionLabel}" exécutée dans le Runtime Genero !`;
+    if (actionLabel.toLowerCase().includes("valid")) {
+      msg = `✅ [${timeStr}] ON ACTION accept (F10) : Données du formulaire validées et enregistrées avec succès !`;
+    } else if (actionLabel.toLowerCase().includes("fermer") || actionLabel.toLowerCase().includes("esc")) {
+      msg = `🔴 [${timeStr}] ON ACTION cancel (ESC) : Clôture de la fenêtre Genero et retour au menu maître.`;
+    } else if (actionLabel.toLowerCase().includes("nouveau") || actionLabel.toLowerCase().includes("f2")) {
+      msg = `➕ [${timeStr}] ON ACTION new_record (F2) : Formulaire réinitialisé pour une nouvelle saisie.`;
+    }
+    setRuntimeFeedback(msg);
+    setTimeout(() => setRuntimeFeedback(null), 5000);
+  };
 
   // Valeurs par défaut si pas de données fournies
   const windowTitle = data?.windowTitle || `Banque Amplitude - ${title}`;
@@ -159,6 +181,7 @@ export function GeneroGuiWindow({ data, title = "Consultation & Opérations Guic
           {actions.map((act, idx) => (
             <button
               key={idx}
+              onClick={() => triggerAction(act.label, act.keyShortcut)}
               style={{
                 display: "inline-flex",
                 alignItems: "center",
@@ -195,6 +218,29 @@ export function GeneroGuiWindow({ data, title = "Consultation & Opérations Guic
         </div>
       </div>
 
+      {/* BANDEAU DE FEEDBACK D'EXÉCUTION RUNTIME GENERO */}
+      {runtimeFeedback && (
+        <div style={{
+          background: "#022c22",
+          borderBottom: "1px solid #059669",
+          padding: "6px 14px",
+          color: "#34d399",
+          fontSize: "11px",
+          fontWeight: 700,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between"
+        }}>
+          <span>{runtimeFeedback}</span>
+          <button
+            onClick={() => setRuntimeFeedback(null)}
+            style={{ background: "none", border: "none", color: "#34d399", cursor: "pointer", fontSize: "11px" }}
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
       {/* 3. CORPS DU FORMULAIRE : VBOX CONTENEUR PRINCIPAL */}
       <div style={{ padding: "16px", display: "flex", flexDirection: "column", gap: "14px", background: "#0b1329" }}>
 
@@ -214,44 +260,47 @@ export function GeneroGuiWindow({ data, title = "Consultation & Opérations Guic
             gap: "12px",
             alignItems: "center"
           }}>
-            {headerFields.map((hf, idx) => (
-              <div key={idx} style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
-                <span style={{ fontSize: "11px", color: "#94a3b8", fontWeight: 600 }}>
-                  {hf.label} :
-                </span>
-                {hf.type === "badge" ? (
-                  <span style={{
-                    display: "inline-block",
-                    padding: "3px 8px",
-                    background: "#064e3b",
-                    color: "#34d399",
-                    border: "1px solid #10b981",
-                    borderRadius: "4px",
-                    fontSize: "11px",
-                    fontWeight: 800,
-                    width: "fit-content"
-                  }}>
-                    {hf.value}
+            {headerFields.map((hf, idx) => {
+              const fieldKey = hf.tag || `header_${idx}`;
+              return (
+                <div key={idx} style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
+                  <span style={{ fontSize: "11px", color: "#94a3b8", fontWeight: 600 }}>
+                    {hf.label} :
                   </span>
-                ) : (
-                  <input
-                    type="text"
-                    readOnly
-                    value={hf.value}
-                    style={{
-                      background: "#0f172a",
-                      border: "1px solid #475569",
+                  {hf.type === "badge" ? (
+                    <span style={{
+                      display: "inline-block",
+                      padding: "3px 8px",
+                      background: "#064e3b",
+                      color: "#34d399",
+                      border: "1px solid #10b981",
                       borderRadius: "4px",
-                      padding: "5px 8px",
-                      color: "#f8fafc",
-                      fontSize: "12px",
-                      fontFamily: "monospace",
-                      fontWeight: 600
-                    }}
-                  />
-                )}
-              </div>
-            ))}
+                      fontSize: "11px",
+                      fontWeight: 800,
+                      width: "fit-content"
+                    }}>
+                      {formValues[fieldKey] ?? hf.value}
+                    </span>
+                  ) : (
+                    <input
+                      type="text"
+                      value={formValues[fieldKey] ?? hf.value}
+                      onChange={(e) => handleFieldChange(fieldKey, e.target.value)}
+                      style={{
+                        background: "#0f172a",
+                        border: "1px solid #475569",
+                        borderRadius: "4px",
+                        padding: "5px 8px",
+                        color: "#f8fafc",
+                        fontSize: "12px",
+                        fontFamily: "monospace",
+                        fontWeight: 600
+                      }}
+                    />
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
 
@@ -276,27 +325,30 @@ export function GeneroGuiWindow({ data, title = "Consultation & Opérations Guic
               <span style={{ fontSize: "10px", color: "#64748b", fontFamily: "monospace" }}>HBOX [Gauche]</span>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-              {leftPanel.fields.map((f, idx) => (
-                <div key={idx} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "8px" }}>
-                  <span style={{ fontSize: "11px", color: "#94a3b8" }}>{f.label} :</span>
-                  <input
-                    type="text"
-                    readOnly
-                    value={f.value}
-                    style={{
-                      background: "#0f172a",
-                      border: "1px solid #475569",
-                      borderRadius: "4px",
-                      padding: "4px 8px",
-                      color: "#f1f5f9",
-                      fontSize: "12px",
-                      fontWeight: 600,
-                      width: "60%",
-                      textAlign: "left"
-                    }}
-                  />
-                </div>
-              ))}
+              {leftPanel.fields.map((f, idx) => {
+                const fieldKey = f.tag || `left_${idx}`;
+                return (
+                  <div key={idx} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "8px" }}>
+                    <span style={{ fontSize: "11px", color: "#94a3b8" }}>{f.label} :</span>
+                    <input
+                      type="text"
+                      value={formValues[fieldKey] ?? f.value}
+                      onChange={(e) => handleFieldChange(fieldKey, e.target.value)}
+                      style={{
+                        background: "#0f172a",
+                        border: "1px solid #475569",
+                        borderRadius: "4px",
+                        padding: "4px 8px",
+                        color: "#f1f5f9",
+                        fontSize: "12px",
+                        fontWeight: 600,
+                        width: "60%",
+                        textAlign: "left"
+                      }}
+                    />
+                  </div>
+                );
+              })}
             </div>
           </div>
 
@@ -314,28 +366,31 @@ export function GeneroGuiWindow({ data, title = "Consultation & Opérations Guic
               <span style={{ fontSize: "10px", color: "#64748b", fontFamily: "monospace" }}>HBOX [Droite]</span>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-              {rightPanel.fields.map((f, idx) => (
-                <div key={idx} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "8px" }}>
-                  <span style={{ fontSize: "11px", color: "#94a3b8" }}>{f.label} :</span>
-                  <input
-                    type="text"
-                    readOnly
-                    value={f.value}
-                    style={{
-                      background: f.highlight ? "#064e3b" : "#0f172a",
-                      border: f.highlight ? "1px solid #10b981" : "1px solid #475569",
-                      borderRadius: "4px",
-                      padding: "4px 8px",
-                      color: f.highlight ? "#ffffff" : "#f1f5f9",
-                      fontSize: "12px",
-                      fontWeight: 700,
-                      fontFamily: "monospace",
-                      width: "55%",
-                      textAlign: "right"
-                    }}
-                  />
-                </div>
-              ))}
+              {rightPanel.fields.map((f, idx) => {
+                const fieldKey = f.tag || `right_${idx}`;
+                return (
+                  <div key={idx} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "8px" }}>
+                    <span style={{ fontSize: "11px", color: "#94a3b8" }}>{f.label} :</span>
+                    <input
+                      type="text"
+                      value={formValues[fieldKey] ?? f.value}
+                      onChange={(e) => handleFieldChange(fieldKey, e.target.value)}
+                      style={{
+                        background: f.highlight ? "#064e3b" : "#0f172a",
+                        border: f.highlight ? "1px solid #10b981" : "1px solid #475569",
+                        borderRadius: "4px",
+                        padding: "4px 8px",
+                        color: f.highlight ? "#ffffff" : "#f1f5f9",
+                        fontSize: "12px",
+                        fontWeight: 700,
+                        fontFamily: "monospace",
+                        width: "55%",
+                        textAlign: "right"
+                      }}
+                    />
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>

@@ -9,6 +9,8 @@ import {
 } from "@/modules/cbs/copilot/types";
 import { generateCopilotPlan } from "@/modules/cbs/copilot/engine";
 import { CBS_SCHEMA_TABLES } from "@/modules/cbs/cbs-advanced-data";
+import { GeneroGuiWindow } from "@/modules/cbs/GeneroGuiWindow";
+import { parsePerToGuiMockupData } from "@/modules/cbs/cbs-screen-builder";
 
 // Préréglages de besoins bancaires courants
 const PRESET_NEEDS: { label: string; icon: string; input: DevelopmentNeedInput }[] = [
@@ -120,6 +122,9 @@ export default function CbsCopilotPage() {
   const [activeTab, setActiveTab] = useState<
     "NEED" | "TASKS" | "CODE" | "PER_SCREEN" | "SQL"
   >("NEED");
+  const [perScreenSubTab, setPerScreenSubTab] = useState<
+    "GUI_COMPILER" | "SOURCE_CODE" | "ASCII_MOCKUP"
+  >("GUI_COMPILER");
 
   // Formulaire Saisie du besoin (Vide par défaut, aucune donnée d'exemple pré-remplie)
   const [needInput, setNeedInput] = useState<DevelopmentNeedInput>(EMPTY_NEED);
@@ -2388,7 +2393,7 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                       Conception du Masque d&apos;Écran Formulaire (.per)
                     </h3>
                     <p style={{ fontSize: "0.82rem", color: "#64748b", margin: "2px 0 0 0" }}>
-                      Masque terminal Curses 24x80 pour AIX / Linux avec mapping champs tables <code>BKCPT</code> et <code>BKCLI</code>.
+                      Compilateur &amp; Rendu Interactif Genero Web GUI (GWC / GDC) pour masques <code>{safePlan.perScreen.screenName}</code>.
                     </p>
                   </div>
 
@@ -2433,55 +2438,124 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                   </div>
                 </div>
 
-                {/* Rendu visuel ASCII du masque terminal */}
-                <div style={{ backgroundColor: "#ffffff", borderRadius: "8px", border: "1px solid #e2e8f0", padding: "1.25rem", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
-                  <div style={{ fontSize: "0.82rem", fontWeight: 700, color: "#4338ca", marginBottom: "0.6rem" }}>
-                    🖥️ MAQUETTE VISUELLE TERMINAL CURSES (24 LIGNES x 80 COLONNES)
-                  </div>
-                  <pre
-                    style={{
-                      margin: 0,
-                      backgroundColor: "#f8fafc",
-                      border: "1px solid #cbd5e1",
-                      borderRadius: "6px",
-                      padding: "1rem",
-                      fontSize: "0.82rem",
-                      lineHeight: "1.3",
-                      fontFamily: "ui-monospace, monospace",
-                      color: "#0f172a",
-                      overflowX: "auto",
-                      maxWidth: "100%",
-                      boxSizing: "border-box",
-                    }}
-                  >
-                    {safePlan.perScreen.visualMockupAscii}
-                  </pre>
+                {/* SÉLECTEUR DE MODE DE VUE SOUS-ONGLETS */}
+                <div style={{ display: "flex", gap: "0.5rem", borderBottom: "1px solid #cbd5e1", paddingBottom: "0.5rem" }}>
+                  {[
+                    { key: "GUI_COMPILER", label: "🖥️ Rendu Interactif Genero Web GUI (Compilateur)", icon: "🚀" },
+                    { key: "SOURCE_CODE", label: "📄 Code Source .PER", icon: "📝" },
+                    { key: "ASCII_MOCKUP", label: "📺 Maquette Visuelle Terminal Curses", icon: "📟" }
+                  ].map((st) => {
+                    const isSubActive = perScreenSubTab === st.key;
+                    return (
+                      <button
+                        key={st.key}
+                        onClick={() => setPerScreenSubTab(st.key as any)}
+                        style={{
+                          padding: "0.45rem 0.85rem",
+                          borderRadius: "6px",
+                          border: isSubActive ? "1px solid #0284c7" : "1px solid #e2e8f0",
+                          backgroundColor: isSubActive ? "#eff6ff" : "#ffffff",
+                          color: isSubActive ? "#1d4ed8" : "#475569",
+                          fontSize: "0.82rem",
+                          fontWeight: isSubActive ? 700 : 500,
+                          cursor: "pointer",
+                          transition: "all 0.15s ease",
+                        }}
+                      >
+                        {st.label}
+                      </button>
+                    );
+                  })}
                 </div>
 
-                {/* Code source .per */}
-                <div style={{ backgroundColor: "#ffffff", borderRadius: "8px", border: "1px solid #e2e8f0", padding: "1.25rem", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
-                  <div style={{ fontSize: "0.82rem", fontWeight: 700, color: "#0284c7", marginBottom: "0.6rem" }}>
-                    📄 SOURCE INFORMIX FORMULAIRE ({safePlan.perScreen.screenName})
+                {/* SUB-TAB 1: COMPILATEUR & RENDU INTERACTIF GENERO WEB GUI */}
+                {perScreenSubTab === "GUI_COMPILER" && (
+                  <div style={{ width: "100%", boxSizing: "border-box" }}>
+                    <div style={{
+                      backgroundColor: "#ecfdf5",
+                      border: "1px solid #a7f3d0",
+                      borderRadius: "8px",
+                      padding: "0.6rem 1rem",
+                      marginBottom: "0.75rem",
+                      fontSize: "0.82rem",
+                      color: "#065f46",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between"
+                    }}>
+                      <span>
+                        ✨ <strong>Compilateur Genero Web GUI Actif :</strong> Vous pouvez tester la saisie dans les champs et cliquer sur les boutons d&apos;action (F10, F2, ESC) pour simuler l&apos;exécution événementielle 4GL.
+                      </span>
+                      <span style={{ fontSize: "0.75rem", fontWeight: 700, backgroundColor: "#047857", color: "#ffffff", padding: "2px 8px", borderRadius: "4px" }}>
+                        LIVE TEST
+                      </span>
+                    </div>
+
+                    <GeneroGuiWindow
+                      data={parsePerToGuiMockupData(
+                        safePlan.perScreen.perCodeSnippet,
+                        safePlan.need.title,
+                        safePlan.need.bankingDomain
+                      )}
+                      title={safePlan.need.title}
+                      domain={safePlan.need.bankingDomain}
+                    />
                   </div>
-                  <pre
-                    style={{
-                      margin: 0,
-                      backgroundColor: "#f8fafc",
-                      border: "1px solid #cbd5e1",
-                      borderRadius: "6px",
-                      padding: "1rem",
-                      fontSize: "0.85rem",
-                      lineHeight: "1.4",
-                      fontFamily: "ui-monospace, monospace",
-                      color: "#0f172a",
-                      overflowX: "auto",
-                      maxWidth: "100%",
-                      boxSizing: "border-box",
-                    }}
-                  >
-                    {safePlan.perScreen.perCodeSnippet}
-                  </pre>
-                </div>
+                )}
+
+                {/* SUB-TAB 2: CODE SOURCE .PER */}
+                {perScreenSubTab === "SOURCE_CODE" && (
+                  <div style={{ backgroundColor: "#ffffff", borderRadius: "8px", border: "1px solid #e2e8f0", padding: "1.25rem", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
+                    <div style={{ fontSize: "0.82rem", fontWeight: 700, color: "#0284c7", marginBottom: "0.6rem" }}>
+                      📄 SOURCE INFORMIX FORMULAIRE ({safePlan.perScreen.screenName})
+                    </div>
+                    <pre
+                      style={{
+                        margin: 0,
+                        backgroundColor: "#f8fafc",
+                        border: "1px solid #cbd5e1",
+                        borderRadius: "6px",
+                        padding: "1rem",
+                        fontSize: "0.85rem",
+                        lineHeight: "1.4",
+                        fontFamily: "ui-monospace, monospace",
+                        color: "#0f172a",
+                        overflowX: "auto",
+                        maxWidth: "100%",
+                        boxSizing: "border-box",
+                      }}
+                    >
+                      {safePlan.perScreen.perCodeSnippet}
+                    </pre>
+                  </div>
+                )}
+
+                {/* SUB-TAB 3: MAQUETTE VISUELLE ASCII */}
+                {perScreenSubTab === "ASCII_MOCKUP" && (
+                  <div style={{ backgroundColor: "#ffffff", borderRadius: "8px", border: "1px solid #e2e8f0", padding: "1.25rem", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" }}>
+                    <div style={{ fontSize: "0.82rem", fontWeight: 700, color: "#4338ca", marginBottom: "0.6rem" }}>
+                      🖥️ MAQUETTE VISUELLE TERMINAL CURSES (24 LIGNES x 80 COLONNES)
+                    </div>
+                    <pre
+                      style={{
+                        margin: 0,
+                        backgroundColor: "#f8fafc",
+                        border: "1px solid #cbd5e1",
+                        borderRadius: "6px",
+                        padding: "1rem",
+                        fontSize: "0.82rem",
+                        lineHeight: "1.3",
+                        fontFamily: "ui-monospace, monospace",
+                        color: "#0f172a",
+                        overflowX: "auto",
+                        maxWidth: "100%",
+                        boxSizing: "border-box",
+                      }}
+                    >
+                      {safePlan.perScreen.visualMockupAscii}
+                    </pre>
+                  </div>
+                )}
               </>
             ) : (
               <div style={{ padding: "3rem", textAlign: "center", color: "#64748b" }}>
