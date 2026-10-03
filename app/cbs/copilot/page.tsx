@@ -143,6 +143,7 @@ export default function CbsCopilotPage() {
   const [rejectReason, setRejectReason] = useState<string>("");
   const [isRejecting, setIsRejecting] = useState<boolean>(false);
   const [isValidating, setIsValidating] = useState<boolean>(false);
+  const [isGeneratingCode, setIsGeneratingCode] = useState<boolean>(false);
   const [actionFeedback, setActionFeedback] = useState<string | null>(null);
   const [showHistoryAccordion, setShowHistoryAccordion] = useState<boolean>(false);
 
@@ -402,6 +403,63 @@ export default function CbsCopilotPage() {
       setAgentError(err.message || "Erreur lors de la validation.");
     } finally {
       setIsValidating(false);
+    }
+  };
+
+  // Génération du code 4GL & écran .per via l'Agent Code (Brique 3 - POST /api/v1/code/{name})
+  const handleGenerateAgentCode = async () => {
+    if (!agentSession) return;
+    setIsGeneratingCode(true);
+    setAgentError(null);
+    try {
+      const res = await fetch(`/api/cbs/agentic/code/${agentSession.name}`, {
+        method: "POST",
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.detail || err.error || "Échec de la génération de code 4GL & .per par l'agent.");
+      }
+      const codeResult = await res.json();
+
+      setGeneratedPlan((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          code4GlProposal: {
+            ...prev.code4GlProposal,
+            code4Gl: codeResult.code4Gl || prev.code4GlProposal?.code4Gl || "",
+            programObjective: codeResult.explanation || prev.code4GlProposal?.programObjective || "",
+          },
+          perScreen: codeResult.codePer
+            ? {
+                ...(prev.perScreen || {
+                  screenName: codeResult.screenName || "ecran.per",
+                  title: "Écran d'affichage & saisie web Genero",
+                  screenType: "Web GUI (GRID Layout)",
+                  dimensions: "Interactive Responsive Web",
+                  inputFieldList: [],
+                  readOnlyFieldList: [],
+                  buttons: ["VALIDER", "ANNULER"],
+                  messages: [],
+                  perCodeSnippet: "",
+                  visualMockupAscii: "",
+                  amplitudeIntegrationNotes: [],
+                }),
+                screenName: codeResult.screenName || prev.perScreen?.screenName || "ecran.per",
+                perCodeSnippet: codeResult.codePer,
+              }
+            : prev.perScreen,
+        };
+      });
+
+      setActiveTab("CODE");
+      setActionFeedback("🚀 Code Informix 4GL et Écran Web (.per) générés avec succès par l'Agent IA (Brique 3) !");
+      setTimeout(() => setActionFeedback(null), 5000);
+    } catch (err: any) {
+      console.error("Erreur Génération Code Agent:", err);
+      setAgentError(err.message || "Erreur lors de la génération du code.");
+    } finally {
+      setIsGeneratingCode(false);
     }
   };
 
@@ -1756,6 +1814,35 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                       </>
                     )}
 
+                    {agentSession.decision === "ACCEPTEE" && (
+                      <button
+                        type="button"
+                        onClick={handleGenerateAgentCode}
+                        disabled={isGeneratingCode}
+                        style={{
+                          backgroundColor: "#4f46e5",
+                          color: "#ffffff",
+                          border: "none",
+                          borderRadius: "6px",
+                          padding: "0.55rem 1.1rem",
+                          fontSize: "0.85rem",
+                          fontWeight: 700,
+                          cursor: isGeneratingCode ? "not-allowed" : "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.45rem",
+                          boxShadow: "0 2px 6px rgba(79, 70, 229, 0.3)",
+                        }}
+                      >
+                        <span>🤖</span>
+                        <span>
+                          {isGeneratingCode
+                            ? "Génération 4GL & .PER en cours..."
+                            : "🚀 Générer le Code 4GL & Écran Web (.per)"}
+                        </span>
+                      </button>
+                    )}
+
                     {agentSession.history && agentSession.history.length > 0 && (
                       <button
                         type="button"
@@ -2141,7 +2228,30 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                     </p>
                   </div>
 
-                  <div style={{ display: "flex", gap: "0.5rem" }}>
+                  <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", alignItems: "center" }}>
+                    {agentSession?.decision === "ACCEPTEE" && (
+                      <button
+                        onClick={handleGenerateAgentCode}
+                        disabled={isGeneratingCode}
+                        style={{
+                          backgroundColor: "#4f46e5",
+                          color: "#ffffff",
+                          border: "none",
+                          borderRadius: "6px",
+                          padding: "0.45rem 0.85rem",
+                          fontSize: "0.82rem",
+                          fontWeight: 600,
+                          cursor: isGeneratingCode ? "not-allowed" : "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.4rem",
+                        }}
+                      >
+                        <span>🤖</span>
+                        <span>{isGeneratingCode ? "Génération 4GL/PER..." : "Régénérer avec l'Agent IA"}</span>
+                      </button>
+                    )}
+
                     <button
                       onClick={() => copyToClipboard(safePlan.code4GlProposal.code4Gl, "4gl")}
                       style={{
