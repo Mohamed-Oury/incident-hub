@@ -1765,7 +1765,7 @@ export function parsePerToGuiMockupData(
   }
 
   // Organiser les champs extraits dans le mockup
-  const headerFields = extractedFields.slice(0, 4).map((f) => ({
+  const headerFields: { label: string; value: string; tag?: string; type?: string }[] = extractedFields.slice(0, 4).map((f) => ({
     label: f.label,
     value: f.value,
     tag: f.tag,
