@@ -7,6 +7,8 @@ import 'cbs_batch_eod_screen.dart';
 import 'cbs_unix_screen.dart';
 import 'cbs_incidents_screen.dart';
 import 'cbs_quiz_screen.dart';
+import 'cbs_copilot_screen.dart';
+import 'cbs_4gl_cheat_sheet_screen.dart';
 import '../../training/screens/training_cbs_screen.dart';
 
 class CbsHomeScreen extends StatefulWidget {
@@ -286,6 +288,26 @@ class _CbsHomeScreenState extends State<CbsHomeScreen> {
                         },
                       ),
                     ),
+                  ),
+                ),
+                _buildModuleCard(
+                  title: 'Copilot 4GL / PER',
+                  subtitle: 'Générateur Code & Attachement 4GL/PER',
+                  icon: Icons.psychology,
+                  accentColor: Colors.blueAccent,
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const CbsCopilotScreen()),
+                  ),
+                ),
+                _buildModuleCard(
+                  title: 'Antisèche 4GL',
+                  subtitle: 'Dictionnaire Mot-clés & Syntaxe SQL',
+                  icon: Icons.style,
+                  accentColor: Colors.amberAccent,
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const Cbs4GlCheatSheetScreen()),
                   ),
                 ),
                 _buildModuleCard(

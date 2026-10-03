@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../cheat_sheet/monetique_cheat_sheet_screen.dart';
 import '../models/training_models.dart';
 import '../services/training_service.dart';
 
@@ -33,7 +34,7 @@ class _TrainingMonetiqueScreenState extends State<TrainingMonetiqueScreen> with 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 5, vsync: this);
     _loadInitialData();
   }
 
@@ -127,6 +128,7 @@ class _TrainingMonetiqueScreenState extends State<TrainingMonetiqueScreen> with 
           isScrollable: true,
           tabs: const [
             Tab(icon: Icon(Icons.menu_book, size: 18), text: 'Cours & Normes'),
+            Tab(icon: Icon(Icons.style_outlined, size: 18), text: 'Antisèche'),
             Tab(icon: Icon(Icons.terminal, size: 18), text: 'Simulateur ISO'),
             Tab(icon: Icon(Icons.quiz, size: 18), text: 'Examen de Grade'),
             Tab(icon: Icon(Icons.workspace_premium, size: 18), text: 'Certificat'),
@@ -185,13 +187,16 @@ class _TrainingMonetiqueScreenState extends State<TrainingMonetiqueScreen> with 
                 // 1. Cours & Normes
                 _buildLessonsTab(currentGrade, gradeLessons),
 
-                // 2. Simulateur ISO
+                // 2. Antisèche Monétique
+                const MonetiqueCheatSheetScreen(),
+
+                // 3. Simulateur ISO
                 _buildSimulatorTab(),
 
-                // 3. Examen officiel (30 questions)
+                // 4. Examen officiel (30 questions)
                 _buildExamTab(currentGrade, gradeExams),
 
-                // 4. Certificat
+                // 5. Certificat
                 _buildCertificateTab(currentGrade),
               ],
             ),

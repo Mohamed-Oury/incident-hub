@@ -86,16 +86,6 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
       ],
     },
     {
-      key: "referentials",
-      title: "FORMATION & CERTIF",
-      icon: "🎓",
-      roleRequired: "ROLE_REFERENTIELS",
-      items: [
-        { href: "/training-monetique", label: "Formation Monétique & Certif", icon: "💳" },
-        //{ href: "/audit", label: "Piste d'audit", icon: "🛡️" },
-      ],
-    },
-    {
       key: "advanced",
       title: "EXPERTISE & OUTILS",
       icon: "🛠️",
@@ -104,6 +94,16 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
         { href: "/crypto-hsm", label: "Diagnostic Clés HSM", icon: "🔐" },
         //{ href: "/timeout-matrix", label: "Matrice Time-Outs", icon: "⏱️" },
         { href: "/post-mortem", label: "Générateur Rapport", icon: "📑" },
+      ],
+    },
+    {
+      key: "referentials",
+      title: "FORMATION & CERTIF",
+      icon: "🎓",
+      roleRequired: "ROLE_REFERENTIELS",
+      items: [
+        { href: "/training-monetique", label: "Formation Monétique & Certif", icon: "💳" },
+        //{ href: "/audit", label: "Piste d'audit", icon: "🛡️" },
       ],
     },
   ];

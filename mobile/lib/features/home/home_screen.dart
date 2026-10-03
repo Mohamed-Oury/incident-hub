@@ -14,6 +14,8 @@ import '../tools/iso_raw_parser_screen.dart';
 import '../tools/crypto_toolbox_screen.dart';
 import '../tools/on_call_report_screen.dart';
 import '../training/screens/training_monetique_screen.dart';
+import '../cheat_sheet/monetique_cheat_sheet_screen.dart';
+import '../cbs/screens/cbs_copilot_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final VoidCallback? onSwitchUniverse;
@@ -488,6 +490,26 @@ class _HomeScreenState extends State<HomeScreen> {
                           onTap: () => Navigator.push(
                             context,
                             MaterialPageRoute(builder: (_) => const CryptoToolboxScreen()),
+                          ),
+                        ),
+                        _buildNavCard(
+                          title: 'Antisèche Monétique',
+                          desc: '18 Fiches ISO, EMV, HSM & Clearing',
+                          icon: Icons.style_outlined,
+                          color: Colors.cyanAccent,
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => const MonetiqueCheatSheetScreen()),
+                          ),
+                        ),
+                        _buildNavCard(
+                          title: 'Copilot 4GL / PER',
+                          desc: 'Générateur Code & Attachement .4gl/.per',
+                          icon: Icons.psychology_outlined,
+                          color: Colors.blueAccent,
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => const CbsCopilotScreen()),
                           ),
                         ),
                         _buildNavCard(
