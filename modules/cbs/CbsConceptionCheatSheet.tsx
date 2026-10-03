@@ -17,7 +17,7 @@ export function CbsConceptionCheatSheet() {
   const [selectedCategory, setSelectedCategory] = useState<string>("ALL");
   const [copiedId, setCopiedId] = useState<number | null>(null);
   
-  // Checklist interactive pour Section 14
+  // Checklist interactive pour Section 15 (GRID)
   const [gridChecklist, setGridChecklist] = useState<Record<string, boolean>>({
     "Quelle donnée ?": false,
     "Combien de lignes ?": false,
@@ -212,7 +212,7 @@ export function CbsConceptionCheatSheet() {
       title: "3. 🧠 Anatomie d'un écran .PER",
       badge: "Hiérarchie .PER",
       badgeColor: "#10b981",
-      rawText: "Anatomie d'un écran .PER SCREEN LAYOUT VBOX HBOX GRID LABEL INPUT BUTTON CHECKBOX RADIO COMBO GROUP FRAME",
+      rawText: "Anatomie d'un écran .PER SCREEN LAYOUT VBOX HBOX GRID LABEL INPUT BUTTON CHECKBOX RADIO COMBO GROUP FRAME TABLES TABLE",
       content: (
         <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
           <div style={{ fontSize: "0.85rem", color: "#94a3b8" }}>
@@ -247,7 +247,7 @@ export function CbsConceptionCheatSheet() {
       │    │    ├── INPUT
       │    │    └── BUTTON
       │    │
-      │    └── GRID
+      │    └── GRID (ou TABLE)
       │
       └── HBOX
            ├── BUTTON
@@ -270,13 +270,15 @@ export function CbsConceptionCheatSheet() {
                 </thead>
                 <tbody>
                   {[
-                    ["LAYOUT", "Organisation générale"],
-                    ["VBOX", "Organisation verticale"],
-                    ["HBOX", "Organisation horizontale"],
-                    ["GRID", "Tableau de données"],
-                    ["LABEL", "Texte / libellé"],
+                    ["LAYOUT", "Organisation générale du masque"],
+                    ["VBOX", "Organisation verticale (empilement en colonne)"],
+                    ["HBOX", "Organisation horizontale (alignement en ligne)"],
+                    ["GRID", "Tableau de données ou grille matricielle"],
+                    ["TABLE", "Tableau défilant multi-lignes (DISPLAY ARRAY)"],
+                    ["TABLES", "Section de déclaration des tables SGBD cibles"],
+                    ["LABEL", "Texte / libellé fixe"],
                     ["INPUT", "Saisie utilisateur"],
-                    ["BUTTON", "Action"],
+                    ["BUTTON", "Action déclenchable"],
                     ["CHECKBOX", "Oui / Non"],
                     ["RADIO", "Choix unique"],
                     ["COMBO", "Liste déroulante"],
@@ -306,7 +308,182 @@ export function CbsConceptionCheatSheet() {
     {
       id: 4,
       category: "IHM",
-      title: "4. 📐 VBOX vs HBOX",
+      title: "4. 🗄️ Le bloc TABLES : rôle, liaison SGBD & alias",
+      badge: "Liaison SGBD",
+      badgeColor: "#0ea5e9",
+      rawText: "TABLES rôle liaison SGBD alias schéma colonnes ATTRIBUTES DATABASE form4gl -4305 typage automatique dictionnaire bkcpt bkcli",
+      content: (
+        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+          <div style={{ fontSize: "0.85rem", color: "#cbd5e1", lineHeight: "1.5" }}>
+            La section <strong>TABLES</strong> est la passerelle obligatoire entre le formulaire d&apos;écran (<code>.per</code>) et le schéma de la base de données relationnelle (Informix / Oracle). Elle se situe juste après <code>SCREEN</code> (ou <code>DATABASE</code>) et avant <code>ATTRIBUTES</code>.
+          </div>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+              gap: "16px",
+            }}
+          >
+            {/* Rôle & Fonctionnement */}
+            <div
+              style={{
+                background: "#090d16",
+                border: "1px solid #1e293b",
+                borderRadius: "8px",
+                padding: "16px",
+                display: "flex",
+                flexDirection: "column",
+                gap: "10px",
+              }}
+            >
+              <div style={{ color: "#38bdf8", fontWeight: 700, fontSize: "0.88rem" }}>
+                🎯 Rôles fondamentaux de TABLES :
+              </div>
+              <ul style={{ margin: 0, paddingLeft: "18px", fontSize: "0.82rem", color: "#cbd5e1", lineHeight: "1.6" }}>
+                <li>
+                  <strong style={{ color: "#f8fafc" }}>Déclarer les tables sources :</strong> Informe le compilateur (<code>form4gl</code>, <code>fglform</code>) quelles tables fournissent les champs de l&apos;écran.
+                </li>
+                <li>
+                  <strong style={{ color: "#f8fafc" }}>Héritage automatique des types :</strong> Le compilateur extrait directement la taille, le type (<code>CHAR</code>, <code>DECIMAL</code>, <code>DATE</code>...) et les contraintes du SGBD sans devoir les redéclarer manuellement.
+                </li>
+                <li>
+                  <strong style={{ color: "#f8fafc" }}>Évolutivité sans régression :</strong> Si une colonne passe de 8 à 10 caractères en base, une simple recompilation du <code>.per</code> met l&apos;IHM à jour.
+                </li>
+              </ul>
+            </div>
+
+            {/* Exemple .per concret */}
+            <div
+              style={{
+                background: "#090d16",
+                border: "1px solid #1e293b",
+                borderRadius: "8px",
+                padding: "16px",
+              }}
+            >
+              <div style={{ color: "#10b981", fontWeight: 700, fontSize: "0.88rem", marginBottom: "6px" }}>
+                📝 Syntaxe standard dans un .per :
+              </div>
+              <pre
+                style={{
+                  background: "#022416",
+                  border: "1px solid #065f46",
+                  borderRadius: "6px",
+                  padding: "12px",
+                  color: "#6ee7b7",
+                  fontFamily: "monospace",
+                  fontSize: "0.8rem",
+                  lineHeight: "1.4",
+                  margin: 0,
+                }}
+              >{`DATABASE amplitude
+SCREEN
+{
+ Client : [f001    ] [f002               ]
+ Compte : [f003       ] Devise : [f004]
+}
+TABLES
+  bkcli
+  bkcpt
+ATTRIBUTES
+  f001 = bkcli.cli;
+  f002 = bkcli.nom;
+  f003 = bkcpt.cpt;
+  f004 = bkcpt.dev;`}</pre>
+            </div>
+          </div>
+
+          {/* Alias et Distinction TABLES vs TABLE */}
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+              gap: "16px",
+            }}
+          >
+            {/* Les Alias */}
+            <div
+              style={{
+                background: "#090d16",
+                border: "1px solid #1e293b",
+                borderRadius: "8px",
+                padding: "16px",
+              }}
+            >
+              <div style={{ color: "#f59e0b", fontWeight: 700, fontSize: "0.88rem", marginBottom: "6px" }}>
+                🔁 Les Alias de tables (Cas multi-occurrences) :
+              </div>
+              <p style={{ fontSize: "0.82rem", color: "#cbd5e1", margin: "0 0 10px 0", lineHeight: "1.5" }}>
+                Quand un écran manipule deux fois la même table (ex: virement de compte émetteur à compte récepteur), on déclare des alias dans <code>TABLES</code> :
+              </p>
+              <pre
+                style={{
+                  background: "#181206",
+                  border: "1px solid #78350f",
+                  borderRadius: "6px",
+                  padding: "10px",
+                  color: "#fde68a",
+                  fontFamily: "monospace",
+                  fontSize: "0.8rem",
+                  lineHeight: "1.4",
+                  margin: 0,
+                }}
+              >{`TABLES
+  cpt_src = bkcpt,
+  cpt_dst = bkcpt
+ATTRIBUTES
+  f_src = cpt_src.cpt;
+  f_dst = cpt_dst.cpt;`}</pre>
+            </div>
+
+            {/* Distinction TABLES vs TABLE */}
+            <div
+              style={{
+                background: "#090d16",
+                border: "1px solid #1e293b",
+                borderRadius: "8px",
+                padding: "16px",
+              }}
+            >
+              <div style={{ color: "#c084fc", fontWeight: 700, fontSize: "0.88rem", marginBottom: "6px" }}>
+                ⚖️ Distinction clé : TABLES vs TABLE
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: "8px", fontSize: "0.82rem" }}>
+                <div style={{ background: "#1e1b4b", padding: "8px 10px", borderRadius: "6px", border: "1px solid #4338ca" }}>
+                  <strong style={{ color: "#a5b4fc" }}>TABLES (avec un S) :</strong> Section déclarative au sommet du <code>.per</code> qui fait le lien avec les tables SGBD.
+                </div>
+                <div style={{ background: "#064e3b", padding: "8px 10px", borderRadius: "6px", border: "1px solid #059669" }}>
+                  <strong style={{ color: "#6ee7b7" }}>TABLE (sans S) :</strong> Composant visuel Genero dans le <code>LAYOUT</code> pour afficher un tableau défilant (<code>DISPLAY ARRAY</code>).
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Erreur classique */}
+          <div
+            style={{
+              background: "rgba(239, 68, 68, 0.1)",
+              border: "1px solid rgba(239, 68, 68, 0.4)",
+              borderRadius: "8px",
+              padding: "12px 16px",
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+            }}
+          >
+            <span style={{ fontSize: "1.3rem" }}>⚠️</span>
+            <div style={{ fontSize: "0.85rem", color: "#fecaca" }}>
+              <strong>Erreur fréquente (-4305) :</strong> Si tu utilises un champ <code>f010 = bkcom.com;</code> dans <code>ATTRIBUTES</code> sans avoir listé <code>bkcom</code> dans la section <code>TABLES</code>, le compilateur échoue immédiatement avec : <em>&quot;Table not in TABLES statement&quot;</em>.
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 5,
+      category: "IHM",
+      title: "5. 📐 VBOX vs HBOX",
       badge: "Mise en page",
       badgeColor: "#0284c7",
       rawText: "VBOX vs HBOX empile composants verticalement place composants horizontalement colonne ligne Nom Prénom Téléphone Email Client Rechercher",
@@ -439,9 +616,9 @@ export function CbsConceptionCheatSheet() {
       ),
     },
     {
-      id: 5,
+      id: 6,
       category: "IHM",
-      title: "5. 🏗️ Pattern d'écran classique",
+      title: "6. 🏗️ Pattern d'écran classique",
       badge: "Standard CBS",
       badgeColor: "#f59e0b",
       rawText: "Pattern d'écran classique application CBS TITRE ÉCRAN CRITÈRES DE RECHERCHE RÉSULTATS Compte Devise Solde Valider Annuler VBOX HBOX GRID",
@@ -542,9 +719,9 @@ export function CbsConceptionCheatSheet() {
       ),
     },
     {
-      id: 6,
+      id: 7,
       category: "GRID",
-      title: "6. 📊 GRID : le composant à maîtriser",
+      title: "7. 📊 GRID : le composant à maîtriser",
       badge: "Collection de données",
       badgeColor: "#ec4899",
       rawText: "GRID le composant à maîtriser collection de données comptes client numéro type devise solde statut répétitives tableau",
@@ -657,9 +834,9 @@ export function CbsConceptionCheatSheet() {
       ),
     },
     {
-      id: 7,
+      id: 8,
       category: "IHM",
-      title: "7. 🧱 Pattern Recherche + GRID",
+      title: "8. 🧱 Pattern Recherche + GRID",
       badge: "Écran type par excellence",
       badgeColor: "#6366f1",
       rawText: "Pattern Recherche + GRID VBOX HBOX Client Rechercher GRID ID NOM TYPE STATUT Consulter Fermer",
@@ -700,9 +877,9 @@ export function CbsConceptionCheatSheet() {
       ),
     },
     {
-      id: 8,
+      id: 9,
       category: "TRAITEMENT",
-      title: "8. 🧠 Séparer IHM et traitement",
+      title: "9. 🧠 Séparer IHM et traitement",
       badge: "Architecture propre",
       badgeColor: "#14b8a6",
       rawText: "Séparer IHM et traitement erreur à éviter écran SQL directement partout traitement mélangé IHM action traitement 4GL SQL données résultat onSearch validateInput loadCustomer loadAccounts populateGrid",
@@ -791,9 +968,9 @@ Mise à jour IHM`}</pre>
       ),
     },
     {
-      id: 9,
+      id: 10,
       category: "TRAITEMENT",
-      title: "9. 🔄 Cycle d'un écran",
+      title: "10. 🔄 Cycle d'un écran",
       badge: "Cycle de vie",
       badgeColor: "#64748b",
       rawText: "Cycle d'un écran OPEN INITIALISATION SAISIE VALIDATION TRAITEMENT CHARGEMENT DONNEES AFFICHAGE ACTION UTILISATEUR VALIDATION MISE A JOUR REFRESH",
@@ -850,9 +1027,9 @@ Mise à jour IHM`}</pre>
       ),
     },
     {
-      id: 10,
+      id: 11,
       category: "METHODE",
-      title: "10. 🧪 Contrôles IHM",
+      title: "11. 🧪 Contrôles IHM",
       badge: "Validation défensive",
       badgeColor: "#e11d48",
       rawText: "Contrôles IHM obligatoire format longueur domaine cohérence existence client montant date agence statut",
@@ -901,9 +1078,9 @@ Mise à jour IHM`}</pre>
       ),
     },
     {
-      id: 11,
+      id: 12,
       category: "TRAITEMENT",
-      title: "11. 🗃️ Mémo SQL → 4GL",
+      title: "12. 🗃️ Mémo SQL → 4GL",
       badge: "Requêtes & Logique",
       badgeColor: "#d97706",
       rawText: "Mémo SQL 4GL Quelles tables clé champs condition JOIN résultat sans résultat plusieurs résultats transaction rollback SELECT IF ELSE",
@@ -992,9 +1169,9 @@ END IF`}</pre>
       ),
     },
     {
-      id: 12,
+      id: 13,
       category: "TRANSACTION",
-      title: "12. 🔐 Transaction",
+      title: "13. 🔐 Transaction",
       badge: "Intégrité financière",
       badgeColor: "#dc2626",
       rawText: "Transaction BEGIN UPDATE INSERT DELETE COMMIT ROLLBACK Qu'est-ce qui se passe si le traitement s'arrête juste avant le COMMIT intégrité bancaire",
@@ -1089,9 +1266,9 @@ ROLLBACK WORK`}</pre>
       ),
     },
     {
-      id: 13,
+      id: 14,
       category: "TRANSACTION",
-      title: "13. 🧯 Gestion des erreurs",
+      title: "14. 🧯 Gestion des erreurs",
       badge: "Résilience RUN",
       badgeColor: "#ea580c",
       rawText: "Gestion des erreurs technique fonctionnelle inexistante invalide droit insuffisant timeout DB indisponible interrompue TRY CATCH ROLLBACK LOG",
@@ -1177,9 +1354,9 @@ END IF`}</pre>
       ),
     },
     {
-      id: 14,
+      id: 15,
       category: "GRID",
-      title: "14. 🧠 GRID : questions à se poser (Checklist)",
+      title: "15. 🧠 GRID : questions à se poser (Checklist)",
       badge: "Checklist interactive",
       badgeColor: "#06b6d4",
       rawText: "GRID questions à se poser checklist pagination tri filtre sélection double clic modification suppression rafraîchissement 0 1 N résultats",
@@ -1228,9 +1405,9 @@ END IF`}</pre>
       ),
     },
     {
-      id: 15,
+      id: 16,
       category: "METHODE",
-      title: "15. 🖥️ Conception d'écran : méthode rapide",
+      title: "16. 🖥️ Conception d'écran : méthode rapide",
       badge: "Cas pratique",
       badgeColor: "#a855f7",
       rawText: "Conception d'écran méthode rapide consulter comptes client Objet Entrées Actions Sorties Architecture IHM Traitement VBOX HBOX GRID",
@@ -1310,7 +1487,7 @@ END IF`}</pre>
 │
 ├── HBOX (LABEL, INPUT, BUTTON)
 │
-├── GRID
+├── GRID (ou TABLE)
 │
 └── HBOX (BUTTON, BUTTON)`}</pre>
             </div>
@@ -1349,9 +1526,9 @@ Populate GRID`}</pre>
       ),
     },
     {
-      id: 16,
+      id: 17,
       category: "IHM",
-      title: "16. 🧩 Layout : règle d'or",
+      title: "17. 🧩 Layout : règle d'or",
       badge: "Clarté structurelle",
       badgeColor: "#059669",
       rawText: "Layout règle d'or structure logique écran Layout principal VBox Header Recherche HBox Résultats Grid Actions HBox maintenable",
@@ -1404,7 +1581,7 @@ Populate GRID`}</pre>
           │    └── HBox
           │
           ├── Résultats (Collection)
-          │    └── Grid
+          │    └── Grid (ou Table)
           │
           └── Actions (Boutons opérationnels)
                └── HBox`}</pre>
@@ -1412,12 +1589,12 @@ Populate GRID`}</pre>
       ),
     },
     {
-      id: 17,
+      id: 18,
       category: "METHODE",
-      title: "17. ⚡ LA MÉTHODE À RETENIR",
+      title: "18. ⚡ LA MÉTHODE À RETENIR",
       badge: "Le Décalogue CBS",
       badgeColor: "#eab308",
-      rawText: "LA MÉTHODE À RETENIR COMPRENDRE DÉCOMPOSER DONNÉES TRAITEMENT IHM STRUCTURE CONTRÔLES TRANSACTION ERREURS TEST modèle de données flux",
+      rawText: "LA MÉTHODE À RETENIR COMPRENDRE DÉCOMPOSER DONNÉES TRAITEMENT IHM STRUCTURE CONTRÔLES TRANSACTION ERREURS TEST modèle de données flux TABLES",
       content: (
         <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
           <div style={{ fontSize: "0.85rem", color: "#fde047", fontWeight: 700 }}>
@@ -1433,9 +1610,9 @@ Populate GRID`}</pre>
             {[
               { num: "①", title: "COMPRENDRE", desc: "Quel est le besoin métier exact ?" },
               { num: "②", title: "DÉCOMPOSER", desc: "Quelles sous-tâches unitaires ?" },
-              { num: "③", title: "DONNÉES", desc: "Tables / champs / relations ?" },
+              { num: "③", title: "DONNÉES", desc: "Tables / champs / relations / bloc TABLES ?" },
               { num: "④", title: "TRAITEMENT", desc: "Quel algorithme 4GL ?" },
-              { num: "⑤", title: "IHM", desc: "Quels INPUT, BUTTON, GRID ?" },
+              { num: "⑤", title: "IHM", desc: "Quels INPUT, BUTTON, GRID, TABLE ?" },
               { num: "⑥", title: "STRUCTURE", desc: "LAYOUT → VBOX, HBOX, GRID" },
               { num: "⑦", title: "CONTRÔLES", desc: "Validation / droits / formats" },
               { num: "⑧", title: "TRANSACTION", desc: "COMMIT / ROLLBACK" },
@@ -1488,7 +1665,7 @@ Populate GRID`}</pre>
             <div style={{ color: "#cbd5e1", fontSize: "0.88rem", lineHeight: "1.5" }}>
               Commence toujours par :{" "}
               <strong style={{ color: "#38bdf8" }}>
-                Besoin → Modèle de données → Flux → Traitement → IHM → Code → Tests.
+                Besoin → Modèle de données &amp; TABLES → Flux → Traitement → IHM → Code → Tests.
               </strong>
             </div>
             <div style={{ color: "#a5b4fc", fontSize: "0.82rem", fontStyle: "italic", marginTop: "4px" }}>
@@ -1546,14 +1723,14 @@ Populate GRID`}</pre>
               ANTISÈCHE OFFICIELLE DU CONCEPTEUR
             </span>
             <span style={{ color: "#94a3b8", fontSize: "0.8rem", fontWeight: 600 }}>
-              17 Règles Pratiques • Du Besoin aux Tests
+              18 Règles Pratiques • Du Besoin aux Tests
             </span>
           </div>
           <h2 style={{ fontSize: "1.45rem", fontWeight: 800, color: "#ffffff", margin: "0 0 6px 0" }}>
             🧠 Fiche Mémo — 4GL CBS &amp; IHM .PER
           </h2>
           <p style={{ fontSize: "0.88rem", color: "#cbd5e1", margin: 0, lineHeight: "1.5" }}>
-            L&apos;antisèche de conception opérationnelle : dès qu&apos;on te confie une évolution bancaire, ouvre cette fiche pour dérouler immédiatement <strong>Analyse → 4GL → Écran .per → Contrôles → Tests</strong>.
+            L&apos;antisèche de conception opérationnelle : dès qu&apos;on te confie une évolution bancaire, ouvre cette fiche pour dérouler immédiatement <strong>Analyse → Données &amp; TABLES → 4GL → Écran .per → Contrôles → Tests</strong>.
           </p>
         </div>
 
@@ -1601,7 +1778,7 @@ Populate GRID`}</pre>
           </span>
           <input
             type="text"
-            placeholder="Rechercher une notion (ex: VBOX, HBOX, GRID, COMMIT, ROLLBACK, SELECT, onSearch, Contrôles...)"
+            placeholder="Rechercher une notion (ex: TABLES, TABLE, VBOX, HBOX, GRID, COMMIT, ROLLBACK, SELECT, onSearch...)"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{
@@ -1640,7 +1817,7 @@ Populate GRID`}</pre>
             { id: "ALL", label: `Toutes les notions (${sections.length})` },
             { id: "METHODE", label: "🧩 Méthode & Décomposition" },
             { id: "IHM", label: "🖥️ Écrans .PER & Layout" },
-            { id: "GRID", label: "📊 Composant GRID" },
+            { id: "GRID", label: "📊 Composant GRID & TABLE" },
             { id: "TRAITEMENT", label: "⚙️ Traitement & SQL" },
             { id: "TRANSACTION", label: "🔐 Transactions & Erreurs" },
           ].map((cat) => (
@@ -1787,7 +1964,7 @@ Populate GRID`}</pre>
               Aucun résultat pour « {searchTerm} »
             </div>
             <p style={{ fontSize: "0.85rem", marginTop: "4px" }}>
-              Essayez un autre mot-clé comme VBOX, HBOX, GRID, COMMIT, ROLLBACK ou SELECT.
+              Essayez un autre mot-clé comme TABLES, TABLE, VBOX, HBOX, GRID, COMMIT, ROLLBACK ou SELECT.
             </p>
           </div>
         )}

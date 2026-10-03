@@ -33,8 +33,8 @@ export default function CbsDashboardPage() {
     },
     {
       title: "Antisèche Conception 4GL & .PER",
-      count: "17 Règles & Patterns",
-      desc: "Fiche mémo pratique : décomposition besoin, IHM .per, flux 4GL, transactions et tests",
+      count: "18 Règles & Patterns",
+      desc: "Fiche mémo pratique : décomposition besoin, TABLES, IHM .per, flux 4GL, transactions et tests",
       href: "/cbs/memo-conception",
       icon: "🧠",
       badge: "Antisèche",

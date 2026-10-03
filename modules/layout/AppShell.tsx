@@ -89,6 +89,7 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
       roleRequired: "ROLE_REFERENTIELS",
       items: [
         { href: "/training-monetique", label: "Formation Monétique & Certif", icon: "💳" },
+        { href: "/training-monetique/antiseche", label: "Antisèche Monétique", icon: "🧠" },
         { href: "/mti", label: "Référentiel MTI", icon: "📬" },
         { href: "/de39", label: "Référentiel DE39", icon: "🏷️" },
         //{ href: "/audit", label: "Piste d'audit", icon: "🛡️" },
@@ -178,7 +179,7 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
             }}
           />
           <div className="brand-text">
-            M.OURY
+            BANKING
             <b>{isCbsUniverse ? "CBS AMPLITUDE" : "MONÉTIQUE HUB"}</b>
           </div>
           <button

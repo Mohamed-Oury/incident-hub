@@ -12,6 +12,10 @@ export interface DevelopmentNeedInput {
   specialConstraints: string;
   amplitudeVersion: AmplitudeVersion;
   technicalEnvironment: "Informix / AIX" | "Oracle / Linux" | "WebLogic / Tuxedo";
+  existing4GlFileName?: string;
+  existing4GlContent?: string;
+  existingPerFileName?: string;
+  existingPerContent?: string;
 }
 
 export interface FunctionalAnalysis {
@@ -39,7 +43,7 @@ export interface CopilotSubTask {
   outputs: string;
   acceptanceCriteria: string[];
   concernedFiles: string[];
-  status: "A_FAIRE" | "EN_COURS" | "VALIDE";
+  status: "A_FAIRE" | "EN_COURS" | "VALIDE" | "A_VALIDER" | "REJETE";
 }
 
 export interface Generated4GlProposal {

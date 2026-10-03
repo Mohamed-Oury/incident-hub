@@ -7,6 +7,7 @@ import {
   MONETIQUE_LESSONS,
 } from "@/modules/training-monetique/data";
 import { MONETIQUE_EXAMS } from "@/modules/training-monetique/exams-data";
+import { MonetiqueCheatSheet } from "@/modules/training-monetique/MonetiqueCheatSheet";
 import {
   MonetiqueGrade,
   MonetiqueLesson,
@@ -17,7 +18,7 @@ export default function TrainingMonetiquePage() {
   // Progression et déblocage (Persistance persistante BDD + LocalStorage)
   const [unlockedLevel, setUnlockedLevel] = useState<MonetiqueGradeLevel>(1);
   const [selectedGradeLevel, setSelectedGradeLevel] = useState<MonetiqueGradeLevel>(1);
-  const [activeTab, setActiveTab] = useState<"cours" | "simulateur" | "examen" | "certificat">("cours");
+  const [activeTab, setActiveTab] = useState<"cours" | "simulateur" | "examen" | "antiseche" | "certificat">("cours");
   const [currentUserName, setCurrentUserName] = useState<string>("");
 
   // Chargement de la progression persistée et de l'utilisateur au démarrage
@@ -303,6 +304,21 @@ export default function TrainingMonetiquePage() {
             }}
           >
             🎓 3. Examen d&apos;Étape ({examQuestions.length} Questions / {currentGrade.minPassScorePct}% Requis)
+          </button>
+          <button
+            onClick={() => setActiveTab("antiseche")}
+            style={{
+              padding: "8px 18px",
+              borderRadius: "8px",
+              fontSize: "13px",
+              fontWeight: 700,
+              border: activeTab === "antiseche" ? "1px solid #10b981" : "1px solid #334155",
+              background: activeTab === "antiseche" ? "#059669" : "#1e293b",
+              color: "#ffffff",
+              cursor: "pointer"
+            }}
+          >
+            🧠 4. Antisèche Monétique
           </button>
           <button
             onClick={() => setActiveTab("certificat")}
@@ -710,7 +726,12 @@ export default function TrainingMonetiquePage() {
           </div>
         )}
 
-        {/* ONGLET 4 : CERTIFICAT D'INGÉNIEUR MONÉTIQUE */}
+        {/* ONGLET 4 : ANTISÈCHE MONÉTIQUE */}
+        {activeTab === "antiseche" && (
+          <MonetiqueCheatSheet />
+        )}
+
+        {/* ONGLET 5 : CERTIFICAT D'INGÉNIEUR MONÉTIQUE */}
         {activeTab === "certificat" && (
           <div className="certificate-tab-container" style={{
             background: "#0f172a",

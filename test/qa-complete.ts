@@ -13,6 +13,7 @@ import { generateCustomPerScreen } from "../modules/cbs/cbs-screen-builder";
 
 import { MONETIQUE_GRADES, MONETIQUE_LESSONS } from "../modules/training-monetique/data";
 import { MONETIQUE_EXAMS } from "../modules/training-monetique/exams-data";
+import { MONETIQUE_CHEAT_SHEET } from "../modules/training-monetique/cheat-sheet-index";
 import { referenceIncidents } from "../app/reference-incidents";
 import { computeEmvCryptograms } from "../modules/crypto/emv-arqc";
 import { generateCopilotPlan, review4GlCode, analyzeCbsFailure } from "../modules/cbs/copilot/engine";
@@ -93,6 +94,7 @@ function runQaAll() {
   // --- NOUVEAU CURSUS FORMATION & CERTIFICATION MONÉTIQUE (150 EXAMENS) ---
   assert("TEST 22 - Cursus Monétique 5 Niveaux de Qualification", MONETIQUE_GRADES.length === 5 && MONETIQUE_GRADES.every(g => g.recommendedResources && g.recommendedResources.length >= 3), `${MONETIQUE_GRADES.length} grades monétique avec normes & specs`);
   assert("TEST 23 - Leçons Techniques Approfondies Monétique", MONETIQUE_LESSONS.length >= 14, `${MONETIQUE_LESSONS.length} leçons de haut niveau (incluant ARQC/ARPC, Schemes UPI/GIM et Runbook)`);
+  assert("TEST 23 bis - Antisèche Officielle Monétique, ISO 8583 & EMV", MONETIQUE_CHEAT_SHEET.length >= 18, `${MONETIQUE_CHEAT_SHEET.length} fiches mémos (ISO 8583, GAB, EMV, HSM, Compensation, Litiges)`);
   assert("TEST 24 - Banque d'Exercices Monétique (150 examens au total, 30/grade)", 
     MONETIQUE_EXAMS.length === 150 && [1, 2, 3, 4, 5].every(lvl => MONETIQUE_EXAMS.filter(q => q.gradeLevel === lvl).length === 30),
     `${MONETIQUE_EXAMS.length} questions réparties en exactement 30 questions par grade (1 à 5)`
