@@ -1,5 +1,818 @@
 [
   {
+    "id": "PROJ-1791051291766",
+    "name": "evolution-du-programme-de-saisie-de-demande-de-carte-bancaires",
+    "domain": "Monétique/ Module Carte",
+    "amplitudeVersion": "v11.x",
+    "input": {
+      "title": "evolution-du-programme-de-saisie-de-demande-de-carte-bancaires",
+      "functionalDescription": "Faire evoluer le programme de souscription des cartes bancaire en rajoutant 3 champs Type pièce, Pièce d'identité et Pays de residence au niveau du programme 4gl et au niveau de l'ecran pour qu'on puisse respecter les exigences etablié par FORCES depuis Paris.",
+      "bankingDomain": "Monétique/ Module Carte",
+      "targetUsers": "Gestionnaires/ CSMS",
+      "knownBusinessRules": "1-Lorsqu'on selection un type de pièce de type CNI, la CNI renseigné dois etre de 9 caractère et le Pays de residence doit etre CNI\n\n2-Lorsqu'on selectionne PassPort, il faut s'assurer que le passport renseigné respecte les patterns de la BCEAO concernant les patterns des pays (Voir sur internet pour plus d'info)",
+      "inputData": "Tous les champs issus de l'ecran de saisie",
+      "specialConstraints": "",
+      "amplitudeVersion": "v11.x",
+      "technicalEnvironment": "Informix / AIX",
+      "existing4GlFileName": "card_request.4gl",
+      "existing4GlContent": "/******************************************************************\n * MODULE        : CARD_REQUEST\n * DESCRIPTION   : Gestion des demandes de cartes bancaires\n * TYPE          : BUILD\n *\n * Fonctionnalités :\n *   - Saisie d'une demande de carte\n *   - Recherche du client via compte\n *   - Contrôle des données\n *   - Détermination du tarif\n *   - Enregistrement de la demande\n ******************************************************************/\n\nDEFINE MODULE card_request\n\n/* ==============================================================\n * CONSTANTES\n * ============================================================== */\n\nDEFINE CONSTANT STATUS_PENDING  = \"PENDING\"\nDEFINE CONSTANT STATUS_VALIDATED = \"VALIDATED\"\nDEFINE CONSTANT STATUS_CANCELLED = \"CANCELLED\"\n\n/* ==============================================================\n * VARIABLES ECRAN\n * ============================================================== */\n\nDEFINE VARIABLE v_agency          CHAR(10)\nDEFINE VARIABLE v_account         CHAR(30)\nDEFINE VARIABLE v_currency        CHAR(3)\n\nDEFINE VARIABLE v_last_name       CHAR(80)\nDEFINE VARIABLE v_first_name      CHAR(80)\nDEFINE VARIABLE v_phone           CHAR(30)\nDEFINE VARIABLE v_email           CHAR(120)\n\nDEFINE VARIABLE v_account_type    CHAR(20)\nDEFINE VARIABLE v_card_type       CHAR(30)\n\nDEFINE VARIABLE v_tariff          DECIMAL(15,2)\n\nDEFINE VARIABLE v_request_date    DATE\nDEFINE VARIABLE v_expiry_date     DATE\n\nDEFINE VARIABLE v_reason          CHAR(100)\nDEFINE VARIABLE v_comment         CHAR(255)\n\nDEFINE VARIABLE v_status          CHAR(20)\n\nDEFINE VARIABLE v_customer_id     CHAR(30)\n\nDEFINE VARIABLE v_error_code      INTEGER\nDEFINE VARIABLE v_error_message   CHAR(255)\n\n/* ==============================================================\n * INITIALISATION\n * ============================================================== */\n\nPROCEDURE INIT_MODULE()\n\n    LET v_agency        = \"\"\n    LET v_account       = \"\"\n    LET v_currency      = \"XOF\"\n\n    LET v_last_name     = \"\"\n    LET v_first_name    = \"\"\n    LET v_phone         = \"\"\n    LET v_email         = \"\"\n\n    LET v_account_type  = \"\"\n    LET v_card_type     = \"\"\n\n    LET v_tariff        = 0\n\n    LET v_request_date  = TODAY\n    LET v_expiry_date   = TODAY\n\n    LET v_reason        = \"\"\n    LET v_comment       = \"\"\n\n    LET v_status        = STATUS_PENDING\n\n    LET v_customer_id   = \"\"\n\n    LET v_error_code    = 0\n    LET v_error_message = \"\"\n\nEND PROCEDURE\n\n\n/* ==============================================================\n * RECHERCHE DU COMPTE\n * ============================================================== */\n\nPROCEDURE SEARCH_ACCOUNT()\n\n    IF TRIM(v_account) = \"\" THEN\n\n        CALL DISPLAY_ERROR(\n            \"Le numéro de compte est obligatoire.\"\n        )\n\n        RETURN\n\n    END IF\n\n\n    /*\n     * Appel au service / objet CBS permettant\n     * de récupérer les informations du compte.\n     *\n     * A adapter aux APIs disponibles dans\n     * l'environnement CBS cible.\n     */\n\n    CALL CBS_GET_ACCOUNT(\n        v_account,\n        v_customer_id,\n        v_currency,\n        v_account_type,\n        v_last_name,\n        v_first_name,\n        v_phone,\n        v_email\n    )\n    RETURNING v_error_code, v_error_message\n\n\n    IF v_error_code <> 0 THEN\n\n        CALL DISPLAY_ERROR(v_error_message)\n\n        RETURN\n\n    END IF\n\n\n    CALL CALCULATE_TARIFF()\n\nEND PROCEDURE\n\n\n/* ==============================================================\n * CALCUL DU TARIF\n * ============================================================== */\n\nPROCEDURE CALCULATE_TARIFF()\n\n    IF v_card_type = \"\" THEN\n\n        LET v_tariff = 0\n\n        RETURN\n\n    END IF\n\n\n    CASE v_card_type\n\n        WHEN \"VISA_CLASSIC\"\n\n            LET v_tariff = 10000\n\n        WHEN \"VISA_GOLD\"\n\n            LET v_tariff = 25000\n\n        WHEN \"VISA_PREMIUM\"\n\n            LET v_tariff = 50000\n\n        WHEN \"MASTERCARD_STANDARD\"\n\n            LET v_tariff = 10000\n\n        WHEN \"MASTERCARD_GOLD\"\n\n            LET v_tariff = 25000\n\n        OTHERWISE\n\n            LET v_tariff = 0\n\n    END CASE\n\nEND PROCEDURE\n\n\n/* ==============================================================\n * CONTROLE DE LA SAISIE\n * ============================================================== */\n\nFUNCTION VALIDATE_REQUEST() RETURNS BOOLEAN\n\n    IF TRIM(v_agency) = \"\" THEN\n\n        CALL DISPLAY_ERROR(\n            \"L'agence est obligatoire.\"\n        )\n\n        RETURN FALSE\n\n    END IF\n\n\n    IF TRIM(v_account) = \"\" THEN\n\n        CALL DISPLAY_ERROR(\n            \"Le numéro de compte est obligatoire.\"\n        )\n\n        RETURN FALSE\n\n    END IF\n\n\n    IF TRIM(v_currency) = \"\" THEN\n\n        CALL DISPLAY_ERROR(\n            \"La devise est obligatoire.\"\n        )\n\n        RETURN FALSE\n\n    END IF\n\n\n    IF TRIM(v_last_name) = \"\" THEN\n\n        CALL DISPLAY_ERROR(\n            \"Le nom du client est obligatoire.\"\n        )\n\n        RETURN FALSE\n\n    END IF\n\n\n    IF TRIM(v_first_name) = \"\" THEN\n\n        CALL DISPLAY_ERROR(\n            \"Le prénom du client est obligatoire.\"\n        )\n\n        RETURN FALSE\n\n    END IF\n\n\n    IF TRIM(v_phone) = \"\" THEN\n\n        CALL DISPLAY_ERROR(\n            \"Le numéro de téléphone est obligatoire.\"\n        )\n\n        RETURN FALSE\n\n    END IF\n\n\n    IF TRIM(v_card_type) = \"\" THEN\n\n        CALL DISPLAY_ERROR(\n            \"Le type de carte est obligatoire.\"\n        )\n\n        RETURN FALSE\n\n    END IF\n\n\n    IF v_tariff <= 0 THEN\n\n        CALL DISPLAY_ERROR(\n            \"Le tarif de la carte est invalide.\"\n        )\n\n        RETURN FALSE\n\n    END IF\n\n\n    RETURN TRUE\n\nEND FUNCTION\n\n\n/* ==============================================================\n * VERIFICATION D'UNE DEMANDE EXISTANTE\n * ============================================================== */\n\nFUNCTION CHECK_EXISTING_REQUEST() RETURNS BOOLEAN\n\n    DEFINE VARIABLE v_count INTEGER\n\n    CALL CBS_COUNT_CARD_REQUEST(\n        v_account,\n        v_card_type\n    )\n    RETURNING v_count\n\n\n    IF v_count > 0 THEN\n\n        CALL DISPLAY_ERROR(\n            \"Une demande existe déjà pour ce compte et ce type de carte.\"\n        )\n\n        RETURN FALSE\n\n    END IF\n\n\n    RETURN TRUE\n\nEND FUNCTION\n\n\n/* ==============================================================\n * ENREGISTREMENT\n * ============================================================== */\n\nPROCEDURE SAVE_REQUEST()\n\n    IF NOT VALIDATE_REQUEST() THEN\n\n        RETURN\n\n    END IF\n\n\n    IF NOT CHECK_EXISTING_REQUEST() THEN\n\n        RETURN\n\n    END IF\n\n\n    CALL CBS_CREATE_CARD_REQUEST(\n\n        v_agency,\n        v_account,\n        v_customer_id,\n        v_currency,\n\n        v_last_name,\n        v_first_name,\n        v_phone,\n        v_email,\n\n        v_account_type,\n        v_card_type,\n\n        v_tariff,\n\n        v_request_date,\n        v_expiry_date,\n\n        v_reason,\n        v_comment,\n\n        v_status\n\n    )\n    RETURNING v_error_code, v_error_message\n\n\n    IF v_error_code <> 0 THEN\n\n        CALL DISPLAY_ERROR(\n            v_error_message\n        )\n\n        RETURN\n\n    END IF\n\n\n    CALL DISPLAY_MESSAGE(\n        \"La demande de carte a été enregistrée avec succès.\"\n    )\n\nEND PROCEDURE\n\n\n/* ==============================================================\n * ANNULATION\n * ============================================================== */\n\nPROCEDURE CANCEL_REQUEST()\n\n    LET v_account      = \"\"\n    LET v_customer_id  = \"\"\n\n    LET v_last_name    = \"\"\n    LET v_first_name   = \"\"\n    LET v_phone        = \"\"\n    LET v_email        = \"\"\n\n    LET v_card_type    = \"\"\n    LET v_tariff       = 0\n\n    LET v_reason       = \"\"\n    LET v_comment      = \"\"\n\n    LET v_status       = STATUS_PENDING\n\nEND PROCEDURE\n\n\n/* ==============================================================\n * PROGRAMME PRINCIPAL\n * ============================================================== */\n\nPROCEDURE MAIN()\n\n    CALL INIT_MODULE()\n\n    /*\n     * Ouverture de l'IHM .per\n     */\n    CALL OPEN_FORM(\n        \"card_request.per\"\n    )\n\nEND PROCEDURE\n\n\nEND MODULE",
+      "existingPerFileName": "card_request.per",
+      "existingPerContent": "# ==============================================================\n# CARD_REQUEST.PER\n# Module : Demande de carte bancaire\n# IHM    : Genero Web\n# ==============================================================\n\nLAYOUT\n(\n  GRID\n  {\n    [f01                                  ]\n    [f02                                  ]\n\n    [f03        ][f04                     ]\n    [f05        ][f06                     ]\n    [f07        ][f08                     ]\n\n    [f09        ][f10                     ]\n    [f11        ][f12                     ]\n    [f13        ][f14                     ]\n\n    [f15        ][f16                     ]\n    [f17        ][f18                     ]\n\n    [f19                                  ]\n    [f20                                  ]\n\n    [f21        ][f22        ][f23        ]\n  }\n)\n\nATTRIBUTES\n\nGROUPBOX f01 = GROUP \"Informations du compte\";\n\nLABEL f02 = \"Agence\";\n\nEDIT f03 = v_agency,\n    REQUIRED;\n\nLABEL f04 = \"Numéro de compte\";\n\nEDIT f05 = v_account,\n    REQUIRED;\n\nLABEL f06 = \"Devise\";\n\nCOMBOBOX f07 = v_currency,\n    ITEMS (\n        \"XOF\",\n        \"EUR\",\n        \"USD\"\n    ),\n    REQUIRED;\n\nBUTTON f08 = \"Rechercher\",\n    ACTION search_account;\n\n\n/*\n * --------------------------------------------------------------\n * INFORMATIONS CLIENT\n * --------------------------------------------------------------\n */\n\nGROUPBOX f09 = GROUP \"Informations client\";\n\nLABEL f10 = \"Nom\";\n\nEDIT f11 = v_last_name,\n    REQUIRED;\n\nLABEL f12 = \"Prénom\";\n\nEDIT f13 = v_first_name,\n    REQUIRED;\n\nLABEL f14 = \"Téléphone\";\n\nEDIT f15 = v_phone,\n    REQUIRED;\n\nLABEL f16 = \"Email\";\n\nEDIT f17 = v_email;\n\nLABEL f18 = \"N° pièce d'identité\";\n\nEDIT f19 = v_identity_number,\n    REQUIRED;\n\nLABEL f20 = \"Type de compte\";\n\nCOMBOBOX f21 = v_account_type,\n    ITEMS (\n        \"COURANT\",\n        \"EPARGNE\",\n        \"PROFESSIONNEL\"\n    );\n\n\n/*\n * --------------------------------------------------------------\n * INFORMATIONS CARTE\n * --------------------------------------------------------------\n */\n\nGROUPBOX f22 = GROUP \"Informations carte\";\n\nLABEL f23 = \"Type de carte\";\n\nCOMBOBOX f24 = v_card_type,\n    ITEMS (\n        \"VISA_CLASSIC\",\n        \"VISA_GOLD\",\n        \"VISA_PREMIUM\",\n        \"MASTERCARD_STANDARD\",\n        \"MASTERCARD_GOLD\"\n    ),\n    REQUIRED;\n\nLABEL f25 = \"Tarif\";\n\nEDIT f26 = v_tariff,\n    READONLY;\n\nLABEL f27 = \"Devise tarif\";\n\nCOMBOBOX f28 = v_tariff_currency,\n    ITEMS (\n        \"XOF\",\n        \"EUR\",\n        \"USD\"\n    ),\n    REQUIRED;\n\n\n/*\n * --------------------------------------------------------------\n * INFORMATIONS DEMANDE\n * --------------------------------------------------------------\n */\n\nGROUPBOX f29 = GROUP \"Informations de la demande\";\n\nLABEL f30 = \"Date de demande\";\n\nEDIT f31 = v_request_date,\n    READONLY;\n\nLABEL f32 = \"Motif\";\n\nEDIT f33 = v_reason;\n\nLABEL f34 = \"Statut\";\n\nEDIT f35 = v_status,\n    READONLY;\n\n\n/*\n * --------------------------------------------------------------\n * OBSERVATIONS\n * --------------------------------------------------------------\n */\n\nLABEL f36 = \"Observations\";\n\nTEXTEDIT f37 = v_comment;\n\n\n/*\n * --------------------------------------------------------------\n * ACTIONS\n * --------------------------------------------------------------\n */\n\nBUTTON f38 = \"Enregistrer\",\n    ACTION save_request;\n\nBUTTON f39 = \"Annuler\",\n    ACTION cancel_request;\n\nBUTTON f40 = \"Quitter\",\n    ACTION close_form;"
+    },
+    "plan": {
+      "need": {
+        "title": "evolution-du-programme-de-saisie-de-demande-de-carte-bancaires",
+        "functionalDescription": "Faire evoluer le programme de souscription des cartes bancaire en rajoutant 3 champs Type pièce, Pièce d'identité et Pays de residence au niveau du programme 4gl et au niveau de l'ecran pour qu'on puisse respecter les exigences etablié par FORCES depuis Paris.",
+        "bankingDomain": "Monétique/ Module Carte",
+        "targetUsers": "Gestionnaires/ CSMS",
+        "knownBusinessRules": "1-Lorsqu'on selection un type de pièce de type CNI, la CNI renseigné dois etre de 9 caractère et le Pays de residence doit etre CNI\n\n2-Lorsqu'on selectionne PassPort, il faut s'assurer que le passport renseigné respecte les patterns de la BCEAO concernant les patterns des pays (Voir sur internet pour plus d'info)",
+        "inputData": "Tous les champs issus de l'ecran de saisie",
+        "specialConstraints": "",
+        "amplitudeVersion": "v11.x",
+        "technicalEnvironment": "Informix / AIX",
+        "existing4GlFileName": "card_request.4gl",
+        "existing4GlContent": "/******************************************************************\n * MODULE        : CARD_REQUEST\n * DESCRIPTION   : Gestion des demandes de cartes bancaires\n * TYPE          : BUILD\n *\n * Fonctionnalités :\n *   - Saisie d'une demande de carte\n *   - Recherche du client via compte\n *   - Contrôle des données\n *   - Détermination du tarif\n *   - Enregistrement de la demande\n ******************************************************************/\n\nDEFINE MODULE card_request\n\n/* ==============================================================\n * CONSTANTES\n * ============================================================== */\n\nDEFINE CONSTANT STATUS_PENDING  = \"PENDING\"\nDEFINE CONSTANT STATUS_VALIDATED = \"VALIDATED\"\nDEFINE CONSTANT STATUS_CANCELLED = \"CANCELLED\"\n\n/* ==============================================================\n * VARIABLES ECRAN\n * ============================================================== */\n\nDEFINE VARIABLE v_agency          CHAR(10)\nDEFINE VARIABLE v_account         CHAR(30)\nDEFINE VARIABLE v_currency        CHAR(3)\n\nDEFINE VARIABLE v_last_name       CHAR(80)\nDEFINE VARIABLE v_first_name      CHAR(80)\nDEFINE VARIABLE v_phone           CHAR(30)\nDEFINE VARIABLE v_email           CHAR(120)\n\nDEFINE VARIABLE v_account_type    CHAR(20)\nDEFINE VARIABLE v_card_type       CHAR(30)\n\nDEFINE VARIABLE v_tariff          DECIMAL(15,2)\n\nDEFINE VARIABLE v_request_date    DATE\nDEFINE VARIABLE v_expiry_date     DATE\n\nDEFINE VARIABLE v_reason          CHAR(100)\nDEFINE VARIABLE v_comment         CHAR(255)\n\nDEFINE VARIABLE v_status          CHAR(20)\n\nDEFINE VARIABLE v_customer_id     CHAR(30)\n\nDEFINE VARIABLE v_error_code      INTEGER\nDEFINE VARIABLE v_error_message   CHAR(255)\n\n/* ==============================================================\n * INITIALISATION\n * ============================================================== */\n\nPROCEDURE INIT_MODULE()\n\n    LET v_agency        = \"\"\n    LET v_account       = \"\"\n    LET v_currency      = \"XOF\"\n\n    LET v_last_name     = \"\"\n    LET v_first_name    = \"\"\n    LET v_phone         = \"\"\n    LET v_email         = \"\"\n\n    LET v_account_type  = \"\"\n    LET v_card_type     = \"\"\n\n    LET v_tariff        = 0\n\n    LET v_request_date  = TODAY\n    LET v_expiry_date   = TODAY\n\n    LET v_reason        = \"\"\n    LET v_comment       = \"\"\n\n    LET v_status        = STATUS_PENDING\n\n    LET v_customer_id   = \"\"\n\n    LET v_error_code    = 0\n    LET v_error_message = \"\"\n\nEND PROCEDURE\n\n\n/* ==============================================================\n * RECHERCHE DU COMPTE\n * ============================================================== */\n\nPROCEDURE SEARCH_ACCOUNT()\n\n    IF TRIM(v_account) = \"\" THEN\n\n        CALL DISPLAY_ERROR(\n            \"Le numéro de compte est obligatoire.\"\n        )\n\n        RETURN\n\n    END IF\n\n\n    /*\n     * Appel au service / objet CBS permettant\n     * de récupérer les informations du compte.\n     *\n     * A adapter aux APIs disponibles dans\n     * l'environnement CBS cible.\n     */\n\n    CALL CBS_GET_ACCOUNT(\n        v_account,\n        v_customer_id,\n        v_currency,\n        v_account_type,\n        v_last_name,\n        v_first_name,\n        v_phone,\n        v_email\n    )\n    RETURNING v_error_code, v_error_message\n\n\n    IF v_error_code <> 0 THEN\n\n        CALL DISPLAY_ERROR(v_error_message)\n\n        RETURN\n\n    END IF\n\n\n    CALL CALCULATE_TARIFF()\n\nEND PROCEDURE\n\n\n/* ==============================================================\n * CALCUL DU TARIF\n * ============================================================== */\n\nPROCEDURE CALCULATE_TARIFF()\n\n    IF v_card_type = \"\" THEN\n\n        LET v_tariff = 0\n\n        RETURN\n\n    END IF\n\n\n    CASE v_card_type\n\n        WHEN \"VISA_CLASSIC\"\n\n            LET v_tariff = 10000\n\n        WHEN \"VISA_GOLD\"\n\n            LET v_tariff = 25000\n\n        WHEN \"VISA_PREMIUM\"\n\n            LET v_tariff = 50000\n\n        WHEN \"MASTERCARD_STANDARD\"\n\n            LET v_tariff = 10000\n\n        WHEN \"MASTERCARD_GOLD\"\n\n            LET v_tariff = 25000\n\n        OTHERWISE\n\n            LET v_tariff = 0\n\n    END CASE\n\nEND PROCEDURE\n\n\n/* ==============================================================\n * CONTROLE DE LA SAISIE\n * ============================================================== */\n\nFUNCTION VALIDATE_REQUEST() RETURNS BOOLEAN\n\n    IF TRIM(v_agency) = \"\" THEN\n\n        CALL DISPLAY_ERROR(\n            \"L'agence est obligatoire.\"\n        )\n\n        RETURN FALSE\n\n    END IF\n\n\n    IF TRIM(v_account) = \"\" THEN\n\n        CALL DISPLAY_ERROR(\n            \"Le numéro de compte est obligatoire.\"\n        )\n\n        RETURN FALSE\n\n    END IF\n\n\n    IF TRIM(v_currency) = \"\" THEN\n\n        CALL DISPLAY_ERROR(\n            \"La devise est obligatoire.\"\n        )\n\n        RETURN FALSE\n\n    END IF\n\n\n    IF TRIM(v_last_name) = \"\" THEN\n\n        CALL DISPLAY_ERROR(\n            \"Le nom du client est obligatoire.\"\n        )\n\n        RETURN FALSE\n\n    END IF\n\n\n    IF TRIM(v_first_name) = \"\" THEN\n\n        CALL DISPLAY_ERROR(\n            \"Le prénom du client est obligatoire.\"\n        )\n\n        RETURN FALSE\n\n    END IF\n\n\n    IF TRIM(v_phone) = \"\" THEN\n\n        CALL DISPLAY_ERROR(\n            \"Le numéro de téléphone est obligatoire.\"\n        )\n\n        RETURN FALSE\n\n    END IF\n\n\n    IF TRIM(v_card_type) = \"\" THEN\n\n        CALL DISPLAY_ERROR(\n            \"Le type de carte est obligatoire.\"\n        )\n\n        RETURN FALSE\n\n    END IF\n\n\n    IF v_tariff <= 0 THEN\n\n        CALL DISPLAY_ERROR(\n            \"Le tarif de la carte est invalide.\"\n        )\n\n        RETURN FALSE\n\n    END IF\n\n\n    RETURN TRUE\n\nEND FUNCTION\n\n\n/* ==============================================================\n * VERIFICATION D'UNE DEMANDE EXISTANTE\n * ============================================================== */\n\nFUNCTION CHECK_EXISTING_REQUEST() RETURNS BOOLEAN\n\n    DEFINE VARIABLE v_count INTEGER\n\n    CALL CBS_COUNT_CARD_REQUEST(\n        v_account,\n        v_card_type\n    )\n    RETURNING v_count\n\n\n    IF v_count > 0 THEN\n\n        CALL DISPLAY_ERROR(\n            \"Une demande existe déjà pour ce compte et ce type de carte.\"\n        )\n\n        RETURN FALSE\n\n    END IF\n\n\n    RETURN TRUE\n\nEND FUNCTION\n\n\n/* ==============================================================\n * ENREGISTREMENT\n * ============================================================== */\n\nPROCEDURE SAVE_REQUEST()\n\n    IF NOT VALIDATE_REQUEST() THEN\n\n        RETURN\n\n    END IF\n\n\n    IF NOT CHECK_EXISTING_REQUEST() THEN\n\n        RETURN\n\n    END IF\n\n\n    CALL CBS_CREATE_CARD_REQUEST(\n\n        v_agency,\n        v_account,\n        v_customer_id,\n        v_currency,\n\n        v_last_name,\n        v_first_name,\n        v_phone,\n        v_email,\n\n        v_account_type,\n        v_card_type,\n\n        v_tariff,\n\n        v_request_date,\n        v_expiry_date,\n\n        v_reason,\n        v_comment,\n\n        v_status\n\n    )\n    RETURNING v_error_code, v_error_message\n\n\n    IF v_error_code <> 0 THEN\n\n        CALL DISPLAY_ERROR(\n            v_error_message\n        )\n\n        RETURN\n\n    END IF\n\n\n    CALL DISPLAY_MESSAGE(\n        \"La demande de carte a été enregistrée avec succès.\"\n    )\n\nEND PROCEDURE\n\n\n/* ==============================================================\n * ANNULATION\n * ============================================================== */\n\nPROCEDURE CANCEL_REQUEST()\n\n    LET v_account      = \"\"\n    LET v_customer_id  = \"\"\n\n    LET v_last_name    = \"\"\n    LET v_first_name   = \"\"\n    LET v_phone        = \"\"\n    LET v_email        = \"\"\n\n    LET v_card_type    = \"\"\n    LET v_tariff       = 0\n\n    LET v_reason       = \"\"\n    LET v_comment      = \"\"\n\n    LET v_status       = STATUS_PENDING\n\nEND PROCEDURE\n\n\n/* ==============================================================\n * PROGRAMME PRINCIPAL\n * ============================================================== */\n\nPROCEDURE MAIN()\n\n    CALL INIT_MODULE()\n\n    /*\n     * Ouverture de l'IHM .per\n     */\n    CALL OPEN_FORM(\n        \"card_request.per\"\n    )\n\nEND PROCEDURE\n\n\nEND MODULE",
+        "existingPerFileName": "card_request.per",
+        "existingPerContent": "# ==============================================================\n# CARD_REQUEST.PER\n# Module : Demande de carte bancaire\n# IHM    : Genero Web\n# ==============================================================\n\nLAYOUT\n(\n  GRID\n  {\n    [f01                                  ]\n    [f02                                  ]\n\n    [f03        ][f04                     ]\n    [f05        ][f06                     ]\n    [f07        ][f08                     ]\n\n    [f09        ][f10                     ]\n    [f11        ][f12                     ]\n    [f13        ][f14                     ]\n\n    [f15        ][f16                     ]\n    [f17        ][f18                     ]\n\n    [f19                                  ]\n    [f20                                  ]\n\n    [f21        ][f22        ][f23        ]\n  }\n)\n\nATTRIBUTES\n\nGROUPBOX f01 = GROUP \"Informations du compte\";\n\nLABEL f02 = \"Agence\";\n\nEDIT f03 = v_agency,\n    REQUIRED;\n\nLABEL f04 = \"Numéro de compte\";\n\nEDIT f05 = v_account,\n    REQUIRED;\n\nLABEL f06 = \"Devise\";\n\nCOMBOBOX f07 = v_currency,\n    ITEMS (\n        \"XOF\",\n        \"EUR\",\n        \"USD\"\n    ),\n    REQUIRED;\n\nBUTTON f08 = \"Rechercher\",\n    ACTION search_account;\n\n\n/*\n * --------------------------------------------------------------\n * INFORMATIONS CLIENT\n * --------------------------------------------------------------\n */\n\nGROUPBOX f09 = GROUP \"Informations client\";\n\nLABEL f10 = \"Nom\";\n\nEDIT f11 = v_last_name,\n    REQUIRED;\n\nLABEL f12 = \"Prénom\";\n\nEDIT f13 = v_first_name,\n    REQUIRED;\n\nLABEL f14 = \"Téléphone\";\n\nEDIT f15 = v_phone,\n    REQUIRED;\n\nLABEL f16 = \"Email\";\n\nEDIT f17 = v_email;\n\nLABEL f18 = \"N° pièce d'identité\";\n\nEDIT f19 = v_identity_number,\n    REQUIRED;\n\nLABEL f20 = \"Type de compte\";\n\nCOMBOBOX f21 = v_account_type,\n    ITEMS (\n        \"COURANT\",\n        \"EPARGNE\",\n        \"PROFESSIONNEL\"\n    );\n\n\n/*\n * --------------------------------------------------------------\n * INFORMATIONS CARTE\n * --------------------------------------------------------------\n */\n\nGROUPBOX f22 = GROUP \"Informations carte\";\n\nLABEL f23 = \"Type de carte\";\n\nCOMBOBOX f24 = v_card_type,\n    ITEMS (\n        \"VISA_CLASSIC\",\n        \"VISA_GOLD\",\n        \"VISA_PREMIUM\",\n        \"MASTERCARD_STANDARD\",\n        \"MASTERCARD_GOLD\"\n    ),\n    REQUIRED;\n\nLABEL f25 = \"Tarif\";\n\nEDIT f26 = v_tariff,\n    READONLY;\n\nLABEL f27 = \"Devise tarif\";\n\nCOMBOBOX f28 = v_tariff_currency,\n    ITEMS (\n        \"XOF\",\n        \"EUR\",\n        \"USD\"\n    ),\n    REQUIRED;\n\n\n/*\n * --------------------------------------------------------------\n * INFORMATIONS DEMANDE\n * --------------------------------------------------------------\n */\n\nGROUPBOX f29 = GROUP \"Informations de la demande\";\n\nLABEL f30 = \"Date de demande\";\n\nEDIT f31 = v_request_date,\n    READONLY;\n\nLABEL f32 = \"Motif\";\n\nEDIT f33 = v_reason;\n\nLABEL f34 = \"Statut\";\n\nEDIT f35 = v_status,\n    READONLY;\n\n\n/*\n * --------------------------------------------------------------\n * OBSERVATIONS\n * --------------------------------------------------------------\n */\n\nLABEL f36 = \"Observations\";\n\nTEXTEDIT f37 = v_comment;\n\n\n/*\n * --------------------------------------------------------------\n * ACTIONS\n * --------------------------------------------------------------\n */\n\nBUTTON f38 = \"Enregistrer\",\n    ACTION save_request;\n\nBUTTON f39 = \"Annuler\",\n    ACTION cancel_request;\n\nBUTTON f40 = \"Quitter\",\n    ACTION close_form;"
+      },
+      "analysis": {
+        "summary": "Évolution du programme de saisie de demande de carte bancaire pour ajouter les champs 'Type pièce', 'Pièce d'identité' et 'Pays de residence' avec des règles de validation spécifiques.",
+        "businessObjective": "Se conformer aux exigences de FORCES (Paris) en enrichissant les informations d'identification et de résidence lors de la souscription d'une carte bancaire.",
+        "actors": [
+          "Gestionnaires/ CSMS"
+        ],
+        "preconditions": [
+          "Le programme de saisie de demande de carte bancaire est accessible",
+          "Les informations de base du client (compte, nom, prénom, etc.) sont déjà renseignées ou recherchées."
+        ],
+        "postconditions": [
+          "Les champs 'Type pièce', 'Pièce d'identité' et 'Pays de residence' sont saisis et validés",
+          "La demande de carte est enregistrée avec les nouvelles informations"
+        ],
+        "businessRules": [
+          "Si 'Type pièce' est 'CNI', alors 'Pièce d'identité' doit être de 9 caractères.",
+          "Si 'Type pièce' est 'CNI', alors 'Pays de residence' doit être 'CNI'.",
+          "Si 'Type pièce' est 'PassPort', alors 'Pièce d'identité' doit respecter les patterns de la BCEAO pour les pays."
+        ],
+        "requiredData": [
+          "Type pièce",
+          "Pièce d'identité",
+          "Pays de residence"
+        ],
+        "cbsDependencies": [
+          "card_request.4gl",
+          "card_request.per"
+        ],
+        "unresolvedQuestions": [
+          "Quelle est la table CBS qui stocke les demandes de cartes bancaires et où les nouveaux champs doivent être ajoutés ?",
+          "Quels sont tous les types de pièces d'identité possibles pour le champ 'Type pièce' (en dehors de CNI et PassPort) ?",
+          "Quelles sont les valeurs possibles pour le champ 'Pays de residence' (liste de valeurs ou texte libre) ?",
+          "Quels sont les patterns exacts de la BCEAO pour les passeports par pays ?",
+          "Quelles sont les longueurs maximales pour les champs 'Type pièce' et 'Pays de residence' ?",
+          "Quels sont les messages d'erreur spécifiques à afficher pour chaque règle de validation non respectée ?"
+        ],
+        "technicalRisks": [
+          "Impact sur la procédure `CBS_CREATE_CARD_REQUEST` et la table sous-jacente si les modifications ne sont pas synchronisées.",
+          "Complexité de l'implémentation des patterns BCEAO pour les passeports si la logique est complexe ou nécessite une base de données de référence."
+        ]
+      },
+      "subTasks": [
+        {
+          "id": "TASK-01",
+          "title": "Spécifier les détails fonctionnels des nouveaux champs et règles",
+          "description": "Clarifier les questions non résolues concernant les types de pièces, les valeurs des pays de résidence, les patterns BCEAO et les messages d'erreur associés à chaque règle de validation.",
+          "type": "FONCTIONNEL",
+          "priority": "HAUTE",
+          "dependencies": [],
+          "estimation": "1 jour",
+          "inputs": "Besoin initial, questions non résolues",
+          "outputs": "Spécification fonctionnelle détaillée des nouveaux champs, de leurs valeurs possibles, des règles de validation et des messages d'erreur.",
+          "acceptanceCriteria": [
+            "La table de stockage des demandes de cartes est identifiée.",
+            "La liste exhaustive des 'Type pièce' est définie.",
+            "Les valeurs possibles pour 'Pays de residence' sont définies (liste ou format libre).",
+            "Les patterns BCEAO pour les passeports sont documentés.",
+            "Les longueurs maximales pour 'Type pièce' et 'Pays de residence' sont spécifiées.",
+            "Les messages d'erreur pour chaque règle de validation sont définis."
+          ],
+          "concernedFiles": [],
+          "status": "VALIDE"
+        },
+        {
+          "id": "TASK-02",
+          "title": "Mettre à jour la table de stockage des demandes de cartes",
+          "description": "Ajouter les colonnes nécessaires dans la table CBS identifiée pour stocker 'Type pièce' et 'Pays de residence'. Intégrer la colonne 'Pièce d'identité' si elle n'existe pas ou ajuster sa définition si nécessaire.",
+          "type": "SQL",
+          "priority": "HAUTE",
+          "dependencies": [
+            "TASK-01"
+          ],
+          "estimation": "0.5 jour",
+          "inputs": "Nom de la table, noms et types des nouvelles colonnes (Type pièce, Pays de residence, Pièce d'identité).",
+          "outputs": "Script SQL de modification de la table.",
+          "acceptanceCriteria": [
+            "Les colonnes 'Type pièce', 'Pièce d'identité' et 'Pays de residence' sont ajoutées à la table de stockage des demandes de cartes avec les types et longueurs appropriés.",
+            "Le script SQL est réversible (si applicable)."
+          ],
+          "concernedFiles": [],
+          "status": "VALIDE"
+        },
+        {
+          "id": "TASK-03",
+          "title": "Modifier la procédure CBS_CREATE_CARD_REQUEST",
+          "description": "Mettre à jour la procédure stockée ou l'objet CBS `CBS_CREATE_CARD_REQUEST` pour accepter les nouveaux paramètres 'Type pièce', 'Pièce d'identité' et 'Pays de residence' et les insérer dans la table de stockage.",
+          "type": "SQL",
+          "priority": "HAUTE",
+          "dependencies": [
+            "TASK-02"
+          ],
+          "estimation": "1 jour",
+          "inputs": "Définition de la procédure `CBS_CREATE_CARD_REQUEST`, noms des nouvelles colonnes.",
+          "outputs": "Code source modifié de la procédure `CBS_CREATE_CARD_REQUEST`.",
+          "acceptanceCriteria": [
+            "La procédure `CBS_CREATE_CARD_REQUEST` accepte les trois nouveaux paramètres.",
+            "Les valeurs des nouveaux paramètres sont correctement insérées dans la table de stockage.",
+            "La procédure assure l'atomicité de l'opération (transaction unique)."
+          ],
+          "concernedFiles": [],
+          "status": "VALIDE"
+        },
+        {
+          "id": "TASK-04",
+          "title": "Modifier l'écran card_request.per",
+          "description": "Ajouter les champs 'Type pièce' (COMBOBOX) et 'Pays de residence' (EDIT) à l'écran `card_request.per`. S'assurer que le champ `v_identity_number` (Pièce d'identité) est correctement positionné et que le layout est cohérent et moderne (Genero Web).",
+          "type": "IHM_PER",
+          "priority": "HAUTE",
+          "dependencies": [
+            "TASK-01"
+          ],
+          "estimation": "1 jour",
+          "inputs": "Fichier `card_request.per` existant, spécification fonctionnelle des champs.",
+          "outputs": "Fichier `card_request.per` modifié et compilé.",
+          "acceptanceCriteria": [
+            "Les champs 'Type pièce' et 'Pays de residence' sont ajoutés à l'écran.",
+            "Le champ 'Type pièce' est une COMBOBOX avec les valeurs spécifiées.",
+            "Le champ `v_identity_number` est correctement intégré et libellé 'Pièce d'identité'.",
+            "Le layout de l'écran est mis à jour pour une présentation claire et moderne (GRID, HBOX, VBOX).",
+            "Les libellés des nouveaux champs sont en français."
+          ],
+          "concernedFiles": [
+            "card_request.per"
+          ],
+          "status": "VALIDE"
+        },
+        {
+          "id": "TASK-05",
+          "title": "Modifier le programme card_request.4gl",
+          "description": "Déclarer les nouvelles variables `v_piece_type` et `v_residence_country`. Initialiser ces variables dans `INIT_MODULE`. Intégrer `v_identity_number` dans les déclarations et initialisations. Ajouter la logique de validation des nouvelles règles métier dans la fonction `VALIDATE_REQUEST`. Modifier l'appel à `CBS_CREATE_CARD_REQUEST` pour passer les nouveaux champs. Implémenter la logique `ON CHANGE` pour `v_piece_type` afin de déclencher les validations conditionnelles.",
+          "type": "4GL",
+          "priority": "HAUTE",
+          "dependencies": [
+            "TASK-01",
+            "TASK-03",
+            "TASK-04"
+          ],
+          "estimation": "2 jours",
+          "inputs": "Fichier `card_request.4gl` existant, `card_request.per` modifié, spécification fonctionnelle.",
+          "outputs": "Fichier `card_request.4gl` modifié et compilé.",
+          "acceptanceCriteria": [
+            "Les variables `v_piece_type`, `v_identity_number` et `v_residence_country` sont déclarées avec les types et longueurs appropriés.",
+            "Ces variables sont initialisées dans `INIT_MODULE`.",
+            "La fonction `VALIDATE_REQUEST` inclut les contrôles pour 'Type pièce', 'Pièce d'identité' et 'Pays de residence' selon les règles métier.",
+            "Les messages d'erreur spécifiés sont affichés en cas de non-respect des règles.",
+            "L'appel à `CBS_CREATE_CARD_REQUEST` dans `SAVE_REQUEST` inclut les paramètres `v_piece_type`, `v_identity_number` et `v_residence_country`.",
+            "Un bloc `ON CHANGE` est implémenté pour `v_piece_type` afin de déclencher la validation ou l'ajustement des champs liés.",
+            "SQLCA.SQLCODE est contrôlé après chaque ordre SQL (y compris l'appel à `CBS_CREATE_CARD_REQUEST`)."
+          ],
+          "concernedFiles": [
+            "card_request.4gl"
+          ],
+          "status": "VALIDE"
+        },
+        {
+          "id": "TASK-06",
+          "title": "Tester l'évolution du programme de saisie",
+          "description": "Exécuter des scénarios de test couvrant le cas nominal (saisie valide avec les nouveaux champs) et tous les cas d'erreur liés aux nouvelles règles de validation (CNI non 9 caractères, Pays de residence incorrect pour CNI, Passeport non conforme aux patterns BCEAO).",
+          "type": "TEST",
+          "priority": "HAUTE",
+          "dependencies": [
+            "TASK-05"
+          ],
+          "estimation": "1.5 jour",
+          "inputs": "Programme `card_request.4gl` et écran `card_request.per` modifiés, spécification fonctionnelle des règles et messages d'erreur.",
+          "outputs": "Compte rendu de tests détaillé.",
+          "acceptanceCriteria": [
+            "La saisie nominale d'une demande de carte avec les nouveaux champs est réussie et les données sont correctement enregistrées.",
+            "La validation 'CNI 9 caractères' fonctionne et affiche le message d'erreur approprié.",
+            "La validation 'Pays de residence = CNI' pour Type pièce CNI fonctionne et affiche le message d'erreur approprié.",
+            "La validation 'Passeport patterns BCEAO' fonctionne et affiche le message d'erreur approprié.",
+            "Aucune demande n'est enregistrée en cas d'erreur de validation.",
+            "Les champs sont correctement réinitialisés lors de l'annulation."
+          ],
+          "concernedFiles": [
+            "card_request.4gl",
+            "card_request.per"
+          ],
+          "status": "VALIDE"
+        },
+        {
+          "id": "TASK-07",
+          "title": "Mettre à jour la documentation technique et fonctionnelle",
+          "description": "Documenter les modifications apportées à la table de stockage, à la procédure `CBS_CREATE_CARD_REQUEST`, au programme `card_request.4gl` et à l'écran `card_request.per`. Mettre à jour la documentation fonctionnelle pour inclure les nouveaux champs et les règles de gestion associées.",
+          "type": "DOCUMENTATION",
+          "priority": "MOYENNE",
+          "dependencies": [
+            "TASK-06"
+          ],
+          "estimation": "0.5 jour",
+          "inputs": "Code source modifié, spécification fonctionnelle finale, compte rendu de tests.",
+          "outputs": "Documentation technique et fonctionnelle mise à jour.",
+          "acceptanceCriteria": [
+            "Toutes les modifications techniques sont documentées (SQL, 4GL, PER).",
+            "Les nouvelles fonctionnalités et règles métier sont décrites dans la documentation fonctionnelle.",
+            "Les exemples de saisie et les messages d'erreur sont inclus."
+          ],
+          "concernedFiles": [],
+          "status": "VALIDE"
+        }
+      ],
+      "code4GlProposal": {
+        "programObjective": "Exécuter le traitement métier pour 'evolution-du-programme-de-saisie-de-demande-de-carte-bancaires' avec accès contrôlé sur la table BKCPT (Comptes à vue, comptes d'épargne et comptes techniques d'agences.).",
+        "programType": "Programme Interactif Formulaire Curses (.per)",
+        "entryPoint": "MAIN ou FUNCTION p_cbs_bkcpt_cst()",
+        "parameters": [
+          "p_age CHAR(15)",
+          "p_ncp CHAR(15)"
+        ],
+        "variables": [
+          "DEFINE v_user_id      VARCHAR(10)",
+          "DEFINE v_code_retour  INTEGER",
+          "DEFINE v_message      VARCHAR(255)",
+          "DEFINE v_age       VARCHAR(15)",
+          "DEFINE v_ncp       VARCHAR(15)",
+          "DEFINE v_cli       VARCHAR(35)",
+          "DEFINE v_dev       VARCHAR(35)",
+          "DEFINE v_cha       VARCHAR(35)",
+          "DEFINE v_sol       DECIMAL(19,4)"
+        ],
+        "dataStructures": [
+          "RECORD LIKE bkcpt.*",
+          "RECORD LIKE bktra.*"
+        ],
+        "errorHandling": "Interception systématique WHENEVER ERROR CONTINUE et analyse rigoureuse de SQLCA.SQLCODE.",
+        "transactionControl": "Lecture optimisée sans verrouillage résiduel.",
+        "loggingStrategy": "Enregistrement systématique dans la table trace_audit_cbs des rejets et succès.",
+        "code4Gl": "DATABASE cbs\n\nGLOBALS\n    DEFINE v_client_id           LIKE bkcpt.ncp,\n           v_card_type           VARCHAR(10),\n           v_piece_type          VARCHAR(10),\n           v_identity_number     VARCHAR(20),\n           v_residence_country   VARCHAR(30)\n\n    DEFINE g_status              INTEGER\nEND GLOBALS\n\nMAIN\n    CALL INIT_MODULE()\n    OPEN WINDOW card_request_win WITH FORM \"card_request\"\n    CALL DISPLAY_SCREEN()\n    CALL INPUT_DATA()\n    CLOSE WINDOW card_request_win\n    CALL END_MODULE()\nEND MAIN\n\nFUNCTION INIT_MODULE()\n    LET v_client_id = NULL\n    LET v_card_type = NULL\n    LET v_piece_type = NULL\n    LET v_identity_number = NULL\n    LET v_residence_country = NULL\n    LET g_status = 0\nEND FUNCTION\n\nFUNCTION DISPLAY_SCREEN()\n    DISPLAY v_client_id TO SCREEN.v_client_id\n    DISPLAY v_card_type TO SCREEN.v_card_type\n    DISPLAY v_piece_type TO SCREEN.v_piece_type\n    DISPLAY v_identity_number TO SCREEN.v_identity_number\n    DISPLAY v_residence_country TO SCREEN.v_residence_country\nEND FUNCTION\n\nFUNCTION INPUT_DATA()\n    INPUT BY NAME v_client_id, v_card_type, v_piece_type, v_identity_number, v_residence_country\n        ON CHANGE v_piece_type\n            -- Clear related fields when piece type changes to avoid inconsistent data\n            LET v_identity_number = NULL\n            LET v_residence_country = NULL\n            DISPLAY v_identity_number TO SCREEN.v_identity_number\n            DISPLAY v_residence_country TO SCREEN.v_residence_country\n        ON ACTION accept\n            IF VALIDATE_REQUEST() THEN\n                CALL SAVE_REQUEST()\n                IF g_status = 0 THEN\n                    CALL CLEAR_SCREEN()\n                    MESSAGE \"Demande de carte enregistrée avec succès.\"\n                ELSE\n                    ERROR \"Erreur lors de l'enregistrement de la demande.\"\n                END IF\n            END IF\n        ON ACTION cancel\n            CALL CLEAR_SCREEN()\n            MESSAGE \"Saisie annulée.\"\n    END INPUT\nEND FUNCTION\n\nFUNCTION VALIDATE_REQUEST() RETURNS BOOLEAN\n    LET g_status = 0\n\n    IF v_client_id IS NULL OR v_client_id = \"\" THEN\n        ERROR \"Le numéro de client est obligatoire.\"\n        RETURN FALSE\n    END IF\n\n    IF v_card_type IS NULL OR v_card_type = \"\" THEN\n        ERROR \"Le type de carte est obligatoire.\"\n        RETURN FALSE\n    END IF\n\n    IF v_piece_type IS NULL OR v_piece_type = \"\" THEN\n        ERROR \"Le type de pièce est obligatoire.\"\n        RETURN FALSE\n    END IF\n\n    IF v_identity_number IS NULL OR v_identity_number = \"\" THEN\n        ERROR \"Le numéro de pièce d'identité est obligatoire.\"\n        RETURN FALSE\n    END IF\n\n    IF v_residence_country IS NULL OR v_residence_country = \"\" THEN\n        ERROR \"Le pays de résidence est obligatoire.\"\n        RETURN FALSE\n    END IF\n\n    CASE v_piece_type\n        WHEN \"CNI\"\n            -- CNI must be 9 digits\n            IF LENGTH(v_identity_number) <> 9 OR NOT (v_identity_number IS DIGIT) THEN\n                ERROR \"Pour une CNI, le numéro de pièce doit contenir 9 chiffres.\"\n                RETURN FALSE\n            END IF\n            -- CNI residence country must be SENEGAL (case-insensitive)\n            IF v_residence_country IS NOT NULL AND v_residence_country NOT MATCHES \"(?i)SENEGAL\" THEN\n                ERROR \"Pour une CNI, le pays de résidence doit être 'SENEGAL'.\"\n                RETURN FALSE\n            END IF\n        WHEN \"Passeport\"\n            -- Passeport must match BCEAO pattern (e.g., 2 letters followed by 7 digits)\n            -- Informix 4GL MATCHES operator has limited regex. Using a basic pattern.\n            IF NOT (v_identity_number MATCHES \"[A-Z][A-Z][0-9][0-9][0-9][0-9][0-9][0-9][0-9]\") THEN\n                ERROR \"Pour un Passeport, le numéro de pièce doit correspondre au format BCEAO (ex: 2 lettres suivies de 7 chiffres).\"\n                RETURN FALSE\n            END IF\n        WHEN \"Autre\"\n            -- No specific validation for 'Autre' type, but could add if needed\n    END CASE\n\n    RETURN TRUE\nEND FUNCTION\n\nFUNCTION SAVE_REQUEST()\n    LET g_status = 0\n\n    BEGIN WORK\n\n    CALL CBS_CREATE_CARD_REQUEST(\n        v_client_id,\n        v_card_type,\n        v_piece_type,\n        v_identity_number,\n        v_residence_country\n    )\n\n    IF SQLCA.SQLCODE = 0 THEN\n        COMMIT WORK\n    ELSE\n        ROLLBACK WORK\n        LET g_status = SQLCA.SQLCODE\n        ERROR \"Erreur SQL lors de l'appel à CBS_CREATE_CARD_REQUEST: \", SQLCA.SQLCODE, \" - \", SQLCA.SQLERRM\n    END IF\nEND FUNCTION\n\nFUNCTION CLEAR_SCREEN()\n    LET v_client_id = NULL\n    LET v_card_type = NULL\n    LET v_piece_type = NULL\n    LET v_identity_number = NULL\n    LET v_residence_country = NULL\n    CALL DISPLAY_SCREEN()\nEND FUNCTION\n\nFUNCTION END_MODULE()\n    -- Any cleanup if necessary\nEND FUNCTION",
+        "importantNotes": [
+          "Table maîtresse ciblée : 'BKCPT' (Comptes & Soldes).",
+          "Clé primaire impérative pour les recherches et écritures : (AGE, NCP).",
+          "Statut des codes retours : 0=Succès, 1=Paramètre manquant, 2=Inexistant, 3=Doublon, 99=Erreur SGBD."
+        ]
+      },
+      "perScreen": {
+        "screenName": "card_request.per",
+        "title": "Formulaire Curses - evolution-du-programme-de-saisie-de-dema",
+        "screenType": "Formulaire Transactionnel Interactif Curses 24x80",
+        "dimensions": "24 lignes x 80 colonnes (Standard terminal Curses/AIX)",
+        "inputFieldList": [
+          "v_age (Clé primaire, obligatoire)",
+          "v_ncp (Clé primaire, obligatoire)"
+        ],
+        "readOnlyFieldList": [
+          "bkcpt.cli (Code du client titulaire du compte.)",
+          "bkcpt.dev (Code devise ISO du compte (ex: XOF, EUR, USD).)",
+          "bkcpt.cha (Chapitre comptable du plan de comptes.)",
+          "bkcpt.sol (Solde comptable en devise du compte.)"
+        ],
+        "buttons": [
+          "F1 = Aide contextuelle",
+          "F5 = Réinitialiser",
+          "F10 = Valider",
+          "F12 = Quitter l'écran"
+        ],
+        "messages": [
+          "Ligne 23 : Guidage utilisateur et statuts opérationnels",
+          "Ligne 24 : Erreurs bloquantes et alertes SGBD"
+        ],
+        "visualMockupAscii": "+------------------------------------------------------------------------------+\n|            SOPRA BANKING AMPLITUDE - MODULE BKCPT                    |\n+------------------------------------------------------------------------------+\n|                                                                              |\n|  [ CRITÈRES D'IDENTIFICATION ]                                               |\n|  AGE         : [f000     ]  NCP         : [f001     ]\n|                                                                              |\n|  [ DONNÉES ENREGISTRÉES ]                                                    |\n|  CLI         : [f010                        ]\n|  DEV         : [f011                        ]\n|  CHA         : [f012                        ]\n|                                                                              |\n|  [F1] Aide    [F5] Recharger    [F10] Valider    [F12] Quitter               |\n+------------------------------------------------------------------------------+\n| MESSAGE : Saisissez les critères puis appuyez sur Entrée                     |\n+------------------------------------------------------------------------------+",
+        "perCodeSnippet": "LAYOUT (TEXT=\"Demande de Carte\", STYLE=\"main\")\n  GRID\n    LABEL \"Client ID:\"\n    EDIT v_client_id, SIZE=20\n\n    LABEL \"Type de Carte:\"\n    EDIT v_card_type, SIZE=10\n\n    LABEL \"Type de Pièce:\"\n    COMBOBOX v_piece_type, ITEMS=(\"CNI\", \"Passeport\", \"Autre\"), SIZE=10\n\n    LABEL \"Pièce d'identité:\"\n    EDIT v_identity_number, SIZE=20\n\n    LABEL \"Pays de résidence:\"\n    EDIT v_residence_country, SIZE=30\n\n    BUTTON \"Valider\", ACTION=accept\n    BUTTON \"Annuler\", ACTION=cancel\n  END GRID\nEND LAYOUT\n\nTABLES\n  bkcrdreq\nEND TABLES\n\nATTRIBUTES\n  v_client_id = FORMONLY.v_client_id TYPE VARCHAR(20);\n  v_card_type = FORMONLY.v_card_type TYPE VARCHAR(10);\n  v_piece_type = FORMONLY.v_piece_type TYPE VARCHAR(10);\n  v_identity_number = FORMONLY.v_identity_number TYPE VARCHAR(20);\n  v_residence_country = FORMONLY.v_residence_country TYPE VARCHAR(30);\nEND ATTRIBUTES",
+        "amplitudeIntegrationNotes": [
+          "Compiler le masque avec : 'form4gl f_cbs_bkcpt_cst.per' (génère f_cbs_bkcpt_cst.frm).",
+          "Le binaire .frm compilé doit résider dans le répertoire $FORMPATH sur le serveur Informix / AIX.",
+          "Validation stricte des longueurs de champs selon les attributs de la table BKCPT."
+        ]
+      },
+      "sqlProposal": {
+        "objective": "Exécution optimisée de l'opération 'CONSULTATION' sur la table BKCPT pour 'evolution-du-programme-de-saisie-de-demande-de-carte-bancaires'.",
+        "targetTables": [
+          "BKCPT (Comptes à vue, comptes d'épargne et comptes techniques d'agences.)",
+          "BKTRA (Mouvements unitaires et journal de saisie des transactions bancaires.)"
+        ],
+        "joins": "LEFT OUTER JOIN BKTRA s ON p.AGE = s.AGE",
+        "parameters": [
+          ":p_age (VARCHAR)",
+          ":p_ncp (VARCHAR)"
+        ],
+        "filters": "WHERE t.AGE = :p_age AND t.NCP = :p_ncp",
+        "performanceRisks": [
+          "Vérifier que l'index PK_BKCPT (AGE, NCP) est scrupuleusement exploité.",
+          "Sur Informix, utiliser 'LOCK MODE WAIT 15' pour prévenir l'erreur -154 (Deadlock / Lock Timeout).",
+          "En cas de grand volume, limiter la restitution ou paginer les curseurs."
+        ],
+        "securityPrecautions": [
+          "Contrôler le filtrage par code agence pour respecter le cloisonnement des données.",
+          "Vérifier les privilèges d'exécution DML dans la table des autorisations applicatives."
+        ],
+        "sqlCode": "-- 1. Requête principale CONSULTATION sur BKCPT\nSELECT t.AGE, t.NCP, t.CLI, t.DEV, t.CHA, t.SOL\nFROM BKCPT t\nWHERE t.AGE = :p_age\n  AND t.NCP = :p_ncp;\n\n-- 2. Index utilisé pour cette requête :\n-- Index PK_BKCPT ON BKCPT (AGE, NCP)"
+      },
+      "testCases": [
+        {
+          "id": "TC-01",
+          "category": "NOMINAL",
+          "title": "Exécution nominale de 'evolution-du-programme-de-saisie-de-demande-de-carte-bancaires' sur BKCPT",
+          "preconditions": "Enregistrement valide présent dans BKCPT, opérateur habilité profil gestionnaire.",
+          "testSteps": [
+            "1. Saisir les critères clés (AGE, NCP).",
+            "2. Valider par F10 ou soumettre l'ordre.",
+            "3. Vérifier les données retournées."
+          ],
+          "expectedResult": "Opération validée avec succès, code retour 0, intégrité de BKCPT préservée.",
+          "actualStatus": "A_TESTER"
+        },
+        {
+          "id": "TC-02",
+          "category": "ERREUR",
+          "title": "Rejet sur clé primaire inexistante dans BKCPT",
+          "preconditions": "Clé (99999, 99999) absente du dictionnaire.",
+          "testSteps": [
+            "1. Saisir une référence erronée.",
+            "2. Valider par F10."
+          ],
+          "expectedResult": "Message bloquant explicite 'Rejet : Enregistrement introuvable dans BKCPT', code retour 2.",
+          "actualStatus": "A_TESTER"
+        },
+        {
+          "id": "TC-03",
+          "category": "LIMITES",
+          "title": "Contrôle de concurrence ou saturation transactionnelle",
+          "preconditions": "Deux sessions concurrentes tentant une écriture simultanée sur la même ressource.",
+          "testSteps": [
+            "1. Ouvrir deux sessions 4GL.",
+            "2. Initier l'écriture concurrente."
+          ],
+          "expectedResult": "Capture du code retour SGBD sans blocage fatal (ROLLBACK ordonné).",
+          "actualStatus": "A_TESTER"
+        },
+        {
+          "id": "TC-04",
+          "category": "DROITS",
+          "title": "Tentative d'accès non autorisé sur module Comptes & Soldes",
+          "preconditions": "Opérateur non rattaché au profil d'habilitation requis.",
+          "testSteps": [
+            "1. Connexion avec compte utilisateur restreint.",
+            "2. Appel du programme."
+          ],
+          "expectedResult": "Rejet immédiat 'Habilitation insuffisante' avec journalisation dans l'audit de sécurité.",
+          "actualStatus": "A_TESTER"
+        }
+      ],
+      "deliveryPackage": {
+        "modifiedFiles": [
+          "src/prog/p_cbs_bkcpt_cst.4gl",
+          "src/forms/f_cbs_bkcpt_cst.per",
+          "src/sql/bkcpt_cst.sql",
+          "config/menus/amplitude_menu_comptes___soldes.xml"
+        ],
+        "parametersToDeclare": [
+          "Variable d'environnement $AMPLITUDE_FORMS pointant sur le dossier compilé .frm",
+          "Habilitation profil 'P_CBS_BKCPT_CST' dans la table de sécurité CBS (BKSEC)"
+        ],
+        "installationScripts": [
+          "c4gl -o bin/p_cbs_bkcpt_cst src/prog/p_cbs_bkcpt_cst.4gl",
+          "form4gl src/forms/f_cbs_bkcpt_cst.per",
+          "chmod 750 bin/p_cbs_bkcpt_cst"
+        ],
+        "installationOrder": [
+          "1. Sauvegarde des binaires existants dans /backup/cbs/bin/.",
+          "2. Compilation des masques d'écran .per vers .frm (form4gl).",
+          "3. Compilation des programmes sources .4gl vers exécutables .4ge / binaires C4GL.",
+          "4. Déclaration des entrées de menu et habilitations en base de recette.",
+          "5. Validation des tests unitaires et procès-verbal de recette."
+        ],
+        "preDeliveryChecklist": [
+          "✓ Code source inspecté sans identifiant en clair ni mot de passe en dur.",
+          "✓ Plan d'exécution SQL validé sur index PK_BKCPT.",
+          "✓ Sauvegarde de sécurité de la base de données validée avant déploiement."
+        ],
+        "postDeliveryChecklist": [
+          "✓ Contrôle de l'absence d'erreurs 4GL dans les logs système.",
+          "✓ Validation du test pilote nominal avec retour code 0.",
+          "✓ Vérification de l'absence de verrous exclusifs résiduels (onstat -k / V$LOCK)."
+        ],
+        "rollbackPlan": [
+          "Étape 1 : Remplacer immédiatement le binaire déployé par la copie de sauvegarde : 'cp /backup/cbs/bin/p_cbs_bkcpt_cst $AMPLITUDE_BIN/'",
+          "Étape 2 : Réactiver l'ancien masque écran si modifié.",
+          "Étape 3 : Purger le cache applicatif Tuxedo / WebLogic : 'tmadmin -c; shutdown -y; boot -y'",
+          "Étape 4 : Confirmer le retour nominal du service sous 10 minutes maximum."
+        ]
+      },
+      "generatedDate": "2026-10-03T18:13:01.365Z"
+    },
+    "createdAt": "2026-10-03T18:14:51.766Z",
+    "updatedAt": "2026-10-03T18:14:51.826Z"
+  },
+  {
+    "id": "PROJ-1791051071094",
+    "name": "Consultation du solde et dernières opérations compte client",
+    "domain": "Comptes & Relation Client",
+    "amplitudeVersion": "v11.x",
+    "input": {
+      "title": "Consultation du solde et dernières opérations compte client",
+      "functionalDescription": "Ajouter une fonctionnalité permettant à un gestionnaire d'agence de rechercher un compte client par agence et numéro de compte, d'afficher son solde disponible (SOL - SIND + DEB) et de consulter ses dernières opérations comptables.",
+      "bankingDomain": "Comptes & Relation Client",
+      "targetUsers": "Gestionnaire de compte / Chargé de clientèle agence",
+      "knownBusinessRules": "Contrôle d'existence du compte dans BKCPT, contrôle d'habilitation agence, interdiction de consultation sur compte sous séquestre ou contentieux (ETA='D') sans profil Superviseur.",
+      "inputData": "Code agence (5 car.) et numéro de compte racine (11 chiffres)",
+      "specialConstraints": "Temps de réponse inférieur à 300ms, masquage des informations confidentielles non nécessaires",
+      "amplitudeVersion": "v11.x",
+      "technicalEnvironment": "Informix / AIX"
+    },
+    "plan": {
+      "need": {
+        "title": "Consultation du solde et dernières opérations compte client",
+        "functionalDescription": "Ajouter une fonctionnalité permettant à un gestionnaire d'agence de rechercher un compte client par agence et numéro de compte, d'afficher son solde disponible (SOL - SIND + DEB) et de consulter ses dernières opérations comptables.",
+        "bankingDomain": "Comptes & Relation Client",
+        "targetUsers": "Gestionnaire de compte / Chargé de clientèle agence",
+        "knownBusinessRules": "Contrôle d'existence du compte dans BKCPT, contrôle d'habilitation agence, interdiction de consultation sur compte sous séquestre ou contentieux (ETA='D') sans profil Superviseur.",
+        "inputData": "Code agence (5 car.) et numéro de compte racine (11 chiffres)",
+        "specialConstraints": "Temps de réponse inférieur à 300ms, masquage des informations confidentielles non nécessaires",
+        "amplitudeVersion": "v11.x",
+        "technicalEnvironment": "Informix / AIX"
+      },
+      "analysis": {
+        "summary": "Ajout d'une fonctionnalité de consultation du solde et des dernières opérations d'un compte client pour les gestionnaires d'agence, avec contrôles d'existence, d'habilitation et de statut du compte.",
+        "businessObjective": "Permettre aux gestionnaires d'agence de rechercher un compte client par agence et numéro de compte, d'afficher son solde disponible et de consulter ses dernières opérations comptables.",
+        "actors": [
+          "Gestionnaire de compte / Chargé de clientèle agence"
+        ],
+        "preconditions": [
+          "Le gestionnaire est connecté au système Amplitude",
+          "Le gestionnaire dispose des habilitations nécessaires pour l'agence du compte"
+        ],
+        "postconditions": [
+          "Le solde disponible du compte est affiché",
+          "La liste des dernières opérations comptables du compte est affichée"
+        ],
+        "businessRules": [
+          "Le compte doit exister dans BKCPT",
+          "Le gestionnaire doit être habilité sur l'agence du compte",
+          "La consultation est interdite sur les comptes avec un statut ETA='D' (séquestre ou contentieux), sauf si l'utilisateur a un profil Superviseur",
+          "Le solde disponible est calculé comme SOL - SIND + DEB"
+        ],
+        "requiredData": [
+          "Code agence (5 caractères)",
+          "Numéro de compte racine (11 chiffres)"
+        ],
+        "cbsDependencies": [
+          "BKCPT"
+        ],
+        "unresolvedQuestions": [
+          "Quelle table contient les dernières opérations comptables (ex: BKTRA) ?",
+          "Quelles sont les colonnes exactes pour le code agence et le numéro de compte dans BKCPT (ex: AGE, NCP) ?",
+          "Quelles colonnes de la table des opérations doivent être affichées (date, libellé, montant, sens, etc.) ?",
+          "Quel est le critère pour déterminer les 'dernières' opérations (nombre d'opérations, période) ?",
+          "Comment est géré le contrôle d'habilitation agence (table, fonction, etc.) ?",
+          "Comment est identifié un profil 'Superviseur' (table, fonction, etc.) ?"
+        ],
+        "technicalRisks": [
+          "Performances dégradées si la table des opérations est très volumineuse et mal indexée pour la recherche",
+          "Risque de sécurité si les contrôles d'habilitation et de profil ne sont pas implémentés correctement"
+        ]
+      },
+      "subTasks": [
+        {
+          "id": "TASK-01",
+          "title": "Spécifier les détails fonctionnels de la consultation compte",
+          "description": "Clarifier les tables et colonnes exactes pour les comptes et les opérations, les critères de sélection des 'dernières' opérations, ainsi que les mécanismes précis de contrôle d'habilitation agence et d'identification du profil Superviseur.",
+          "type": "FONCTIONNEL",
+          "priority": "HAUTE",
+          "dependencies": [],
+          "estimation": "1 jour",
+          "inputs": "Besoin initial, questions non résolues",
+          "outputs": "Spécification fonctionnelle détaillée incluant les réponses aux questions",
+          "acceptanceCriteria": [
+            "Toutes les questions listées dans 'unresolvedQuestions' sont documentées avec des réponses précises",
+            "Les colonnes exactes des tables BKCPT et de la table des opérations sont définies",
+            "Le critère des 'dernières' opérations est clairement établi (ex: les 20 dernières, les opérations du mois en cours)",
+            "Les modalités techniques des contrôles d'habilitation agence et de profil Superviseur sont spécifiées"
+          ],
+          "concernedFiles": [],
+          "status": "VALIDE"
+        },
+        {
+          "id": "TASK-02",
+          "title": "Définir les requêtes SQL de consultation",
+          "description": "Écrire les requêtes SQL pour récupérer les informations du compte (solde, statut) depuis BKCPT et les dernières opérations depuis la table des opérations, en tenant compte des critères définis.",
+          "type": "SQL",
+          "priority": "HAUTE",
+          "dependencies": [
+            "TASK-01"
+          ],
+          "estimation": "0.5 jour",
+          "inputs": "Spécification fonctionnelle détaillée (TASK-01)",
+          "outputs": "Scripts SQL validés pour la consultation",
+          "acceptanceCriteria": [
+            "La requête pour BKCPT récupère le solde (SOL, SIND, DEB) et le statut (ETA) du compte par agence et numéro de compte",
+            "La requête pour les opérations récupère les colonnes définies selon le critère des 'dernières' opérations",
+            "Les requêtes sont optimisées pour la performance"
+          ],
+          "concernedFiles": [],
+          "status": "VALIDE"
+        },
+        {
+          "id": "TASK-03",
+          "title": "Créer l'écran de consultation compte client",
+          "description": "Développer un écran interactif (.per) permettant la saisie du code agence et du numéro de compte, l'affichage du solde disponible et la présentation des dernières opérations dans une zone de type TABLE. L'écran utilisera les conteneurs Genero (LAYOUT, GRID, TABLE).",
+          "type": "IHM_PER",
+          "priority": "HAUTE",
+          "dependencies": [
+            "TASK-01"
+          ],
+          "estimation": "1 jour",
+          "inputs": "Spécification fonctionnelle détaillée (TASK-01)",
+          "outputs": "Fichier f_cbs_bkcpt_cst.per compilé",
+          "acceptanceCriteria": [
+            "L'écran contient des champs de saisie pour le code agence et le numéro de compte",
+            "Un champ est dédié à l'affichage du solde disponible",
+            "Une zone de type TABLE est utilisée pour afficher les dernières opérations avec les colonnes spécifiées",
+            "L'écran est conçu avec des conteneurs Genero (LAYOUT, GRID, TABLE)",
+            "Les libellés sont clairs et en français"
+          ],
+          "concernedFiles": [
+            "f_cbs_bkcpt_cst.per"
+          ],
+          "status": "VALIDE"
+        },
+        {
+          "id": "TASK-04",
+          "title": "Développer le programme 4GL de consultation",
+          "description": "Implémenter la logique du programme 4GL pour : 1. Lire les entrées de l'écran. 2. Effectuer les contrôles (existence compte, habilitation agence, statut ETA='D' avec gestion du profil Superviseur). 3. Exécuter les requêtes SQL pour récupérer le solde et les opérations. 4. Afficher les résultats dans l'écran. 5. Gérer les messages d'erreur.",
+          "type": "4GL",
+          "priority": "HAUTE",
+          "dependencies": [
+            "TASK-02",
+            "TASK-03"
+          ],
+          "estimation": "1.5 jour",
+          "inputs": "Écran f_cbs_bkcpt_cst.per, requêtes SQL (TASK-02), spécification fonctionnelle (TASK-01)",
+          "outputs": "Fichier p_cbs_bkcpt_cst.4gl compilé",
+          "acceptanceCriteria": [
+            "Le programme lit correctement le code agence et le numéro de compte saisis",
+            "Le contrôle d'existence du compte dans BKCPT est effectué",
+            "Le contrôle d'habilitation agence est implémenté selon la spécification",
+            "Le contrôle du statut ETA='D' est effectué, avec dérogation pour le profil Superviseur",
+            "Le solde disponible est calculé et affiché correctement",
+            "Les opérations sont récupérées et affichées dans la TABLE de l'écran",
+            "SQLCA.SQLCODE est contrôlé après chaque ordre SQL",
+            "Des messages d'erreur clairs sont affichés pour chaque cas de rejet (compte inexistant, habilitation, statut ETA='D')",
+            "Le programme gère les cas où aucune opération n'est trouvée"
+          ],
+          "concernedFiles": [
+            "p_cbs_bkcpt_cst.4gl"
+          ],
+          "status": "VALIDE"
+        },
+        {
+          "id": "TASK-05",
+          "title": "Tester la fonctionnalité de consultation compte",
+          "description": "Exécuter des scénarios de test couvrant le cas nominal (compte existant, habilité, sans statut ETA='D'), les cas d'erreur (compte inexistant, habilitation insuffisante, compte ETA='D' sans superviseur) et le cas spécifique du compte ETA='D' avec un profil Superviseur.",
+          "type": "TEST",
+          "priority": "HAUTE",
+          "dependencies": [
+            "TASK-04"
+          ],
+          "estimation": "1 jour",
+          "inputs": "Programme p_cbs_bkcpt_cst.4gl et écran f_cbs_bkcpt_cst.per compilés",
+          "outputs": "Compte rendu de tests détaillé",
+          "acceptanceCriteria": [
+            "Cas nominal : le solde et les opérations sont affichés correctement pour un compte valide",
+            "Compte inexistant : un message d'erreur approprié est affiché et aucune donnée n'est présentée",
+            "Habilitation agence insuffisante : un message d'erreur d'habilitation est affiché",
+            "Compte ETA='D' sans profil Superviseur : un message d'erreur indiquant l'interdiction de consultation est affiché",
+            "Compte ETA='D' avec profil Superviseur : le solde et les opérations sont affichés correctement",
+            "Le comportement est correct si aucune opération n'est trouvée pour le compte",
+            "Les performances de la consultation sont jugées acceptables par l'utilisateur métier"
+          ],
+          "concernedFiles": [
+            "p_cbs_bkcpt_cst.4gl",
+            "f_cbs_bkcpt_cst.per"
+          ],
+          "status": "VALIDE"
+        },
+        {
+          "id": "TASK-06",
+          "title": "Rédiger la documentation technique et utilisateur",
+          "description": "Créer la documentation technique du programme (description, tables utilisées, contrôles, messages d'erreur) et un guide utilisateur expliquant comment utiliser la nouvelle fonctionnalité de consultation.",
+          "type": "DOCUMENTATION",
+          "priority": "MOYENNE",
+          "dependencies": [
+            "TASK-04"
+          ],
+          "estimation": "0.5 jour",
+          "inputs": "Spécification fonctionnelle (TASK-01), programme p_cbs_bkcpt_cst.4gl",
+          "outputs": "Documents techniques et utilisateur",
+          "acceptanceCriteria": [
+            "La documentation technique est complète et à jour, décrivant le fonctionnement interne du programme",
+            "Le guide utilisateur est clair, concis et permet à un gestionnaire d'agence d'utiliser la fonctionnalité sans assistance",
+            "Les documents sont stockés dans le référentiel de documentation approprié"
+          ],
+          "concernedFiles": [],
+          "status": "VALIDE"
+        }
+      ],
+      "code4GlProposal": {
+        "programObjective": "Exécuter le traitement métier pour 'Consultation du solde et dernières opérations compte client' avec accès contrôlé sur la table BKCLI (Table centrale des clients physiques et moraux (Tiers).).",
+        "programType": "Programme Interactif Formulaire Curses (.per)",
+        "entryPoint": "MAIN ou FUNCTION p_cbs_bkcli_cre()",
+        "parameters": [
+          "p_cli CHAR(15)"
+        ],
+        "variables": [
+          "DEFINE v_user_id      VARCHAR(10)",
+          "DEFINE v_code_retour  INTEGER",
+          "DEFINE v_message      VARCHAR(255)",
+          "DEFINE v_cli       VARCHAR(15)",
+          "DEFINE v_nom       VARCHAR(35)",
+          "DEFINE v_pre       VARCHAR(35)",
+          "DEFINE v_typ       VARCHAR(35)",
+          "DEFINE v_eta       VARCHAR(35)",
+          "DEFINE v_seg       VARCHAR(35)"
+        ],
+        "dataStructures": [
+          "RECORD LIKE bkcli.*",
+          "RECORD LIKE bkcpt.*"
+        ],
+        "errorHandling": "Interception systématique WHENEVER ERROR CONTINUE et analyse rigoureuse de SQLCA.SQLCODE.",
+        "transactionControl": "BEGIN WORK / COMMIT WORK avec protection ROLLBACK et verrous exclusifs contrôlés.",
+        "loggingStrategy": "Enregistrement systématique dans la table trace_audit_cbs des rejets et succès.",
+        "code4Gl": "DATABASE cbs\n\nGLOBALS\n  DEFINE g_nag_in      INTEGER\n  DEFINE g_ncp_in      DECIMAL(10)\n  DEFINE g_solde_dispo DECIMAL(15,2)\n  DEFINE g_is_supervisor BOOLEAN\n\n  -- Variables pour BKCPT\n  DEFINE g_cpt_sol     DECIMAL(15,2)\n  DEFINE g_cpt_sind    DECIMAL(15,2)\n  DEFINE g_cpt_deb     DECIMAL(15,2)\n  DEFINE g_cpt_eta     CHAR(1)\n\n  -- Variables pour BKOPR (tableau d'opérations)\n  DEFINE g_opr_dat     DATE\n  DEFINE g_opr_lib     CHAR(50)\n  DEFINE g_opr_mnt     DECIMAL(15,2)\n  DEFINE g_opr_sens    CHAR(1)\n\n  -- Screen record pour l'écran f_cbs_bkcpt_cst.per\n  RECORD scr_bkcpt_cst\n    nag_in      LIKE g_nag_in,\n    ncp_in      LIKE g_ncp_in,\n    solde_dispo LIKE g_solde_dispo,\n    operations  ARRAY\n      opr_dat   LIKE g_opr_dat,\n      opr_lib   LIKE g_opr_lib,\n      opr_mnt   LIKE g_opr_mnt,\n      opr_sens  LIKE g_opr_sens\n    END ARRAY\n  END RECORD\n\nEND GLOBALS\n\nMAIN\n  -- Initialisation du profil superviseur pour les tests\n  -- En production, cette valeur serait déterminée par le profil de l'utilisateur connecté\n  LET g_is_supervisor = FALSE -- Mettre à TRUE pour tester le cas superviseur\n\n  CALL f_init_screen()\n\n  OPEN FORM f_cbs_bkcpt_cst FROM \"f_cbs_bkcpt_cst\"\n  DISPLAY FORM f_cbs_bkcpt_cst\n\n  -- Initialisation des champs de l'écran\n  INITIALIZE scr_bkcpt_cst.* TO NULL\n  DISPLAY scr_bkcpt_cst.*\n\n  WHILE TRUE\n    INPUT BY NAME scr_bkcpt_cst.nag_in, scr_bkcpt_cst.ncp_in\n      ON ACTION validate_account\n        CALL f_consult_account()\n      ON ACTION quit\n        EXIT PROGRAM\n    END INPUT\n  END WHILE\n\nEND MAIN\n\nFUNCTION f_init_screen()\n  -- Fonction d'initialisation des variables d'écran\n  LET scr_bkcpt_cst.nag_in = NULL\n  LET scr_bkcpt_cst.ncp_in = NULL\n  LET scr_bkcpt_cst.solde_dispo = NULL\n  CALL DIALOG.clearTable(\"operations\") -- Efface le contenu de la table des opérations\nEND FUNCTION\n\nFUNCTION f_consult_account()\n  MESSAGE \"Consultation en cours...\"\n  CALL DIALOG.clearTable(\"operations\") -- Efface les anciennes opérations\n  LET scr_bkcpt_cst.solde_dispo = NULL\n  DISPLAY scr_bkcpt_cst.solde_dispo\n\n  -- 1. Récupération des entrées utilisateur\n  LET g_nag_in = scr_bkcpt_cst.nag_in\n  LET g_ncp_in = scr_bkcpt_cst.ncp_in\n\n  IF g_nag_in IS NULL OR g_ncp_in IS NULL THEN\n    CALL ERR_MESSAGE(\"Veuillez saisir le code agence et le numéro de compte.\")\n    RETURN\n  END IF\n\n  -- 2. Contrôle d'existence du compte et récupération des détails\n  SELECT sol, sind, deb, eta\n    INTO g_cpt_sol, g_cpt_sind, g_cpt_deb, g_cpt_eta\n    FROM bkcpt\n    WHERE nag = g_nag_in AND ncp = g_ncp_in\n\n  IF SQLCA.SQLCODE = 100 THEN -- Compte non trouvé\n    CALL ERR_MESSAGE(SFMT(\"Compte %1/%2 inexistant.\", g_nag_in, g_ncp_in))\n    RETURN\n  ELSE IF SQLCA.SQLCODE < 0 THEN -- Erreur SQL\n    CALL ERR_MESSAGE(SFMT(\"Erreur SQL lors de la consultation du compte: %1\", SQLCA.SQLERRM))\n    RETURN\n  END IF\n\n  -- 3. Contrôle d'habilitation agence (simulé)\n  IF NOT f_cbs_check_agency_auth(g_nag_in) THEN\n    CALL ERR_MESSAGE(SFMT(\"Vous n'êtes pas habilité à consulter l'agence %1.\", g_nag_in))\n    RETURN\n  END IF\n\n  -- 4. Contrôle du statut ETA='D' (compte bloqué/dormant)\n  IF g_cpt_eta = 'D' THEN\n    IF NOT f_cbs_is_supervisor() THEN\n      CALL ERR_MESSAGE(\"Consultation impossible: Compte bloqué (ETA='D'). Contactez un superviseur.\")\n      RETURN\n    ELSE\n      MESSAGE \"Attention: Compte bloqué (ETA='D'). Consultation autorisée pour le superviseur.\"\n    END IF\n  END IF\n\n  -- 5. Calcul et affichage du solde disponible\n  LET g_solde_dispo = g_cpt_sol + g_cpt_sind - g_cpt_deb\n  LET scr_bkcpt_cst.solde_dispo = g_solde_dispo\n  DISPLAY scr_bkcpt_cst.solde_dispo\n\n  -- 6. Récupération et affichage des dernières opérations\n  DECLARE c_operations CURSOR FOR\n    SELECT dat, lib, mnt, sens\n    FROM bkopr\n    WHERE nag = g_nag_in AND ncp = g_ncp_in\n    ORDER BY dat DESC\n    LIMIT 20\n\n  OPEN c_operations\n  IF SQLCA.SQLCODE < 0 THEN\n    CALL ERR_MESSAGE(SFMT(\"Erreur SQL lors de l'ouverture du curseur des opérations: %1\", SQLCA.SQLERRM))\n    CLOSE c_operations\n    RETURN\n  END IF\n\n  FOREACH c_operations INTO g_opr_dat, g_opr_lib, g_opr_mnt, g_opr_sens\n    LET scr_bkcpt_cst.operations.appendRow() -- Ajoute une nouvelle ligne au tableau de l'écran\n    LET scr_bkcpt_cst.operations[scr_bkcpt_cst.operations.getLength()].opr_dat = g_opr_dat\n    LET scr_bkcpt_cst.operations[scr_bkcpt_cst.operations.getLength()].opr_lib = g_opr_lib\n    LET scr_bkcpt_cst.operations[scr_bkcpt_cst.operations.getLength()].opr_mnt = g_opr_mnt\n    LET scr_bkcpt_cst.operations[scr_bkcpt_cst.operations.getLength()].opr_sens = g_opr_sens\n  END FOREACH\n\n  IF SQLCA.SQLCODE = 100 AND scr_bkcpt_cst.operations.getLength() = 0 THEN\n    MESSAGE \"Aucune opération trouvée pour ce compte.\"\n  ELSE IF SQLCA.SQLCODE < 0 THEN\n    CALL ERR_MESSAGE(SFMT(\"Erreur SQL lors de la lecture des opérations: %1\", SQLCA.SQLERRM))\n  END IF\n\n  CLOSE c_operations\n\n  DISPLAY scr_bkcpt_cst.operations.*\n  MESSAGE \"Consultation terminée.\"\n\nEND FUNCTION\n\n-- Fonction utilitaire pour afficher les messages d'erreur\nFUNCTION ERR_MESSAGE(p_message VARCHAR)\n  MESSAGE p_message\n  SLEEP 2\nEND FUNCTION\n\n-- Fonction simulée de contrôle d'habilitation agence\n-- Dans un système réel, cette fonction interrogerait une table de sécurité\nFUNCTION f_cbs_check_agency_auth(p_nag INTEGER) RETURNS BOOLEAN\n  -- Pour l'exemple, l'utilisateur est habilité uniquement pour l'agence 100\n  IF p_nag = 100 THEN\n    RETURN TRUE\n  ELSE\n    RETURN FALSE\n  END IF\nEND FUNCTION\n\n-- Fonction simulée de vérification du profil Superviseur\n-- Dans un système réel, cette fonction vérifierait le profil de l'utilisateur connecté\nFUNCTION f_cbs_is_supervisor() RETURNS BOOLEAN\n  RETURN g_is_supervisor\nEND FUNCTION",
+        "importantNotes": [
+          "Table maîtresse ciblée : 'BKCLI' (Clientèle / KYC).",
+          "Clé primaire impérative pour les recherches et écritures : (CLI).",
+          "Statut des codes retours : 0=Succès, 1=Paramètre manquant, 2=Inexistant, 3=Doublon, 99=Erreur SGBD."
+        ]
+      },
+      "perScreen": {
+        "screenName": "f_cbs_bkcpt_cst.per",
+        "title": "Formulaire Curses - Consultation du solde et dernières opéra",
+        "screenType": "Formulaire Transactionnel Interactif Curses 24x80",
+        "dimensions": "24 lignes x 80 colonnes (Standard terminal Curses/AIX)",
+        "inputFieldList": [
+          "v_cli (Clé primaire, obligatoire)"
+        ],
+        "readOnlyFieldList": [
+          "bkcli.nom (Nom patronymique ou raison sociale.)",
+          "bkcli.pre (Prénom du client.)",
+          "bkcli.typ (Type de personne : 01=Physique, 02=Morale, 03=EI.)",
+          "bkcli.eta (État du dossier client (A=Actif, F=Fermé, B=Bloqué).)"
+        ],
+        "buttons": [
+          "F1 = Aide contextuelle",
+          "F5 = Réinitialiser",
+          "F10 = Valider",
+          "F12 = Quitter l'écran"
+        ],
+        "messages": [
+          "Ligne 23 : Guidage utilisateur et statuts opérationnels",
+          "Ligne 24 : Erreurs bloquantes et alertes SGBD"
+        ],
+        "visualMockupAscii": "+------------------------------------------------------------------------------+\n|            SOPRA BANKING AMPLITUDE - MODULE BKCLI                    |\n+------------------------------------------------------------------------------+\n|                                                                              |\n|  [ CRITÈRES D'IDENTIFICATION ]                                               |\n|  CLI         : [f000     ]\n|                                                                              |\n|  [ DONNÉES ENREGISTRÉES ]                                                    |\n|  NOM         : [f010                        ]\n|  PRE         : [f011                        ]\n|  TYP         : [f012                        ]\n|                                                                              |\n|  [F1] Aide    [F5] Recharger    [F10] Valider    [F12] Quitter               |\n+------------------------------------------------------------------------------+\n| MESSAGE : Saisissez les critères puis appuyez sur Entrée                     |\n+------------------------------------------------------------------------------+",
+        "perCodeSnippet": "LAYOUT (TEXT=\"Consultation Compte Client\", STYLE=\"main\")\n  GRID\n    GROUP (TEXT=\"Informations Compte\")\n      GRID\n        HBOX\n          LABEL (TEXT=\"Agence:\")\n          FIELD nag_in (SIZE=4, COMMENT=\"Code Agence\")\n          LABEL (TEXT=\"Compte:\")\n          FIELD ncp_in (SIZE=10, COMMENT=\"Numéro de Compte\")\n        END HBOX\n        HBOX\n          LABEL (TEXT=\"Solde Disponible:\")\n          FIELD solde_dispo (TYPE=MONEY, FORMAT=\"###,###,##0.00\", STYLE=\"bold\", COMMENT=\"Solde disponible du compte\")\n        END HBOX\n      END GRID\n    END GROUP\n\n    GROUP (TEXT=\"Dernières Opérations\")\n      TABLE operations (UNSIZABLE, DYNAMIC SCROLL, STRETCH=BOTH)\n        COLUMN (TEXT=\"Date\")\n          FIELD opr_dat (FORMAT=\"DD/MM/YYYY\")\n        COLUMN (TEXT=\"Libellé\")\n          FIELD opr_lib\n        COLUMN (TEXT=\"Montant\")\n          FIELD opr_mnt (TYPE=MONEY, FORMAT=\"###,###,##0.00\")\n        COLUMN (TEXT=\"Sens\")\n          FIELD opr_sens (SIZE=1, COMMENT=\"D: Débit, C: Crédit\")\n      END TABLE\n    END GROUP\n\n    GRID (ROW=1, COL=2)\n      BUTTON (TEXT=\"Consulter\", IMAGE=\"search\", ACTION=validate_account)\n      BUTTON (TEXT=\"Quitter\", IMAGE=\"quit\", ACTION=quit)\n    END GRID\n  END GRID\nEND LAYOUT\n\nATTRIBUTES\n  nag_in = scr_bkcpt_cst.nag_in;\n  ncp_in = scr_bkcpt_cst.ncp_in;\n  solde_dispo = scr_bkcpt_cst.solde_dispo;\n\n  opr_dat = scr_bkcpt_cst.operations.opr_dat;\n  opr_lib = scr_bkcpt_cst.operations.opr_lib;\n  opr_mnt = scr_bkcpt_cst.operations.opr_mnt;\n  opr_sens = scr_bkcpt_cst.operations.opr_sens;\nEND ATTRIBUTES",
+        "amplitudeIntegrationNotes": [
+          "Compiler le masque avec : 'form4gl f_cbs_bkcli_cre.per' (génère f_cbs_bkcli_cre.frm).",
+          "Le binaire .frm compilé doit résider dans le répertoire $FORMPATH sur le serveur Informix / AIX.",
+          "Validation stricte des longueurs de champs selon les attributs de la table BKCLI."
+        ]
+      },
+      "sqlProposal": {
+        "objective": "Exécution optimisée de l'opération 'CREATION' sur la table BKCLI pour 'Consultation du solde et dernières opérations compte client'.",
+        "targetTables": [
+          "BKCLI (Table centrale des clients physiques et moraux (Tiers).)",
+          "BKCPT (Comptes à vue, comptes d'épargne et comptes techniques d'agences.)"
+        ],
+        "joins": "LEFT OUTER JOIN BKCPT s ON p.CLI = s.AGE",
+        "parameters": [
+          ":p_cli (VARCHAR)"
+        ],
+        "filters": "WHERE t.CLI = :p_cli",
+        "performanceRisks": [
+          "Vérifier que l'index PK_BKCLI (CLI) est scrupuleusement exploité.",
+          "Sur Informix, utiliser 'LOCK MODE WAIT 15' pour prévenir l'erreur -154 (Deadlock / Lock Timeout).",
+          "En cas de grand volume, limiter la restitution ou paginer les curseurs."
+        ],
+        "securityPrecautions": [
+          "Contrôler le filtrage par code agence pour respecter le cloisonnement des données.",
+          "Vérifier les privilèges d'exécution DML dans la table des autorisations applicatives."
+        ],
+        "sqlCode": "-- 1. Requête principale CREATION sur BKCLI\nSELECT t.CLI, t.NOM, t.PRE, t.TYP, t.ETA, t.SEG\nFROM BKCLI t\nWHERE t.CLI = :p_cli;\n\n-- 2. Index utilisé pour cette requête :\n-- Index PK_BKCLI ON BKCLI (CLI)"
+      },
+      "testCases": [
+        {
+          "id": "TC-01",
+          "category": "NOMINAL",
+          "title": "Exécution nominale de 'Consultation du solde et dernières opérations compte client' sur BKCLI",
+          "preconditions": "Enregistrement valide présent dans BKCLI, opérateur habilité profil gestionnaire.",
+          "testSteps": [
+            "1. Saisir les critères clés (CLI).",
+            "2. Valider par F10 ou soumettre l'ordre.",
+            "3. Vérifier les données retournées."
+          ],
+          "expectedResult": "Opération validée avec succès, code retour 0, intégrité de BKCLI préservée.",
+          "actualStatus": "A_TESTER"
+        },
+        {
+          "id": "TC-02",
+          "category": "ERREUR",
+          "title": "Rejet sur clé primaire inexistante dans BKCLI",
+          "preconditions": "Clé (99999) absente du dictionnaire.",
+          "testSteps": [
+            "1. Saisir une référence erronée.",
+            "2. Valider par F10."
+          ],
+          "expectedResult": "Message bloquant explicite 'Rejet : Enregistrement introuvable dans BKCLI', code retour 2.",
+          "actualStatus": "A_TESTER"
+        },
+        {
+          "id": "TC-03",
+          "category": "LIMITES",
+          "title": "Contrôle de concurrence ou saturation transactionnelle",
+          "preconditions": "Deux sessions concurrentes tentant une écriture simultanée sur la même ressource.",
+          "testSteps": [
+            "1. Ouvrir deux sessions 4GL.",
+            "2. Initier l'écriture concurrente."
+          ],
+          "expectedResult": "Capture du code retour SGBD sans blocage fatal (ROLLBACK ordonné).",
+          "actualStatus": "A_TESTER"
+        },
+        {
+          "id": "TC-04",
+          "category": "DROITS",
+          "title": "Tentative d'accès non autorisé sur module Clientèle / KYC",
+          "preconditions": "Opérateur non rattaché au profil d'habilitation requis.",
+          "testSteps": [
+            "1. Connexion avec compte utilisateur restreint.",
+            "2. Appel du programme."
+          ],
+          "expectedResult": "Rejet immédiat 'Habilitation insuffisante' avec journalisation dans l'audit de sécurité.",
+          "actualStatus": "A_TESTER"
+        }
+      ],
+      "deliveryPackage": {
+        "modifiedFiles": [
+          "src/prog/p_cbs_bkcli_cre.4gl",
+          "src/forms/f_cbs_bkcli_cre.per",
+          "src/sql/bkcli_cre.sql",
+          "config/menus/amplitude_menu_client_le___kyc.xml"
+        ],
+        "parametersToDeclare": [
+          "Variable d'environnement $AMPLITUDE_FORMS pointant sur le dossier compilé .frm",
+          "Habilitation profil 'P_CBS_BKCLI_CRE' dans la table de sécurité CBS (BKSEC)"
+        ],
+        "installationScripts": [
+          "c4gl -o bin/p_cbs_bkcli_cre src/prog/p_cbs_bkcli_cre.4gl",
+          "form4gl src/forms/f_cbs_bkcli_cre.per",
+          "chmod 750 bin/p_cbs_bkcli_cre"
+        ],
+        "installationOrder": [
+          "1. Sauvegarde des binaires existants dans /backup/cbs/bin/.",
+          "2. Compilation des masques d'écran .per vers .frm (form4gl).",
+          "3. Compilation des programmes sources .4gl vers exécutables .4ge / binaires C4GL.",
+          "4. Déclaration des entrées de menu et habilitations en base de recette.",
+          "5. Validation des tests unitaires et procès-verbal de recette."
+        ],
+        "preDeliveryChecklist": [
+          "✓ Code source inspecté sans identifiant en clair ni mot de passe en dur.",
+          "✓ Plan d'exécution SQL validé sur index PK_BKCLI.",
+          "✓ Sauvegarde de sécurité de la base de données validée avant déploiement."
+        ],
+        "postDeliveryChecklist": [
+          "✓ Contrôle de l'absence d'erreurs 4GL dans les logs système.",
+          "✓ Validation du test pilote nominal avec retour code 0.",
+          "✓ Vérification de l'absence de verrous exclusifs résiduels (onstat -k / V$LOCK)."
+        ],
+        "rollbackPlan": [
+          "Étape 1 : Remplacer immédiatement le binaire déployé par la copie de sauvegarde : 'cp /backup/cbs/bin/p_cbs_bkcli_cre $AMPLITUDE_BIN/'",
+          "Étape 2 : Réactiver l'ancien masque écran si modifié.",
+          "Étape 3 : Purger le cache applicatif Tuxedo / WebLogic : 'tmadmin -c; shutdown -y; boot -y'",
+          "Étape 4 : Confirmer le retour nominal du service sous 10 minutes maximum."
+        ]
+      },
+      "generatedDate": "2026-10-03T18:07:38.926Z"
+    },
+    "createdAt": "2026-10-03T18:11:11.094Z",
+    "updatedAt": "2026-10-03T18:11:11.144Z"
+  },
+  {
     "id": "PROJ-1790199810950",
     "name": "Opposition et Blocage d'Urgence Carte Monétique Fraude",
     "domain": "Monétique / Cartes",
