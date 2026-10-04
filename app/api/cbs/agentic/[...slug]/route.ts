@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { NextResponse } from "next/server";
 
 const DOCKER_AGENT_BASE_URL = process.env.AGENTIC_API_URL || "http://localhost:8080";

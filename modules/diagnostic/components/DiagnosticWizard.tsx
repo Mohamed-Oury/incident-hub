@@ -389,18 +389,25 @@ export function DiagnosticWizard() {
                 <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 700, color: "#3f3f46", marginBottom: "0.3rem" }}>
                   Domaine
                 </label>
-                <select
+                <input
+                  type="text"
+                  list="domain-suggestions"
                   value={formData.domain}
                   onChange={(e) => setFormData({ ...formData, domain: e.target.value })}
+                  placeholder="Ex: GAB, TPE, CARTE, PAYWAY, HOST, MOBILE..."
                   style={{ width: "100%", padding: "0.7rem", borderRadius: "8px", border: "1px solid #d4d4d8", fontSize: "0.9rem" }}
-                >
-                  <option value="GAB">GAB / Automate Retrait</option>
-                  <option value="TPE">TPE / Paiement Commerçant</option>
-                  <option value="CARTE">Carte / Puce EMV</option>
-                  <option value="INTERFACE">Interface ISO 8583</option>
-                  <option value="PAYWAY">Switch Payway</option>
-                  <option value="HOST">Host & Core Banking</option>
-                </select>
+                />
+                <datalist id="domain-suggestions">
+                  <option value="GAB" />
+                  <option value="TPE" />
+                  <option value="CARTE" />
+                  <option value="INTERFACE ISO 8583" />
+                  <option value="PAYWAY" />
+                  <option value="HOST & CORE BANKING" />
+                  <option value="MOBILE BANKING" />
+                  <option value="CLEARING & RÈGLEMENT" />
+                  <option value="HSM & CRYPTO" />
+                </datalist>
               </div>
 
               <div>
@@ -1180,19 +1187,14 @@ export function DiagnosticWizard() {
                       <label style={{ display: "block", fontSize: "0.85rem", fontWeight: 600, marginBottom: "0.3rem" }}>
                         Domaine
                       </label>
-                      <select
+                      <input
+                        type="text"
+                        list="domain-suggestions"
                         value={formData.domain}
                         onChange={(e) => setFormData({ ...formData, domain: e.target.value })}
+                        placeholder="Ex: GAB, TPE, CARTE, PAYWAY, HOST, MOBILE..."
                         style={{ width: "100%", padding: "0.75rem", borderRadius: "8px", border: "1px solid #d4d4d8" }}
-                      >
-                        <option value="GAB">GAB / Distributeur</option>
-                        <option value="TPE">TPE / Paiement commerçant</option>
-                        <option value="CARTE">Carte / EMV</option>
-                        <option value="INTERFACE">Interface ISO 8583</option>
-                        <option value="PAYWAY">Moteur Payway</option>
-                        <option value="HOST">Host & Core Banking</option>
-                        <option value="CLEARING">Clearing & Règlement</option>
-                      </select>
+                      />
                     </div>
 
                     <div>
