@@ -33,6 +33,7 @@ interface DiagnosticResultData {
     de39?: string;
   }>;
   breakpointAnalysis: string;
+  potentialTechnicalCauses?: string[];
   timeline: Array<{
     time: string;
     source: string;
@@ -45,10 +46,15 @@ interface DiagnosticResultData {
   hypotheses: Array<{
     id: string;
     title: string;
-    probaPercent: number;
+    confidenceLevel?: string;
+    supportingEvidenceCount?: number;
+    contradictingEvidenceCount?: number;
+    missingEvidenceCount?: number;
+    probaPercent?: number;
     status: "PROPOSED" | "INVESTIGATING" | "SUPPORTED" | "CONFIRMED" | "REJECTED";
     evidenceCount: number;
     evidenceDetails: string[];
+    potentialCauses?: string[];
     rationale: string;
   }>;
   similarIncidents: Array<{
@@ -76,10 +82,12 @@ interface DiagnosticResultData {
     rationale: string;
   }>;
   contradictionsDetected?: string[];
+  missingEvidence?: string[];
+  nextInvestigationStep?: string;
   rcaProposal: {
     summary: string;
     status: "PROPOSED_UNCONFIRMED" | "CONFIRMED_BY_OPERATOR" | "REJECTED_BY_OPERATOR";
-    confidenceLevel: "ÉLEVÉ" | "MOYEN" | "FAIBLE";
+    confidenceLevel: string;
     recommendedActions: string[];
     humanValidationRequired: boolean;
   };
@@ -97,23 +105,23 @@ export function DiagnosticWizard() {
 
   // Formulaire d'incident pour Mode Guidé & enregistrement DB
   const [formData, setFormData] = useState({
-    title: "GAB — Retraits rejetés suite à saturation pool de connexion",
-    domain: "GAB",
-    component: "CBS/DB",
-    errorCode: "DE39=00",
-    severity: "HIGH",
-    symptom: "Le client insère sa carte, saisit son PIN mais l'automate affiche « Opération impossible — délais dépassé ».",
-    facts: "85 retraits refusés entre 10h12 et 10h35 sur le secteur NORD. Le Host signale pourtant l'accord accordé.",
-    scope: "28 automates NCR raccordés au contrôleur frontal secteur NORD",
-    breakPoint: "Module Distributeur ATM (Cash Dispenser)",
+    title: "",
+    domain: "",
+    component: "",
+    errorCode: "",
+    severity: "",
+    symptom: "",
+    facts: "",
+    scope: "",
+    breakPoint: "",
     hypotheses: [
-      { desc: "Défaut mécanique ou timeout du Cash Dispenser ATM", status: "PROBABLE" },
-      { desc: "Timeout réseau de la socket TCP ATM -> Switch Payway", status: "OPEN" },
+      { desc: "", status: "" },
+      { desc: "", status: "" },
     ],
-    evidence: "MTI=0200 STAN=739214 RRN=849201948201 DE39=00\nEJ LOG: [WARN] DISPENSER_TIMEOUT: Presenter sensor did not detect bill movement",
-    rootCause: "Rupture mécanique sur le module distributeur de billets de l'ATM suite à autorisation 0210 DE39=00.",
-    correction: "Inspection du journal physique EJ, redémarrage du contrôleur dispenser et purge cassette de rejet.",
-    prevention: "Création d'une alerte de supervision automatisée du capteur de présence billets.",
+    evidence: "",
+    rootCause: "",
+    correction: "",
+    prevention: "",
   });
 
   // État du Copilot Agentic
@@ -122,6 +130,14 @@ export function DiagnosticWizard() {
   const [copilotResult, setCopilotResult] = useState<DiagnosticResultData | null>(null);
   const [copilotError, setCopilotError] = useState<string | null>(null);
   const [operatorConfirmed, setOperatorConfirmed] = useState(false);
+
+  // État de la modal de Poursuite d'Investigation
+  const [isInvestigationModalOpen, setIsInvestigationModalOpen] = useState(false);
+  const [investigationLogInput, setInvestigationLogInput] = useState("");
+  const [selectedPresetCategory, setSelectedPresetCategory] = useState<"HOST" | "TCP" | "ISO" | "GAB_EJ" | "CUSTOM">("HOST");
+  const [investigationHistory, setInvestigationHistory] = useState<
+    Array<{ id: number; timestamp: string; category: string; content: string }>
+  >([]);
 
   const PROGRESS_STEPS = [
     "Classification incident & canal",
@@ -171,6 +187,7 @@ export function DiagnosticWizard() {
           stan: "739214",
           errorCode: formData.errorCode,
           scope: formData.scope,
+          rawLogs: formData.evidence,
         }),
       });
 
@@ -581,7 +598,7 @@ export function DiagnosticWizard() {
               {/* Card 3 : Point de Rupture & Timeline Séquentielle */}
               <div style={{ background: "#ffffff", padding: "1.75rem", borderRadius: "14px", border: "1px solid #e4e4e7" }}>
                 <h3 style={{ fontSize: "1.1rem", fontWeight: 800, color: "#111827", marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                  <span>🎯</span> 4. Localisation du Point de Rupture
+                  <span>🎯</span> 4. Localisation du Point de Rupture & Causes Techniques Possibles
                 </h3>
 
                 <div style={{ background: "#fff1f2", borderLeft: "4px solid #e60028", padding: "1.25rem", borderRadius: "0 8px 8px 0", marginBottom: "1.25rem" }}>
@@ -592,6 +609,21 @@ export function DiagnosticWizard() {
                     {copilotResult.breakpointAnalysis}
                   </p>
                 </div>
+
+                {copilotResult.potentialTechnicalCauses && copilotResult.potentialTechnicalCauses.length > 0 && (
+                  <div style={{ background: "#f8fafc", padding: "1rem 1.25rem", borderRadius: "10px", border: "1px solid #cbd5e1", marginBottom: "1.25rem" }}>
+                    <span style={{ fontSize: "0.8rem", fontWeight: 800, color: "#334155", display: "block", marginBottom: "0.4rem" }}>
+                      CAUSES TECHNIQUES SOUS-JACENTES POSSIBLES AU POINT DE RUPTURE :
+                    </span>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
+                      {copilotResult.potentialTechnicalCauses.map((cause, idx) => (
+                        <div key={idx} style={{ fontSize: "0.85rem", color: "#0f172a", fontWeight: 600 }}>
+                          • {cause}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 <h4 style={{ fontSize: "0.85rem", fontWeight: 700, color: "#475569", marginBottom: "0.75rem" }}>
                   CHRONOLOGIE DÉTAILLÉE DES ÉVÉNEMENTS (TIMELINE ISO 8583) :
@@ -628,10 +660,10 @@ export function DiagnosticWizard() {
                 </div>
               </div>
 
-              {/* Card 4 : Hypothèses Probabilisées */}
+              {/* Card 4 : Hypothèses Probabilisées avec Score d'Appui Transparent */}
               <div style={{ background: "#ffffff", padding: "1.75rem", borderRadius: "14px", border: "1px solid #e4e4e7" }}>
                 <h3 style={{ fontSize: "1.1rem", fontWeight: 800, color: "#111827", marginBottom: "1.25rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                  <span>📊</span> 5. Émission des Hypothèses (Classement par Probabilité)
+                  <span>📊</span> 5. Émission des Hypothèses & Score d'Appui des Preuves
                 </h3>
 
                 <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
@@ -645,28 +677,38 @@ export function DiagnosticWizard() {
                         background: hyp.status === "SUPPORTED" ? "#fff1f2" : "#ffffff",
                       }}
                     >
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.6rem" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
                           <span style={{ background: "#e60028", color: "#ffffff", padding: "0.2rem 0.5rem", borderRadius: "6px", fontWeight: 800, fontSize: "0.75rem" }}>
                             {hyp.id}
                           </span>
                           <strong style={{ fontSize: "0.95rem", color: "#0f172a" }}>{hyp.title}</strong>
                         </div>
-                        <span style={{ fontSize: "1rem", fontWeight: 800, color: "#e60028" }}>
-                          {hyp.probaPercent}%
+                        <span
+                          style={{
+                            background: hyp.status === "SUPPORTED" ? "#dcfce7" : hyp.status === "REJECTED" ? "#fee2e2" : "#f1f5f9",
+                            color: hyp.status === "SUPPORTED" ? "#15803d" : hyp.status === "REJECTED" ? "#991b1b" : "#475569",
+                            padding: "0.3rem 0.75rem",
+                            borderRadius: "20px",
+                            fontWeight: 800,
+                            fontSize: "0.8rem",
+                          }}
+                        >
+                          CONFIANCE : {hyp.confidenceLevel || (hyp.probaPercent ? `${hyp.probaPercent}%` : "MOYENNE")}
                         </span>
                       </div>
 
-                      {/* Barre de progression de la probabilité */}
-                      <div style={{ width: "100%", background: "#e2e8f0", height: "8px", borderRadius: "4px", overflow: "hidden", marginBottom: "0.75rem" }}>
-                        <div
-                          style={{
-                            width: `${hyp.probaPercent}%`,
-                            background: hyp.probaPercent > 50 ? "#e60028" : "#f59e0b",
-                            height: "100%",
-                            borderRadius: "4px",
-                          }}
-                        />
+                      {/* Pills de Ratios d'Appui */}
+                      <div style={{ display: "flex", gap: "0.6rem", flexWrap: "wrap", marginBottom: "0.75rem" }}>
+                        <span style={{ background: "#dcfce7", color: "#166534", padding: "0.2rem 0.6rem", borderRadius: "6px", fontSize: "0.78rem", fontWeight: 700 }}>
+                          ✓ Preuves d'appui : {hyp.supportingEvidenceCount ?? hyp.evidenceCount}
+                        </span>
+                        <span style={{ background: "#fee2e2", color: "#991b1b", padding: "0.2rem 0.6rem", borderRadius: "6px", fontSize: "0.78rem", fontWeight: 700 }}>
+                          ❌ Contradictoires : {hyp.contradictingEvidenceCount ?? 0}
+                        </span>
+                        <span style={{ background: "#fef3c7", color: "#92400e", padding: "0.2rem 0.6rem", borderRadius: "6px", fontSize: "0.78rem", fontWeight: 700 }}>
+                          ❓ Manquantes : {hyp.missingEvidenceCount ?? 0}
+                        </span>
                       </div>
 
                       <p style={{ fontSize: "0.85rem", color: "#475569", marginBottom: "0.5rem" }}>
@@ -676,7 +718,7 @@ export function DiagnosticWizard() {
                       {hyp.evidenceDetails.length > 0 && (
                         <div style={{ marginTop: "0.5rem" }}>
                           <span style={{ fontSize: "0.75rem", fontWeight: 700, color: "#64748b", display: "block", marginBottom: "0.2rem" }}>
-                            PREUVES CONCRÈTES ASSOCIÉES :
+                            PREUVES CONCRÈTES DE L'INCIDENT COURANT :
                           </span>
                           <ul style={{ margin: 0, paddingLeft: "1.2rem", fontSize: "0.82rem", color: "#334155" }}>
                             {hyp.evidenceDetails.map((ev, i) => (
@@ -717,7 +759,7 @@ export function DiagnosticWizard() {
                 </div>
               </div>
 
-              {/* Card 6 : Evidence Ledger (Registre des Preuves & Filtre de Contradictions) */}
+              {/* Card 6 : Evidence Ledger Normalisé & Filter Contradictions */}
               <div style={{ background: "#ffffff", padding: "1.75rem", borderRadius: "14px", border: "1px solid #e4e4e7" }}>
                 <h3 style={{ fontSize: "1.1rem", fontWeight: 800, color: "#111827", marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
                   <span>🔬</span> Evidence Ledger (Registre des Preuves & Grounding Rules)
@@ -744,7 +786,7 @@ export function DiagnosticWizard() {
                           <th style={{ padding: "0.6rem 0.8rem" }}>ID</th>
                           <th style={{ padding: "0.6rem 0.8rem" }}>Énoncé / Fait</th>
                           <th style={{ padding: "0.6rem 0.8rem" }}>Source</th>
-                          <th style={{ padding: "0.6rem 0.8rem" }}>Type & Statut</th>
+                          <th style={{ padding: "0.6rem 0.8rem" }}>Type & Statut Normalisé</th>
                           <th style={{ padding: "0.6rem 0.8rem" }}>Justification Ancrage</th>
                         </tr>
                       </thead>
@@ -752,8 +794,9 @@ export function DiagnosticWizard() {
                         {copilotResult.evidenceLedger.map((item) => {
                           const isRejected = item.type === "REJECTED_CONTRADICTION";
                           const isFact = item.type === "VERIFIED_EVIDENCE";
+                          const isInference = item.type === "INFERENCE";
                           return (
-                            <tr key={item.id} style={{ borderBottom: "1px solid #f1f5f9", background: isRejected ? "#fef2f2" : "#ffffff" }}>
+                            <tr key={item.id} style={{ borderBottom: "1px solid #f1f5f9", background: isRejected ? "#fef2f2" : isInference ? "#fefce8" : "#ffffff" }}>
                               <td style={{ padding: "0.6rem 0.8rem", fontFamily: "monospace", fontWeight: 700, color: "#0f172a" }}>{item.id}</td>
                               <td style={{ padding: "0.6rem 0.8rem", fontWeight: 600, color: isRejected ? "#991b1b" : "#1e293b" }}>{item.information}</td>
                               <td style={{ padding: "0.6rem 0.8rem", color: "#64748b" }}>{item.source}</td>
@@ -762,13 +805,13 @@ export function DiagnosticWizard() {
                                   style={{
                                     fontSize: "0.75rem",
                                     fontWeight: 700,
-                                    padding: "0.2rem 0.5rem",
+                                    padding: "0.2rem 0.55rem",
                                     borderRadius: "12px",
-                                    background: isFact ? "#dcfce7" : isRejected ? "#fee2e2" : "#f1f5f9",
-                                    color: isFact ? "#15803d" : isRejected ? "#991b1b" : "#475569",
+                                    background: isFact ? "#dcfce7" : isInference ? "#fef08a" : isRejected ? "#fee2e2" : "#f1f5f9",
+                                    color: isFact ? "#15803d" : isInference ? "#854d0e" : isRejected ? "#991b1b" : "#475569",
                                   }}
                                 >
-                                  {isFact ? "✅ Preuve Vérifiée" : isRejected ? "❌ Contradiction Rejetée" : "⚪ Référence KB"}
+                                  {isFact ? "✅ Preuve Factuelle" : isInference ? "🟡 Inférence Agent" : isRejected ? "❌ Contradiction Rejetée" : "⚪ Référence KB"}
                                 </span>
                               </td>
                               <td style={{ padding: "0.6rem 0.8rem", color: "#334155" }}>{item.rationale}</td>
@@ -780,6 +823,132 @@ export function DiagnosticWizard() {
                   </div>
                 )}
               </div>
+
+              {/* Card 7 : Checklist des Preuves Manquantes & Investigation Itérative */}
+              {copilotResult.missingEvidence && copilotResult.missingEvidence.length > 0 && (
+                <div style={{ background: "#ffffff", padding: "1.75rem", borderRadius: "14px", border: "1px solid #e4e4e7" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+                    <h3 style={{ fontSize: "1.1rem", fontWeight: 800, color: "#111827", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                      <span>❓</span> Checklist des Preuves Manquantes & Suivi d'Investigation
+                    </h3>
+                    <span style={{ background: "#fef3c7", color: "#92400e", padding: "0.25rem 0.75rem", borderRadius: "12px", fontWeight: 700, fontSize: "0.8rem" }}>
+                      {copilotResult.missingEvidence.length} preuves identifiées
+                    </span>
+                  </div>
+
+                  {/* Checklist des éléments manquants avec boutons d'action interactifs */}
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem", marginBottom: "1.25rem" }}>
+                    {copilotResult.missingEvidence.map((item, idx) => {
+                      const isProvided = item.includes("✅");
+                      return (
+                        <div
+                          key={idx}
+                          style={{
+                            background: isProvided ? "#f0fdf4" : "#f8fafc",
+                            padding: "0.75rem 1rem",
+                            borderRadius: "10px",
+                            border: isProvided ? "1px solid #bbf7d0" : "1px solid #e2e8f0",
+                            fontSize: "0.88rem",
+                            fontWeight: 600,
+                            color: isProvided ? "#166534" : "#334155",
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            gap: "0.75rem",
+                          }}
+                        >
+                          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flex: 1 }}>
+                            <span style={{ fontSize: "1rem" }}>{isProvided ? "✅" : "📋"}</span>
+                            <span>{item}</span>
+                          </div>
+                          {!isProvided && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                let template = `[PREUVE COMPLÉMENTAIRE] ${item.replace("□ ", "")}`;
+                                if (item.toLowerCase().includes("host")) {
+                                  template = "[LOG HOST APPLICATIF] 10:15:22.019 ERR - Socket pool (host-01.bank.internal:10443) saturated: 64/64 active connections busy. Dropping incoming 0200 requests for STAN 739214.";
+                                  setSelectedPresetCategory("HOST");
+                                } else if (item.toLowerCase().includes("tcp") || item.toLowerCase().includes("reseau")) {
+                                  template = "[TRACE TCP NETWORK] 10:15:25.802 WARN - TCP SYN-ACK timeout on port 10443 (Payway -> Host). Retries 3/3 exhausted.";
+                                  setSelectedPresetCategory("TCP");
+                                } else if (item.toLowerCase().includes("ej") || item.toLowerCase().includes("journal")) {
+                                  template = "[ELECTRONIC JOURNAL ATM] 10:42:18.951 WARN - Presenter module sensor error code 04: Motor movement timeout on note transport.";
+                                  setSelectedPresetCategory("GAB_EJ");
+                                }
+                                setInvestigationLogInput(template);
+                                setIsInvestigationModalOpen(true);
+                              }}
+                              style={{
+                                background: "#0284c7",
+                                color: "#ffffff",
+                                border: "none",
+                                padding: "0.35rem 0.75rem",
+                                borderRadius: "6px",
+                                fontSize: "0.78rem",
+                                fontWeight: 700,
+                                cursor: "pointer",
+                                whiteSpace: "nowrap",
+                              }}
+                            >
+                              + Injecter cette preuve
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {copilotResult.nextInvestigationStep && (
+                    <div style={{ background: "#eff6ff", borderLeft: "4px solid #0284c7", padding: "1rem 1.25rem", borderRadius: "0 8px 8px 0", marginBottom: "1.25rem" }}>
+                      <span style={{ fontSize: "0.78rem", fontWeight: 800, color: "#0369a1", display: "block" }}>PROCHAINE ACTION D'INVESTIGATION RECOMMANDÉE :</span>
+                      <p style={{ fontSize: "0.9rem", fontWeight: 700, color: "#0c4a6e", marginTop: "0.2rem", margin: 0 }}>
+                        {copilotResult.nextInvestigationStep}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Historique des itérations d'investigation */}
+                  {investigationHistory.length > 0 && (
+                    <div style={{ background: "#f8fafc", padding: "1rem", borderRadius: "10px", border: "1px solid #e2e8f0", marginBottom: "1.25rem" }}>
+                      <span style={{ fontSize: "0.78rem", fontWeight: 800, color: "#475569", display: "block", marginBottom: "0.5rem" }}>
+                        📜 HISTORIQUE DES ITÉRATIONS D'INVESTIGATION ({investigationHistory.length} inj. effectuée{investigationHistory.length > 1 ? "s" : ""}) :
+                      </span>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                        {investigationHistory.map((hist) => (
+                          <div key={hist.id} style={{ fontSize: "0.8rem", color: "#334155", background: "#ffffff", padding: "0.5rem 0.75rem", borderRadius: "6px", border: "1px solid #cbd5e1" }}>
+                            <span style={{ fontWeight: 800, color: "#0284c7" }}>Itération #{hist.id} [{hist.timestamp}]</span> - <span style={{ fontFamily: "monospace", color: "#0f172a" }}>{hist.content.substring(0, 90)}...</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setInvestigationLogInput("");
+                      setIsInvestigationModalOpen(true);
+                    }}
+                    style={{
+                      background: "linear-gradient(135deg, #0284c7 0%, #0369a1 100%)",
+                      color: "#ffffff",
+                      padding: "0.85rem 1.75rem",
+                      borderRadius: "10px",
+                      fontWeight: 700,
+                      fontSize: "0.92rem",
+                      cursor: "pointer",
+                      border: "none",
+                      boxShadow: "0 4px 14px rgba(2,132,199,0.35)",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "0.6rem",
+                    }}
+                  >
+                    <span>🔍</span> Poursuivre l'Investigation (Injecter des Logs Complémentaires)
+                  </button>
+                </div>
+              )}
 
               {/* Card 6 : Cause Racine (RCA Proposée) & Gate de Validation Humaine */}
               <div
@@ -1270,6 +1439,269 @@ export function DiagnosticWizard() {
               </div>
             </div>
           )}
+        </div>
+      )}
+      {/* MODAL PERSONNALISEE : POURSUITE DE L INVESTIGATION (THEME CLAIR) */}
+      {isInvestigationModalOpen && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(15, 23, 42, 0.45)",
+            backdropFilter: "blur(6px)",
+            zIndex: 9999,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "1.5rem",
+          }}
+        >
+          <div
+            style={{
+              background: "#ffffff",
+              color: "#1e293b",
+              width: "100%",
+              maxWidth: "680px",
+              borderRadius: "16px",
+              border: "1px solid #cbd5e1",
+              boxShadow: "0 20px 45px -10px rgba(0, 0, 0, 0.18)",
+              overflow: "hidden",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            {/* Header Modal */}
+            <div
+              style={{
+                padding: "1.25rem 1.5rem",
+                background: "linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)",
+                borderBottom: "1px solid #e2e8f0",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+                <span style={{ fontSize: "1.4rem" }}>🔍</span>
+                <div>
+                  <h3 style={{ fontSize: "1.05rem", fontWeight: 800, color: "#0f172a", margin: 0 }}>
+                    Poursuite des Investigations Monétiques
+                  </h3>
+                  <p style={{ fontSize: "0.78rem", color: "#64748b", margin: 0 }}>
+                    Injectez de nouvelles preuves (logs applicatifs, trames TCP, EJ) pour affiner le diagnostic agentic.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsInvestigationModalOpen(false)}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  color: "#64748b",
+                  fontSize: "1.3rem",
+                  cursor: "pointer",
+                  padding: "0.2rem 0.5rem",
+                }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Content Modal */}
+            <div style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+              {/* Presets rapides */}
+              <div>
+                <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 700, color: "#334155", marginBottom: "0.5rem" }}>
+                  💡 Modèles de preuves prêtes à l&apos;emploi (Cliquer pour charger) :
+                </label>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedPresetCategory("HOST");
+                      setInvestigationLogInput(
+                        "[LOG HOST APPLICATIF] 10:15:22.019 ERR - Socket pool (host-01.bank.internal:10443) saturated: 64/64 active connections busy. Dropping incoming 0200 requests for STAN 739214."
+                      );
+                    }}
+                    style={{
+                      background: selectedPresetCategory === "HOST" ? "#0284c7" : "#f1f5f9",
+                      color: selectedPresetCategory === "HOST" ? "#ffffff" : "#334155",
+                      border: selectedPresetCategory === "HOST" ? "1px solid #0284c7" : "1px solid #cbd5e1",
+                      padding: "0.4rem 0.75rem",
+                      borderRadius: "6px",
+                      fontSize: "0.78rem",
+                      fontWeight: 600,
+                      cursor: "pointer",
+                    }}
+                  >
+                    🖥️ Log Host Application
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedPresetCategory("TCP");
+                      setInvestigationLogInput(
+                        "[TRACE TCP NETWORK] 10:15:25.802 WARN - TCP SYN-ACK timeout on port 10443 (Payway -> Host). Retries 3/3 exhausted."
+                      );
+                    }}
+                    style={{
+                      background: selectedPresetCategory === "TCP" ? "#0284c7" : "#f1f5f9",
+                      color: selectedPresetCategory === "TCP" ? "#ffffff" : "#334155",
+                      border: selectedPresetCategory === "TCP" ? "1px solid #0284c7" : "1px solid #cbd5e1",
+                      padding: "0.4rem 0.75rem",
+                      borderRadius: "6px",
+                      fontSize: "0.78rem",
+                      fontWeight: 600,
+                      cursor: "pointer",
+                    }}
+                  >
+                    🌐 Trace Network TCP
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedPresetCategory("ISO");
+                      setInvestigationLogInput(
+                        "[TRAME ISO 8583] MTI=0210 STAN=739214 DE39=91 DE44=HOST_TIMEOUT DE3=010000 DE4=000000005000 RRN=849201948201"
+                      );
+                    }}
+                    style={{
+                      background: selectedPresetCategory === "ISO" ? "#0284c7" : "#f1f5f9",
+                      color: selectedPresetCategory === "ISO" ? "#ffffff" : "#334155",
+                      border: selectedPresetCategory === "ISO" ? "1px solid #0284c7" : "1px solid #cbd5e1",
+                      padding: "0.4rem 0.75rem",
+                      borderRadius: "6px",
+                      fontSize: "0.78rem",
+                      fontWeight: 600,
+                      cursor: "pointer",
+                    }}
+                  >
+                    💳 Trame ISO 8583
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedPresetCategory("GAB_EJ");
+                      setInvestigationLogInput(
+                        "[ELECTRONIC JOURNAL ATM] 10:42:18.951 WARN - Presenter module sensor error code 04: Motor movement timeout on note transport."
+                      );
+                    }}
+                    style={{
+                      background: selectedPresetCategory === "GAB_EJ" ? "#0284c7" : "#f1f5f9",
+                      color: selectedPresetCategory === "GAB_EJ" ? "#ffffff" : "#334155",
+                      border: selectedPresetCategory === "GAB_EJ" ? "1px solid #0284c7" : "1px solid #cbd5e1",
+                      padding: "0.4rem 0.75rem",
+                      borderRadius: "6px",
+                      fontSize: "0.78rem",
+                      fontWeight: 600,
+                      cursor: "pointer",
+                    }}
+                  >
+                    📟 Journal Physique ATM EJ
+                  </button>
+                </div>
+              </div>
+
+              {/* Textarea Saisie de Logs */}
+              <div>
+                <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 700, color: "#334155", marginBottom: "0.4rem" }}>
+                  Saisissez ou collez l&apos;extrait de preuves/logs système :
+                </label>
+                <textarea
+                  rows={6}
+                  value={investigationLogInput}
+                  onChange={(e) => setInvestigationLogInput(e.target.value)}
+                  placeholder="Ex: Collez ici les logs applicatifs Host, les traces TCP ou le journal EJ..."
+                  style={{
+                    width: "100%",
+                    padding: "0.85rem",
+                    borderRadius: "10px",
+                    background: "#f8fafc",
+                    border: "1px solid #cbd5e1",
+                    color: "#0f172a",
+                    fontFamily: "monospace",
+                    fontSize: "0.85rem",
+                    lineHeight: "1.4",
+                    boxSizing: "border-box",
+                  }}
+                />
+                <span style={{ fontSize: "0.75rem", color: "#64748b", marginTop: "0.3rem", display: "block" }}>
+                  {investigationLogInput.length} caractères • Ces données seront intégrées au registre Evidence Ledger.
+                </span>
+              </div>
+            </div>
+
+            {/* Footer Modal */}
+            <div
+              style={{
+                padding: "1.25rem 1.5rem",
+                background: "#f8fafc",
+                borderTop: "1px solid #e2e8f0",
+                display: "flex",
+                justifyContent: "flex-end",
+                gap: "0.75rem",
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => setIsInvestigationModalOpen(false)}
+                style={{
+                  background: "#ffffff",
+                  color: "#475569",
+                  padding: "0.7rem 1.25rem",
+                  borderRadius: "8px",
+                  fontWeight: 600,
+                  fontSize: "0.85rem",
+                  cursor: "pointer",
+                  border: "1px solid #cbd5e1",
+                }}
+              >
+                Annuler
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (!investigationLogInput.trim()) return;
+                  const newEntry = {
+                    id: investigationHistory.length + 1,
+                    timestamp: new Date().toLocaleTimeString("fr-FR"),
+                    category: selectedPresetCategory,
+                    content: investigationLogInput.trim(),
+                  };
+                  setInvestigationHistory([...investigationHistory, newEntry]);
+                  setFormData((prev) => ({
+                    ...prev,
+                    evidence: `${prev.evidence}\n[LOG COMPLÉMENTAIRE OPERATEUR] ${investigationLogInput.trim()}`,
+                  }));
+                  setIsInvestigationModalOpen(false);
+                  handleRunCopilotAnalysis();
+                }}
+                disabled={!investigationLogInput.trim()}
+                style={{
+                  background: investigationLogInput.trim()
+                    ? "linear-gradient(135deg, #0284c7 0%, #0369a1 100%)"
+                    : "#cbd5e1",
+                  color: "#ffffff",
+                  padding: "0.7rem 1.5rem",
+                  borderRadius: "8px",
+                  fontWeight: 700,
+                  fontSize: "0.85rem",
+                  cursor: investigationLogInput.trim() ? "pointer" : "not-allowed",
+                  border: "none",
+                  boxShadow: investigationLogInput.trim() ? "0 4px 12px rgba(2,132,199,0.35)" : "none",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                }}
+              >
+                <span>⚡</span> Re-lancer l&apos;Analyse avec l&apos;Agent
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
