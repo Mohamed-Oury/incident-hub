@@ -761,7 +761,12 @@ export function DiagnosticWizard() {
                   {!operatorConfirmed ? (
                     <button
                       type="button"
-                      onClick={() => setOperatorConfirmed(true)}
+                      onClick={async () => {
+                        setOperatorConfirmed(true);
+                        // Auto-sauvegarde immédiate dans la BD avec statut VALIDATED
+                        await handleSaveIncident();
+                      }}
+                      disabled={loading}
                       style={{
                         background: "#166534",
                         color: "#ffffff",
@@ -769,16 +774,26 @@ export function DiagnosticWizard() {
                         borderRadius: "10px",
                         fontWeight: 700,
                         fontSize: "0.9rem",
-                        cursor: "pointer",
+                        cursor: loading ? "wait" : "pointer",
                         border: "none",
                         boxShadow: "0 4px 12px rgba(22,101,52,0.3)",
                       }}
                     >
-                      ✅ Confirmer la RCA (Validation Opérateur)
+                      {loading ? "💾 Enregistrement dans la BD..." : "✅ Confirmer la RCA & Enregistrer en BD"}
                     </button>
                   ) : (
-                    <div style={{ background: "#dcfce7", color: "#15803d", padding: "0.6rem 1.25rem", borderRadius: "8px", fontWeight: 700, fontSize: "0.88rem" }}>
-                      ✓ Conclusion formellement approuvée par l'opérateur
+                    <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+                      <div style={{ background: "#dcfce7", color: "#15803d", padding: "0.6rem 1.25rem", borderRadius: "8px", fontWeight: 700, fontSize: "0.88rem" }}>
+                        ✓ RCA Validée par l'opérateur et sauvegardée {createdRef ? `(${createdRef})` : ""}
+                      </div>
+                      <button
+                        type="button"
+                        className="btn-emerald"
+                        onClick={() => router.push("/knowledge")}
+                        style={{ padding: "0.6rem 1.25rem", fontSize: "0.88rem" }}
+                      >
+                        📚 Voir dans la Base de Connaissances (1ère Position) →
+                      </button>
                     </div>
                   )}
 

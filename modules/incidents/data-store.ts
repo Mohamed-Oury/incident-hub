@@ -164,11 +164,11 @@ export async function getAllIncidents(): Promise<IncidentRecord[]> {
         resolution: true,
         prevention: true,
       },
-      orderBy: { reference: "asc" },
+      orderBy: { createdAt: "desc" },
     });
 
-    if (dbIncidents.length >= referenceIncidents.length) {
-      return dbIncidents.map((inc) => ({
+    if (dbIncidents.length > 0) {
+      const mappedDb = dbIncidents.map((inc) => ({
         id: inc.id,
         reference: inc.reference,
         title: inc.title,
@@ -278,6 +278,187 @@ export async function getAllIncidents(): Promise<IncidentRecord[]> {
           },
         ],
       }));
+
+      // Inverser ou fusionner : placer les incidents créés en BD tout en haut
+      const refMapped = referenceIncidents.map((ref, idx) => {
+        const detailed = DETAILED_CASES[ref.reference];
+        const num = parseInt(ref.reference.replace("INC-", ""), 10) || idx + 1;
+        const domain = ref.domain;
+        const component = ref.component;
+        const keys = ref.analysisKeys;
+
+        const stanStr = String(100000 + num).slice(-6);
+        const rrnStr = `50291${String(10000000 + num).slice(-7)}`;
+        const tidStr = domain === "GAB" ? `GAB-${String(num).padStart(4, "0")}` : domain === "TPE" ? `POS-${String(num).padStart(4, "0")}` : `SW-${String(num).padStart(4, "0")}`;
+
+        let respCode = "05";
+        if (keys.includes("91")) respCode = "91";
+        else if (keys.includes("55")) respCode = "55";
+        else if (keys.includes("96")) respCode = "96";
+        else if (keys.includes("12")) respCode = "12";
+        else if (keys.includes("14")) respCode = "14";
+        else if (keys.includes("51")) respCode = "51";
+        else if (keys.includes("68")) respCode = "68";
+
+        return {
+          id: ref.reference,
+          reference: ref.reference,
+          title: ref.title,
+          description: detailed?.description || `Incident monétique capitalisé : ${ref.title}. Analyse approfondie et éléments clés d'investigation : ${keys}.`,
+          status: "RESOLVED" as const,
+          severity: (detailed?.severity || (num % 4 === 0 ? "CRITICAL" : num % 2 === 0 ? "HIGH" : "MEDIUM")) as any,
+          knowledgeStatus: "VALIDATED" as const,
+          domain: ref.domain,
+          channel: ref.domain === "GAB" ? "GAB/ATM" : ref.domain === "TPE" ? "TPE/POS" : ref.domain === "Carte" ? "EMV" : "SWITCH",
+          operation: "Transaction Monétique ISO 8583",
+          network: "VISA / GIMAC / Mastercard",
+          environment: "PRODUCTION",
+          component: ref.component,
+          host: "HOST-PAYWAY-SWITCH-01",
+          errorCode: `DE39=${respCode}`,
+          occurredAt: new Date(Date.now() - 3600000 * 24).toISOString(),
+          resolvedAt: new Date().toISOString(),
+          authorId: "usr-operator-01",
+          authorName: "Oury Kohkoun (Expert Monétique)",
+          createdAt: new Date(Date.now() - 3600000 * 48).toISOString(),
+          updatedAt: new Date().toISOString(),
+          observations: detailed?.observations || [
+            {
+              symptom: `Dysfonctionnement constaté en production : ${ref.title}. Rejet ou blocage des opérations monétiques.`,
+              facts: `Taux d'échec de plus de 85% mesuré sur le canal ${ref.domain}. Paramètres discriminants : ${keys} sur le composant ${ref.component}.`,
+              scope: `Périmètre impacté : canal ${ref.domain}, nœud applicatif ${ref.component}, zone réseau correspondante.`,
+              context: `Pic d'activité transactionnelle, supervision temps-réel avec déclenchement d'alerte critique sur ${keys}.`,
+            },
+          ],
+          flowSteps: detailed?.flowSteps || [
+            {
+              position: 1,
+              source: domain === "GAB" ? "GAB/ATM" : domain === "TPE" ? "Terminal TPE" : "Frontal Partenaire",
+              destination: "Frontal Payway",
+              event: `ISO 0200 Demande d'autorisation (${keys})`,
+              status: "OK",
+            },
+            {
+              position: 2,
+              source: "Frontal Payway",
+              destination: component,
+              event: `Routage et contrôle du message transactionnel [${keys}]`,
+              status: "OK",
+            },
+            {
+              position: 3,
+              source: component,
+              destination: "Core Banking / Autorisation Host",
+              event: `Traitement de l'autorisation et contrôle de solvabilité [${keys}]`,
+              status: "TIMEOUT_BLOCKED",
+            },
+            {
+              position: 4,
+              source: component,
+              destination: "Frontal Payway",
+              event: `Génération de la réponse ISO 0210 (DE39=${respCode})`,
+              status: "ERROR",
+            },
+            {
+              position: 5,
+              source: "Frontal Payway",
+              destination: domain === "GAB" ? "GAB/ATM" : domain === "TPE" ? "Terminal TPE" : "Partenaire",
+              event: "Restitution au porteur avec message d'abandon explicite",
+              status: "COMPLETED",
+            },
+          ],
+          isoMessages: detailed?.isoMessages || [
+            {
+              mti: "0200",
+              bitmap: "7238000008C08000",
+              stan: stanStr,
+              rrn: rrnStr,
+              responseCode: "00",
+              terminalId: tidStr,
+              maskedRawMessage: `02007238000008C08000164500********9124010000000500000917114512${stanStr}...`,
+              fields: {
+                DE3: "010000",
+                DE4: "50000",
+                DE11: stanStr,
+                DE37: rrnStr,
+                DE41: tidStr,
+                DE49: "952",
+              },
+            },
+            {
+              mti: "0210",
+              bitmap: "7238000008C08000",
+              stan: stanStr,
+              rrn: rrnStr,
+              responseCode: respCode,
+              terminalId: tidStr,
+              maskedRawMessage: `02107238000008C08000164500********9124010000000500000917114535${stanStr}${respCode}...`,
+              fields: {
+                DE3: "010000",
+                DE4: "50000",
+                DE11: stanStr,
+                DE37: rrnStr,
+                DE39: respCode,
+                DE41: tidStr,
+              },
+            },
+          ],
+          hypotheses: detailed?.hypotheses || [
+            {
+              description: `Hypothèse 1 : Panne physique ou coupure réseau sur le lien télécom vers ${component}`,
+              status: "REJECTED" as const,
+              evidence: "Sonde ICMP stable avec 0% de perte de paquets et temps de latence < 12ms.",
+            },
+            {
+              description: `Hypothèse 2 : Blocage logique, désynchronisation ou verrou applicatif au niveau de ${component}`,
+              status: "CONFIRMED" as const,
+              evidence: `Concordance chronologique parfaite avec les anomalies de trace sur ${keys}.`,
+            },
+          ],
+          evidence: detailed?.evidence || [
+            {
+              type: "Log Applicatif",
+              content: `[ERROR] ${component} - Échec de traitement transactionnel sur clé ${keys} : timeout ou rejet interne`,
+              source: `Syslog ${component}`,
+            },
+            {
+              type: "Capture Trame",
+              content: `Trame ISO 8583 0210 retournée avec DE39=${respCode} à la milliseconde 14:22:05.112`,
+              source: "Wireshark Frontal Payway",
+            },
+          ],
+          rootCause: detailed?.rootCause || {
+            category: `${domain} & ${component}`,
+            description: `Cause racine démontrée sur ${component} : anomalie de configuration ou saturation identifiée lors du traitement de ${ref.title}.`,
+            justification: `Les logs applicatifs horodatés et la corrélation des trames ISO (${keys}) démontrent formellement le point de blocage sur ${component}.`,
+            validatedBy: "Oury Kohkoun (Expert Monétique)",
+            validatedAt: new Date().toISOString(),
+          },
+          resolution: detailed?.resolution || {
+            actions: `Application immédiate du correctif sur ${component}, rechargement à chaud des tables de routage, purge des sessions bloquantes et réalignement des paramètres ${keys}.`,
+            result: "Rétablissement nominal du service monétique avec taux de succès rétabli à 99.9% et latence < 350ms.",
+            executor: "Oury Kohkoun (Exploitant Senior)",
+            approver: "Responsable Validation Monétique",
+          },
+          prevention: detailed?.prevention || [
+            {
+              action: `Mise en place d'une alerte proactive sur le composant ${component} en cas de dépassement du seuil d'échec sur ${keys}`,
+              owner: "Équipe Supervision Monétique",
+              priority: "CRITICAL",
+              status: "DONE",
+            },
+            {
+              action: `Revue périodique des timers de timeout et des règles de retry sur le lien ${domain} <-> ${component}`,
+              owner: "Architecture & Intégration",
+              priority: "HIGH",
+              status: "DONE",
+            },
+          ],
+        };
+      });
+
+      // Mettre TOUS les incidents réels de la BD au DÉBUT de la liste (1ère position)
+      return [...mappedDb, ...refMapped];
     }
   } catch (err) {
     // Si la BD n'a pas encore été migrée ou démarre, fallback en mémoire sur le catalogue complet
