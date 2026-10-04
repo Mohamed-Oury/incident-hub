@@ -65,12 +65,13 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
       roleRequired: "ROLE_EXPLOITATION",
       items: [
         { href: "/", label: "Vue d'ensemble", icon: "⊞" },
+        { href: "/knowledge", label: "Base de connaissance", icon: "📚" },
+        { href: "/diagnostic", label: "Diagnostic Assistant", icon: "⚡" },
         { href: "/training-monetique/antiseche", label: "Antisèche Monétique", icon: "🧠" },
         { href: "/mti", label: "Référentiel MTI", icon: "📬" },
         { href: "/de39", label: "Référentiel DE39", icon: "🏷️" },
         { href: "/run-supervision", label: "Supervision & Runbook", icon: "🖥️" },
-        { href: "/knowledge", label: "Base de connaissance", icon: "📚" },
-        { href: "/diagnostic", label: "Diagnostic Assistant", icon: "⚡" },
+
       ],
     },
     {

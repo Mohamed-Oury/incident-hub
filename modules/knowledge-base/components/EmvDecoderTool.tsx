@@ -22,6 +22,18 @@ export function EmvDecoderTool() {
   const [activeTab, setActiveTab] = useState<"DE55" | "TVR_TOOL">("DE55");
   const [searchTerm, setSearchTerm] = useState<string>("");
 
+  // État du Copilot Agent EMV
+  const [copilotLoading, setCopilotLoading] = useState(false);
+  const [copilotResult, setCopilotResult] = useState<{
+    summaryTitle: string;
+    cryptoType: string;
+    riskLevel: string;
+    tvrAnalysisDetail: string;
+    recommendedActions: string[];
+    copilotExplanation: string;
+  } | null>(null);
+  const [copilotError, setCopilotError] = useState<string | null>(null);
+
   const decodedTlv = useMemo(() => {
     return parseEmvTlv(inputHex);
   }, [inputHex]);
@@ -29,6 +41,32 @@ export function EmvDecoderTool() {
   const standaloneTvr = useMemo(() => {
     return decodeTvrHex(tvrInput);
   }, [tvrInput]);
+
+  const handleRunEmvCopilot = async () => {
+    setCopilotLoading(true);
+    setCopilotError(null);
+    try {
+      const res = await fetch("/api/cbs/agentic/decoders/emv/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          inputHex: inputHex,
+          tvrRaw: decodedTlv.tvrSummary?.rawHex || "",
+          parsedTagsCount: decodedTlv.tags.length,
+          criticalFlags: decodedTlv.tvrSummary?.criticalFlags || [],
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.detail || data.error || "Impossible de contacter l'agent Copilot EMV.");
+      }
+      setCopilotResult(data);
+    } catch (err: any) {
+      setCopilotError(err.message || "Erreur d'analyse Copilot EMV.");
+    } finally {
+      setCopilotLoading(false);
+    }
+  };
 
   const filteredTags = useMemo(() => {
     return decodedTlv.tags.filter((t) => {
@@ -169,6 +207,125 @@ export function EmvDecoderTool() {
                 <p style={{ color: "#059669", fontSize: "0.88rem", margin: 0, fontWeight: 600 }}>
                   ✅ Aucun drapeau critique d&apos;échec dans le TVR. Contrôles de sécurité terminaux nominaux.
                 </p>
+              )}
+
+              {/* Bouton de Lancement du Copilot EMV Agent */}
+              <div style={{ marginTop: "1rem", paddingTop: "0.75rem", borderTop: "1px solid #e2e8f0", display: "flex", justifyContent: "flex-between", alignItems: "center" }}>
+                <button
+                  type="button"
+                  onClick={handleRunEmvCopilot}
+                  disabled={copilotLoading || !inputHex.trim()}
+                  style={{
+                    background: copilotLoading
+                      ? "#a1a1aa"
+                      : "linear-gradient(135deg, #0284c7 0%, #0369a1 100%)",
+                    color: "#ffffff",
+                    padding: "0.65rem 1.25rem",
+                    borderRadius: "8px",
+                    fontWeight: 700,
+                    fontSize: "0.86rem",
+                    cursor: copilotLoading ? "not-allowed" : "pointer",
+                    border: "none",
+                    boxShadow: "0 4px 12px rgba(2,132,199,0.3)",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "0.5rem",
+                  }}
+                >
+                  {copilotLoading ? (
+                    <>⚙️ Analyse Experte EMV Agentic en cours...</>
+                  ) : (
+                    <>✨ Lancer l&apos;Analyse Experte Copilot EMV (Tag 95 &amp; TVR)</>
+                  )}
+                </button>
+              </div>
+
+              {copilotError && (
+                <div style={{ marginTop: "0.75rem", padding: "0.75rem", background: "#fef2f2", color: "#991b1b", borderRadius: "8px", fontSize: "0.85rem", border: "1px solid #fecaca" }}>
+                  ⚠️ {copilotError}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Restitution de l'Analyse Agent Copilot EMV */}
+          {copilotResult && (
+            <div
+              className="card"
+              style={{
+                background: "linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)",
+                border: "2px solid #0284c7",
+                borderRadius: "14px",
+                padding: "1.5rem",
+                boxShadow: "0 10px 25px -5px rgba(2, 132, 199, 0.15)",
+              }}
+            >
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                  <span style={{ fontSize: "1.4rem" }}>🧠</span>
+                  <div>
+                    <span style={{ fontSize: "0.75rem", fontWeight: 800, color: "#0369a1", letterSpacing: "0.08em" }}>
+                      EXPERTISE COPILOT AGENT EMV &amp; CRYPTO PUCE
+                    </span>
+                    <h3 style={{ fontSize: "1.1rem", fontWeight: 800, color: "#0c4a6e" }}>
+                      {copilotResult.summaryTitle}
+                    </h3>
+                  </div>
+                </div>
+                <span
+                  style={{
+                    background: copilotResult.riskLevel === "ÉLEVÉ" || copilotResult.riskLevel === "CRITIQUE" ? "#fee2e2" : "#dcfce7",
+                    color: copilotResult.riskLevel === "ÉLEVÉ" || copilotResult.riskLevel === "CRITIQUE" ? "#991b1b" : "#15803d",
+                    padding: "0.3rem 0.75rem",
+                    borderRadius: "20px",
+                    fontWeight: 800,
+                    fontSize: "0.78rem",
+                  }}
+                >
+                  NIVEAU DE RISQUE : {copilotResult.riskLevel}
+                </span>
+              </div>
+
+              <div style={{ background: "#ffffff", padding: "1rem 1.25rem", borderRadius: "10px", border: "1px solid #bae6fd", marginBottom: "1rem" }}>
+                <span style={{ fontSize: "0.78rem", fontWeight: 800, color: "#0369a1", display: "block", marginBottom: "0.2rem" }}>
+                  CRYPTOGRAMME IDENTIFIÉ :
+                </span>
+                <p style={{ fontSize: "0.9rem", fontWeight: 700, color: "#0f172a", margin: 0 }}>
+                  {copilotResult.cryptoType}
+                </p>
+              </div>
+
+              <div style={{ background: "#ffffff", padding: "1rem 1.25rem", borderRadius: "10px", border: "1px solid #bae6fd", marginBottom: "1rem" }}>
+                <span style={{ fontSize: "0.78rem", fontWeight: 800, color: "#0369a1", display: "block", marginBottom: "0.3rem" }}>
+                  ANALYSE DU TVR (TAG 95) &amp; MOTIF DE DÉGRADATION :
+                </span>
+                <p style={{ fontSize: "0.88rem", color: "#334155", lineHeight: 1.5, margin: 0 }}>
+                  {copilotResult.tvrAnalysisDetail}
+                </p>
+              </div>
+
+              <div style={{ background: "#ffffff", padding: "1rem 1.25rem", borderRadius: "10px", border: "1px solid #bae6fd", marginBottom: "1rem" }}>
+                <span style={{ fontSize: "0.78rem", fontWeight: 800, color: "#0369a1", display: "block", marginBottom: "0.3rem" }}>
+                  EXPLICATION DE L'AGENT COPILOT POUR L'EXPLOITATION :
+                </span>
+                <p style={{ fontSize: "0.88rem", color: "#1e293b", fontWeight: 600, lineHeight: 1.5, margin: 0 }}>
+                  {copilotResult.copilotExplanation}
+                </p>
+              </div>
+
+              {copilotResult.recommendedActions && copilotResult.recommendedActions.length > 0 && (
+                <div>
+                  <span style={{ fontSize: "0.78rem", fontWeight: 800, color: "#0369a1", display: "block", marginBottom: "0.4rem" }}>
+                    ACTIONS RECOMMANDÉES SUR LA CARTE / TERMINAL :
+                  </span>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem" }}>
+                    {copilotResult.recommendedActions.map((action, i) => (
+                      <div key={i} style={{ background: "#ffffff", padding: "0.55rem 0.85rem", borderRadius: "6px", fontSize: "0.83rem", fontWeight: 600, color: "#0f172a", border: "1px solid #cbd5e1" }}>
+                        🛠️ {action}
+                      </div>
+                    ))}
+                  </div>
+                </div>
               )}
             </div>
           )}

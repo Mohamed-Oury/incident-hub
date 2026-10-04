@@ -49,11 +49,50 @@ const SAMPLE_EJ_LOGS = [
 export function AtmEjAnalyzerTool() {
   const [rawLogInput, setRawLogInput] = useState<string>(SAMPLE_EJ_LOGS[0].log);
 
+  // État du Copilot Agent ATM EJ
+  const [copilotLoading, setCopilotLoading] = useState(false);
+  const [copilotResult, setCopilotResult] = useState<{
+    summaryTitle: string;
+    vendorDetected: string;
+    hardwareFaultDetected: boolean;
+    forensicChronology: string[];
+    claimVerdictExplanation: string;
+    recommendedActions: string[];
+    copilotExplanation: string;
+  } | null>(null);
+  const [copilotError, setCopilotError] = useState<string | null>(null);
+
   const analysis = useMemo(() => {
     return parseAtmElectronicJournal(rawLogInput);
   }, [rawLogInput]);
 
   const summary = analysis.summary;
+
+  const handleRunEjCopilot = async () => {
+    setCopilotLoading(true);
+    setCopilotError(null);
+    try {
+      const res = await fetch("/api/cbs/agentic/decoders/atm-ej/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          rawLog: rawLogInput,
+          vendor: summary.vendor,
+          atmId: summary.atmId || "",
+          claimAdvice: summary.claimAdvice,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.detail || data.error || "Impossible de contacter l'agent Copilot EJ.");
+      }
+      setCopilotResult(data);
+    } catch (err: any) {
+      setCopilotError(err.message || "Erreur d'analyse Copilot EJ.");
+    } finally {
+      setCopilotLoading(false);
+    }
+  };
 
   const getVerdictBadge = () => {
     switch (summary.claimAdvice) {
@@ -196,7 +235,132 @@ export function AtmEjAnalyzerTool() {
             {summary.recommendedOperatorAction}
           </p>
         </div>
+
+        {/* Bouton de lancement de l'Agent Copilot Forensic EJ */}
+        <div style={{ marginTop: "0.5rem", paddingTop: "0.75rem", borderTop: "1px solid rgba(0,0,0,0.08)", display: "flex", alignItems: "center" }}>
+          <button
+            type="button"
+            onClick={handleRunEjCopilot}
+            disabled={copilotLoading || !rawLogInput.trim()}
+            style={{
+              background: copilotLoading
+                ? "#a1a1aa"
+                : "linear-gradient(135deg, #0284c7 0%, #0369a1 100%)",
+              color: "#ffffff",
+              padding: "0.65rem 1.25rem",
+              borderRadius: "8px",
+              fontWeight: 700,
+              fontSize: "0.86rem",
+              cursor: copilotLoading ? "not-allowed" : "pointer",
+              border: "none",
+              boxShadow: "0 4px 12px rgba(2,132,199,0.3)",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.5rem",
+            }}
+          >
+            {copilotLoading ? (
+              <>⚙️ Expertise Forensic Agentic en cours...</>
+            ) : (
+              <>✨ Lancer l&apos;Analyse Forensic Copilot GAB / EJ</>
+            )}
+          </button>
+        </div>
+
+        {copilotError && (
+          <div style={{ marginTop: "0.5rem", padding: "0.75rem", background: "#ffffff", color: "#991b1b", borderRadius: "8px", fontSize: "0.85rem", border: "1px solid #fecaca" }}>
+            ⚠️ {copilotError}
+          </div>
+        )}
       </div>
+
+      {/* Restitution de l'Analyse Forensic Agent Copilot GAB */}
+      {copilotResult && (
+        <div
+          className="card"
+          style={{
+            background: "linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)",
+            border: "2px solid #0284c7",
+            borderRadius: "14px",
+            padding: "1.5rem",
+            boxShadow: "0 10px 25px -5px rgba(2, 132, 199, 0.15)",
+          }}
+        >
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              <span style={{ fontSize: "1.4rem" }}>🕵️</span>
+              <div>
+                <span style={{ fontSize: "0.75rem", fontWeight: 800, color: "#0369a1", letterSpacing: "0.08em" }}>
+                  EXPERTISE FORENSIC COPILOT AGENT GAB
+                </span>
+                <h3 style={{ fontSize: "1.1rem", fontWeight: 800, color: "#0c4a6e" }}>
+                  {copilotResult.summaryTitle}
+                </h3>
+              </div>
+            </div>
+            <span
+              style={{
+                background: copilotResult.hardwareFaultDetected ? "#fee2e2" : "#dcfce7",
+                color: copilotResult.hardwareFaultDetected ? "#991b1b" : "#15803d",
+                padding: "0.3rem 0.75rem",
+                borderRadius: "20px",
+                fontWeight: 800,
+                fontSize: "0.78rem",
+              }}
+            >
+              {copilotResult.hardwareFaultDetected ? "🚨 PANNE MATÉRIELLE GAB ATTESTÉE" : "✅ SÉQUENCE CAPTEURS NOMINALE"}
+            </span>
+          </div>
+
+          <div style={{ background: "#ffffff", padding: "1rem 1.25rem", borderRadius: "10px", border: "1px solid #bae6fd", marginBottom: "1rem" }}>
+            <span style={{ fontSize: "0.78rem", fontWeight: 800, color: "#0369a1", display: "block", marginBottom: "0.3rem" }}>
+              AVIS MÉTIER OPPOSABLE POUR SERVICE RÉCLAMATIONS :
+            </span>
+            <p style={{ fontSize: "0.9rem", fontWeight: 700, color: "#0f172a", lineHeight: 1.5, margin: 0 }}>
+              {copilotResult.claimVerdictExplanation}
+            </p>
+          </div>
+
+          {copilotResult.forensicChronology && copilotResult.forensicChronology.length > 0 && (
+            <div style={{ background: "#ffffff", padding: "1rem 1.25rem", borderRadius: "10px", border: "1px solid #bae6fd", marginBottom: "1rem" }}>
+              <span style={{ fontSize: "0.78rem", fontWeight: 800, color: "#0369a1", display: "block", marginBottom: "0.4rem" }}>
+                RECONSTRUCTION CHRONOLOGIQUE DES ÉVÉNEMENTS GAB :
+              </span>
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
+                {copilotResult.forensicChronology.map((step, i) => (
+                  <div key={i} style={{ fontSize: "0.85rem", color: "#334155", fontWeight: 600 }}>
+                    {step}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div style={{ background: "#ffffff", padding: "1rem 1.25rem", borderRadius: "10px", border: "1px solid #bae6fd", marginBottom: "1rem" }}>
+            <span style={{ fontSize: "0.78rem", fontWeight: 800, color: "#0369a1", display: "block", marginBottom: "0.3rem" }}>
+              SYNTHÈSE ET CONSEIL DE L'AGENT COPILOT :
+            </span>
+            <p style={{ fontSize: "0.88rem", color: "#1e293b", fontWeight: 600, lineHeight: 1.5, margin: 0 }}>
+              {copilotResult.copilotExplanation}
+            </p>
+          </div>
+
+          {copilotResult.recommendedActions && copilotResult.recommendedActions.length > 0 && (
+            <div>
+              <span style={{ fontSize: "0.78rem", fontWeight: 800, color: "#0369a1", display: "block", marginBottom: "0.4rem" }}>
+                CONTRÔLES COMPLÉMENTAIRES RECOMMENDED EN BACK-OFFICE :
+              </span>
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem" }}>
+                {copilotResult.recommendedActions.map((action, i) => (
+                  <div key={i} style={{ background: "#ffffff", padding: "0.55rem 0.85rem", borderRadius: "6px", fontSize: "0.83rem", fontWeight: 600, color: "#0f172a", border: "1px solid #cbd5e1" }}>
+                    🛠️ {action}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Métriques clés extraites du log */}
       <div className="grid-metrics">
