@@ -67,6 +67,15 @@ interface DiagnosticResultData {
     isVerified: boolean;
     timestamp?: string;
   }>;
+  evidenceLedger?: Array<{
+    id: string;
+    information: string;
+    source: string;
+    type: string;
+    status: string;
+    rationale: string;
+  }>;
+  contradictionsDetected?: string[];
   rcaProposal: {
     summary: string;
     status: "PROPOSED_UNCONFIRMED" | "CONFIRMED_BY_OPERATOR" | "REJECTED_BY_OPERATOR";
@@ -701,11 +710,75 @@ export function DiagnosticWizard() {
                         <b>Point de rupture :</b> {inc.breakpoint}
                       </p>
                       <p style={{ fontSize: "0.8rem", color: "#166534", margin: 0 }}>
-                        <b>Résolution historique :</b> {inc.resolution}
+                        <b>Référence Historique KB (Non injectée comme preuve) :</b> {inc.resolution}
                       </p>
                     </div>
                   ))}
                 </div>
+              </div>
+
+              {/* Card 6 : Evidence Ledger (Registre des Preuves & Filtre de Contradictions) */}
+              <div style={{ background: "#ffffff", padding: "1.75rem", borderRadius: "14px", border: "1px solid #e4e4e7" }}>
+                <h3 style={{ fontSize: "1.1rem", fontWeight: 800, color: "#111827", marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                  <span>🔬</span> Evidence Ledger (Registre des Preuves & Grounding Rules)
+                </h3>
+
+                {copilotResult.contradictionsDetected && copilotResult.contradictionsDetected.length > 0 && (
+                  <div style={{ background: "#fff1f2", borderLeft: "4px solid #e60028", padding: "1rem 1.25rem", borderRadius: "0 8px 8px 0", marginBottom: "1.25rem" }}>
+                    <span style={{ fontSize: "0.8rem", fontWeight: 800, color: "#9f1239", display: "block", marginBottom: "0.3rem" }}>
+                      🛡️ DÉTECTEUR DE CONTRADICTIONS (FILTRE ANTI-HALLUCINATION) :
+                    </span>
+                    {copilotResult.contradictionsDetected.map((c, i) => (
+                      <p key={i} style={{ fontSize: "0.85rem", color: "#881337", margin: "0.2rem 0", fontWeight: 600 }}>
+                        {c}
+                      </p>
+                    ))}
+                  </div>
+                )}
+
+                {copilotResult.evidenceLedger && copilotResult.evidenceLedger.length > 0 && (
+                  <div style={{ overflowX: "auto" }}>
+                    <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.85rem" }}>
+                      <thead>
+                        <tr style={{ background: "#f8fafc", textAlign: "left", color: "#64748b", borderBottom: "1px solid #e2e8f0" }}>
+                          <th style={{ padding: "0.6rem 0.8rem" }}>ID</th>
+                          <th style={{ padding: "0.6rem 0.8rem" }}>Énoncé / Fait</th>
+                          <th style={{ padding: "0.6rem 0.8rem" }}>Source</th>
+                          <th style={{ padding: "0.6rem 0.8rem" }}>Type & Statut</th>
+                          <th style={{ padding: "0.6rem 0.8rem" }}>Justification Ancrage</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {copilotResult.evidenceLedger.map((item) => {
+                          const isRejected = item.type === "REJECTED_CONTRADICTION";
+                          const isFact = item.type === "VERIFIED_EVIDENCE";
+                          return (
+                            <tr key={item.id} style={{ borderBottom: "1px solid #f1f5f9", background: isRejected ? "#fef2f2" : "#ffffff" }}>
+                              <td style={{ padding: "0.6rem 0.8rem", fontFamily: "monospace", fontWeight: 700, color: "#0f172a" }}>{item.id}</td>
+                              <td style={{ padding: "0.6rem 0.8rem", fontWeight: 600, color: isRejected ? "#991b1b" : "#1e293b" }}>{item.information}</td>
+                              <td style={{ padding: "0.6rem 0.8rem", color: "#64748b" }}>{item.source}</td>
+                              <td style={{ padding: "0.6rem 0.8rem" }}>
+                                <span
+                                  style={{
+                                    fontSize: "0.75rem",
+                                    fontWeight: 700,
+                                    padding: "0.2rem 0.5rem",
+                                    borderRadius: "12px",
+                                    background: isFact ? "#dcfce7" : isRejected ? "#fee2e2" : "#f1f5f9",
+                                    color: isFact ? "#15803d" : isRejected ? "#991b1b" : "#475569",
+                                  }}
+                                >
+                                  {isFact ? "✅ Preuve Vérifiée" : isRejected ? "❌ Contradiction Rejetée" : "⚪ Référence KB"}
+                                </span>
+                              </td>
+                              <td style={{ padding: "0.6rem 0.8rem", color: "#334155" }}>{item.rationale}</td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </div>
 
               {/* Card 6 : Cause Racine (RCA Proposée) & Gate de Validation Humaine */}
