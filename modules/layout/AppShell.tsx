@@ -118,6 +118,9 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
       roleRequired: "ROLE_EXPLOITATION",
       items: [
         { href: "/cbs", label: "Tableau de bord CBS", icon: "⊞" },
+        { href: "/cbs/copilot", label: "4GL Development Copilot", icon: "🤖" },
+        { href: "/cbs/memo-conception", label: "Antisèche 4GL & .PER", icon: "🧠" },
+        { href: "/cbs/per-studio", label: "Studio Créateur .per", icon: "✨" },
         { href: "/cbs/domains", label: "Domaines Métier", icon: "📑" },
         { href: "/cbs/schema", label: "Dictionnaire de Données", icon: "🔍" },
       ],
@@ -128,11 +131,9 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
       icon: "🎓",
       roleRequired: "ROLE_REFERENTIELS",
       items: [
-        { href: "/cbs/copilot", label: "4GL Development Copilot", icon: "🤖" },
-        { href: "/cbs/memo-conception", label: "Antisèche 4GL & .PER", icon: "🧠" },
-        { href: "/cbs/training-4gl", label: "Développement 4GL", icon: "👨‍💻" },
+
+        { href: "/cbs/training-4gl", label: "Cursus Développement 4GL", icon: "👨‍💻" },
         { href: "/cbs/per-screens", label: "Écrans .per", icon: "🖥️" },
-        { href: "/cbs/per-studio", label: "Studio Créateur .per", icon: "✨" },
         { href: "/cbs/academy", label: "CBS Academy", icon: "🎯" },
 
       ],
