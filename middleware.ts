@@ -18,6 +18,7 @@ export function middleware(request: NextRequest) {
   // 2. Définir les routes publiques du Portfolio (accessibles à tous sans connexion)
   const isPublicRoute =
     pathname === "/" ||
+    pathname.startsWith("/portfolio") ||
     pathname.startsWith("/a-propos") ||
     pathname.startsWith("/projets") ||
     pathname.startsWith("/blog") ||
