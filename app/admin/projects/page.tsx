@@ -446,7 +446,7 @@ export default function AdminProjectsPage() {
               {/* Actions */}
               <div className="space-y-2 pt-2">
                 <div className="grid grid-cols-2 gap-2">
-                  <Link href={`/portfolio/projects/${project.id}`} target="_blank" className="w-full">
+                  <Link href={`/projets/${project.id}`} target="_blank" className="w-full">
                     <button className="w-full py-2 px-3 border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white rounded-xl text-xs font-medium transition-colors flex items-center justify-center">
                       <Eye className="w-3.5 h-3.5 mr-1" />
                       Détails

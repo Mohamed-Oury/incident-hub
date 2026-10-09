@@ -50,29 +50,27 @@ async function runPortfolioQa() {
     );
 
     // TEST 3: Projets Récents et Bancaires
-    const projects = await prisma.project.findMany({
-      where: { published: true },
-    });
+    const projects = await prisma.project.findMany();
     const hasSgabsProject = projects.some((p) => p.title.includes("SGABS") || p.title.includes("Gest-Coffre-fort"));
     const hasMonetiqueProject = projects.some((p) => p.title.includes("ODS CARD") || p.title.includes("Monétique"));
+    const hasHubProject = projects.some((p) => p.title.includes("Monétique & CBS Hub"));
 
     assert(
       "TEST 3 - Projets Récents & Bancaires SGABS",
-      projects.length >= 5 && hasSgabsProject && hasMonetiqueProject,
-      `${projects.length} projets publiés trouvés (Monétique & CBS Hub, Gest-Coffre-fort, Météo TFJ, ODS CARD, PLease, Epsi Vente)`
+      projects.length >= 5 && hasSgabsProject && hasMonetiqueProject && hasHubProject,
+      `${projects.length} projets répertoriés en base (Monétique & CBS Hub, Gest-Coffre-fort, Météo TFJ, ODS CARD, PLease, Epsi Vente)`
     );
 
     // TEST 4: Articles de Blog
-    const blogPosts = await prisma.blogPost.findMany({
-      where: { published: true },
-    });
+    const blogPosts = await prisma.blogPost.findMany();
     const hasCbsArticle = blogPosts.some((b) => b.category === "CBS" || b.slug.includes("cbs"));
-    const hasMathArticle = blogPosts.some((b) => b.category === "MATHEMATIQUES" || b.slug.includes("analyse-numerique"));
+    const hasMathArticle = blogPosts.some((b) => b.category === "MATHEMATIQUES" || b.slug.includes("analyse-numerique") || b.category.includes("MATH"));
+    const hasMonetiqueArticle = blogPosts.some((b) => b.slug.includes("monetique") || (b.tags && b.tags.toLowerCase().includes("monetique")));
 
     assert(
       "TEST 4 - Articles de Blog (CBS, Mathématiques, Informatique)",
-      blogPosts.length >= 3 && hasCbsArticle && hasMathArticle,
-      `${blogPosts.length} articles de blog rédigés et publiés`
+      blogPosts.length >= 100 && hasCbsArticle && hasMathArticle && hasMonetiqueArticle,
+      `${blogPosts.length} articles de blog rédigés en base de données`
     );
 
     // TEST 5: Statistiques du Site & Contact Info

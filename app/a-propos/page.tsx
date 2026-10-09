@@ -29,7 +29,7 @@ export default async function AboutPage() {
               {about?.title || "Ingénieur Logiciel & Mathématicien"}
             </h1>
             <p className="text-lg text-gray-600 mt-4 leading-relaxed font-medium">
-              Spécialisé en Mathématiques Appliquées, CBS Amplitude &amp; Flex, Informix 4GL et Monétique Payway &amp; Powercard.
+              Spécialisé en Mathématiques Appliquées, CBS Amplitude &amp; FlexCube, Informix 4GL et Monétique Payway &amp; Powercard.
             </p>
           </div>
 

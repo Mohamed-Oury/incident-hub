@@ -1,5 +1,9 @@
 export type UserRole =
-  | "ADMIN"           // Accès total
+  | "ADMIN"             // Accès total
+  | "OPERATOR"          // Opérateur système
+  | "EXPERT"            // Expert Monétique & CBS
+  | "VALIDATOR"         // Validateur d'incidents
+  | "VIEWER"            // Lecteur / Observateur
   | "ROLE_EXPLOITATION" // Vue d'ensemble (/), Base de connaissance (/knowledge), Diagnostic Assistant (/diagnostic)
   | "ROLE_DECODEURS"    // Parseur Trame ISO (/parser), Décodeur Bitmap (/bitmap), Décodeur EMV/DE55 (/emv), Journal GAB (/atm-ej)
   | "ROLE_REFERENTIELS" // Référentiel MTI (/mti), Référentiel DE39 (/de39), Piste d'audit (/audit)
@@ -15,6 +19,10 @@ export interface SessionUser {
 // 1ère page par défaut pour chaque rôle
 export const ROLE_DEFAULT_PAGES: Record<UserRole, string> = {
   ADMIN: "/",
+  OPERATOR: "/",
+  EXPERT: "/cbs",
+  VALIDATOR: "/incidents",
+  VIEWER: "/",
   ROLE_EXPLOITATION: "/",
   ROLE_DECODEURS: "/parser",
   ROLE_REFERENTIELS: "/mti",
@@ -24,6 +32,10 @@ export const ROLE_DEFAULT_PAGES: Record<UserRole, string> = {
 // Liste des routes autorisées pour chaque rôle
 export const ROLE_ALLOWED_ROUTES: Record<UserRole, string[]> = {
   ADMIN: ["*"], // Tout est autorisé
+  OPERATOR: ["/", "/knowledge", "/diagnostic", "/incidents", "/cbs", "/parser", "/bitmap", "/emv", "/atm-ej"],
+  EXPERT: ["*"],
+  VALIDATOR: ["/", "/knowledge", "/diagnostic", "/incidents", "/audit"],
+  VIEWER: ["/", "/knowledge", "/mti", "/de39"],
   ROLE_EXPLOITATION: ["/", "/knowledge", "/diagnostic", "/incidents", "/cbs"],
   ROLE_DECODEURS: ["/parser", "/bitmap", "/emv", "/atm-ej", "/cbs"],
   ROLE_REFERENTIELS: ["/mti", "/de39", "/audit", "/cbs"],
@@ -32,6 +44,10 @@ export const ROLE_ALLOWED_ROUTES: Record<UserRole, string[]> = {
 
 export const ROLE_LABELS: Record<UserRole, string> = {
   ADMIN: "Administrateur Global (Accès Total)",
+  OPERATOR: "Opérateur Système",
+  EXPERT: "Expert Monétique & CBS",
+  VALIDATOR: "Validateur d'Incidents",
+  VIEWER: "Lecteur / Observateur",
   ROLE_EXPLOITATION: "Pôle Exploitation & Diagnostic",
   ROLE_DECODEURS: "Pôle Analyse & Décodeurs (ISO/EMV/EJ)",
   ROLE_REFERENTIELS: "Pôle Normes & Référentiels (MTI/DE39)",

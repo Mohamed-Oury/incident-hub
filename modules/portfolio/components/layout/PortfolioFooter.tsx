@@ -83,7 +83,7 @@ export function PortfolioFooter() {
                 href="/hub"
                 className="inline-flex items-center px-4 py-2.5 bg-gradient-to-r from-[#7d1538] to-[#a01e4a] text-white rounded-full font-bold text-xs md:text-sm shadow-md hover:shadow-lg transition-all duration-300 text-decoration-none mb-3"
               >
-                <span>💳 Accéder à l&apos;App Monétique &amp; CBS</span>
+                <span>💳 Monétique &amp; CBS</span>
               </Link>
             </div>
 
