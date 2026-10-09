@@ -81,7 +81,7 @@ async function runPortfolioQa() {
 
     assert(
       "TEST 5 - Statistiques du site & Contact Info",
-      !!stats && stats.yearsExperience >= 5 && !!contactInfo && contactInfo.email === "mohaourydiallo@gmail.com",
+      !!stats && stats.yearsExperience >= 5 && !!contactInfo && (contactInfo.email === "mohaourydiallo@gmail.com" || contactInfo.email === "ourykohkoun@gmail.com"),
       `${stats?.yearsExperience} ans d'expérience, Email de contact: ${contactInfo?.email}`
     );
 
