@@ -121,6 +121,102 @@ Je suis un **ingénieur logiciel** passionné avec un **Master en Mathématiques
   // 3. Données des Projets Réels
   const projects = [
     {
+      id: 'monetique-cbs-hub',
+      title: 'Monétique & CBS Hub',
+      excerpt: 'Plateforme tout-en-un d\'ingénierie bancaire combinant simulation transactionnelle ISO 8583 / EMV, diagnostic Core Banking Amplitude & FlexCube, Copilot 4GL intelligent et base de connaissances de 1 000 incidents résolus.',
+      description: `# Monétique & CBS Hub : Plateforme d'Ingénierie Bancaire & Simulation
+
+**Monétique & CBS Hub** est un écosystème applicatif bancaire de pointe conçu pour unifier l'exploitation opérationnelle des systèmes de paiement électronique (Monétique) et des architectures de Core Banking (**Sopra Banking Amplitude** & **Oracle FlexCube**).
+
+Ce système réunit en un seul endroit un ensemble complet d'outils d'analyse transactionnelle temps réel, un assistant Copilot de développement 4GL, un studio de conception d'interfaces Genero/Form-4GL, un moteur de diagnostic de blocages d'arrêté comptable EOD, ainsi qu'une base de capitalisation de **1 000 incidents de production résolus**.
+
+---
+
+## 🏛️ Architecture Globale & Cockpit Unifié
+
+![Cockpit Global Monétique & CBS Hub](/images/projects/hub/hub-hero.svg)
+
+La plateforme est organisée en 6 modules métiers hautement spécialisés :
+
+---
+
+## 💳 Module 1 : Monétique, Simulation ISO 8583 & Cryptographie EMV
+
+![Module Monétique & Cryptographie EMV](/images/projects/hub/module-monetique.svg)
+
+Le module monétique fournit un environnement complet de décodage et de validation des flux d'autorisation et de compensation :
+- **Parseur de Trames ISO 8583 (1987 / 1993)** : Décomposition des messages MTI 0100, 0200, 0210, 0420 avec analyse champ par champ (DE3, DE4, DE11, DE22, DE39, DE55).
+- **Décodeur de Bitmaps Primaire & Secondaire** : Inspection bit-à-bit pour identifier instantanément les champs obligatoires et optionnels activés.
+- **Moteur Cryptographique EMV & HSM** : Décodage des TLV du champ DE55 (Tag 9F26, 9F36, TVR Tag 95), vérification de l'ARQC (Application Request Cryptogram) et génération de l'ARPC avec clés dérivées MKac/Session Keys sous variantes TR-31.
+- **Analyseur de Journal Électronique GAB (ATM EJ)** : Diagnostic des incidents de distribution d'espèces (Stacker Jam, Shutter Failure) pour motiver les arbitrages et récrédits clients immédiats.
+- **Cursus de Formation & 150 Examens de Qualification** : 5 grades d'expertise monétique avec certifications interactives.
+
+---
+
+## 🏦 Module 2 : Core Banking System (CBS Amplitude & FlexCube)
+
+![Module Core Banking CBS](/images/projects/hub/module-cbs.svg)
+
+Ce module centralise la modélisation et l'exploitation des systèmes comptables et transactionnels centraux :
+- **Dictionnaire de Schéma de 220 Tables Amplitude** : Cartographie relationnelle des tables centrales (\`BKCPT\` Comptes, \`BKCLI\` Clients, \`BKTRA\` Transactions, \`BKCOM\` Paramétrage agios, \`BKEVE\` Événements).
+- **8 Domaines Métier Bancaires** : Virements & Échanges interbancaires (RTGS / ACH), Moyens de paiement, Crédits & Engagements, Épargne & Dépôts, Devises et Trésorerie.
+- **Réconciliation Monétique ↔ CBS** : Contrôle du solde disponible en temps réel, réservation de provision et schémas d'écritures de clearing / règlement.
+- **CBS Academy** : 240 questions interactives d'examen pour les ingénieurs et exploitants bancaires.
+
+---
+
+## 🤖 Module 3 : Copilot de Développement Informix 4GL & Genero BDL
+
+![Module 4GL Dev Copilot](/images/projects/hub/module-copilot.svg)
+
+Un assistant de développement taillé sur mesure pour la maintenance et la création de programmes Core Banking 4GL :
+- **Revue de Code 4GL Intelligente** : Détection automatique des antipatterns de transaction, des verrous exclusifs non libérés et des failles d'intégrité référentielle.
+- **Générateur de Code & Plans de Rollback** : Production de fonctions 4GL sécurisées avec transactions ACID (\`BEGIN WORK\`, \`COMMIT WORK\`, \`ROLLBACK WORK\`).
+- **Diagnostic des Deadlocks & Erreurs ISAM** : Résolution des erreurs d'accès concurrentiel (ISAM -111, Deadlock -143) et génération automatique de tests unitaires.
+- **Mémento Interactif 4GL** : Fiches de synthèse sur 219 mots-clés et instructions Informix 4GL / Genero.
+
+---
+
+## 🖥️ Module 4 : Studio Concepteur de Masques d'Écran .per
+
+![Studio Concepteur de Masques .per](/images/projects/hub/module-per-studio.svg)
+
+Un outil visuel innovant permettant aux équipes de créer et prévisualiser des écrans bancaires sans compilation lourde :
+- **Conception IHM Moderne & Form-4GL** : Édition des sections \`SCHEMA\`, \`LAYOUT\`, \`GRID\`, \`VBOX\`, \`HBOX\`, \`FOLDER\`, \`TABLE\`.
+- **Alignement Automatique des Champs** : Positionnement au caractère près des champs de saisie, libellés et boutons de validation (F12, Esc).
+- **Export Prêt à Compiler** : Génération instantanée du fichier \`.per\` source et du squelette de programme 4GL associé.
+
+---
+
+## ⏱️ Module 5 : Diagnostic de Blocage d'Arrêté EOD Batch
+
+![Module EOD Batch Diagnostic](/images/projects/hub/module-eod-batch.svg)
+
+La chaîne d'arrêté quotidien (End Of Day - EOD) est le moment le plus critique de l'exploitation bancaire. Ce module apporte :
+- **Séquencement Visuel des 10 Étapes EOD** : De la sauvegarde à froid SGBD jusqu'à l'ouverture de journée J+1 (BOD).
+- **Diagnostic en Temps Réel des Blocages** : Identification des étapes en échec (calcul des agios, compensation carte, purge des journaux).
+- **Playbooks de Reprise Immédiate** : Procédures validées de redémarrage après crash et déverrouillage de tables sans corruption de données.
+
+---
+
+## 📚 Module 6 : Base de Connaissances de 1 000 Incidents Résolus
+
+![Base de Connaissances 1000 Incidents](/images/projects/hub/module-knowledge-base.svg)
+
+Une mine d'or opérationnelle capitalisant des années d'expérience sur le terrain :
+- **1 000 Fiches Incidents Documentées** : Chaque cas intègre les symptômes observés, les logs techniques réels, les hypothèses testées et la cause racine prouvée (RCA).
+- **Moteur de Recherche par Code Erreur** : Recherche instantanée par code DE39 (00, 05, 51, 91, 96), code MTI ou code erreur SGBD.
+- **Playbooks d'Exploitation Prêts à l'Emploi** : Fiches d'intervention pas-à-pas pour les équipes d'astreinte et de support niveau 2/3.`,
+      technologies: JSON.stringify(['Next.js 15', 'TypeScript', 'Tailwind CSS', 'Prisma', 'Informix 4GL', 'Genero BDL', 'ISO 8583', 'EMV / HSM', 'AmplitudeUp', 'Oracle FlexCube']),
+      category: 'CBS' as ProjectCategory,
+      imageUrl: '/images/projects/hub/hub-hero.svg',
+      featuredImage: '/images/projects/hub/hub-hero.svg',
+      demoUrl: '/hub',
+      githubUrl: 'https://github.com/Mohamed-Oury/incident-hub',
+      published: true,
+      featured: true,
+    },
+    {
       id: 'gest-coffre-fort',
       title: 'Gest-Coffre-fort',
       excerpt: 'Application bancaire de gestion des coffres-forts avec architecture hexagonale.',

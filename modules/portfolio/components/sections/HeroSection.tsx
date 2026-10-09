@@ -46,12 +46,6 @@ export function HeroSection() {
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </button>
               </Link>
-
-              <Link href="/hub" className="text-decoration-none">
-                <button className="border-2 border-[#7d1538] text-[#7d1538] hover:bg-[#7d1538] hover:text-white px-8 py-3.5 rounded-full font-bold text-base transition-all duration-300 w-full sm:w-auto inline-flex items-center justify-center bg-transparent cursor-pointer">
-                  💳 Explorer la plateforme Hub
-                </button>
-              </Link>
             </div>
           </div>
 

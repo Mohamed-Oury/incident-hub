@@ -59,7 +59,7 @@ async function runPortfolioQa() {
     assert(
       "TEST 3 - Projets Récents & Bancaires SGABS",
       projects.length >= 5 && hasSgabsProject && hasMonetiqueProject,
-      `${projects.length} projets publiés trouvés (Gest-Coffre-fort, Météo TFJ, ODS CARD, PLease, Epsi Vente)`
+      `${projects.length} projets publiés trouvés (Monétique & CBS Hub, Gest-Coffre-fort, Météo TFJ, ODS CARD, PLease, Epsi Vente)`
     );
 
     // TEST 4: Articles de Blog

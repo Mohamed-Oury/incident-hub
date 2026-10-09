@@ -59,7 +59,7 @@ export function PortfolioHeader() {
               className="inline-flex items-center gap-2 bg-gradient-to-r from-[#7d1538] to-[#a01e4a] text-white px-4 py-2 rounded-full hover:shadow-lg transition-all duration-300 font-bold text-xs lg:text-sm text-decoration-none shadow-md"
             >
               <span>💳</span>
-              <span>Plateforme Monétique &amp; CBS</span>
+              <span>Monétique &amp; CBS</span>
               <span className="bg-white text-[#7d1538] text-[10px] px-2 py-0.5 rounded-full font-extrabold">
                 HUB
               </span>

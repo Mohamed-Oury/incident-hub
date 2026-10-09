@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="800" height="450">
+  <defs>
+    <linearGradient id="copilotBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a101f" />
+      <stop offset="100%" stop-color="#1e0c19" />
+    </linearGradient>
+  </defs>
+
+  <rect width="800" height="450" rx="16" fill="url(#copilotBg)" />
+  <rect x="2" y="2" width="796" height="446" rx="14" fill="none" stroke="#334155" stroke-width="2" />
+
+  <!-- Badge Top -->
+  <rect x="40" y="35" width="310" height="32" rx="16" fill="#7d1538" fill-opacity="0.3" stroke="#f43f5e" stroke-width="1.5" />
+  <text x="60" y="56" font-family="-apple-system, sans-serif" font-size="12" font-weight="800" fill="#fecdd3" letter-spacing="1">MODULE 3 : 4GL COPILOT INTELLIGENT</text>
+
+  <!-- Title -->
+  <text x="40" y="105" font-family="-apple-system, sans-serif" font-size="28" font-weight="900" fill="#ffffff">
+    Informix 4GL &amp; Genero BDL Dev Copilot
+  </text>
+  <text x="40" y="135" font-family="-apple-system, sans-serif" font-size="15" fill="#94a3b8">
+    Revue de code automatisée, détection d'antipatterns SQL, génération de scripts 4GL et plan de tests unitaires.
+  </text>
+
+  <!-- Visual: Code Editor Mockup + AI Suggestions -->
+  <g transform="translate(40, 165)">
+    <!-- Terminal Editor -->
+    <rect width="450" height="175" rx="12" fill="#0f172a" stroke="#334155" stroke-width="1.5" />
+    <rect width="450" height="30" rx="12" fill="#1e293b" />
+    <text x="15" y="20" font-family="monospace" font-size="11" fill="#94a3b8">cbs_virement_bkcp.4gl</text>
+    <text x="360" y="20" font-family="monospace" font-size="11" fill="#10b981">GENERO BDL</text>
+
+    <text x="15" y="52" font-family="monospace" font-size="11" fill="#f43f5e">FUNCTION <tspan fill="#ffffff">process_transfer_funds</tspan>(p_cpt_src, p_cpt_dst, p_mnt)</text>
+    <text x="15" y="70" font-family="monospace" font-size="11" fill="#94a3b8">    DEFINE p_cpt_src, p_cpt_dst CHAR(11), p_mnt DECIMAL(16,2)</text>
+    <text x="15" y="88" font-family="monospace" font-size="11" fill="#10b981">    BEGIN WORK</text>
+    <text x="15" y="106" font-family="monospace" font-size="11" fill="#cbd5e1">    UPDATE bkcpt SET mnt_disp = mnt_disp - p_mnt WHERE cpt = p_cpt_src</text>
+    <text x="15" y="124" font-family="monospace" font-size="11" fill="#cbd5e1">    UPDATE bkcpt SET mnt_disp = mnt_disp + p_mnt WHERE cpt = p_cpt_dst</text>
+    <text x="15" y="142" font-family="monospace" font-size="11" fill="#10b981">    COMMIT WORK</text>
+    <text x="15" y="160" font-family="monospace" font-size="11" fill="#f43f5e">END FUNCTION</text>
+  </g>
+
+  <!-- AI Analysis Card -->
+  <g transform="translate(510, 165)">
+    <rect width="250" height="175" rx="12" fill="#1e293b" stroke="#7d1538" stroke-width="2" />
+    <text x="15" y="30" font-family="-apple-system, sans-serif" font-size="14" font-weight="700" fill="#f43f5e">ANALYSE COPILOT</text>
+    <text x="15" y="60" font-family="-apple-system, sans-serif" font-size="12" fill="#10b981">✓ Transaction ACID sécurisée</text>
+    <text x="15" y="82" font-family="-apple-system, sans-serif" font-size="12" fill="#10b981">✓ Index optimisé sur BKCPT</text>
+    <text x="15" y="104" font-family="-apple-system, sans-serif" font-size="12" fill="#f59e0b">⚠ Recommandation :</text>
+    <text x="25" y="124" font-family="-apple-system, sans-serif" font-size="11" fill="#cbd5e1">Ajouter WHENEVER ERROR</text>
+    <text x="25" y="142" font-family="-apple-system, sans-serif" font-size="11" fill="#cbd5e1">ROLLBACK WORK immédiat</text>
+    <text x="15" y="162" font-family="monospace" font-size="10" fill="#38bdf8">Tests unitaires auto-générés: 4</text>
+  </g>
+
+  <!-- Bottom Bar -->
+  <rect x="40" y="355" width="720" height="55" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1" />
+  <text x="60" y="388" font-family="-apple-system, sans-serif" font-size="13" font-weight="600" fill="#e2e8f0">
+    Atouts techniques :
+  </text>
+  <text x="195" y="388" font-family="-apple-system, sans-serif" font-size="13" fill="#cbd5e1">
+    • Génération de plans de rollback • Diagnostic des Deadlocks • Mémento de 219 mots-clés 4GL
+  </text>
+</svg>

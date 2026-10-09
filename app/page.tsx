@@ -12,7 +12,7 @@ export const revalidate = 60; // SSR revalidation
 
 export default async function PortfolioHomePage() {
   const [projectsRaw, blogPostsRaw, stats] = await Promise.all([
-    prisma.project.findMany({ where: { published: true }, orderBy: { createdAt: "desc" } }),
+    prisma.project.findMany({ where: { published: true }, orderBy: [{ featured: "desc" }, { createdAt: "desc" }] }),
     prisma.blogPost.findMany({ where: { published: true }, orderBy: { createdAt: "desc" }, include: { author: true } }),
     prisma.siteStats.findFirst({ where: { id: "main-stats" } }),
   ]);

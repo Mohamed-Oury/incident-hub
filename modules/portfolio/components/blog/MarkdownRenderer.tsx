@@ -125,11 +125,32 @@ function CodeBlock({ code, lang }: { code: string; lang: string }) {
  * Parse inline Markdown (bold, italic, code, math, links)
  */
 function renderInlineMarkdown(text: string): React.ReactNode[] {
-  const regex = /(\$[^$]+\$|`[^`]+`|\*\*[^*]+\*\*|\*[^*]+\*|\[[^\]]+\]\([^)]+\))/g;
+  const regex = /(!\[[^\]]*\]\([^)]+\)|\$[^$]+\$|`[^`]+`|\*\*[^*]+\*\*|\*[^*]+\*|\[[^\]]+\]\([^)]+\))/g;
   const parts = text.split(regex);
 
   return parts.map((part, idx) => {
     if (!part) return null;
+
+    // Image
+    const imgMatch = part.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
+    if (imgMatch) {
+      const [, altText, imgSrc] = imgMatch;
+      return (
+        <span key={idx} className="block my-6 rounded-2xl overflow-hidden border border-gray-200/80 shadow-md bg-slate-950 group">
+          <img
+            src={imgSrc}
+            alt={altText}
+            className="w-full h-auto max-h-[480px] object-contain mx-auto transition-transform duration-500 group-hover:scale-[1.01]"
+            loading="lazy"
+          />
+          {altText && (
+            <span className="block py-2.5 px-4 bg-slate-900 text-center border-t border-slate-800 text-xs text-rose-200/90 font-medium">
+              📷 {altText}
+            </span>
+          )}
+        </span>
+      );
+    }
 
     // Math inline
     if (part.startsWith("$") && part.endsWith("$") && part.length > 2) {
@@ -316,6 +337,30 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
       continue;
     } else if (inTable) {
       flushTable(`end-table-${i}`);
+    }
+
+    // 2.5 Image block
+    const imgMatch = trimmed.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
+    if (imgMatch) {
+      flushList(`before-img-${i}`);
+      flushTable(`before-img-${i}`);
+      const [, altText, imgSrc] = imgMatch;
+      blocks.push(
+        <div key={`img-${i}`} className="my-8 rounded-2xl overflow-hidden border border-gray-200/80 shadow-lg bg-slate-950 group">
+          <img
+            src={imgSrc}
+            alt={altText}
+            className="w-full h-auto max-h-[500px] object-contain mx-auto transition-transform duration-500 group-hover:scale-[1.01]"
+            loading="lazy"
+          />
+          {altText && (
+            <div className="py-2.5 px-4 bg-slate-900 text-center border-t border-slate-800 text-xs text-rose-200/90 font-medium">
+              📷 {altText}
+            </div>
+          )}
+        </div>
+      );
+      continue;
     }
 
     // 3. Horizontal Rule

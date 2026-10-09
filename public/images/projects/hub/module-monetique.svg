@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="800" height="450">
+  <defs>
+    <linearGradient id="monoBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0c1322" />
+      <stop offset="100%" stop-color="#1f1124" />
+    </linearGradient>
+    <linearGradient id="wineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#7d1538" />
+      <stop offset="100%" stop-color="#b91c1c" />
+    </linearGradient>
+  </defs>
+
+  <rect width="800" height="450" rx="16" fill="url(#monoBg)" />
+  <rect x="2" y="2" width="796" height="446" rx="14" fill="none" stroke="#334155" stroke-width="2" />
+
+  <!-- Badge Top -->
+  <rect x="40" y="35" width="280" height="32" rx="16" fill="#7d1538" fill-opacity="0.3" stroke="#f43f5e" stroke-width="1.5" />
+  <text x="60" y="56" font-family="-apple-system, sans-serif" font-size="12" font-weight="800" fill="#fecdd3" letter-spacing="1">MODULE 1 : MONÉTIQUE &amp; ISO 8583</text>
+
+  <!-- Title -->
+  <text x="40" y="105" font-family="-apple-system, sans-serif" font-size="28" font-weight="900" fill="#ffffff">
+    Simulation Transactionnelle &amp; EMV Cryptography
+  </text>
+  <text x="40" y="135" font-family="-apple-system, sans-serif" font-size="15" fill="#94a3b8">
+    Parseur ISO 8583 (MTI 0200), Bitmap bit-à-bit, DE55 EMV, Calculs ARQC/ARPC et analyseur GAB.
+  </text>
+
+  <!-- Graphic Workflow -->
+  <!-- Box 1: Terminal TPE -->
+  <g transform="translate(40, 175)">
+    <rect width="210" height="150" rx="12" fill="#1e293b" stroke="#475569" stroke-width="1.5" />
+    <text x="20" y="35" font-family="sans-serif" font-size="22">💳</text>
+    <text x="55" y="32" font-family="-apple-system, sans-serif" font-size="14" font-weight="700" fill="#ffffff">TPE / GAB Client</text>
+    <text x="20" y="65" font-family="monospace" font-size="11" fill="#f43f5e">MTI: 0200 Auth Request</text>
+    <text x="20" y="85" font-family="monospace" font-size="10" fill="#94a3b8">DE3: 000000 (Purchase)</text>
+    <text x="20" y="103" font-family="monospace" font-size="10" fill="#94a3b8">DE4: 000000050000 XOF</text>
+    <text x="20" y="121" font-family="monospace" font-size="10" fill="#94a3b8">DE55: TLV 9F26, 9F36, TVR</text>
+  </g>
+
+  <!-- Arrow 1 -->
+  <path d="M 260 250 L 295 250" stroke="#f43f5e" stroke-width="2.5" marker-end="url(#arrow)" />
+  <polygon points="295,246 303,250 295,254" fill="#f43f5e" />
+
+  <!-- Box 2: Switch Payway / Powercard -->
+  <g transform="translate(310, 175)">
+    <rect width="210" height="150" rx="12" fill="#1e293b" stroke="#7d1538" stroke-width="2" />
+    <text x="20" y="35" font-family="sans-serif" font-size="22">⚡</text>
+    <text x="55" y="32" font-family="-apple-system, sans-serif" font-size="14" font-weight="700" fill="#ffffff">Switch Monétique</text>
+    <text x="20" y="65" font-family="monospace" font-size="11" fill="#38bdf8">Bitmap: 7238200108E18000</text>
+    <text x="20" y="85" font-family="monospace" font-size="10" fill="#94a3b8">Contrôle Plafonds &amp; PAN</text>
+    <text x="20" y="103" font-family="monospace" font-size="10" fill="#10b981">Routage vers HSM Thales</text>
+    <text x="20" y="121" font-family="monospace" font-size="10" fill="#cbd5e1">Code Réponse: DE39 = 00</text>
+  </g>
+
+  <!-- Arrow 2 -->
+  <path d="M 530 250 L 565 250" stroke="#f43f5e" stroke-width="2.5" />
+  <polygon points="565,246 573,250 565,254" fill="#f43f5e" />
+
+  <!-- Box 3: HSM Thales & EMV Crypto -->
+  <g transform="translate(580, 175)">
+    <rect width="180" height="150" rx="12" fill="#1e293b" stroke="#475569" stroke-width="1.5" />
+    <text x="15" y="35" font-family="sans-serif" font-size="22">🔐</text>
+    <text x="50" y="32" font-family="-apple-system, sans-serif" font-size="14" font-weight="700" fill="#ffffff">HSM Thales 10K</text>
+    <text x="15" y="65" font-family="monospace" font-size="11" fill="#10b981">ARQC: VERIFIED ✓</text>
+    <text x="15" y="85" font-family="monospace" font-size="10" fill="#94a3b8">MKac / Session Key</text>
+    <text x="15" y="103" font-family="monospace" font-size="10" fill="#94a3b8">PIN Block Format 01</text>
+    <text x="15" y="121" font-family="monospace" font-size="10" fill="#f43f5e">Génération ARPC</text>
+  </g>
+
+  <!-- Bottom Features Bar -->
+  <rect x="40" y="355" width="720" height="55" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1" />
+  <text x="60" y="388" font-family="-apple-system, sans-serif" font-size="13" font-weight="600" fill="#e2e8f0">
+    Fonctionnalités intégrées :
+  </text>
+  <text x="210" y="388" font-family="-apple-system, sans-serif" font-size="13" fill="#cbd5e1">
+    • Parseur Hexa ISO • Décodeur TLV Tag 9F26 • Journal GAB (Stacker Jam) • 150 QCM Certifiants
+  </text>
+</svg>

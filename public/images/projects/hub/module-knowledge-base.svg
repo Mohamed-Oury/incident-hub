@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="800" height="450">
+  <defs>
+    <linearGradient id="kbBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a1220" />
+      <stop offset="100%" stop-color="#240c18" />
+    </linearGradient>
+  </defs>
+
+  <rect width="800" height="450" rx="16" fill="url(#kbBg)" />
+  <rect x="2" y="2" width="796" height="446" rx="14" fill="none" stroke="#334155" stroke-width="2" />
+
+  <!-- Badge Top -->
+  <rect x="40" y="35" width="310" height="32" rx="16" fill="#7d1538" fill-opacity="0.3" stroke="#f43f5e" stroke-width="1.5" />
+  <text x="60" y="56" font-family="-apple-system, sans-serif" font-size="12" font-weight="800" fill="#fecdd3" letter-spacing="1">MODULE 6 : BASE DE CONNAISSANCES</text>
+
+  <!-- Title -->
+  <text x="40" y="105" font-family="-apple-system, sans-serif" font-size="28" font-weight="900" fill="#ffffff">
+    1 000 Incidents Monétiques Résolus &amp; Playbooks
+  </text>
+  <text x="40" y="135" font-family="-apple-system, sans-serif" font-size="15" fill="#94a3b8">
+    Capitalisation exhaustive d'incidents de production, arbres de décision et fiches RCA d'exploitation bancaire.
+  </text>
+
+  <!-- Incident Cards Grid Mockup -->
+  <g transform="translate(40, 165)">
+    <!-- Search Bar Mockup -->
+    <rect width="720" height="38" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1" />
+    <text x="15" y="24" font-family="sans-serif" font-size="13">🔍</text>
+    <text x="40" y="24" font-family="-apple-system, sans-serif" font-size="12" fill="#94a3b8">Rechercher par Code DE39, Erreur MTI, Symptôme GAB ou Table CBS...</text>
+    <rect x="620" y="6" width="90" height="26" rx="6" fill="#7d1538" />
+    <text x="635" y="23" font-family="-apple-system, sans-serif" font-size="11" font-weight="700" fill="#ffffff">Filtrer (1000)</text>
+
+    <!-- Incident 1 -->
+    <g transform="translate(0, 50)">
+      <rect width="230" height="125" rx="10" fill="#0f172a" stroke="#334155" stroke-width="1" />
+      <rect x="12" y="12" width="60" height="20" rx="4" fill="#ef4444" fill-opacity="0.2" />
+      <text x="20" y="26" font-family="monospace" font-size="10" font-weight="bold" fill="#f87171">DE39 : 91</text>
+      <text x="80" y="26" font-family="-apple-system, sans-serif" font-size="11" fill="#94a3b8">Timeout Switch</text>
+      <text x="12" y="55" font-family="-apple-system, sans-serif" font-size="12" font-weight="700" fill="#ffffff">Rupture Réseau Payway</text>
+      <text x="12" y="75" font-family="-apple-system, sans-serif" font-size="10" fill="#cbd5e1">Non-réponse du serveur émetteur</text>
+      <text x="12" y="92" font-family="-apple-system, sans-serif" font-size="10" fill="#cbd5e1">Émission automatique ISO 0420</text>
+      <text x="12" y="115" font-family="-apple-system, sans-serif" font-size="10" font-weight="bold" fill="#10b981">✓ PLAYBOOK REVERSAL ACTIF</text>
+    </g>
+
+    <!-- Incident 2 -->
+    <g transform="translate(245, 50)">
+      <rect width="230" height="125" rx="10" fill="#0f172a" stroke="#7d1538" stroke-width="1.5" />
+      <rect x="12" y="12" width="80" height="20" rx="4" fill="#f59e0b" fill-opacity="0.2" />
+      <text x="20" y="26" font-family="monospace" font-size="10" font-weight="bold" fill="#fbbf24">GAB ATM-04</text>
+      <text x="100" y="26" font-family="-apple-system, sans-serif" font-size="11" fill="#94a3b8">Stacker Jam</text>
+      <text x="12" y="55" font-family="-apple-system, sans-serif" font-size="12" font-weight="700" fill="#ffffff">Billet Coincé Distributeur</text>
+      <text x="12" y="75" font-family="-apple-system, sans-serif" font-size="10" fill="#cbd5e1">Billet engagé mais non présenté</text>
+      <text x="12" y="92" font-family="-apple-system, sans-serif" font-size="10" fill="#cbd5e1">Analyse du journal électronique</text>
+      <text x="12" y="115" font-family="-apple-system, sans-serif" font-size="10" font-weight="bold" fill="#10b981">✓ RECRÉDIT COMPTE CLIENT</text>
+    </g>
+
+    <!-- Incident 3 -->
+    <g transform="translate(490, 50)">
+      <rect width="230" height="125" rx="10" fill="#0f172a" stroke="#334155" stroke-width="1" />
+      <rect x="12" y="12" width="75" height="20" rx="4" fill="#38bdf8" fill-opacity="0.2" />
+      <text x="20" y="26" font-family="monospace" font-size="10" font-weight="bold" fill="#38bdf8">ISAM -143</text>
+      <text x="95" y="26" font-family="-apple-system, sans-serif" font-size="11" fill="#94a3b8">Deadlock</text>
+      <text x="12" y="55" font-family="-apple-system, sans-serif" font-size="12" font-weight="700" fill="#ffffff">Verrouillage Compte</text>
+      <text x="12" y="75" font-family="-apple-system, sans-serif" font-size="10" fill="#cbd5e1">Conflit accès simultané BKCPT</text>
+      <text x="12" y="92" font-family="-apple-system, sans-serif" font-size="10" fill="#cbd5e1">Lock wait mode 30s dépassé</text>
+      <text x="12" y="115" font-family="-apple-system, sans-serif" font-size="10" font-weight="bold" fill="#10b981">✓ PROCÉDURE ONMODE -Z</text>
+    </g>
+  </g>
+
+  <!-- Bottom Bar -->
+  <rect x="40" y="355" width="720" height="55" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1" />
+  <text x="60" y="388" font-family="-apple-system, sans-serif" font-size="13" font-weight="600" fill="#e2e8f0">
+    Couverture de la base :
+  </text>
+  <text x="220" y="388" font-family="-apple-system, sans-serif" font-size="13" fill="#cbd5e1">
+    • 1000 Incidents résolus • 40 Codes DE39 documentés • 17 MTI • Playbooks prêts à l'emploi
+  </text>
+</svg>

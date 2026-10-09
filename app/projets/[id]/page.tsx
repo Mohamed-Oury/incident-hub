@@ -1,5 +1,6 @@
 import { PortfolioHeader } from "@/modules/portfolio/components/layout/PortfolioHeader";
 import { PortfolioFooter } from "@/modules/portfolio/components/layout/PortfolioFooter";
+import { MarkdownRenderer } from "@/modules/portfolio/components/blog/MarkdownRenderer";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import Link from "next/link";
@@ -93,15 +94,25 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
                 )}
 
                 {project.demoUrl && (
-                  <a
-                    href={project.demoUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center px-5 py-2.5 bg-[#7d1538] hover:bg-[#63102c] text-white font-medium rounded-xl transition-all duration-200 text-sm shadow-md"
-                  >
-                    <ExternalLink className="w-4 h-4 mr-2" />
-                    Voir la démo en direct
-                  </a>
+                  project.demoUrl.startsWith("/") ? (
+                    <Link
+                      href={project.demoUrl}
+                      className="inline-flex items-center px-5 py-2.5 bg-[#7d1538] hover:bg-[#63102c] text-white font-medium rounded-xl transition-all duration-200 text-sm shadow-md"
+                    >
+                      <ExternalLink className="w-4 h-4 mr-2" />
+                      Explorer la plateforme en direct
+                    </Link>
+                  ) : (
+                    <a
+                      href={project.demoUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center px-5 py-2.5 bg-[#7d1538] hover:bg-[#63102c] text-white font-medium rounded-xl transition-all duration-200 text-sm shadow-md"
+                    >
+                      <ExternalLink className="w-4 h-4 mr-2" />
+                      Voir la démo en direct
+                    </a>
+                  )
                 )}
               </div>
             </div>
@@ -120,10 +131,8 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
                     À propos du projet
                   </h2>
 
-                  <div className="bg-gray-50 border border-gray-200/80 rounded-2xl p-6 md:p-8 shadow-sm">
-                    <p className="text-gray-700 text-base md:text-lg leading-relaxed whitespace-pre-wrap font-normal">
-                      {project.description}
-                    </p>
+                  <div className="bg-white border border-gray-200/80 rounded-2xl p-6 md:p-8 shadow-sm">
+                    <MarkdownRenderer content={project.description} />
                   </div>
                 </div>
 

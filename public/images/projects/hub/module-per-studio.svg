@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="800" height="450">
+  <defs>
+    <linearGradient id="perBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a1324" />
+      <stop offset="100%" stop-color="#1c0f1c" />
+    </linearGradient>
+  </defs>
+
+  <rect width="800" height="450" rx="16" fill="url(#perBg)" />
+  <rect x="2" y="2" width="796" height="446" rx="14" fill="none" stroke="#334155" stroke-width="2" />
+
+  <!-- Badge Top -->
+  <rect x="40" y="35" width="310" height="32" rx="16" fill="#7d1538" fill-opacity="0.3" stroke="#f43f5e" stroke-width="1.5" />
+  <text x="60" y="56" font-family="-apple-system, sans-serif" font-size="12" font-weight="800" fill="#fecdd3" letter-spacing="1">MODULE 4 : STUDIO DE MASQUES .PER</text>
+
+  <!-- Title -->
+  <text x="40" y="105" font-family="-apple-system, sans-serif" font-size="28" font-weight="900" fill="#ffffff">
+    Concepteur d'Écrans Form-4GL &amp; Genero
+  </text>
+  <text x="40" y="135" font-family="-apple-system, sans-serif" font-size="15" fill="#94a3b8">
+    Éditeur visuel d'IHM bancaires, agencement de composants graphiques (GRID, FOLDER, TABLE) et export .per.
+  </text>
+
+  <!-- Screen Builder Visual Mockup -->
+  <g transform="translate(40, 165)">
+    <!-- Window Frame -->
+    <rect width="720" height="175" rx="12" fill="#0f172a" stroke="#334155" stroke-width="1.5" />
+    <rect width="720" height="30" rx="12" fill="#1e293b" />
+    <text x="15" y="20" font-family="monospace" font-size="11" fill="#94a3b8">BKCAR_PORT.per - Studio Concepteur Écran Genero</text>
+    <text x="590" y="20" font-family="monospace" font-size="11" fill="#f43f5e">[EXPORT 4GL]</text>
+
+    <!-- Visual Form Layout inside Studio -->
+    <!-- Left: Form Canvas -->
+    <rect x="20" y="45" width="420" height="115" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1" />
+    <text x="35" y="68" font-family="-apple-system, sans-serif" font-size="12" font-weight="700" fill="#ffffff">Agence :</text>
+    <rect x="95" y="54" width="70" height="20" rx="4" fill="#0f172a" stroke="#64748b" stroke-width="1" />
+    <text x="105" y="68" font-family="monospace" font-size="11" fill="#38bdf8">00001</text>
+
+    <text x="180" y="68" font-family="-apple-system, sans-serif" font-size="12" font-weight="700" fill="#ffffff">Compte :</text>
+    <rect x="245" y="54" width="120" height="20" rx="4" fill="#0f172a" stroke="#64748b" stroke-width="1" />
+    <text x="255" y="68" font-family="monospace" font-size="11" fill="#38bdf8">12345678901</text>
+
+    <text x="35" y="100" font-family="-apple-system, sans-serif" font-size="12" font-weight="700" fill="#ffffff">Titulaire :</text>
+    <rect x="95" y="86" width="270" height="20" rx="4" fill="#0f172a" stroke="#64748b" stroke-width="1" />
+    <text x="105" y="100" font-family="monospace" font-size="11" fill="#cbd5e1">SOCIETE GENERALE GUINEE</text>
+
+    <!-- Buttons row -->
+    <rect x="95" y="120" width="80" height="24" rx="4" fill="#7d1538" />
+    <text x="110" y="136" font-family="-apple-system, sans-serif" font-size="11" font-weight="700" fill="#ffffff">Valider (F12)</text>
+
+    <rect x="185" y="120" width="80" height="24" rx="4" fill="#334155" />
+    <text x="200" y="136" font-family="-apple-system, sans-serif" font-size="11" font-weight="700" fill="#cbd5e1">Annuler (Esc)</text>
+
+    <!-- Right: Code Preview -->
+    <rect x="460" y="45" width="240" height="115" rx="8" fill="#020617" stroke="#334155" stroke-width="1" />
+    <text x="475" y="65" font-family="monospace" font-size="10" fill="#f43f5e">LAYOUT (TEXT="Saisie Carte")</text>
+    <text x="485" y="80" font-family="monospace" font-size="10" fill="#38bdf8">VBOX</text>
+    <text x="495" y="95" font-family="monospace" font-size="10" fill="#cbd5e1">GRID</text>
+    <text x="505" y="110" font-family="monospace" font-size="10" fill="#94a3b8">{</text>
+    <text x="505" y="125" font-family="monospace" font-size="10" fill="#10b981">Age: [f01 ] Cpt: [f02     ]</text>
+    <text x="505" y="140" font-family="monospace" font-size="10" fill="#94a3b8">}</text>
+  </g>
+
+  <!-- Bottom Bar -->
+  <rect x="40" y="355" width="720" height="55" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1" />
+  <text x="60" y="388" font-family="-apple-system, sans-serif" font-size="13" font-weight="600" fill="#e2e8f0">
+    Composants supportés :
+  </text>
+  <text x="235" y="388" font-family="-apple-system, sans-serif" font-size="13" fill="#cbd5e1">
+    • Masques .per natifs • IHM Graphique Genero • Form-4GL • Génération du code BDL associé
+  </text>
+</svg>

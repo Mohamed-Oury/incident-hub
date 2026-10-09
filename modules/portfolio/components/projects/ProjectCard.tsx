@@ -12,6 +12,7 @@ interface Project {
   featured?: boolean;
   githubUrl?: string | null;
   demoUrl?: string | null;
+  imageUrl?: string | null;
 }
 
 interface ProjectCardProps {
@@ -39,10 +40,18 @@ export default function ProjectCard({ project, featured = false }: ProjectCardPr
       {/* Header visuel de la carte */}
       <div>
         <div className="relative h-48 overflow-hidden bg-gradient-to-br from-[#7d1538]/10 via-gray-50 to-[#a01e4a]/15 flex items-center justify-center">
-          <div className="relative z-10 text-center">
-            <div className="text-5xl mb-2">{categoryIcons[project.category] || "💻"}</div>
-            <div className="text-xs font-bold text-[#7d1538] uppercase tracking-wider">{project.category}</div>
-          </div>
+          {project.imageUrl ? (
+            <img
+              src={project.imageUrl}
+              alt={project.title}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+          ) : (
+            <div className="relative z-10 text-center">
+              <div className="text-5xl mb-2">{categoryIcons[project.category] || "💻"}</div>
+              <div className="text-xs font-bold text-[#7d1538] uppercase tracking-wider">{project.category}</div>
+            </div>
+          )}
 
           {featured && (
             <div className="absolute top-4 left-4 bg-gradient-to-r from-[#7d1538] to-[#a01e4a] text-white px-3 py-1 rounded-full text-xs font-bold shadow-md">

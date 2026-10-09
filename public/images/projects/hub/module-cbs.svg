@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="800" height="450">
+  <defs>
+    <linearGradient id="cbsBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b1329" />
+      <stop offset="100%" stop-color="#1e0f22" />
+    </linearGradient>
+  </defs>
+
+  <rect width="800" height="450" rx="16" fill="url(#cbsBg)" />
+  <rect x="2" y="2" width="796" height="446" rx="14" fill="none" stroke="#334155" stroke-width="2" />
+
+  <!-- Badge Top -->
+  <rect x="40" y="35" width="310" height="32" rx="16" fill="#7d1538" fill-opacity="0.3" stroke="#f43f5e" stroke-width="1.5" />
+  <text x="60" y="56" font-family="-apple-system, sans-serif" font-size="12" font-weight="800" fill="#fecdd3" letter-spacing="1">MODULE 2 : CORE BANKING CBS &amp; EOD</text>
+
+  <!-- Title -->
+  <text x="40" y="105" font-family="-apple-system, sans-serif" font-size="28" font-weight="900" fill="#ffffff">
+    Sopra Banking Amplitude &amp; Oracle FlexCube
+  </text>
+  <text x="40" y="135" font-family="-apple-system, sans-serif" font-size="15" fill="#94a3b8">
+    Architecture des tables bancaires, compensation interbancaire, suivi d'arrêté EOD et diagnostic de blocages.
+  </text>
+
+  <!-- Grid Schema -->
+  <!-- Table BKCPT Card -->
+  <g transform="translate(40, 175)">
+    <rect width="220" height="150" rx="12" fill="#1e293b" stroke="#334155" stroke-width="1.5" />
+    <rect width="220" height="32" rx="12" fill="#334155" />
+    <text x="15" y="22" font-family="monospace" font-size="12" font-weight="700" fill="#ffffff">TABLE BKCPT (Comptes)</text>
+    <text x="15" y="55" font-family="monospace" font-size="11" fill="#38bdf8">• AGE (Code Agence)</text>
+    <text x="15" y="75" font-family="monospace" font-size="11" fill="#cbd5e1">• CPT (Numéro Compte)</text>
+    <text x="15" y="95" font-family="monospace" font-size="11" fill="#cbd5e1">• DEVI (Devise XOF)</text>
+    <text x="15" y="115" font-family="monospace" font-size="11" fill="#10b981">• SOLDE_DISPO (Disponible)</text>
+    <text x="15" y="135" font-family="monospace" font-size="10" fill="#94a3b8">Index: AGE + NCO + SUF</text>
+  </g>
+
+  <!-- Table BKCLI Card -->
+  <g transform="translate(290, 175)">
+    <rect width="220" height="150" rx="12" fill="#1e293b" stroke="#334155" stroke-width="1.5" />
+    <rect width="220" height="32" rx="12" fill="#334155" />
+    <text x="15" y="22" font-family="monospace" font-size="12" font-weight="700" fill="#ffffff">TABLE BKCLI (Clients)</text>
+    <text x="15" y="55" font-family="monospace" font-size="11" fill="#38bdf8">• CLI (Numéro Client)</text>
+    <text x="15" y="75" font-family="monospace" font-size="11" fill="#cbd5e1">• NOM (Raison Sociale)</text>
+    <text x="15" y="95" font-family="monospace" font-size="11" fill="#cbd5e1">• CATEG (Segment Marché)</text>
+    <text x="15" y="115" font-family="monospace" font-size="11" fill="#f43f5e">• ETAT (Actif / Bloqué)</text>
+    <text x="15" y="135" font-family="monospace" font-size="10" fill="#94a3b8">Relations 1:N vers BKCPT</text>
+  </g>
+
+  <!-- EOD Batch Card -->
+  <g transform="translate(540, 175)">
+    <rect width="220" height="150" rx="12" fill="#1e293b" stroke="#7d1538" stroke-width="2" />
+    <rect width="220" height="32" rx="12" fill="#7d1538" />
+    <text x="15" y="22" font-family="-apple-system, sans-serif" font-size="12" font-weight="700" fill="#ffffff">CHAÎNE BATCH EOD</text>
+    <text x="15" y="55" font-family="monospace" font-size="11" fill="#10b981">1. Clôture Agences ✓</text>
+    <text x="15" y="75" font-family="monospace" font-size="11" fill="#10b981">2. Arrêté Monétique ✓</text>
+    <text x="15" y="95" font-family="monospace" font-size="11" fill="#38bdf8">3. Intérêts &amp; Agios ▶</text>
+    <text x="15" y="115" font-family="monospace" font-size="11" fill="#94a3b8">4. Balance Générale ⧖</text>
+    <text x="15" y="135" font-family="monospace" font-size="10" fill="#f43f5e">RCA Deadlocks -143</text>
+  </g>
+
+  <!-- Bottom Bar -->
+  <rect x="40" y="355" width="720" height="55" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1" />
+  <text x="60" y="388" font-family="-apple-system, sans-serif" font-size="13" font-weight="600" fill="#e2e8f0">
+    Couverture fonctionnelle :
+  </text>
+  <text x="235" y="388" font-family="-apple-system, sans-serif" font-size="13" fill="#cbd5e1">
+    • Dictionnaire 220 tables • 8 Domaines Métier • 240 QCM CBS Academy • 120 Commandes AIX/Unix
+  </text>
+</svg>
