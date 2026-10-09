@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { AppShell } from "@/modules/layout/AppShell";
+import { Users, Plus, Edit, Trash2, RefreshCw, Key, Shield, CheckCircle2, XCircle } from "lucide-react";
 import { ROLE_LABELS, UserRole } from "@/modules/auth/types";
 
 interface UserItem {
@@ -22,19 +22,19 @@ export default function UsersAdminPage() {
   // Formulaire création
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState<UserRole>("ROLE_EXPLOITATION");
+  const [role, setRole] = useState<UserRole>("OPERATOR");
   const [submitting, setSubmitting] = useState(false);
 
   // Modal / Mode Édition
   const [editingUser, setEditingUser] = useState<UserItem | null>(null);
   const [editName, setEditName] = useState("");
   const [editEmail, setEditEmail] = useState("");
-  const [editRole, setEditRole] = useState<UserRole>("ROLE_EXPLOITATION");
+  const [editRole, setEditRole] = useState<UserRole>("OPERATOR");
   const [editActive, setEditActive] = useState(true);
   const [editResetPwd, setEditResetPwd] = useState(false);
   const [updating, setUpdating] = useState(false);
 
-  // Modal de Confirmation de Suppression Propre
+  // Modal de Confirmation de Suppression
   const [userToDelete, setUserToDelete] = useState<UserItem | null>(null);
   const [deleting, setDeleting] = useState(false);
 
@@ -75,7 +75,7 @@ export default function UsersAdminPage() {
       setSuccessMsg(`Utilisateur créé avec succès ! Mot de passe initial : 123456`);
       setName("");
       setEmail("");
-      setRole("ROLE_EXPLOITATION");
+      setRole("OPERATOR");
       fetchUsers();
     } catch (err: any) {
       setError(err.message);
@@ -133,7 +133,7 @@ export default function UsersAdminPage() {
       const res = await fetch(`/api/users/${userToDelete.id}`, { method: "DELETE" });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Échec suppression");
-      setSuccessMsg(`L'utilisateur ${userToDelete.name} a été supprimé avec succès.`);
+      setSuccessMsg(`L'utilisateur ${userToDelete.name} a été supprimé.`);
       setUserToDelete(null);
       fetchUsers();
     } catch (err: any) {
@@ -144,456 +144,308 @@ export default function UsersAdminPage() {
   };
 
   return (
-    <AppShell pageTitle="Gestion des Utilisateurs & Rôles Applicatifs" eyebrow="ADMINISTRATION SYSTÈME">
-      <div style={{ display: "flex", flexDirection: "column", gap: "1.75rem" }}>
-        
-        {/* Bandeau d'information sur la politique d'accès */}
-        <div
-          style={{
-            background: "#111827",
-            color: "#ffffff",
-            padding: "1.25rem 1.5rem",
-            borderRadius: "12px",
-            borderLeft: "5px solid #e60028",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
+    <div className="space-y-8 max-w-full overflow-hidden">
+      {/* En-tête */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-black text-gray-900">Gestion des Utilisateurs</h1>
+          <p className="text-gray-600 text-sm mt-1">
+            Gérez les comptes d&apos;accès, rôles et autorisations des collaborateurs.
+          </p>
+        </div>
+        <button
+          onClick={fetchUsers}
+          className="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold rounded-xl text-xs transition-colors cursor-pointer border-0 self-start sm:self-auto"
         >
-          <div>
-            <span style={{ fontSize: "0.75rem", letterSpacing: "0.08em", color: "#e60028", fontWeight: 700, textTransform: "uppercase" }}>
-              POLITIQUE DE CONTRÔLE D&apos;ACCÈS BASÉE SUR LES RÔLES (RBAC)
-            </span>
-            <h3 style={{ fontSize: "1.1rem", fontWeight: 800, marginTop: "0.2rem" }}>
-              Chaque onglet regroupé correspond à un pôle de compétences
-            </h3>
-            <p style={{ fontSize: "0.85rem", color: "#9ca3af", marginTop: "0.15rem" }}>
-              Les collaborateurs accèdent directement à la première vue de leur pôle sans voir les autres sections. Mot de passe initial : <code style={{ color: "#ffffff", background: "#374151", padding: "0.15rem 0.4rem", borderRadius: "4px" }}>123456</code>.
-            </p>
-          </div>
+          <RefreshCw className="w-4 h-4 mr-2" />
+          Actualiser
+        </button>
+      </div>
+
+      {error && (
+        <div className="p-4 bg-red-50 text-red-800 border border-red-200 rounded-xl text-sm font-semibold flex items-center">
+          <XCircle className="w-5 h-5 mr-2 flex-shrink-0 text-red-600" />
+          <span>{error}</span>
+        </div>
+      )}
+
+      {successMsg && (
+        <div className="p-4 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-xl text-sm font-semibold flex items-center">
+          <CheckCircle2 className="w-5 h-5 mr-2 flex-shrink-0 text-emerald-600" />
+          <span>{successMsg}</span>
+        </div>
+      )}
+
+      {/* Grille Principale (Responsive sans overflow) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        {/* Formulaire de création (4 colonnes) */}
+        <div className="lg:col-span-4 bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-6">
+          <h2 className="text-lg font-bold text-gray-900 flex items-center pb-3 border-b border-gray-100">
+            <Plus className="w-5 h-5 mr-2 text-[#7d1538]" />
+            Créer un Collaborateur
+          </h2>
+
+          <form onSubmit={handleCreateUser} className="space-y-4">
+            <div>
+              <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Nom Complet</label>
+              <input
+                type="text"
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Ex: Mohamed Diallo"
+                className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-[#7d1538] outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Adresse Email</label>
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="m.diallo@banque.com"
+                className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-[#7d1538] outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Rôle Applicatif</label>
+              <select
+                value={role}
+                onChange={(e) => setRole(e.target.value as UserRole)}
+                className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-[#7d1538] outline-none"
+              >
+                <option value="OPERATOR">Opérateur</option>
+                <option value="EXPERT">Expert Monétique / CBS</option>
+                <option value="VALIDATOR">Validateur</option>
+                <option value="VIEWER">Lecteur</option>
+                <option value="ADMIN">Administrateur Global</option>
+              </select>
+            </div>
+
+            <div className="p-3 bg-gray-50 rounded-xl border border-gray-200 text-xs text-gray-600">
+              🔒 <b>Sécurité :</b> Mot de passe initial défini automatiquement sur <code className="bg-gray-200 px-1.5 py-0.5 rounded text-gray-800 font-bold">123456</code>.
+            </div>
+
+            <button
+              type="submit"
+              disabled={submitting}
+              className="w-full py-3 bg-[#7d1538] hover:bg-[#a01e4a] text-white font-bold rounded-xl text-sm shadow transition-all cursor-pointer border-0 disabled:opacity-50"
+            >
+              {submitting ? "Création en cours..." : "+ Valider la Création"}
+            </button>
+          </form>
         </div>
 
-        {error && (
-          <div style={{ background: "#fee2e2", color: "#991b1b", padding: "0.75rem 1rem", borderRadius: "8px", fontSize: "0.85rem", border: "1px solid #fecaca" }}>
-            ⚠️ {error}
+        {/* Tableau des utilisateurs (8 colonnes, responsive scrollable uniquement dans son conteneur) */}
+        <div className="lg:col-span-8 bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-4 min-w-0">
+          <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+            <h2 className="text-lg font-bold text-gray-900 flex items-center">
+              <Users className="w-5 h-5 mr-2 text-[#7d1538]" />
+              Utilisateurs Enregistrés ({users.length})
+            </h2>
           </div>
-        )}
 
-        {successMsg && (
-          <div style={{ background: "#ecfdf5", color: "#065f46", padding: "0.75rem 1rem", borderRadius: "8px", fontSize: "0.85rem", border: "1px solid #a7f3d0" }}>
-            ✅ {successMsg}
+          <div className="overflow-x-auto w-full rounded-xl border border-gray-200">
+            <table className="w-full text-left border-collapse text-sm min-w-[600px]">
+              <thead>
+                <tr className="bg-gray-50 text-gray-600 text-xs uppercase font-bold border-b border-gray-200">
+                  <th className="py-3 px-4">Collaborateur</th>
+                  <th className="py-3 px-4">Email</th>
+                  <th className="py-3 px-4">Rôle</th>
+                  <th className="py-3 px-4">Statut</th>
+                  <th className="py-3 px-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {loading ? (
+                  <tr>
+                    <td colSpan={5} className="py-8 text-center text-gray-500 font-medium">
+                      Chargement des profils...
+                    </td>
+                  </tr>
+                ) : users.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="py-8 text-center text-gray-500 font-medium">
+                      Aucun utilisateur trouvé.
+                    </td>
+                  </tr>
+                ) : (
+                  users.map((u) => (
+                    <tr key={u.id} className="hover:bg-gray-50/80 transition-colors">
+                      <td className="py-3 px-4 font-bold text-gray-900 whitespace-nowrap">{u.name}</td>
+                      <td className="py-3 px-4 text-gray-600 text-xs whitespace-nowrap">{u.email}</td>
+                      <td className="py-3 px-4 whitespace-nowrap">
+                        <span
+                          className={`inline-block px-2.5 py-1 rounded-full text-xs font-bold border ${
+                            u.role === "ADMIN"
+                              ? "bg-[#7d1538] text-white border-[#7d1538]"
+                              : "bg-gray-100 text-gray-700 border-gray-200"
+                          }`}
+                        >
+                          {ROLE_LABELS[u.role] || u.role}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4 whitespace-nowrap">
+                        <span className={`text-xs font-bold ${u.active ? "text-emerald-600" : "text-red-600"}`}>
+                          {u.active ? "● Actif" : "○ Inactif"}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4 text-right whitespace-nowrap">
+                        <div className="inline-flex space-x-2">
+                          <button
+                            onClick={() => openEditModal(u)}
+                            className="px-2.5 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-lg text-xs transition-colors cursor-pointer border-0"
+                          >
+                            ✏️ Éditer
+                          </button>
+                          {u.email !== "mohaourydiallo@gmail.com" && (
+                            <button
+                              onClick={() => setUserToDelete(u)}
+                              className="px-2.5 py-1 bg-red-100 hover:bg-red-200 text-red-700 font-bold rounded-lg text-xs transition-colors cursor-pointer border-0"
+                            >
+                              🗑️ Supprimer
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
-        )}
+        </div>
+      </div>
 
-        {/* 1. Modal Propre de Confirmation de Suppression */}
-        {userToDelete && (
-          <div
-            style={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              background: "rgba(17, 24, 39, 0.75)",
-              backdropFilter: "blur(4px)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              zIndex: 1100,
-              padding: "1rem",
-              animation: "fadeIn 0.15s ease-out",
-            }}
-          >
-            <div
-              className="card"
-              style={{
-                width: "100%",
-                maxWidth: "460px",
-                background: "#ffffff",
-                borderRadius: "16px",
-                padding: "1.75rem 2rem",
-                boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.35)",
-                border: "1px solid #e5e7eb",
-                textAlign: "center",
-              }}
-            >
-              <div
-                style={{
-                  width: "56px",
-                  height: "56px",
-                  borderRadius: "50%",
-                  background: "#fee2e2",
-                  color: "#dc2626",
-                  display: "inline-flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: "1.75rem",
-                  marginBottom: "1rem",
-                }}
-              >
-                🗑️
+      {/* Modal d'édition */}
+      {editingUser && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-6 sm:p-8 max-w-lg w-full shadow-2xl space-y-6">
+            <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+              <h3 className="text-xl font-bold text-gray-900">Modifier le Profil</h3>
+              <button onClick={() => setEditingUser(null)} className="text-gray-400 hover:text-gray-600 text-lg">
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdateUser} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Nom complet</label>
+                <input
+                  type="text"
+                  required
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold"
+                />
               </div>
 
-              <h3 style={{ fontSize: "1.25rem", fontWeight: 800, color: "#111827", marginBottom: "0.5rem" }}>
-                Confirmer la suppression
-              </h3>
+              <div>
+                <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Adresse Email</label>
+                <input
+                  type="email"
+                  required
+                  value={editEmail}
+                  onChange={(e) => setEditEmail(e.target.value)}
+                  className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold"
+                />
+              </div>
 
-              <p style={{ fontSize: "0.9rem", color: "#4b5563", lineHeight: "1.5", marginBottom: "1.5rem" }}>
-                Êtes-vous certain de vouloir supprimer définitivement le collaborateur{" "}
-                <b style={{ color: "#111827" }}>{userToDelete.name}</b> ({userToDelete.email}) ?
-                <br />
-                <span style={{ fontSize: "0.8rem", color: "#dc2626", fontWeight: 600, display: "block", marginTop: "0.4rem" }}>
-                  ⚠️ Cette action est irréversible et révoquera immédiatement tous ses accès.
-                </span>
-              </p>
+              <div>
+                <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Rôle Applicatif</label>
+                <select
+                  value={editRole}
+                  onChange={(e) => setEditRole(e.target.value as UserRole)}
+                  className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold"
+                  disabled={editingUser.email === "mohaourydiallo@gmail.com"}
+                >
+                  <option value="OPERATOR">Opérateur</option>
+                  <option value="EXPERT">Expert Monétique / CBS</option>
+                  <option value="VALIDATOR">Validateur</option>
+                  <option value="VIEWER">Lecteur</option>
+                  <option value="ADMIN">Administrateur Global</option>
+                </select>
+              </div>
 
-              <div style={{ display: "flex", gap: "0.75rem", justifyContent: "center" }}>
+              <div className="flex items-center space-x-2 pt-2">
+                <input
+                  type="checkbox"
+                  id="editActive"
+                  checked={editActive}
+                  onChange={(e) => setEditActive(e.target.checked)}
+                  disabled={editingUser.email === "mohaourydiallo@gmail.com"}
+                  className="w-4 h-4 text-[#7d1538] rounded"
+                />
+                <label htmlFor="editActive" className="text-sm font-semibold text-gray-800">
+                  Compte actif (accès autorisé)
+                </label>
+              </div>
+
+              <div className="p-3 bg-red-50 border border-red-100 rounded-xl">
+                <label className="flex items-center space-x-2 text-xs font-bold text-red-800 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={editResetPwd}
+                    onChange={(e) => setEditResetPwd(e.target.checked)}
+                    className="w-4 h-4 text-red-600 rounded"
+                  />
+                  <span>Réinitialiser le mot de passe à &quot;123456&quot;</span>
+                </label>
+              </div>
+
+              <div className="flex justify-end space-x-3 pt-4 border-t border-gray-100">
                 <button
                   type="button"
-                  onClick={() => setUserToDelete(null)}
-                  className="btn-secondary"
-                  style={{ flex: 1, padding: "0.65rem 1rem", fontSize: "0.9rem" }}
-                  disabled={deleting}
+                  onClick={() => setEditingUser(null)}
+                  className="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl text-xs transition-colors border-0 cursor-pointer"
                 >
                   Annuler
                 </button>
                 <button
-                  type="button"
-                  onClick={confirmDeleteUser}
-                  style={{
-                    flex: 1,
-                    background: "#dc2626",
-                    color: "#ffffff",
-                    border: "none",
-                    borderRadius: "8px",
-                    fontWeight: 700,
-                    fontSize: "0.9rem",
-                    padding: "0.65rem 1rem",
-                    cursor: "pointer",
-                    boxShadow: "0 4px 12px rgba(220, 38, 38, 0.3)",
-                    transition: "background 0.15s ease",
-                  }}
-                  disabled={deleting}
+                  type="submit"
+                  disabled={updating}
+                  className="px-6 py-2.5 bg-[#7d1538] hover:bg-[#a01e4a] text-white font-bold rounded-xl text-xs shadow transition-colors border-0 cursor-pointer"
                 >
-                  {deleting ? "Suppression..." : "Oui, supprimer"}
+                  {updating ? "Enregistrement..." : "Enregistrer"}
                 </button>
               </div>
-            </div>
-          </div>
-        )}
-
-        {/* 2. Modal Propre d'Édition d'Utilisateur */}
-        {editingUser && (
-          <div
-            style={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              background: "rgba(17, 24, 39, 0.75)",
-              backdropFilter: "blur(4px)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              zIndex: 1000,
-              padding: "1rem",
-            }}
-          >
-            <div
-              className="card"
-              style={{
-                width: "100%",
-                maxWidth: "500px",
-                background: "#ffffff",
-                borderRadius: "16px",
-                padding: "2rem",
-                boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.35)",
-              }}
-            >
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem" }}>
-                <h3 style={{ fontSize: "1.2rem", fontWeight: 800 }}>Modifier l&apos;utilisateur</h3>
-                <button
-                  onClick={() => setEditingUser(null)}
-                  style={{ background: "none", border: "none", fontSize: "1.2rem", cursor: "pointer", color: "#64748b" }}
-                >
-                  ✕
-                </button>
-              </div>
-
-              <form onSubmit={handleUpdateUser} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                <div>
-                  <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 700, marginBottom: "0.3rem" }}>
-                    Nom complet :
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={editName}
-                    onChange={(e) => setEditName(e.target.value)}
-                    className="input"
-                  />
-                </div>
-
-                <div>
-                  <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 700, marginBottom: "0.3rem" }}>
-                    Email professionnel :
-                  </label>
-                  <input
-                    type="email"
-                    required
-                    value={editEmail}
-                    onChange={(e) => setEditEmail(e.target.value)}
-                    className="input"
-                  />
-                </div>
-
-                <div>
-                  <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 700, marginBottom: "0.3rem" }}>
-                    Rôle / Périmètre applicatif :
-                  </label>
-                  <select
-                    value={editRole}
-                    onChange={(e) => setEditRole(e.target.value as UserRole)}
-                    className="input"
-                    disabled={editingUser.email === "ourykohkoun@gmail.com"}
-                  >
-                    <option value="ROLE_EXPLOITATION">⚡ Pôle Exploitation (Dashboard, Base Connaissances, Diagnostic)</option>
-                    <option value="ROLE_DECODEURS">🧮 Pôle Décodeurs (Parseur ISO 8583, Bitmap, EMV/DE55, Journal GAB)</option>
-                    <option value="ROLE_REFERENTIELS">📖 Pôle Référentiels (MTI, DE39, Piste d&apos;audit)</option>
-                    <option value="ROLE_EXPERTISE">🛠️ Pôle Expertise &amp; Outils (Clés HSM, Timeouts, Post-Mortem)</option>
-                    <option value="ADMIN">👑 Administrateur Global (Accès Intégral)</option>
-                  </select>
-                </div>
-
-                <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
-                  <input
-                    type="checkbox"
-                    id="activeCheckbox"
-                    checked={editActive}
-                    onChange={(e) => setEditActive(e.target.checked)}
-                    disabled={editingUser.email === "ourykohkoun@gmail.com"}
-                  />
-                  <label htmlFor="activeCheckbox" style={{ fontSize: "0.85rem", fontWeight: 600 }}>
-                    Compte actif (autorisé à se connecter)
-                  </label>
-                </div>
-
-                <div style={{ background: "#f8fafc", padding: "0.75rem", borderRadius: "8px", border: "1px solid var(--border-light)" }}>
-                  <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.85rem", fontWeight: 600, color: "#e60028" }}>
-                    <input
-                      type="checkbox"
-                      checked={editResetPwd}
-                      onChange={(e) => setEditResetPwd(e.target.checked)}
-                    />
-                    Réinitialiser le mot de passe à &quot;123456&quot;
-                  </label>
-                </div>
-
-                <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.75rem", marginTop: "0.5rem" }}>
-                  <button
-                    type="button"
-                    onClick={() => setEditingUser(null)}
-                    className="btn-secondary"
-                  >
-                    Annuler
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={updating}
-                    className="btn-primary"
-                  >
-                    {updating ? "Enregistrement..." : "Enregistrer les modifications"}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
-
-        <div style={{ display: "grid", gridTemplateColumns: "1.1fr 2fr", gap: "1.5rem" }}>
-          
-          {/* Formulaire de création */}
-          <div className="card">
-            <h2 style={{ fontSize: "1.15rem", fontWeight: 800, marginBottom: "0.5rem" }}>
-              ➕ Créer un collaborateur
-            </h2>
-            <p style={{ fontSize: "0.82rem", color: "var(--text-secondary)", marginBottom: "1.25rem" }}>
-              Attribuez le rôle adéquat pour restreindre l&apos;accès au périmètre métier du collaborateur.
-            </p>
-
-            <form onSubmit={handleCreateUser} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-              <div>
-                <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 700, marginBottom: "0.3rem" }}>
-                  Nom complet du collaborateur :
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Ex: Jean Dupont"
-                  className="input"
-                />
-              </div>
-
-              <div>
-                <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 700, marginBottom: "0.3rem" }}>
-                  Adresse email professionnelle :
-                </label>
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="j.dupont@banque.com"
-                  className="input"
-                />
-              </div>
-
-              <div>
-                <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 700, marginBottom: "0.3rem" }}>
-                  Périmètre &amp; Rôle applicatif :
-                </label>
-                <select
-                  value={role}
-                  onChange={(e) => setRole(e.target.value as UserRole)}
-                  className="input"
-                  style={{ background: "#ffffff", color: "#111827" }}
-                >
-                  <option value="ROLE_EXPLOITATION">⚡ Pôle Exploitation (Dashboard, Base Connaissances, Diagnostic)</option>
-                  <option value="ROLE_DECODEURS">🧮 Pôle Décodeurs (Parseur ISO 8583, Bitmap, EMV/DE55, Journal GAB)</option>
-                  <option value="ROLE_REFERENTIELS">📖 Pôle Référentiels (MTI, DE39, Piste d&apos;audit)</option>
-                  <option value="ROLE_EXPERTISE">🛠️ Pôle Expertise &amp; Outils (Clés HSM, Timeouts, Post-Mortem)</option>
-                  <option value="ADMIN">👑 Administrateur Global (Accès Intégral)</option>
-                </select>
-              </div>
-
-              <div style={{ background: "#f8fafc", padding: "0.75rem", borderRadius: "8px", border: "1px solid var(--border-light)", fontSize: "0.78rem", color: "#64748b" }}>
-                🔒 <b>Sécurité :</b> Mot de passe initial défini automatiquement sur <code>123456</code>.
-              </div>
-
-              <button
-                type="submit"
-                disabled={submitting}
-                className="btn-primary"
-                style={{ alignSelf: "flex-start", marginTop: "0.5rem" }}
-              >
-                {submitting ? "Création en cours..." : "+ Valider la création"}
-              </button>
             </form>
           </div>
+        </div>
+      )}
 
-          {/* Liste des utilisateurs existants avec action Modifier & Supprimer via modal propre */}
-          <div className="card">
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
-              <h3 style={{ fontSize: "1.1rem", fontWeight: 800 }}>Utilisateurs Enregistrés ({users.length})</h3>
+      {/* Modal de suppression */}
+      {userToDelete && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-6 sm:p-8 max-w-md w-full shadow-2xl text-center space-y-4">
+            <div className="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto text-xl">
+              🗑️
+            </div>
+            <h3 className="text-xl font-bold text-gray-900">Confirmer la suppression</h3>
+            <p className="text-sm text-gray-600">
+              Voulez-vous supprimer définitivement le collaborateur <b className="text-gray-900">{userToDelete.name}</b> ?
+            </p>
+            <div className="flex space-x-3 pt-4">
               <button
-                type="button"
-                onClick={fetchUsers}
-                className="btn-secondary"
-                style={{ fontSize: "0.78rem", padding: "0.35rem 0.75rem" }}
+                onClick={() => setUserToDelete(null)}
+                className="flex-1 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl text-xs transition-colors border-0 cursor-pointer"
               >
-                🔄 Actualiser
+                Annuler
+              </button>
+              <button
+                onClick={confirmDeleteUser}
+                disabled={deleting}
+                className="flex-1 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-xs shadow transition-colors border-0 cursor-pointer"
+              >
+                {deleting ? "Suppression..." : "Oui, Supprimer"}
               </button>
             </div>
-
-            <div className="table-wrapper">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Collaborateur</th>
-                    <th>Email</th>
-                    <th>Rôle / Périmètre</th>
-                    <th>Statut</th>
-                    <th style={{ textAlign: "right" }}>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {loading ? (
-                    <tr>
-                      <td colSpan={5} style={{ textAlign: "center", padding: "2rem", color: "#64748b" }}>
-                        Chargement des profils...
-                      </td>
-                    </tr>
-                  ) : users.length === 0 ? (
-                    <tr>
-                      <td colSpan={5} style={{ textAlign: "center", padding: "2rem", color: "#64748b" }}>
-                        Aucun utilisateur trouvé.
-                      </td>
-                    </tr>
-                  ) : (
-                    users.map((u) => (
-                      <tr key={u.id}>
-                        <td>
-                          <b style={{ color: "#111827" }}>{u.name}</b>
-                        </td>
-                        <td style={{ fontSize: "0.85rem", color: "#4b5563" }}>{u.email}</td>
-                        <td>
-                          <span
-                            style={{
-                              display: "inline-block",
-                              fontSize: "0.72rem",
-                              fontWeight: 800,
-                              padding: "0.25rem 0.6rem",
-                              borderRadius: "6px",
-                              background: u.role === "ADMIN" ? "#111827" : "#fef2f2",
-                              color: u.role === "ADMIN" ? "#ffffff" : "#e60028",
-                              border: u.role === "ADMIN" ? "1px solid #374151" : "1px solid #fee2e2",
-                            }}
-                          >
-                            {ROLE_LABELS[u.role] || u.role}
-                          </span>
-                        </td>
-                        <td>
-                          <span style={{ fontSize: "0.75rem", color: u.active ? "#16a34a" : "#dc2626", fontWeight: 700 }}>
-                            {u.active ? "● Actif" : "○ Inactif"}
-                          </span>
-                        </td>
-                        <td style={{ textAlign: "right" }}>
-                          <div style={{ display: "inline-flex", gap: "0.35rem" }}>
-                            <button
-                              type="button"
-                              onClick={() => openEditModal(u)}
-                              className="btn-secondary"
-                              style={{ padding: "0.3rem 0.6rem", fontSize: "0.75rem" }}
-                            >
-                              ✏️ Modifier
-                            </button>
-                            {u.email !== "ourykohkoun@gmail.com" && (
-                              <button
-                                type="button"
-                                onClick={() => setUserToDelete(u)}
-                                style={{
-                                  background: "#fee2e2",
-                                  border: "1px solid #fecaca",
-                                  color: "#991b1b",
-                                  padding: "0.3rem 0.6rem",
-                                  fontSize: "0.75rem",
-                                  borderRadius: "6px",
-                                  cursor: "pointer",
-                                  fontWeight: 600,
-                                  display: "inline-flex",
-                                  alignItems: "center",
-                                  gap: "0.25rem",
-                                }}
-                                title="Supprimer cet utilisateur"
-                              >
-                                🗑️ Supprimer
-                              </button>
-                            )}
-                          </div>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
           </div>
-
         </div>
-      </div>
-    </AppShell>
+      )}
+    </div>
   );
 }

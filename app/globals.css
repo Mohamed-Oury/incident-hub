@@ -1,18 +1,30 @@
-:root {
-  /* Charte Officielle GROUPE SOCIÉTÉ GÉNÉRALE : Rouge SG (#E60028), Noir profond (#1A1A1A / #111827), Blanc */
-  --sg-red-50: #fef2f2;
-  --sg-red-100: #fee2e2;
-  --sg-red-200: #fecaca;
-  --sg-red-400: #f87171;
-  --sg-red-500: #ef4444;
-  --sg-red-600: #e60028;
-  /* ROUGE OFFICIEL SOCIÉTÉ GÉNÉRALE */
-  --sg-red-700: #cc0024;
-  --sg-red-800: #99001b;
-  --sg-red-900: #7f1d1d;
-  --sg-red-950: #450a0a;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-  /* Aliases de compatibilité pour les composants existants */
+:root {
+  /* Charte Portfolio Mr. Oury & Monétique Hub : Burgundy (#7d1538), Burgundy Light (#a01e4a), Burgundy Dark (#5c0f28) */
+  --burgundy: #7d1538;
+  --burgundy-light: #a01e4a;
+  --burgundy-dark: #5c0f28;
+  --black: #000000;
+  --white: #ffffff;
+  --gray-light: #f8f9fa;
+  --gray-medium: #6c757d;
+  --gray-dark: #343a40;
+
+  --sg-red-50: #fdf2f5;
+  --sg-red-100: #fce7ec;
+  --sg-red-200: #f8d0db;
+  --sg-red-400: #a01e4a;
+  --sg-red-500: #7d1538;
+  --sg-red-600: #7d1538;
+  --sg-red-700: #5c0f28;
+  --sg-red-800: #420a1b;
+  --sg-red-900: #2d0611;
+  --sg-red-950: #1a0309;
+
+  /* Aliases de compatibilité */
   --emerald-50: var(--sg-red-50);
   --emerald-100: var(--sg-red-100);
   --emerald-200: var(--sg-red-200);
@@ -24,14 +36,12 @@
   --emerald-900: var(--sg-red-900);
   --emerald-950: var(--sg-red-950);
 
-  /* Noir officiel & Ardoise Société Générale */
-  --slate-darkest: #111827;
-  /* Noir profond officiel SG pour la sidebar et les éléments sombres */
-  --slate-surface: #1a1a1a;
-  /* Noir pur secondaire */
+  /* Noir & Ardoise */
+  --slate-darkest: #0f172a;
+  --slate-surface: #1e293b;
   --slate-card: #1f2937;
-  --slate-border: #2d3748;
-  --slate-muted: #6b7280;
+  --slate-border: #334155;
+  --slate-muted: #64748b;
 
   --text-primary: #111827;
   --text-secondary: #4b5563;

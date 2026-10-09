@@ -42,27 +42,65 @@ enum Role {
   ADMIN
 }
 
+enum BlogCategory {
+  MATHEMATIQUES
+  INFORMATIQUE
+  CBS
+  GEOPOLITIQUE
+}
+
+enum ProjectCategory {
+  WEB
+  MOBILE
+  DESKTOP
+  BANCAIRE
+  CBS
+  RESEARCH
+  OTHER
+}
+
+enum CommentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  SPAM
+}
+
+enum ReactionType {
+  LIKE
+  LOVE
+  FIRE
+  CLAP
+  THINKING
+  LAUGH
+}
+
 model User {
-  id           String     @id @default(cuid())
-  email        String     @unique
+  id           String        @id @default(cuid())
+  email        String        @unique
   name         String
   passwordHash String?
-  role         Role       @default(OPERATOR)
-  active       Boolean    @default(true)
-  incidents    Incident[] @relation("IncidentAuthor")
+  role         Role          @default(OPERATOR)
+  active       Boolean       @default(true)
+  incidents    Incident[]    @relation("IncidentAuthor")
   audits       AuditLog[]
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  blogPosts    BlogPost[]
+  messages     Message[]
+  blogComments BlogComment[]
+  reactions    Reaction[]
+  newsletter   Newsletter?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
 }
 
 model Incident {
-  id              String          @id @default(cuid())
-  reference       String          @unique
+  id              String             @id @default(cuid())
+  reference       String             @unique
   title           String
-  description     String?         @db.Text
-  status          IncidentStatus  @default(DRAFT)
-  severity        Severity        @default(MEDIUM)
-  knowledgeStatus KnowledgeStatus @default(REFERENCE_SCENARIO)
+  description     String?            @db.Text
+  status          IncidentStatus     @default(DRAFT)
+  severity        Severity           @default(MEDIUM)
+  knowledgeStatus KnowledgeStatus    @default(REFERENCE_SCENARIO)
   domain          String?
   channel         String?
   operation       String?
@@ -74,7 +112,7 @@ model Incident {
   occurredAt      DateTime?
   resolvedAt      DateTime?
   authorId        String
-  author          User            @relation("IncidentAuthor", fields: [authorId], references: [id])
+  author          User               @relation("IncidentAuthor", fields: [authorId], references: [id])
   observations    Observation[]
   flowSteps       FlowStep[]
   isoMessages     IsoMessage[]
@@ -84,8 +122,8 @@ model Incident {
   resolution      Resolution?
   prevention      PreventionAction[]
   comments        Comment[]
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
 
   @@index([authorId])
   @@index([status])
@@ -239,3 +277,163 @@ model CbsCopilotProject {
   @@index([name])
 }
 
+// ==================== MODÈLES PORTFOLIO ====================
+
+model BlogPost {
+  id         String       @id @default(cuid())
+  title      String
+  slug       String       @unique
+  content    String       @db.Text
+  excerpt    String       @db.Text
+  category   BlogCategory
+  tags       String       @db.Text
+  coverImage String?
+  readTime   Int          @default(0)
+  published  Boolean      @default(false)
+  featured   Boolean      @default(false)
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+
+  authorId  String
+  author    User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  comments  BlogComment[]
+  reactions Reaction[]
+
+  @@map("blog_posts")
+}
+
+model Project {
+  id            String          @id @default(cuid())
+  title         String
+  description   String          @db.Text
+  excerpt       String          @db.Text
+  imageUrl      String?
+  featuredImage String?
+  technologies  String          @db.Text
+  category      ProjectCategory
+  githubUrl     String?
+  demoUrl       String?
+  published     Boolean         @default(false)
+  featured      Boolean         @default(false)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  @@map("projects")
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String?
+  content   String   @db.Text
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("messages")
+}
+
+model About {
+  id           String   @id @default(cuid())
+  title        String
+  subtitle     String?
+  content      String   @db.Text
+  profileImage String?
+  cvUrl        String?
+  skills       String   @db.Text
+  experiences  String   @db.Text
+  education    String   @db.Text
+  languages    String   @db.Text
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("about")
+}
+
+model SiteStats {
+  id               String   @id @default(cuid())
+  totalViews       Int      @default(0)
+  yearsExperience  Int      @default(0)
+  customStat1Label String?
+  customStat1Value Int?
+  customStat2Label String?
+  customStat2Value Int?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@map("site_stats")
+}
+
+model ContactInfo {
+  id           String   @id @default(cuid())
+  title        String   @default("Contactez-moi")
+  subtitle     String?
+  email        String
+  phone        String?
+  address      String?
+  socialLinks  String   @db.Text
+  availability String   @db.Text
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("contact_info")
+}
+
+model BlogComment {
+  id        String        @id @default(cuid())
+  content   String        @db.Text
+  status    CommentStatus @default(PENDING)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  authorId String
+  author   User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  postId   String
+  post     BlogPost      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  parentId String?
+  parent   BlogComment?  @relation("BlogCommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies  BlogComment[] @relation("BlogCommentReplies")
+
+  @@map("blog_comments")
+}
+
+model Reaction {
+  id        String       @id @default(cuid())
+  type      ReactionType
+  createdAt DateTime     @default(now())
+
+  userId String
+  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  postId String
+  post   BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId, type])
+  @@map("reactions")
+}
+
+model Newsletter {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  isSubscribed Boolean  @default(true)
+  preferences  String?  @db.Text
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  userId String? @unique
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("newsletter")
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  email     String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@map("password_reset_tokens")
+}

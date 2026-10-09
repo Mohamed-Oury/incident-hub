@@ -1,67 +1,59 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { ROLE_ALLOWED_ROUTES, ROLE_DEFAULT_PAGES, UserRole } from "@/modules/auth/types";
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // 1. Autoriser les ressources publiques, API et pages statiques
+  // 1. Autoriser les ressources publiques statiques et API publiques
   if (
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api/auth") ||
+    pathname.startsWith("/api/portfolio") ||
     pathname === "/login" ||
     pathname.includes(".")
   ) {
     return NextResponse.next();
   }
 
-  // 2. Vérifier la présence du cookie de session
+  // 2. Définir les routes publiques du Portfolio (accessibles à tous sans connexion)
+  const isPublicRoute =
+    pathname === "/" ||
+    pathname.startsWith("/a-propos") ||
+    pathname.startsWith("/projets") ||
+    pathname.startsWith("/blog") ||
+    pathname.startsWith("/contact");
+
+  // 3. Vérifier la présence de la session pour les routes protégées
   const sessionCookie = request.cookies.get("payway_session");
-  if (!sessionCookie || !sessionCookie.value) {
+
+  if (!isPublicRoute && (!sessionCookie || !sessionCookie.value)) {
     const loginUrl = new URL("/login", request.url);
+    loginUrl.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(loginUrl);
   }
 
-  // 3. Extraction du rôle depuis le cookie signé
-  // Format token : base64url(payload).hmac
+  // 4. Si la route est publique et qu'il n'y a pas de session, laisser passer
+  if (isPublicRoute && (!sessionCookie || !sessionCookie.value)) {
+    return NextResponse.next();
+  }
+
+  // 5. Contrôle d'accès basé sur les rôles (RBAC) pour les utilisateurs connectés
   try {
-    const rawCookie = sessionCookie.value;
+    const rawCookie = sessionCookie?.value || "";
     const lastDot = rawCookie.lastIndexOf(".");
     if (lastDot !== -1) {
       const payloadBase64 = rawCookie.slice(0, lastDot);
       const decodedJson = atob(payloadBase64.replace(/-/g, "+").replace(/_/g, "/"));
       const user = JSON.parse(decodedJson);
-      const userRole = (user?.role || "OPERATOR") as UserRole;
+      const userRole = user?.role || "OPERATOR";
 
-      // Si l'utilisateur est ADMIN, il a accès à tout
-      if (userRole === "ADMIN") {
-        return NextResponse.next();
-      }
-
-      // Cas racine "/" : si le rôle n'est pas ROLE_EXPLOITATION ni ADMIN, rediriger vers sa 1ère page
-      if (pathname === "/") {
-        if (userRole !== "ROLE_EXPLOITATION") {
-          const defaultPage = ROLE_DEFAULT_PAGES[userRole] || "/";
-          return NextResponse.redirect(new URL(defaultPage, request.url));
-        }
-        return NextResponse.next();
-      }
-
-      // Vérification des routes autorisées pour ce rôle
-      const allowedRoutes = ROLE_ALLOWED_ROUTES[userRole] || [];
-      const isAllowed = allowedRoutes.some((route) => {
-        if (route === "/") return pathname === "/";
-        return pathname.startsWith(route);
-      });
-
-      if (!isAllowed) {
-        // Redirection vers la page autorisée par défaut du rôle pour empêcher la vue
-        const defaultPage = ROLE_DEFAULT_PAGES[userRole] || "/";
-        return NextResponse.redirect(new URL(defaultPage, request.url));
+      // Si l'utilisateur tente d'accéder à /admin et qu'il n'est pas ADMIN
+      if (pathname.startsWith("/admin") && userRole !== "ADMIN") {
+        return NextResponse.redirect(new URL("/hub", request.url));
       }
     }
   } catch (err) {
-    console.warn("Erreur validation middleware RBAC:", err);
+    console.warn("Erreur validation middleware session:", err);
   }
 
   return NextResponse.next();

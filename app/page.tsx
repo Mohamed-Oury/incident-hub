@@ -1,66 +1,65 @@
-import { getSession } from "@/modules/auth/auth-service";
-import { getAllIncidents } from "@/modules/incidents/data-store";
-import { AppShell } from "@/modules/layout/AppShell";
-import { MetricsOverview } from "@/modules/dashboard/components/MetricsOverview";
-import { KnowledgeCatalog } from "@/modules/knowledge-base/components/KnowledgeCatalog";
-import Link from "next/link";
+import { PortfolioHeader } from "@/modules/portfolio/components/layout/PortfolioHeader";
+import { PortfolioFooter } from "@/modules/portfolio/components/layout/PortfolioFooter";
+import { HeroSection } from "@/modules/portfolio/components/sections/HeroSection";
+import { AboutSection } from "@/modules/portfolio/components/sections/AboutSection";
+import { SiteStats } from "@/modules/portfolio/components/common/SiteStats";
+import { ProjectsSection } from "@/modules/portfolio/components/sections/ProjectsSection";
+import { BlogSection } from "@/modules/portfolio/components/sections/BlogSection";
+import { CallToAction } from "@/modules/portfolio/components/common/CallToAction";
+import { prisma } from "@/lib/prisma";
 
-export default async function HomePage() {
-  const user = await getSession();
-  const incidents = await getAllIncidents();
+export const revalidate = 60; // SSR revalidation
+
+export default async function PortfolioHomePage() {
+  const [projectsRaw, blogPostsRaw, stats] = await Promise.all([
+    prisma.project.findMany({ where: { published: true }, orderBy: { createdAt: "desc" } }),
+    prisma.blogPost.findMany({ where: { published: true }, orderBy: { createdAt: "desc" }, include: { author: true } }),
+    prisma.siteStats.findFirst({ where: { id: "main-stats" } }),
+  ]);
+
+  const recentProjects = projectsRaw.slice(0, 3).map((p) => ({
+    ...p,
+    technologies: JSON.parse(p.technologies || "[]") as string[],
+  }));
+
+  const recentBlogPosts = blogPostsRaw.slice(0, 3).map((p) => ({
+    ...p,
+    tags: typeof p.tags === "string" ? JSON.parse(p.tags || "[]") : p.tags,
+  }));
+
+  const projectStats = {
+    total: projectsRaw.length,
+    web: projectsRaw.filter((p) => p.category === "WEB").length,
+    bancaire: projectsRaw.filter((p) => p.category === "BANCAIRE").length,
+    research: projectsRaw.filter((p) => p.category === "RESEARCH").length,
+    cbs: projectsRaw.filter((p) => p.category === "CBS").length,
+  };
+
+  const blogStats = {
+    total: blogPostsRaw.length,
+    cbs: blogPostsRaw.filter((b) => b.category === "CBS").length,
+    informatique: blogPostsRaw.filter((b) => b.category === "INFORMATIQUE").length,
+    mathematiques: blogPostsRaw.filter((b) => b.category === "MATHEMATIQUES").length,
+  };
 
   return (
-    <AppShell user={user} pageTitle="Vue d'ensemble" eyebrow="EXPLOITATION MONÉTIQUE">
-      {/* 1. Métriques clés */}
-      <MetricsOverview incidents={incidents} />
+    <div className="bg-white text-gray-900 min-h-screen font-sans">
+      <PortfolioHeader />
 
-      {/* 2. Appel à l'action Diagnostic et méthodologie */}
-      <div
-        style={{
-          background: "linear-gradient(135deg, #111827 0%, #1f2937 100%)",
-          color: "white",
-          padding: "2rem",
-          borderRadius: "16px",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.35)",
-          border: "1px solid #374151",
-          borderLeft: "6px solid #e60028",
-        }}
-      >
-        <div>
-          <span style={{ fontSize: "0.75rem", letterSpacing: "0.1em", fontWeight: 700, textTransform: "uppercase", color: "#e60028" }}>
-            ASSISTANT DE DIAGNOSTIC GUIDÉ
-          </span>
-          <h2 style={{ fontSize: "1.4rem", fontWeight: 800, marginTop: "0.3rem" }}>
-            Un incident monétique en cours ?
-          </h2>
-          <p style={{ fontSize: "0.92rem", opacity: 0.9, marginTop: "0.25rem", maxWidth: "600px", color: "#d1d5db" }}>
-            Suivez la démarche standardisée : Symptômes → Point de rupture → Hypothèses → Preuves ISO 8583 → Cause Racine validée.
-          </p>
-        </div>
+      <main>
+        <HeroSection />
+        <AboutSection />
+        <SiteStats
+          totalPosts={blogPostsRaw.length}
+          totalProjects={projectsRaw.length}
+          yearsExperience={stats?.yearsExperience || 5}
+        />
+        <ProjectsSection recentProjects={recentProjects} stats={projectStats} />
+        <BlogSection recentPosts={recentBlogPosts} blogStats={blogStats} />
+        <CallToAction />
+      </main>
 
-        <Link
-          href="/diagnostic"
-          style={{
-            background: "#e60028",
-            color: "#ffffff",
-            fontWeight: 700,
-            padding: "0.85rem 1.6rem",
-            borderRadius: "10px",
-            fontSize: "0.95rem",
-            whiteSpace: "nowrap",
-            boxShadow: "0 4px 12px rgba(230, 0, 40, 0.35)",
-            border: "none",
-          }}
-        >
-          Lancer le diagnostic →
-        </Link>
-      </div>
-
-      {/* 3. Knowledge Base & Catalogue des incidents de référence */}
-      <KnowledgeCatalog initialIncidents={incidents} />
-    </AppShell>
+      <PortfolioFooter />
+    </div>
   );
 }

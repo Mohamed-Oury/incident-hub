@@ -64,7 +64,7 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
       icon: "⚡",
       roleRequired: "ROLE_EXPLOITATION",
       items: [
-        { href: "/", label: "Vue d'ensemble", icon: "⊞" },
+        { href: "/hub", label: "Vue d'ensemble", icon: "⊞" },
         { href: "/knowledge", label: "Base de connaissance", icon: "📚" },
         { href: "/diagnostic", label: "Diagnostic Assistant", icon: "⚡" },
         { href: "/training-monetique/antiseche", label: "Antisèche Monétique", icon: "🧠" },
@@ -209,7 +209,7 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
               }}
             >
               <Link
-                href="/"
+                href="/hub"
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -331,6 +331,26 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+            <Link
+              href="/"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "0.4rem",
+                background: "linear-gradient(135deg, #7d1538 0%, #a01e4a 100%)",
+                color: "#ffffff",
+                padding: "0.45rem 0.95rem",
+                borderRadius: "10px",
+                fontSize: "0.82rem",
+                fontWeight: 700,
+                textDecoration: "none",
+                boxShadow: "0 2px 8px rgba(125, 21, 56, 0.3)",
+                transition: "all 0.15s ease",
+              }}
+            >
+              ← Portfolio Mr. Oury
+            </Link>
+
             <div
               style={{
                 display: "flex",

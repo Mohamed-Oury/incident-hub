@@ -1,8 +1,8 @@
 import fs from "fs";
 import path from "path";
-import { MONETIQUE_GRADES, MONETIQUE_LESSONS } from "../modules/training-monetique/data";
-import { MONETIQUE_EXAMS } from "../modules/training-monetique/exams-data";
-import { CBS_4GL_GRADES, CBS_4GL_LESSONS, CBS_4GL_EXAMS } from "../modules/cbs/cbs-4gl-data";
+import { MONETIQUE_GRADES, MONETIQUE_LESSONS } from "@/modules/training-monetique/data";
+import { MONETIQUE_EXAMS } from "@/modules/training-monetique/exams-data";
+import { CBS_4GL_GRADES, CBS_4GL_LESSONS, CBS_4GL_EXAMS } from "@/modules/cbs/cbs-4gl-data";
 
 const outDir = path.join(process.cwd(), "mobile/assets/data");
 if (!fs.existsSync(outDir)) {

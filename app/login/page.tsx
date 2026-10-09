@@ -2,13 +2,13 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { DEMO_USERS } from "@/modules/auth/types";
+import Link from "next/link";
 
 export default function LoginPage() {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
-  const [email, setEmail] = useState("ourykohkoun@gmail.com");
-  const [password, setPassword] = useState("123456");
+  const [email, setEmail] = useState("mohaourydiallo@gmail.com");
+  const [password, setPassword] = useState("admin123");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -36,7 +36,11 @@ export default function LoginPage() {
         throw new Error(data.error || "Échec de connexion.");
       }
 
-      window.location.href = data.redirectTo || "/";
+      // Redirection dynamique post-connexion (callbackUrl ou /admin/dashboard pour admin)
+      const searchParams = new URLSearchParams(window.location.search);
+      const callbackUrl = searchParams.get("callbackUrl");
+
+      window.location.href = callbackUrl || data.redirectTo || "/admin/dashboard";
     } catch (err: any) {
       setError(err.message || "Impossible de se connecter.");
     } finally {
@@ -49,46 +53,69 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="login-container">
-      <div className="login-card">
-        <div style={{ textAlign: "center", marginBottom: "1.25rem" }}>
-          <img
-            src="/logo.png"
-            alt="BANKING CBS & MONÉTIQUE HUB Logo"
+    <div
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "radial-gradient(circle at 50% 20%, rgba(125, 21, 56, 0.35) 0%, #0f172a 75%)",
+        padding: "1.5rem",
+        fontFamily: "sans-serif",
+      }}
+    >
+      <div
+        style={{
+          background: "rgba(30, 41, 59, 0.8)",
+          backdropFilter: "blur(16px)",
+          borderRadius: "20px",
+          padding: "2.25rem",
+          width: "100%",
+          maxWidth: "440px",
+          boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
+          border: "1px solid rgba(255, 255, 255, 0.12)",
+        }}
+      >
+        <div style={{ textAlign: "center", marginBottom: "1.5rem" }}>
+          <div
             style={{
-              width: "68px",
-              height: "68px",
+              width: "60px",
+              height: "60px",
               borderRadius: "16px",
-              objectFit: "cover",
-              border: "1px solid #10b981",
-              boxShadow: "0 6px 20px rgba(16, 185, 129, 0.25)",
-              background: "#0f172a",
-              marginBottom: "0.5rem",
-              display: "inline-block",
+              background: "linear-gradient(135deg, #7d1538 0%, #a01e4a 100%)",
+              color: "#ffffff",
+              display: "grid",
+              placeItems: "center",
+              fontWeight: 900,
+              fontSize: "1.5rem",
+              margin: "0 auto 0.75rem",
+              boxShadow: "0 6px 20px rgba(125, 21, 56, 0.4)",
             }}
-          />
-          <h1 style={{ fontSize: "1.4rem", fontWeight: 800, color: "#111827", letterSpacing: "0.02em" }}>BANKING</h1>
-          <p style={{ fontSize: "0.8rem", fontWeight: 700, letterSpacing: "0.06em", color: "#10b981", textTransform: "uppercase" }}>
-            CBS &amp; MONÉTIQUE HUB
-          </p>
-          <p style={{ fontSize: "0.82rem", color: "#6b7280", marginTop: "0.15rem" }}>
-            Plateforme globale d&apos;ingénierie &amp; exploitation Banking Core (CBS Amplitude 4GL) et Monétique (ISO 8583, EMV, GAB, HSM)
+          >
+            MO
+          </div>
+
+          <h1 style={{ fontSize: "1.5rem", fontWeight: 900, color: "#ffffff", letterSpacing: "-0.02em" }}>
+            Espace Sécurisé
+          </h1>
+          <p style={{ fontSize: "0.82rem", fontWeight: 700, color: "#f8d0db", textTransform: "uppercase", letterSpacing: "0.06em", marginTop: "0.2rem" }}>
+            PORTFOLIO ADMIN &amp; MONÉTIQUE HUB
           </p>
         </div>
 
         {error && (
           <div
             style={{
-              padding: "0.5rem 0.75rem",
-              background: "#fee2e2",
-              color: "#991b1b",
-              borderRadius: "6px",
-              fontSize: "0.82rem",
-              marginBottom: "1rem",
-              border: "1px solid #fca5a5",
+              padding: "0.75rem 1rem",
+              background: "rgba(239, 68, 68, 0.2)",
+              color: "#fca5a5",
+              borderRadius: "10px",
+              fontSize: "0.85rem",
+              marginBottom: "1.25rem",
+              border: "1px solid rgba(239, 68, 68, 0.3)",
             }}
           >
-            {error}
+            ⚠️ {error}
           </div>
         )}
 
@@ -97,10 +124,10 @@ export default function LoginPage() {
             e.preventDefault();
             handleLogin();
           }}
-          style={{ display: "flex", flexDirection: "column", gap: "0.85rem" }}
+          style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
         >
           <div>
-            <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, marginBottom: "0.25rem", color: "#0f172a" }}>
+            <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 700, marginBottom: "0.35rem", color: "#cbd5e1" }}>
               Adresse email
             </label>
             <input
@@ -108,20 +135,22 @@ export default function LoginPage() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="votre.email@domaine.com"
+              placeholder="mohaourydiallo@gmail.com"
               style={{
                 width: "100%",
-                padding: "0.6rem 0.85rem",
-                borderRadius: "8px",
-                border: "1px solid #cbd5e1",
-                fontSize: "0.9rem",
+                padding: "0.75rem 1rem",
+                borderRadius: "10px",
+                background: "rgba(15, 23, 42, 0.8)",
+                border: "1px solid rgba(255, 255, 255, 0.15)",
+                color: "#ffffff",
+                fontSize: "0.92rem",
                 outline: "none",
               }}
             />
           </div>
 
           <div>
-            <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 600, marginBottom: "0.25rem", color: "#0f172a" }}>
+            <label style={{ display: "block", fontSize: "0.82rem", fontWeight: 700, marginBottom: "0.35rem", color: "#cbd5e1" }}>
               Mot de passe
             </label>
             <input
@@ -132,10 +161,12 @@ export default function LoginPage() {
               placeholder="••••••••"
               style={{
                 width: "100%",
-                padding: "0.6rem 0.85rem",
-                borderRadius: "8px",
-                border: "1px solid #cbd5e1",
-                fontSize: "0.9rem",
+                padding: "0.75rem 1rem",
+                borderRadius: "10px",
+                background: "rgba(15, 23, 42, 0.8)",
+                border: "1px solid rgba(255, 255, 255, 0.15)",
+                color: "#ffffff",
+                fontSize: "0.92rem",
                 outline: "none",
               }}
             />
@@ -144,40 +175,28 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="btn-emerald"
-            style={{ width: "100%", justifyContent: "center", padding: "0.65rem 1rem", fontSize: "0.9rem", marginTop: "0.25rem" }}
+            style={{
+              width: "100%",
+              background: "linear-gradient(135deg, #7d1538 0%, #a01e4a 100%)",
+              color: "#ffffff",
+              padding: "0.85rem",
+              borderRadius: "10px",
+              fontWeight: 800,
+              fontSize: "0.95rem",
+              border: "none",
+              cursor: loading ? "wait" : "pointer",
+              boxShadow: "0 4px 15px rgba(125, 21, 56, 0.4)",
+              marginTop: "0.5rem",
+            }}
           >
-            {loading ? "Vérification en cours..." : "Se connecter"}
+            {loading ? "Connexion en cours..." : "Se connecter →"}
           </button>
         </form>
 
-        {/* <div style={{ marginTop: "1.25rem", borderTop: "1px solid #f1f5f9", paddingTop: "0.85rem" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.4rem" }}>
-            {DEMO_USERS.map((user) => (
-              <button
-                key={user.id}
-                type="button"
-                className="demo-account-chip"
-                style={{
-                  textAlign: "left",
-                  padding: "0.4rem 0.6rem",
-                  border: "1px solid #e2e8f0",
-                  gridColumn: user.role === "ADMIN" ? "1 / -1" : undefined,
-                }}
-                onClick={() => handleLogin(user.email)}
-              >
-                <strong style={{ fontSize: "0.78rem", color: "#0f172a" }}>{user.name}</strong>
-                <span style={{ fontSize: "0.68rem", color: user.role === "ADMIN" ? "#111827" : "#e60028", fontWeight: 700 }}>
-                  {user.role}
-                </span>
-              </button>
-            ))}
-          </div>
-        </div> */}
-
-        {/* Signature & Copyright */}
-        <div style={{ marginTop: "1rem", textAlign: "center", fontSize: "0.72rem", color: "#6b7280", borderTop: "1px solid #f3f4f6", paddingTop: "0.75rem" }}>
-          © {new Date().getFullYear()} <strong>M.Oury</strong> • <span style={{ color: "#e60028", fontWeight: 600 }}>Ingénieur IT BANKING &amp; Expert Monétique - CBS</span>
+        <div style={{ marginTop: "1.5rem", textAlign: "center" }}>
+          <Link href="/" style={{ fontSize: "0.85rem", color: "#cbd5e1", textDecoration: "none" }}>
+            ← Retourner au Portfolio public
+          </Link>
         </div>
       </div>
     </div>
