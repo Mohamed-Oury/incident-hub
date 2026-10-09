@@ -25,7 +25,7 @@ export function SiteStats({ totalPosts = 3, totalProjects = 5, yearsExperience =
     },
     {
       icon: Users,
-      value: "6+",
+      value: "9+",
       label: "Filiales Accompagnées",
     },
   ];

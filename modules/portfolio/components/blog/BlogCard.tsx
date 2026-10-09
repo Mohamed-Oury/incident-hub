@@ -26,13 +26,12 @@ export default function BlogCard({ post, featured = false }: BlogCardProps) {
     GEOPOLITIQUE: "🌍",
   };
 
-  const authorName = typeof post.author === "object" ? post.author?.name : post.author || "Mr.Diallo";
+  const authorName = typeof post.author === "object" ? post.author?.name : post.author || "Mr.Oury";
 
   return (
     <div
-      className={`group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden border border-gray-200 hover:border-[#7d1538]/20 flex flex-col justify-between h-full ${
-        featured ? "ring-2 ring-[#7d1538]/30 shadow-[#7d1538]/10" : ""
-      }`}
+      className={`group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden border border-gray-200 hover:border-[#7d1538]/20 flex flex-col justify-between h-full ${featured ? "ring-2 ring-[#7d1538]/30 shadow-[#7d1538]/10" : ""
+        }`}
     >
       <div>
         {/* Visuel d'en-tête */}

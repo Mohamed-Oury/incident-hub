@@ -23,7 +23,7 @@ export function PortfolioHeader() {
               <span className="text-white font-bold text-base md:text-xl">M</span>
             </div>
             <div className="flex flex-col">
-              <span className="text-lg md:text-2xl font-bold text-gray-900 leading-tight">Mr.Diallo</span>
+              <span className="text-lg md:text-2xl font-bold text-gray-900 leading-tight">Mr.Oury</span>
               <span className="text-xs text-gray-500 hidden sm:block">
                 Mathématicien &amp; Expert Monétique - CBS
               </span>
@@ -42,7 +42,18 @@ export function PortfolioHeader() {
               </Link>
             ))}
 
+            <Link
+              href="/contact"
+              className="bg-[#7d1538] text-white px-5 py-2.5 rounded-full hover:bg-[#a01e4a] transition-all duration-300 shadow-md text-sm font-medium text-decoration-none"
+            >
+              Contact
+            </Link>
+
             {/* Onglet Spécial Redirection vers la Plateforme Monétique & CBS */}
+          </nav>
+
+          {/* Actions Desktop (Bouton Contact & Admin) */}
+          <div className="hidden md:flex items-center space-x-3">
             <Link
               href="/hub"
               className="inline-flex items-center gap-2 bg-gradient-to-r from-[#7d1538] to-[#a01e4a] text-white px-4 py-2 rounded-full hover:shadow-lg transition-all duration-300 font-bold text-xs lg:text-sm text-decoration-none shadow-md"
@@ -52,22 +63,6 @@ export function PortfolioHeader() {
               <span className="bg-white text-[#7d1538] text-[10px] px-2 py-0.5 rounded-full font-extrabold">
                 HUB
               </span>
-            </Link>
-          </nav>
-
-          {/* Actions Desktop (Bouton Contact & Admin) */}
-          <div className="hidden md:flex items-center space-x-3">
-            <Link
-              href="/contact"
-              className="bg-[#7d1538] text-white px-5 py-2.5 rounded-full hover:bg-[#a01e4a] transition-all duration-300 shadow-md text-sm font-medium text-decoration-none"
-            >
-              Contact
-            </Link>
-            <Link
-              href="/admin/dashboard"
-              className="border border-[#7d1538] text-[#7d1538] hover:bg-[#7d1538] hover:text-white px-4 py-2 rounded-full transition-all duration-300 text-xs font-semibold text-decoration-none"
-            >
-              Admin
             </Link>
           </div>
 

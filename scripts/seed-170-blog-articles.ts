@@ -97,8 +97,8 @@ async function seed170Articles() {
   for (let i = 1; i <= 60; i++) {
     const topic = mathDetailedTopics[(i - 1) % mathDetailedTopics.length];
     const indexStr = i < 10 ? `0${i}` : `${i}`;
-    const title = `${topic.title} (Fiche ${indexStr})`;
-    const slug = slugify(`math-quant-${title}`);
+    const title = topic.title;
+    const slug = slugify(`math-quant-${topic.title}-${indexStr}`);
 
     const excerpt = `${topic.sub}. Inclus : cas d'usage concret (${topic.example}) et implémentation algorithmique.`;
 
@@ -266,8 +266,8 @@ La maîtrise théorique et numérique de **${topic.title}** permet de concevoir 
     const topic = monetiqueDetailedTopics[(i - 1) % monetiqueDetailedTopics.length];
     const indexStr = i < 10 ? `0${i}` : `${i}`;
     const level = i <= 20 ? "Basique - Principes & Traces" : i <= 40 ? "Intermédiaire - Protocoles" : "Expert - Architecture & Cryptographie";
-    const title = `Monétique & Payway : ${topic.title} (Vol. ${indexStr})`;
-    const slug = slugify(`monetique-payway-${title}`);
+    const title = `Monétique & Payway : ${topic.title}`;
+    const slug = slugify(`monetique-payway-${topic.title}-${indexStr}`);
 
     const excerpt = `Guide spécialisé (${level}) : ${topic.sub}. Exemples réels de trames, logs TPE/GAB et procédures de résolution.`;
 
@@ -412,8 +412,8 @@ La maîtrise de **${topic.title}** permet d'assurer la haute disponibilité des 
   for (let i = 1; i <= 50; i++) {
     const topic = cbsDetailedTopics[(i - 1) % cbsDetailedTopics.length];
     const indexStr = i < 10 ? `0${i}` : `${i}`;
-    const title = `CBS Core Banking : ${topic.title} (Fiche ${indexStr})`;
-    const slug = slugify(`cbs-amplitude-flex-${title}`);
+    const title = `CBS Core Banking : ${topic.title}`;
+    const slug = slugify(`cbs-amplitude-flex-${topic.title}-${indexStr}`);
 
     const excerpt = `Guide expert Core Banking : ${topic.sub}. Exemples de code 4GL, masques .per, requêtes SQL et diagnostic EOD.`;
 

@@ -26,10 +26,10 @@ export function HeroSection() {
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-gray-900 leading-tight tracking-tight">
                 Bonjour,
                 <br />
-                je suis <span className="text-[#7d1538]">Mr. Diallo</span>
+                je suis <span className="text-[#7d1538]">Mr.Oury</span>
               </h1>
               <p className="text-gray-600 text-base sm:text-lg lg:text-xl leading-relaxed max-w-2xl mx-auto lg:mx-0 font-normal">
-                Ingénieur Logiciel &amp; Mathématicien spécialisé dans l&apos;ingénierie bancaire. Mon expertise s&apos;articule autour de 4 piliers d&apos;excellence : <strong className="text-gray-900 font-semibold">Mathématiques</strong>, <strong className="text-gray-900 font-semibold">CBS Amplitude &amp; Flex</strong>, <strong className="text-gray-900 font-semibold">Informix 4GL</strong> et <strong className="text-gray-900 font-semibold">Monétique Payway &amp; Powercard</strong>.
+                Ingénieur Logiciel &amp; Mathématicien spécialisé dans l&apos;ingénierie bancaire. Mon expertise s&apos;articule autour de 4 piliers d&apos;excellence  <strong className="text-gray-900 font-semibold">Mathématiques</strong>, <strong className="text-gray-900 font-semibold">CBS Amplitude &amp; Flex</strong>, <strong className="text-gray-900 font-semibold">Informix 4GL</strong> et <strong className="text-gray-900 font-semibold">Monétique Payway &amp; Powercard</strong>.
               </p>
             </div>
 

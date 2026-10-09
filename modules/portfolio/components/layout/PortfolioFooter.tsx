@@ -22,13 +22,13 @@ export function PortfolioFooter() {
                 <span className="text-white font-bold text-lg md:text-xl">M</span>
               </div>
               <div>
-                <span className="text-xl md:text-2xl font-bold text-white">Mr.Diallo</span>
+                <span className="text-xl md:text-2xl font-bold text-white">Mr.Oury</span>
                 <p className="text-gray-400 text-xs md:text-sm">Ingénieur Logiciel &amp; Mathématicien</p>
               </div>
             </Link>
 
             <p className="text-gray-300 leading-relaxed max-w-md text-sm md:text-base">
-              Magistère en Mathématiques spécialité analyse numérique, je partage mes connaissances sur l&apos;informatique, les mathématiques, les systèmes bancaires CBS (AmplitudeUp) et la monétique à travers ce portfolio.
+              Mathématicien spécialisé en Modelisation, Optimisation, Ingénierie Bancaire, je partage mes connaissances sur l&apos;informatique, les mathématiques, les systèmes bancaires CBS (AmplitudeUp) et la monétique à travers cette plateforme.
             </p>
 
             {/* Réseaux sociaux */}
@@ -106,7 +106,7 @@ export function PortfolioFooter() {
         <div className="mt-8 md:mt-12 pt-6 md:pt-8 border-t border-gray-700">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 text-xs md:text-sm text-gray-400">
             <p className="text-center md:text-left">
-              © {new Date().getFullYear()} Mr.Diallo (Mr.Oury). Tous droits réservés.
+              © {new Date().getFullYear()} Mr.Oury. Tous droits réservés.
             </p>
             <div className="flex items-center space-x-4">
               <Link
