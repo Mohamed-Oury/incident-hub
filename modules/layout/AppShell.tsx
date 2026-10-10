@@ -234,77 +234,41 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
           </button>
         </div>
 
-        {/* Universe Switcher Widget in Sidebar */}
+        {/* Badge Univers Actif dans la Sidebar */}
         {!collapsed && (
-          <div style={{ padding: "0.6rem 0.85rem", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+          <div style={{ padding: "0.5rem 0.85rem 0.75rem", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
             <div
               style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(3, 1fr)",
-                gap: "3px",
-                background: "rgba(0,0,0,0.4)",
-                padding: "3px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                background: isFlexcubeUniverse ? "rgba(234, 88, 12, 0.12)" : isAmplitudeUniverse ? "rgba(2, 132, 199, 0.12)" : "rgba(225, 29, 72, 0.12)",
+                border: `1px solid ${isFlexcubeUniverse ? "rgba(234, 88, 12, 0.3)" : isAmplitudeUniverse ? "rgba(2, 132, 199, 0.3)" : "rgba(225, 29, 72, 0.3)"}`,
                 borderRadius: "8px",
-                border: "1px solid rgba(255,255,255,0.08)",
+                padding: "6px 10px",
               }}
             >
-              <Link
-                href="/hub"
-                title="Espace Monétique & Cartes"
+              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                <span style={{ fontSize: "0.9rem" }}>
+                  {isFlexcubeUniverse ? "🏛️" : isAmplitudeUniverse ? "🏦" : "💳"}
+                </span>
+                <span style={{ fontSize: "0.74rem", fontWeight: 700, color: isFlexcubeUniverse ? "#fb923c" : isAmplitudeUniverse ? "#38bdf8" : "#fda4af" }}>
+                  {isFlexcubeUniverse ? "Oracle FLEXCUBE" : isAmplitudeUniverse ? "Sopra Amplitude" : "Monétique Hub"}
+                </span>
+              </div>
+              <span
                 style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: "0.68rem",
-                  fontWeight: !isCbsUniverse ? 700 : 500,
-                  padding: "6px 2px",
-                  borderRadius: "6px",
-                  textDecoration: "none",
-                  color: !isCbsUniverse ? "#ffffff" : "#94a3b8",
-                  background: !isCbsUniverse ? "var(--sg-red-600, #e60028)" : "transparent",
-                  transition: "all 0.2s",
+                  fontSize: "0.62rem",
+                  fontWeight: 800,
+                  textTransform: "uppercase",
+                  padding: "1px 5px",
+                  borderRadius: "4px",
+                  background: isFlexcubeUniverse ? "#ea580c" : isAmplitudeUniverse ? "#0284c7" : "var(--sg-red-600)",
+                  color: "#ffffff",
                 }}
               >
-                💳 Monét.
-              </Link>
-              <Link
-                href="/cbs"
-                title="Sopra Amplitude (4GL & .per)"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: "0.68rem",
-                  fontWeight: isAmplitudeUniverse ? 700 : 500,
-                  padding: "6px 2px",
-                  borderRadius: "6px",
-                  textDecoration: "none",
-                  color: isAmplitudeUniverse ? "#ffffff" : "#94a3b8",
-                  background: isAmplitudeUniverse ? "#0284c7" : "transparent",
-                  transition: "all 0.2s",
-                }}
-              >
-                🏦 Amplit.
-              </Link>
-              <Link
-                href="/cbs/flexcube"
-                title="Oracle FLEXCUBE (PL/SQL & AEOD)"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: "0.68rem",
-                  fontWeight: isFlexcubeUniverse ? 700 : 500,
-                  padding: "6px 2px",
-                  borderRadius: "6px",
-                  textDecoration: "none",
-                  color: isFlexcubeUniverse ? "#ffffff" : "#94a3b8",
-                  background: isFlexcubeUniverse ? "#ea580c" : "transparent",
-                  transition: "all 0.2s",
-                }}
-              >
-                🏛️ FLEXC.
-              </Link>
+                Actif
+              </span>
             </div>
           </div>
         )}
@@ -369,88 +333,94 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
 
       {/* Contenu avec marge dynamique */}
       <div className={`content ${collapsed ? "collapsed-margin" : ""}`}>
-        <header className="topbar">
-          <div>
-            <p className="eyebrow">{eyebrow}</p>
-            <h1 className="page-title">{pageTitle}</h1>
+        <header className="topbar" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "1rem", flexWrap: "nowrap" }}>
+          <div style={{ minWidth: 0, flex: "1 1 auto" }}>
+            <p className="eyebrow" style={{ margin: "0 0 2px 0", fontSize: "0.72rem", letterSpacing: "0.06em", fontWeight: 700, color: "var(--text-muted)" }}>{eyebrow}</p>
+            <h1 className="page-title" style={{ margin: 0, fontSize: "1.35rem", fontWeight: 800, color: "var(--text-primary)", letterSpacing: "-0.02em" }}>{pageTitle}</h1>
           </div>
 
-          <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.65rem", flexShrink: 0 }}>
+            {/* Bouton retour vers Portfolio discret & moderne */}
             <Link
               href="/"
+              title="Retour au Portfolio"
               style={{
                 display: "inline-flex",
                 alignItems: "center",
-                gap: "0.4rem",
-                background: "linear-gradient(135deg, #7d1538 0%, #a01e4a 100%)",
-                color: "#ffffff",
-                padding: "0.45rem 0.95rem",
-                borderRadius: "10px",
-                fontSize: "0.82rem",
-                fontWeight: 700,
+                gap: "0.35rem",
+                background: "rgba(15, 23, 42, 0.05)",
+                border: "1px solid var(--border-light)",
+                color: "var(--text-secondary)",
+                padding: "0.4rem 0.8rem",
+                borderRadius: "8px",
+                fontSize: "0.78rem",
+                fontWeight: 600,
                 textDecoration: "none",
-                boxShadow: "0 2px 8px rgba(125, 21, 56, 0.3)",
                 transition: "all 0.15s ease",
               }}
             >
-              ← Portfolio
+              <span>←</span> Portfolio
             </Link>
 
+            {/* Switcher 3 Univers avec pillules fluides */}
             <div
               style={{
                 display: "flex",
                 alignItems: "center",
-                background: "rgba(0,0,0,0.35)",
+                background: "rgba(15, 23, 42, 0.04)",
                 border: "1px solid var(--border-light)",
-                borderRadius: "20px",
-                padding: "2px 4px",
+                borderRadius: "10px",
+                padding: "3px",
                 gap: "2px",
               }}
             >
               <Link
                 href="/hub"
-                title="Monétique Hub"
+                title="Espace Monétique & Cartes"
                 style={{
                   fontSize: "0.75rem",
                   fontWeight: !isCbsUniverse ? 700 : 500,
                   color: !isCbsUniverse ? "#ffffff" : "var(--text-muted)",
                   background: !isCbsUniverse ? "var(--sg-red-600)" : "transparent",
                   padding: "4px 10px",
-                  borderRadius: "16px",
+                  borderRadius: "7px",
                   textDecoration: "none",
                   transition: "all 0.15s ease",
+                  boxShadow: !isCbsUniverse ? "0 1px 3px rgba(125, 21, 56, 0.3)" : "none",
                 }}
               >
                 💳 Monétique
               </Link>
               <Link
                 href="/cbs"
-                title="Sopra Amplitude"
+                title="Espace Sopra Amplitude 4GL"
                 style={{
                   fontSize: "0.75rem",
                   fontWeight: isAmplitudeUniverse ? 700 : 500,
                   color: isAmplitudeUniverse ? "#ffffff" : "var(--text-muted)",
                   background: isAmplitudeUniverse ? "#0284c7" : "transparent",
                   padding: "4px 10px",
-                  borderRadius: "16px",
+                  borderRadius: "7px",
                   textDecoration: "none",
                   transition: "all 0.15s ease",
+                  boxShadow: isAmplitudeUniverse ? "0 1px 3px rgba(2, 132, 199, 0.3)" : "none",
                 }}
               >
                 🏦 Amplitude
               </Link>
               <Link
                 href="/cbs/flexcube"
-                title="Oracle FLEXCUBE"
+                title="Espace Oracle FLEXCUBE"
                 style={{
                   fontSize: "0.75rem",
                   fontWeight: isFlexcubeUniverse ? 700 : 500,
                   color: isFlexcubeUniverse ? "#ffffff" : "var(--text-muted)",
                   background: isFlexcubeUniverse ? "#ea580c" : "transparent",
                   padding: "4px 10px",
-                  borderRadius: "16px",
+                  borderRadius: "7px",
                   textDecoration: "none",
                   transition: "all 0.15s ease",
+                  boxShadow: isFlexcubeUniverse ? "0 1px 3px rgba(234, 88, 12, 0.3)" : "none",
                 }}
               >
                 🏛️ FLEXCUBE
@@ -458,8 +428,23 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
             </div>
 
             {/* Header épuré : rôle et déconnexion */}
-            <div className="user-badge">
-              <div className="user-avatar">
+            <div className="user-badge" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              <div
+                className="user-avatar"
+                style={{
+                  width: "32px",
+                  height: "32px",
+                  borderRadius: "50%",
+                  background: "linear-gradient(135deg, #1e293b 0%, #0f172a 100%)",
+                  color: "#38bdf8",
+                  fontSize: "0.75rem",
+                  fontWeight: 800,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  border: "1px solid rgba(56, 189, 248, 0.3)",
+                }}
+              >
                 {currentUser?.name ? currentUser.name.slice(0, 2).toUpperCase() : initialUser?.name ? initialUser.name.slice(0, 2).toUpperCase() : "AD"}
               </div>
               <button
@@ -467,6 +452,16 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
                 onClick={handleLogout}
                 className="btn-logout"
                 title="Se déconnecter"
+                style={{
+                  fontSize: "0.75rem",
+                  fontWeight: 600,
+                  color: "#ef4444",
+                  background: "rgba(239, 68, 68, 0.08)",
+                  border: "1px solid rgba(239, 68, 68, 0.2)",
+                  padding: "4px 8px",
+                  borderRadius: "6px",
+                  cursor: "pointer",
+                }}
               >
                 Déconnexion
               </button>
