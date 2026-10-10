@@ -174,7 +174,7 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
       roleRequired: "ROLE_REFERENTIELS",
       items: [
         { href: "/cbs/flexcube/training", label: "Cursus Certifiant (5 Niveaux)", icon: "👨‍💻" },
-        { href: "/cbs/flexcube/academy", label: "FLEXCUBE Academy (75 QCM)", icon: "🎯" },
+        { href: "/cbs/flexcube/academy", label: "FLEXCUBE Academy", icon: "🎯" },
       ],
     },
     {
@@ -393,7 +393,7 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
                 transition: "all 0.15s ease",
               }}
             >
-              ← Portfolio Mr. Oury
+              ← Portfolio
             </Link>
 
             <div
