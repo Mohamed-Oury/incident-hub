@@ -41,6 +41,8 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
   const userRole: UserRole = currentUser?.role || initialUser?.role || "ADMIN";
 
   const isCbsUniverse = pathname.startsWith("/cbs");
+  const isFlexcubeUniverse = pathname.startsWith("/cbs/flexcube");
+  const isAmplitudeUniverse = isCbsUniverse && !isFlexcubeUniverse;
 
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({
     exploitation: true,
@@ -147,12 +149,52 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
         { href: "/cbs/log-analyzer", label: "Analyseur de Logs & Traces", icon: "📜" },
         { href: "/cbs/unix", label: "Commandes AIX/Unix", icon: "💻" },
         { href: "/cbs/incidents", label: "Incidents RCA & Run", icon: "🚨" },
+        { href: "/cbs/flexcube", label: "Espace Oracle FLEXCUBE", icon: "🏛️" },
       ],
     },
-
   ];
 
-  const currentNavSections = isCbsUniverse ? cbsNavSections : monetiqueNavSections;
+  // Sections Oracle FLEXCUBE
+  const flexcubeNavSections = [
+    {
+      key: "cbs_core",
+      title: "ORACLE FLEXCUBE",
+      icon: "🏛️",
+      roleRequired: "ROLE_EXPLOITATION",
+      items: [
+        { href: "/cbs/flexcube", label: "Tableau de bord FCUBS", icon: "⊞" },
+        { href: "/cbs/flexcube/copilot", label: "Studio Copilot PL/SQL", icon: "⚡" },
+        { href: "/cbs/flexcube/antiseche", label: "Antisèche FLEXCUBE", icon: "🧠" },
+        { href: "/cbs/flexcube/knowledge", label: "Dictionnaire Tables", icon: "🔍" },
+      ],
+    },
+    {
+      key: "cbs_academy",
+      title: "FORMATION & CERTIF",
+      icon: "🎓",
+      roleRequired: "ROLE_REFERENTIELS",
+      items: [
+        { href: "/cbs/flexcube/training", label: "Cursus Certifiant (5 Niveaux)", icon: "👨‍💻" },
+        { href: "/cbs/flexcube/academy", label: "FLEXCUBE Academy (75 QCM)", icon: "🎯" },
+      ],
+    },
+    {
+      key: "cbs_ops",
+      title: "FCUBS RUN & BATCH",
+      icon: "⚙️",
+      roleRequired: "ROLE_EXPERTISE",
+      items: [
+        { href: "/cbs/flexcube/incidents", label: "Incidents RUN & AEOD", icon: "🚨" },
+        { href: "/cbs", label: "Basculer vers Amplitude", icon: "↩️" },
+      ],
+    },
+  ];
+
+  const currentNavSections = isFlexcubeUniverse
+    ? flexcubeNavSections
+    : isCbsUniverse
+    ? cbsNavSections
+    : monetiqueNavSections;
 
   // Filtrage strict : Seul ADMIN voit TOUT. Les autres ne voient QUE leur section respective.
   const authorizedSections = currentNavSections.filter((section) => {
@@ -182,7 +224,7 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
           />
           <div className="brand-text">
             BANKING
-            <b>{isCbsUniverse ? "CBS AMPLITUDE" : "MONÉTIQUE HUB"}</b>
+            <b>{isFlexcubeUniverse ? "ORACLE FLEXCUBE" : isCbsUniverse ? "CBS AMPLITUDE" : "MONÉTIQUE HUB"}</b>
           </div>
           <button
             type="button"
@@ -200,8 +242,8 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: "4px",
+                gridTemplateColumns: "repeat(3, 1fr)",
+                gap: "3px",
                 background: "rgba(0,0,0,0.4)",
                 padding: "3px",
                 borderRadius: "8px",
@@ -210,14 +252,14 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
             >
               <Link
                 href="/hub"
+                title="Espace Monétique & Cartes"
                 style={{
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  gap: "5px",
-                  fontSize: "0.72rem",
+                  fontSize: "0.68rem",
                   fontWeight: !isCbsUniverse ? 700 : 500,
-                  padding: "6px 8px",
+                  padding: "6px 2px",
                   borderRadius: "6px",
                   textDecoration: "none",
                   color: !isCbsUniverse ? "#ffffff" : "#94a3b8",
@@ -225,26 +267,45 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
                   transition: "all 0.2s",
                 }}
               >
-                <span>💳</span> Monétique
+                💳 Monét.
               </Link>
               <Link
                 href="/cbs"
+                title="Sopra Amplitude (4GL & .per)"
                 style={{
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  gap: "5px",
-                  fontSize: "0.72rem",
-                  fontWeight: isCbsUniverse ? 700 : 500,
-                  padding: "6px 8px",
+                  fontSize: "0.68rem",
+                  fontWeight: isAmplitudeUniverse ? 700 : 500,
+                  padding: "6px 2px",
                   borderRadius: "6px",
                   textDecoration: "none",
-                  color: isCbsUniverse ? "#ffffff" : "#94a3b8",
-                  background: isCbsUniverse ? "#0284c7" : "transparent",
+                  color: isAmplitudeUniverse ? "#ffffff" : "#94a3b8",
+                  background: isAmplitudeUniverse ? "#0284c7" : "transparent",
                   transition: "all 0.2s",
                 }}
               >
-                <span>🏦</span> CBS Core
+                🏦 Amplit.
+              </Link>
+              <Link
+                href="/cbs/flexcube"
+                title="Oracle FLEXCUBE (PL/SQL & AEOD)"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "0.68rem",
+                  fontWeight: isFlexcubeUniverse ? 700 : 500,
+                  padding: "6px 2px",
+                  borderRadius: "6px",
+                  textDecoration: "none",
+                  color: isFlexcubeUniverse ? "#ffffff" : "#94a3b8",
+                  background: isFlexcubeUniverse ? "#ea580c" : "transparent",
+                  transition: "all 0.2s",
+                }}
+              >
+                🏛️ FLEXC.
               </Link>
             </div>
           </div>
@@ -364,6 +425,7 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
             >
               <Link
                 href="/"
+                title="Monétique Hub"
                 style={{
                   fontSize: "0.75rem",
                   fontWeight: !isCbsUniverse ? 700 : 500,
@@ -375,22 +437,39 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
                   transition: "all 0.15s ease",
                 }}
               >
-                💳
+                💳 Monétique
               </Link>
               <Link
                 href="/cbs"
+                title="Sopra Amplitude"
                 style={{
                   fontSize: "0.75rem",
-                  fontWeight: isCbsUniverse ? 700 : 500,
-                  color: isCbsUniverse ? "#ffffff" : "var(--text-muted)",
-                  background: isCbsUniverse ? "#0284c7" : "transparent",
+                  fontWeight: isAmplitudeUniverse ? 700 : 500,
+                  color: isAmplitudeUniverse ? "#ffffff" : "var(--text-muted)",
+                  background: isAmplitudeUniverse ? "#0284c7" : "transparent",
                   padding: "4px 10px",
                   borderRadius: "16px",
                   textDecoration: "none",
                   transition: "all 0.15s ease",
                 }}
               >
-                🏦
+                🏦 Amplitude
+              </Link>
+              <Link
+                href="/cbs/flexcube"
+                title="Oracle FLEXCUBE"
+                style={{
+                  fontSize: "0.75rem",
+                  fontWeight: isFlexcubeUniverse ? 700 : 500,
+                  color: isFlexcubeUniverse ? "#ffffff" : "var(--text-muted)",
+                  background: isFlexcubeUniverse ? "#ea580c" : "transparent",
+                  padding: "4px 10px",
+                  borderRadius: "16px",
+                  textDecoration: "none",
+                  transition: "all 0.15s ease",
+                }}
+              >
+                🏛️ FLEXCUBE
               </Link>
             </div>
 
@@ -437,7 +516,7 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
                 style={{ width: "24px", height: "24px", borderRadius: "6px", border: "1px solid #10b981", background: "#0f172a" }}
               />
               <span>
-                Plateforme globale d&apos;ingénierie &amp; exploitation Banking Core (CBS Amplitude 4GL) et Monétique (ISO 8583, EMV, GAB, HSM)
+                Plateforme globale d&apos;ingénierie &amp; exploitation Banking Core (Sopra Amplitude 4GL &amp; Oracle FLEXCUBE PL/SQL) et Monétique (ISO 8583, EMV, GAB, HSM)
               </span>
             </div>
             <div style={{ textAlign: "right" }}>

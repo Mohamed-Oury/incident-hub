@@ -100,6 +100,177 @@ export default function CbsDashboardPage() {
     <AppShell pageTitle="Core Banking Amplitude & IT Banking" eyebrow="UNIVERS PRODUCTION BANCAIRE">
       <div style={{ display: "flex", flexDirection: "column", gap: "1.75rem" }}>
         
+        {/* Sélecteur de Plateforme Multi-CBS */}
+        <div
+          style={{
+            background: "linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%)",
+            border: "1px solid rgba(255, 255, 255, 0.1)",
+            borderRadius: "var(--radius-lg)",
+            padding: "1.25rem 1.5rem",
+            boxShadow: "0 4px 16px rgba(0,0,0,0.2)",
+          }}
+        >
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem", flexWrap: "wrap", gap: "0.5rem" }}>
+            <div>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <span style={{ fontSize: "1.2rem" }}>🌐</span>
+                <h3 style={{ fontSize: "1.05rem", fontWeight: 800, margin: 0, color: "#f8fafc" }}>
+                  Plateforme Multi-Core Banking Systems (CBS)
+                </h3>
+              </div>
+              <p style={{ fontSize: "0.82rem", color: "#94a3b8", margin: "2px 0 0 0" }}>
+                Basculez entre les deux environnements majeurs du marché bancaire avec leurs moteurs et référentiels dédiés :
+              </p>
+            </div>
+            <span
+              style={{
+                fontSize: "0.72rem",
+                fontWeight: 700,
+                background: "rgba(56, 189, 248, 0.15)",
+                color: "#38bdf8",
+                border: "1px solid rgba(56, 189, 248, 0.3)",
+                padding: "3px 10px",
+                borderRadius: "20px",
+              }}
+            >
+              2 Systèmes Opérationnels
+            </span>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "1rem" }}>
+            {/* Carte Amplitude (Actuelle) */}
+            <div
+              style={{
+                background: "rgba(2, 132, 199, 0.08)",
+                border: "2px solid #0284c7",
+                borderRadius: "var(--radius-md)",
+                padding: "1.2rem 1.4rem",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                position: "relative",
+              }}
+            >
+              <div style={{ position: "absolute", top: "12px", right: "12px" }}>
+                <span
+                  style={{
+                    background: "#0284c7",
+                    color: "#ffffff",
+                    fontSize: "0.68rem",
+                    fontWeight: 800,
+                    padding: "2px 8px",
+                    borderRadius: "10px",
+                    letterSpacing: "0.04em",
+                  }}
+                >
+                  ✓ ENVIRONNEMENT ACTIF
+                </span>
+              </div>
+              <div>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", marginBottom: "0.4rem" }}>
+                  <span style={{ fontSize: "1.6rem" }}>🏦</span>
+                  <div>
+                    <h4 style={{ margin: 0, fontSize: "1.05rem", fontWeight: 800, color: "#f1f5f9" }}>
+                      Sopra Amplitude
+                    </h4>
+                    <span style={{ fontSize: "0.75rem", color: "#38bdf8", fontWeight: 600 }}>
+                      Informix / Oracle • 4GL • Masques .per • Tables BK*
+                    </span>
+                  </div>
+                </div>
+                <p style={{ fontSize: "0.82rem", color: "#cbd5e1", lineHeight: "1.45", margin: "0.6rem 0" }}>
+                  Environnement standard UEMOA &amp; CEMAC : arrêtés journaliers EOD/BOD, requêtes SQL d&apos;urgence, dictionnaire de schémas bancaires et atelier de développement 4GL.
+                </p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem", marginTop: "0.5rem" }}>
+                  <span style={{ fontSize: "0.7rem", padding: "2px 6px", background: "rgba(255,255,255,0.06)", borderRadius: "4px", color: "#94a3b8" }}>
+                    🤖 Copilot 4GL
+                  </span>
+                  <span style={{ fontSize: "0.7rem", padding: "2px 6px", background: "rgba(255,255,255,0.06)", borderRadius: "4px", color: "#94a3b8" }}>
+                    🧠 Antisèche .per
+                  </span>
+                  <span style={{ fontSize: "0.7rem", padding: "2px 6px", background: "rgba(255,255,255,0.06)", borderRadius: "4px", color: "#94a3b8" }}>
+                    ⚙️ Chaîne EOD
+                  </span>
+                  <span style={{ fontSize: "0.7rem", padding: "2px 6px", background: "rgba(255,255,255,0.06)", borderRadius: "4px", color: "#94a3b8" }}>
+                    🚨 200 Incidents
+                  </span>
+                </div>
+              </div>
+              <div style={{ marginTop: "1rem", paddingTop: "0.75rem", borderTop: "1px solid rgba(255,255,255,0.08)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span style={{ fontSize: "0.78rem", color: "#38bdf8", fontWeight: 600 }}>Vous êtes dans cet univers</span>
+                <span style={{ fontSize: "0.8rem", color: "#94a3b8" }}>8 Domaines Métier</span>
+              </div>
+            </div>
+
+            {/* Carte FLEXCUBE (Accès Rapide) */}
+            <Link
+              href="/cbs/flexcube"
+              style={{
+                textDecoration: "none",
+                background: "rgba(234, 88, 12, 0.08)",
+                border: "1px solid rgba(234, 88, 12, 0.4)",
+                borderRadius: "var(--radius-md)",
+                padding: "1.2rem 1.4rem",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                position: "relative",
+                transition: "all 0.2s ease",
+              }}
+            >
+              <div style={{ position: "absolute", top: "12px", right: "12px" }}>
+                <span
+                  style={{
+                    background: "#ea580c",
+                    color: "#ffffff",
+                    fontSize: "0.68rem",
+                    fontWeight: 800,
+                    padding: "2px 8px",
+                    borderRadius: "10px",
+                    letterSpacing: "0.04em",
+                  }}
+                >
+                  NOUVEAU MODULE
+                </span>
+              </div>
+              <div>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", marginBottom: "0.4rem" }}>
+                  <span style={{ fontSize: "1.6rem" }}>🏛️</span>
+                  <div>
+                    <h4 style={{ margin: 0, fontSize: "1.05rem", fontWeight: 800, color: "#f1f5f9" }}>
+                      Oracle FLEXCUBE
+                    </h4>
+                    <span style={{ fontSize: "0.75rem", color: "#fb923c", fontWeight: 600 }}>
+                      Oracle DB • Packages PL/SQL • Tables STTM/ACTB • Batch AEOD
+                    </span>
+                  </div>
+                </div>
+                <p style={{ fontSize: "0.82rem", color: "#cbd5e1", lineHeight: "1.45", margin: "0.6rem 0" }}>
+                  Plateforme complète de Core Banking international : Copilot PL/SQL (_CUSTOM), antisèche officielle, cursus certifiant en 5 niveaux, 75 QCM et diagnostic AEOD.
+                </p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem", marginTop: "0.5rem" }}>
+                  <span style={{ fontSize: "0.7rem", padding: "2px 6px", background: "rgba(255,255,255,0.06)", borderRadius: "4px", color: "#94a3b8" }}>
+                    ⚡ Copilot PL/SQL
+                  </span>
+                  <span style={{ fontSize: "0.7rem", padding: "2px 6px", background: "rgba(255,255,255,0.06)", borderRadius: "4px", color: "#94a3b8" }}>
+                    🧠 Mémento FCUBS
+                  </span>
+                  <span style={{ fontSize: "0.7rem", padding: "2px 6px", background: "rgba(255,255,255,0.06)", borderRadius: "4px", color: "#94a3b8" }}>
+                    🎓 Cursus 5 Niveaux
+                  </span>
+                  <span style={{ fontSize: "0.7rem", padding: "2px 6px", background: "rgba(255,255,255,0.06)", borderRadius: "4px", color: "#94a3b8" }}>
+                    🎯 75 QCM Academy
+                  </span>
+                </div>
+              </div>
+              <div style={{ marginTop: "1rem", paddingTop: "0.75rem", borderTop: "1px solid rgba(255,255,255,0.08)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span style={{ fontSize: "0.82rem", color: "#fb923c", fontWeight: 700 }}>Basculer vers Oracle FLEXCUBE →</span>
+                <span style={{ fontSize: "0.8rem", color: "#94a3b8" }}>BUILD &amp; RUN</span>
+              </div>
+            </Link>
+          </div>
+        </div>
+
         {/* Bannière Hero CBS */}
         <div
           style={{

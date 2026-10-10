@@ -76,7 +76,7 @@ export function HeroSection() {
                     <TrendingUp className="w-5 h-5 text-blue-700" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-gray-900 text-sm sm:text-base">CBS Amplitude &amp; Flex</h3>
+                    <h3 className="font-bold text-gray-900 text-sm sm:text-base">CBS</h3>
                     <p className="text-gray-500 text-xs mt-0.5">Sopra Amplitude &amp; Oracle FlexCube</p>
                   </div>
                 </div>
@@ -102,8 +102,8 @@ export function HeroSection() {
                     <ShieldCheck className="w-5 h-5 text-[#7d1538]" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-gray-900 text-sm sm:text-base">Monétique Payway &amp; Powercard</h3>
-                    <p className="text-gray-500 text-xs mt-0.5">ISO 8583, EMV &amp; Clearing</p>
+                    <h3 className="font-bold text-gray-900 text-sm sm:text-base">Monétiques</h3>
+                    <p className="text-gray-500 text-xs mt-0.5"> Payway &amp; Powercard : ISO 8583, EMV &amp; Clearing</p>
                   </div>
                 </div>
               </div>
