@@ -166,7 +166,10 @@ function runQaFlexcube() {
     "Routage déterministe validé : Amplitude produit du 4GL/MAIN, FLEXCUBE produit du PL/SQL/PACKAGE BODY sans mélange"
   );
 
-  // TEST 13 : Contrat de Données & Persistance des Projets Copilot FLEXCUBE
+  if (routedFlex.cbsType !== "FLEXCUBE" || !("flexcubePlan" in routedFlex)) {
+    throw new Error("Invalid routedFlex type");
+  }
+
   const sampleProject = {
     id: "FCUBS-PROJ-TEST",
     name: "Virement Interne FTTB",
