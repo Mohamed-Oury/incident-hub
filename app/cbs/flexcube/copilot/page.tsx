@@ -1,11 +1,38 @@
 // app/cbs/flexcube/copilot/page.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { AppShell } from "@/modules/layout/AppShell";
 import { FlexcubeNeedInput, FlexcubeFullPlan, FlexcubeModule, FlexcubeVersion } from "@/modules/cbs/flexcube/types";
 import { generateFlexcubePlan, reviewFlexcubePlSql } from "@/modules/cbs/flexcube/engine/flexcube-copilot-engine";
+
+interface DockerHealth {
+  status: "checking" | "ok" | "down";
+  llmProvider?: string;
+  llmModel?: string;
+}
+
+interface AgentSession {
+  name: string;
+  version: number;
+  decision: "EN_ATTENTE" | "ACCEPTEE" | "REFUSEE";
+  summary?: string;
+  subTasksCount?: number;
+  rejectionHistory?: string[];
+}
+
+interface SavedProject {
+  id: string;
+  name: string;
+  module: string;
+  flexcubeVersion: string;
+  input: FlexcubeNeedInput;
+  plan: FlexcubeFullPlan;
+  agentSessionName?: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
 const PRESET_NEEDS: { label: string; icon: string; input: FlexcubeNeedInput }[] = [
   {
@@ -64,7 +91,7 @@ const PRESET_NEEDS: { label: string; icon: string; input: FlexcubeNeedInput }[] 
       knownBusinessRules: "Prélèvement prioritaire des intérêts puis du capital. Si provision insuffisante, passage en statut impayé et calcul des pénalités.",
       inputData: "Numéro de contrat prêt, Date d échéance",
       specialConstraints: "Traitement tolérant aux exceptions individuelles avec SAVE EXCEPTIONS.",
-      flexcubeVersion: "UNCONFIRMED",
+      flexcubeVersion: "14.x",
       environmentType: "PLSQL_BACKEND"
     }
   }
@@ -88,21 +115,335 @@ export default function FlexcubeCopilotPage() {
   const [plan, setPlan] = useState<FlexcubeFullPlan>(() => generateFlexcubePlan(PRESET_NEEDS[0].input));
   const [copiedCode, setCopiedCode] = useState(false);
 
+  // État Agent IA Docker (:8080)
+  const [dockerHealth, setDockerHealth] = useState<DockerHealth>({ status: "checking" });
+  const [agentLoading, setAgentLoading] = useState<boolean>(false);
+  const [agentStepMessage, setAgentStepMessage] = useState<string>("");
+  const [agentError, setAgentError] = useState<string | null>(null);
+  const [agentSession, setAgentSession] = useState<AgentSession | null>(null);
+
+  // Modal de rejet Human-in-the-Loop
+  const [showRejectModal, setShowRejectModal] = useState<boolean>(false);
+  const [rejectReason, setRejectReason] = useState<string>("");
+  const [isRejecting, setIsRejecting] = useState<boolean>(false);
+  const [isValidating, setIsValidating] = useState<boolean>(false);
+  const [isGeneratingCode, setIsGeneratingCode] = useState<boolean>(false);
+  const [actionFeedback, setActionFeedback] = useState<string | null>(null);
+
+  // Gestion des projets persistés
+  const [savedProjects, setSavedProjects] = useState<SavedProject[]>([]);
+  const [showProjectsModal, setShowProjectsModal] = useState<boolean>(false);
+  const [saveStatus, setSaveStatus] = useState<string | null>(null);
+
   // Audit de code PL/SQL
   const [customPlsql, setCustomPlsql] = useState<string>(
     "CREATE OR REPLACE PROCEDURE PR_TRANSFER IS\nBEGIN\n  SELECT * FROM STTM_CUST_ACCOUNT FOR UPDATE;\n  COMMIT;\nEND;"
   );
   const [auditResult, setAuditResult] = useState(() => reviewFlexcubePlSql(customPlsql));
 
-  const handleGenerate = (e: React.FormEvent) => {
-    e.preventDefault();
+  // Vérification de la disponibilité de l'agent Docker (:8080)
+  useEffect(() => {
+    fetch("/api/cbs/agentic/health")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (data && data.status === "ok") {
+          setDockerHealth({
+            status: "ok",
+            llmProvider: data.llm_provider || "google",
+            llmModel: data.llm_model || "gemini-2.5-flash",
+          });
+        } else {
+          setDockerHealth({ status: "down" });
+        }
+      })
+      .catch(() => setDockerHealth({ status: "down" }));
+  }, []);
+
+  // Chargement des projets enregistrés
+  useEffect(() => {
+    fetch("/api/cbs/flexcube/copilot")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (data && data.projects && Array.isArray(data.projects)) {
+          setSavedProjects(data.projects);
+        }
+      })
+      .catch((e) => console.warn("Échec chargement projets FLEXCUBE:", e));
+  }, []);
+
+  // Déclenchement local immédiat (Moteur TypeScript autonome)
+  const handleGenerateLocal = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     const newPlan = generateFlexcubePlan(input);
     setPlan(newPlan);
+    setActionFeedback("⚡ Plan technique & packages PL/SQL régénérés avec le moteur autonome !");
   };
 
-  const handleSelectPreset = (preset: (typeof PRESET_NEEDS)[0]) => {
-    setInput(preset.input);
-    setPlan(generateFlexcubePlan(preset.input));
+  // Workflow Agent IA (Docker :8080)
+  const handleRunAgenticWorkflow = async () => {
+    if (!input.title || !input.functionalDescription) {
+      setAgentError("Veuillez renseigner au moins le titre et la description fonctionnelle.");
+      return;
+    }
+
+    setAgentLoading(true);
+    setAgentError(null);
+    setActionFeedback(null);
+    setAgentStepMessage("1/2 — Construction du prompt système d ingénierie FLEXCUBE...");
+
+    try {
+      const payload = {
+        title: input.title,
+        functionalDescription: input.functionalDescription,
+        module: input.module,
+        targetUsers: input.targetUsers || "Opérateur ou automate bancaire",
+        knownBusinessRules: input.knownBusinessRules || "Règles standard FCUBS",
+        inputData: input.inputData ? input.inputData.split(",").map((s) => s.trim()) : ["Paramètres par défaut"],
+        specialConstraints: input.specialConstraints || null,
+        flexcubeVersion: input.flexcubeVersion || "14.x",
+        environmentType: input.environmentType || "PLSQL_BACKEND",
+      };
+
+      const promptRes = await fetch("/api/cbs/agentic/flexcube/prompts/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!promptRes.ok) {
+        throw new Error("Échec génération du prompt système FLEXCUBE par l agent.");
+      }
+
+      const promptData = await promptRes.json();
+      const slugName = promptData.name;
+
+      setAgentStepMessage(`2/2 — Décomposition et analyse par l Agent d Analyse LLM (${slugName})...`);
+
+      const analysisRes = await fetch(`/api/cbs/agentic/flexcube/analyses/${slugName}`, {
+        method: "POST",
+      });
+
+      if (!analysisRes.ok) {
+        const err = await analysisRes.json().catch(() => ({}));
+        throw new Error(err.detail || "Échec lors de l analyse par l agent IA.");
+      }
+
+      const analysisData = await analysisRes.json();
+      const currentVer = analysisData.versions?.find((v: any) => v.version === analysisData.currentVersion);
+
+      if (currentVer && currentVer.result) {
+        setAgentSession({
+          name: slugName,
+          version: analysisData.currentVersion,
+          decision: analysisData.decision,
+          summary: currentVer.result.analysis?.summary,
+          subTasksCount: currentVer.result.subTasks?.length,
+          rejectionHistory: analysisData.history?.filter((h: any) => h.decision === "REFUSEE").map((h: any) => h.reason),
+        });
+
+        // Mise à jour des sous-tâches du plan avec celles de l agent
+        if (currentVer.result.subTasks && currentVer.result.subTasks.length > 0) {
+          const mappedTasks = currentVer.result.subTasks.map((t: any) => ({
+            id: t.id,
+            title: t.title,
+            description: t.description || "",
+            type: "PLSQL_PACKAGE" as const,
+            priority: "HAUTE" as const,
+            estimation: t.estimation || "1 jour",
+            inputs: t.inputs || "",
+            outputs: t.outputs || "",
+            concernedObjects: t.concernedFiles || ["STTM_CUST_ACCOUNT"],
+            dependencies: t.dependencies || [],
+            acceptanceCriteria: t.acceptanceCriteria || [],
+            status: "A_FAIRE" as const,
+          }));
+          setPlan((prev) => ({
+            ...prev,
+            subTasks: mappedTasks,
+            analysis: {
+              ...prev.analysis,
+              summary: currentVer.result.analysis?.summary || prev.analysis.summary,
+              businessObjective: currentVer.result.analysis?.businessObjective || prev.analysis.businessObjective,
+            },
+          }));
+        }
+
+        setActionFeedback("✨ Analyse produite avec succès par l Agent IA ! Vous pouvez valider ou refuser.");
+      }
+    } catch (err: any) {
+      console.error("Erreur Agentic FLEXCUBE:", err);
+      setAgentError(err.message || "Erreur de communication avec l agent Docker.");
+      handleGenerateLocal();
+    } finally {
+      setAgentLoading(false);
+      setAgentStepMessage("");
+    }
+  };
+
+  // Validation humaine (Accept)
+  const handleAcceptAnalysis = async () => {
+    if (!agentSession) return;
+    setIsValidating(true);
+    setAgentError(null);
+    try {
+      const res = await fetch(`/api/cbs/agentic/flexcube/analyses/${agentSession.name}/accept`, {
+        method: "POST",
+      });
+      if (!res.ok) {
+        throw new Error("Échec lors de l acceptation de l analyse.");
+      }
+      setAgentSession((prev) => (prev ? { ...prev, decision: "ACCEPTEE" } : null));
+      setActionFeedback("✅ Analyse validée par l humain ! Vous pouvez lancer l Agent de Code PL/SQL.");
+    } catch (err: any) {
+      setAgentError(err.message || "Erreur de validation.");
+    } finally {
+      setIsValidating(false);
+    }
+  };
+
+  // Rejet motivé (Reject - Human-in-the-Loop)
+  const handleRejectAnalysis = async () => {
+    if (!agentSession || !rejectReason.trim()) return;
+    setIsRejecting(true);
+    setAgentError(null);
+    try {
+      const res = await fetch(`/api/cbs/agentic/flexcube/analyses/${agentSession.name}/reject`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reason: rejectReason }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.detail || "Échec lors du rejet de l analyse.");
+      }
+      const updated = await res.json();
+      const currentVer = updated.versions?.find((v: any) => v.version === updated.currentVersion);
+
+      setAgentSession({
+        name: agentSession.name,
+        version: updated.currentVersion,
+        decision: updated.decision,
+        summary: currentVer?.result?.analysis?.summary,
+        subTasksCount: currentVer?.result?.subTasks?.length,
+        rejectionHistory: updated.history?.filter((h: any) => h.decision === "REFUSEE").map((h: any) => h.reason),
+      });
+
+      if (currentVer && currentVer.result && currentVer.result.subTasks) {
+        const mappedTasks = currentVer.result.subTasks.map((t: any) => ({
+          id: t.id,
+          title: t.title,
+          description: t.description || "",
+          type: "PLSQL_PACKAGE" as const,
+          priority: "HAUTE" as const,
+          estimation: t.estimation || "1 jour",
+          inputs: t.inputs || "",
+          outputs: t.outputs || "",
+          concernedObjects: t.concernedFiles || ["STTM_CUST_ACCOUNT"],
+          dependencies: t.dependencies || [],
+          acceptanceCriteria: t.acceptanceCriteria || [],
+          status: "A_FAIRE" as const,
+        }));
+        setPlan((prev) => ({
+          ...prev,
+          subTasks: mappedTasks,
+          analysis: {
+            ...prev.analysis,
+            summary: currentVer.result.analysis?.summary || prev.analysis.summary,
+          },
+        }));
+      }
+
+      setShowRejectModal(false);
+      setRejectReason("");
+      setActionFeedback(`🔄 Nouvelle version v${updated.currentVersion} régénérée par l agent avec prise en compte du motif !`);
+    } catch (err: any) {
+      setAgentError(err.message || "Erreur lors du rejet de l analyse.");
+    } finally {
+      setIsRejecting(false);
+    }
+  };
+
+  // Génération du code source PL/SQL par l Agent de Code
+  const handleGenerateAgentCode = async () => {
+    if (!agentSession) return;
+    setIsGeneratingCode(true);
+    setAgentError(null);
+    try {
+      const res = await fetch(`/api/cbs/agentic/flexcube/code/${agentSession.name}`, {
+        method: "POST",
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.detail || "Échec lors de la génération de code par l agent.");
+      }
+      const codeData = await res.json();
+      setPlan((prev) => ({
+        ...prev,
+        plsqlProposal: {
+          ...prev.plsqlProposal,
+          packageName: codeData.packageName || prev.plsqlProposal.packageName,
+          packageSpec: codeData.packageSpecification || prev.plsqlProposal.packageSpec,
+          packageBody: codeData.packageBody || prev.plsqlProposal.packageBody,
+        },
+        sqlProposal: {
+          ...prev.sqlProposal,
+          sqlCode: codeData.ddlScript ? codeData.ddlScript : prev.sqlProposal.sqlCode,
+          rollbackScript: codeData.rollbackScript || prev.sqlProposal.rollbackScript,
+        },
+        testCases: codeData.unitTestPlSql
+          ? [
+              {
+                id: "TC-AGENT-01",
+                category: "NOMINAL",
+                title: "Validation Suite PL/SQL Agent Code",
+                preconditions: "Compte configuré dans STTM_CUST_ACCOUNT",
+                testSteps: ["Exécution du bloc PL/SQL de test", "Contrôle code retour"],
+                expectedResult: "ST-SAVE-001 (Succès)",
+                verificationQuery: codeData.unitTestPlSql,
+                actualStatus: "A_TESTER",
+              },
+              ...prev.testCases,
+            ]
+          : prev.testCases,
+      }));
+      setActiveTab("plsql");
+      setActionFeedback("🚀 Package PL/SQL _CUSTOM et scripts DDL générés avec succès par l Agent de Code !");
+    } catch (err: any) {
+      setAgentError(err.message || "Erreur lors de la génération de code par l agent.");
+    } finally {
+      setIsGeneratingCode(false);
+    }
+  };
+
+  // Sauvegarde du projet dans l API de persistance
+  const handleSaveProject = async () => {
+    try {
+      setSaveStatus("Sauvegarde en cours...");
+      const res = await fetch("/api/cbs/flexcube/copilot", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          project: {
+            name: input.title,
+            module: input.module,
+            flexcubeVersion: input.flexcubeVersion,
+            input,
+            plan,
+            agentSessionName: agentSession?.name,
+          },
+        }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setSaveStatus("✅ Projet sauvegardé avec succès !");
+        setSavedProjects((prev) => [data.project, ...prev.filter((p) => p.id !== data.project.id)]);
+        setTimeout(() => setSaveStatus(null), 3500);
+      } else {
+        setSaveStatus("❌ Échec de la sauvegarde.");
+      }
+    } catch (e) {
+      setSaveStatus("❌ Erreur réseau lors de la sauvegarde.");
+    }
   };
 
   const copyToClipboard = (text: string) => {
@@ -111,373 +452,917 @@ export default function FlexcubeCopilotPage() {
     setTimeout(() => setCopiedCode(false), 2000);
   };
 
-  return (
-    <AppShell pageTitle="FLEXCUBE PL/SQL Copilot" eyebrow="STUDIO DE DÉVELOPPEMENT CORE BANKING">
-      <div className="space-y-6">
-        {/* En-tête avec rappel de traçabilité */}
-        <div className="bg-gradient-to-r from-red-900 via-slate-900 to-red-950 p-6 rounded-2xl text-white border border-red-800/40 shadow-xl">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-600 text-white">
-                  STUDIO ORACLE FLEXCUBE
-                </span>
-                <span className="text-xs text-red-200">Générateur PL/SQL Custom & DDL</span>
-              </div>
-              <h1 className="text-2xl font-black">Copilot de Développement FLEXCUBE</h1>
-              <p className="text-sm text-red-100/80 mt-1 max-w-2xl">
-                Transformez vos besoins bancaires en spécifications fonctionnelles, packages PL/SQL respectant les normes Oracle (<code className="text-red-200">_CUSTOM</code>), requêtes SQL et plans de test.
-              </p>
-            </div>
+  const isAuditPassed = auditResult.score >= 70;
 
-            <div className="flex items-center gap-2">
-              <Link
-                href="/cbs/copilot"
-                className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold border border-slate-700 transition"
+  return (
+    <AppShell pageTitle="Oracle FLEXCUBE Copilot & Agents IA" eyebrow="BUILD & EXTENSIBILITÉ FCUBS">
+      <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+        
+        {/* En-tête avec statut Agent Docker et bascule Multi-CBS */}
+        <div
+          style={{
+            background: "linear-gradient(135deg, #1e1e38 0%, #0f172a 100%)",
+            border: "1px solid rgba(234, 88, 12, 0.3)",
+            borderRadius: "var(--radius-lg)",
+            padding: "1.25rem 1.75rem",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            flexWrap: "wrap",
+            gap: "1rem",
+            boxShadow: "0 8px 24px rgba(234, 88, 12, 0.15)",
+          }}
+        >
+          <div>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", marginBottom: "0.35rem" }}>
+              <span
+                style={{
+                  background: "#ea580c",
+                  color: "#ffffff",
+                  fontSize: "0.72rem",
+                  fontWeight: 800,
+                  padding: "2px 8px",
+                  borderRadius: "6px",
+                  letterSpacing: "0.05em",
+                }}
               >
-                🏦 Aller vers le Copilot Amplitude (4GL)
-              </Link>
+                STUDIO AGENTIQUE FLEXCUBE
+              </span>
+              <span style={{ color: "#fdba74", fontSize: "0.8rem", fontWeight: 600 }}>
+                ⚡ Packages PL/SQL • Concurrence NOWAIT • Extensibilité Radpack
+              </span>
             </div>
+            <h2 style={{ fontSize: "1.35rem", fontWeight: 800, margin: 0, color: "#ffffff" }}>
+              Assistant &amp; Pipeline Agentique Oracle FLEXCUBE
+            </h2>
+            <p style={{ fontSize: "0.85rem", color: "#cbd5e1", margin: "0.35rem 0 0 0" }}>
+              Transformez vos spécifications bancaires en packages PL/SQL durcis <code>_CUSTOM</code>, scripts DDL et tests unitaires automatisés.
+            </p>
           </div>
 
-          {/* Préréglages */}
-          <div className="mt-5 pt-4 border-t border-red-800/40">
-            <div className="text-xs font-bold text-red-300 uppercase tracking-wider mb-2.5">
-              Préréglages bancaires prêts à l emploi :
+          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap" }}>
+            {/* Widget Statut Docker Agent */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+                background: "rgba(0,0,0,0.4)",
+                padding: "6px 12px",
+                borderRadius: "8px",
+                border: "1px solid rgba(255,255,255,0.1)",
+                fontSize: "0.78rem",
+              }}
+            >
+              <span
+                style={{
+                  width: "8px",
+                  height: "8px",
+                  borderRadius: "50%",
+                  background: dockerHealth.status === "ok" ? "#10b981" : dockerHealth.status === "checking" ? "#f59e0b" : "#ef4444",
+                }}
+              />
+              <span style={{ color: "#e2e8f0", fontWeight: 600 }}>
+                Agent IA Docker (:8080) :
+              </span>
+              <span style={{ color: dockerHealth.status === "ok" ? "#34d399" : "#f87171", fontWeight: 700 }}>
+                {dockerHealth.status === "ok" ? `Actif (${dockerHealth.llmModel})` : dockerHealth.status === "checking" ? "Vérification..." : "Autonome / Local"}
+              </span>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
-              {PRESET_NEEDS.map((preset, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={() => handleSelectPreset(preset)}
-                  className="text-left p-2.5 rounded-xl bg-red-950/40 hover:bg-red-800/40 border border-red-700/40 transition text-xs font-medium text-white flex items-center gap-2"
-                >
-                  <span className="text-base">{preset.icon}</span>
-                  <span className="truncate">{preset.label}</span>
-                </button>
-              ))}
-            </div>
+
+            <button
+              type="button"
+              onClick={() => setShowProjectsModal(true)}
+              style={{
+                background: "rgba(255,255,255,0.08)",
+                border: "1px solid rgba(255,255,255,0.2)",
+                color: "#ffffff",
+                padding: "0.5rem 0.9rem",
+                borderRadius: "8px",
+                fontSize: "0.82rem",
+                fontWeight: 600,
+                cursor: "pointer",
+              }}
+            >
+              📂 Projets ({savedProjects.length})
+            </button>
+
+            <Link
+              href="/cbs/copilot"
+              style={{
+                background: "rgba(2, 132, 199, 0.15)",
+                border: "1px solid #0284c7",
+                color: "#38bdf8",
+                textDecoration: "none",
+                padding: "0.5rem 0.9rem",
+                borderRadius: "8px",
+                fontSize: "0.82rem",
+                fontWeight: 600,
+              }}
+            >
+              ↩ Studio Amplitude 4GL
+            </Link>
           </div>
         </div>
 
-        {/* Formulaire & Résultats */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Colonne Gauche : Formulaire de besoin */}
-          <div className="lg:col-span-5 bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-4">
-            <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
-              <span>📝 Définition du Besoin Bancaire</span>
-            </h2>
-
-            <form onSubmit={handleGenerate} className="space-y-3.5">
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Titre de la fonctionnalité</label>
-                <input
-                  type="text"
-                  value={input.title}
-                  onChange={(e) => setInput({ ...input, title: e.target.value })}
-                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-red-600 outline-none"
-                  required
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-2.5">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Module FLEXCUBE</label>
-                  <select
-                    value={input.module}
-                    onChange={(e) => setInput({ ...input, module: e.target.value as FlexcubeModule })}
-                    className="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-red-600 outline-none bg-white font-medium"
-                  >
-                    <option value="ST">ST - Static Maintenance</option>
-                    <option value="AC">AC - Accounts & Ledger</option>
-                    <option value="GL">GL - General Ledger</option>
-                    <option value="FT">FT - Funds Transfer</option>
-                    <option value="CL">CL - Consumer Lending</option>
-                    <option value="LC">LC - Letters of Credit</option>
-                    <option value="DE">DE - Data Entry / Caisse</option>
-                    <option value="GW">GW - Gateway / Switch</option>
-                    <option value="AEOD">AEOD - Batch Clôture</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Version FLEXCUBE</label>
-                  <select
-                    value={input.flexcubeVersion}
-                    onChange={(e) => setInput({ ...input, flexcubeVersion: e.target.value as FlexcubeVersion })}
-                    className="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-red-600 outline-none bg-white font-medium"
-                  >
-                    <option value="14.x">Oracle FCUBS 14.x</option>
-                    <option value="12.4">Oracle FCUBS 12.4</option>
-                    <option value="UNCONFIRMED">À confirmer</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Description fonctionnelle</label>
-                <textarea
-                  rows={3}
-                  value={input.functionalDescription}
-                  onChange={(e) => setInput({ ...input, functionalDescription: e.target.value })}
-                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-red-600 outline-none"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Règles de gestion connues</label>
-                <textarea
-                  rows={2}
-                  value={input.knownBusinessRules}
-                  onChange={(e) => setInput({ ...input, knownBusinessRules: e.target.value })}
-                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-red-600 outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Données d entrée requises</label>
-                <input
-                  type="text"
-                  value={input.inputData}
-                  onChange={(e) => setInput({ ...input, inputData: e.target.value })}
-                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-red-600 outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Contraintes techniques</label>
-                <input
-                  type="text"
-                  value={input.specialConstraints}
-                  onChange={(e) => setInput({ ...input, specialConstraints: e.target.value })}
-                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-red-600 outline-none"
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="w-full py-2.5 px-4 rounded-xl bg-red-700 hover:bg-red-800 text-white font-bold text-xs shadow-md transition flex items-center justify-center gap-2 cursor-pointer"
-              >
-                <span>⚡ Générer le Plan PL/SQL & Tests</span>
-              </button>
-            </form>
+        {/* Feedback / Notifications */}
+        {actionFeedback && (
+          <div
+            style={{
+              background: "rgba(16, 185, 129, 0.15)",
+              border: "1px solid #10b981",
+              color: "#34d399",
+              padding: "0.75rem 1rem",
+              borderRadius: "8px",
+              fontSize: "0.85rem",
+              fontWeight: 600,
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <span>{actionFeedback}</span>
+            <button
+              onClick={() => setActionFeedback(null)}
+              style={{ background: "transparent", border: "none", color: "#34d399", cursor: "pointer", fontSize: "1rem" }}
+            >
+              ✕
+            </button>
           </div>
+        )}
 
-          {/* Colonne Droite : Visualiseur de Résultats avec Onglets */}
-          <div className="lg:col-span-7 bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col">
-            {/* Barre d onglets */}
-            <div className="flex flex-wrap items-center gap-1.5 pb-3 border-b border-slate-200">
-              <button
-                onClick={() => setActiveTab("plan")}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${activeTab === "plan" ? "bg-red-700 text-white" : "bg-slate-100 text-slate-700 hover:bg-slate-200"}`}
-              >
-                📋 Analyse & Tâches ({plan.subTasks.length})
-              </button>
-              <button
-                onClick={() => setActiveTab("plsql")}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${activeTab === "plsql" ? "bg-red-700 text-white" : "bg-slate-100 text-slate-700 hover:bg-slate-200"}`}
-              >
-                ⚡ Code PL/SQL ({plan.plsqlProposal.packageName})
-              </button>
-              <button
-                onClick={() => setActiveTab("sql")}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${activeTab === "sql" ? "bg-red-700 text-white" : "bg-slate-100 text-slate-700 hover:bg-slate-200"}`}
-              >
-                🗄️ SQL & Indexation
-              </button>
-              <button
-                onClick={() => setActiveTab("tests")}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${activeTab === "tests" ? "bg-red-700 text-white" : "bg-slate-100 text-slate-700 hover:bg-slate-200"}`}
-              >
-                🧪 Tests Unitaires ({plan.testCases.length})
-              </button>
-              <button
-                onClick={() => setActiveTab("delivery")}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${activeTab === "delivery" ? "bg-red-700 text-white" : "bg-slate-100 text-slate-700 hover:bg-slate-200"}`}
-              >
-                📦 Déploiement & Repli
-              </button>
-              <button
-                onClick={() => setActiveTab("audit")}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${activeTab === "audit" ? "bg-red-700 text-white" : "bg-slate-100 text-slate-700 hover:bg-slate-200"}`}
-              >
-                🔍 Audit PL/SQL
-              </button>
+        {agentError && (
+          <div
+            style={{
+              background: "rgba(239, 68, 68, 0.15)",
+              border: "1px solid #ef4444",
+              color: "#f87171",
+              padding: "0.75rem 1rem",
+              borderRadius: "8px",
+              fontSize: "0.85rem",
+              fontWeight: 600,
+            }}
+          >
+            ⚠️ {agentError}
+          </div>
+        )}
+
+        {/* Barre d état Session Agent IA & Human-in-the-Loop */}
+        {agentSession && (
+          <div
+            style={{
+              background: "rgba(30, 41, 59, 0.85)",
+              border: "1px solid rgba(56, 189, 248, 0.3)",
+              borderRadius: "var(--radius-md)",
+              padding: "1rem 1.25rem",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              flexWrap: "wrap",
+              gap: "1rem",
+            }}
+          >
+            <div>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <span style={{ fontSize: "1.1rem" }}>🤖</span>
+                <span style={{ fontWeight: 700, color: "#f8fafc", fontSize: "0.9rem" }}>
+                  Session Agent IA : {agentSession.name} (v{agentSession.version})
+                </span>
+                <span
+                  style={{
+                    background: agentSession.decision === "ACCEPTEE" ? "rgba(16, 185, 129, 0.2)" : "rgba(245, 158, 11, 0.2)",
+                    color: agentSession.decision === "ACCEPTEE" ? "#34d399" : "#fbbf24",
+                    border: `1px solid ${agentSession.decision === "ACCEPTEE" ? "#10b981" : "#f59e0b"}`,
+                    fontSize: "0.7rem",
+                    fontWeight: 800,
+                    padding: "2px 8px",
+                    borderRadius: "12px",
+                  }}
+                >
+                  {agentSession.decision === "ACCEPTEE" ? "VALIDÉE PAR L HUMAIN" : "EN ATTENTE DE VALIDATION"}
+                </span>
+              </div>
+              <p style={{ margin: "4px 0 0 0", fontSize: "0.8rem", color: "#94a3b8" }}>
+                {agentSession.summary || "Analyse en cours de traitement par l agent LLM."}
+              </p>
             </div>
 
-            {/* Contenu de l onglet */}
-            <div className="pt-4 flex-1">
-              {/* Onglet 1 : Plan & Analyse */}
-              {activeTab === "plan" && (
-                <div className="space-y-4 text-xs">
-                  <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
-                    <div className="font-bold text-slate-900 text-sm">Objectif Fonctionnel</div>
-                    <p className="text-slate-700 leading-relaxed">{plan.analysis.businessObjective}</p>
-                    <div className="flex flex-wrap gap-1.5 pt-2">
-                      <span className="font-semibold text-slate-600">Tables impactées :</span>
-                      {plan.analysis.flexcubeDependencies.map((dep, i) => (
-                        <span key={i} className="px-2 py-0.5 rounded bg-red-100 text-red-800 font-mono font-bold">
-                          {dep}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Avertissement Traçabilité */}
-                  <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs space-y-1">
-                    <div className="font-bold flex items-center gap-1.5 text-amber-950">
-                      <span>⚠️ Note de Traçabilité & Version :</span>
-                    </div>
-                    <p>{plan.traceability.versionCaveat}</p>
-                  </div>
-
-                  {/* Liste des sous-tâches */}
-                  <div>
-                    <h3 className="font-bold text-slate-900 mb-2">Sous-tâches ordonnées de développement :</h3>
-                    <div className="space-y-2">
-                      {plan.subTasks.map((task) => (
-                        <div key={task.id} className="p-3 bg-white rounded-xl border border-slate-200 hover:border-slate-300 transition">
-                          <div className="flex items-center justify-between gap-2 mb-1">
-                            <span className="font-bold text-slate-900">{task.id} • {task.title}</span>
-                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700">
-                              {task.type} • {task.estimation}
-                            </span>
-                          </div>
-                          <p className="text-slate-600">{task.description}</p>
-                          <div className="text-[11px] text-slate-500 mt-1 font-mono">
-                            Objets : {task.concernedObjects.join(", ")}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
+            <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+              {agentSession.decision !== "ACCEPTEE" ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={handleAcceptAnalysis}
+                    disabled={isValidating}
+                    style={{
+                      background: "#10b981",
+                      color: "#ffffff",
+                      border: "none",
+                      padding: "0.45rem 0.9rem",
+                      borderRadius: "6px",
+                      fontSize: "0.82rem",
+                      fontWeight: 700,
+                      cursor: "pointer",
+                    }}
+                  >
+                    {isValidating ? "Validation..." : "✓ Valider l Analyse"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowRejectModal(true)}
+                    style={{
+                      background: "rgba(239, 68, 68, 0.2)",
+                      color: "#f87171",
+                      border: "1px solid #ef4444",
+                      padding: "0.45rem 0.9rem",
+                      borderRadius: "6px",
+                      fontSize: "0.82rem",
+                      fontWeight: 700,
+                      cursor: "pointer",
+                    }}
+                  >
+                    ✕ Refuser avec motif
+                  </button>
+                </>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleGenerateAgentCode}
+                  disabled={isGeneratingCode}
+                  style={{
+                    background: "linear-gradient(135deg, #ea580c 0%, #f97316 100%)",
+                    color: "#ffffff",
+                    border: "none",
+                    padding: "0.5rem 1.1rem",
+                    borderRadius: "6px",
+                    fontSize: "0.85rem",
+                    fontWeight: 700,
+                    cursor: "pointer",
+                    boxShadow: "0 2px 8px rgba(234, 88, 12, 0.4)",
+                  }}
+                >
+                  {isGeneratingCode ? "Génération PL/SQL..." : "🚀 Générer le Code PL/SQL (Agent Code)"}
+                </button>
               )}
+            </div>
+          </div>
+        )}
 
-              {/* Onglet 2 : Code PL/SQL */}
-              {activeTab === "plsql" && (
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-slate-700 font-mono">
-                      {plan.plsqlProposal.packageName}.sql
-                    </span>
-                    <button
-                      onClick={() => copyToClipboard(plan.plsqlProposal.packageBody)}
-                      className="px-3 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition cursor-pointer"
+        {/* Modal Human-in-the-Loop : Rejet motivé */}
+        {showRejectModal && (
+          <div
+            style={{
+              position: "fixed",
+              inset: 0,
+              background: "rgba(0,0,0,0.75)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              zIndex: 1000,
+              padding: "1rem",
+            }}
+          >
+            <div
+              style={{
+                background: "#0f172a",
+                border: "1px solid #ef4444",
+                borderRadius: "var(--radius-lg)",
+                padding: "1.5rem",
+                maxWidth: "540px",
+                width: "100%",
+                boxShadow: "0 20px 40px rgba(0,0,0,0.5)",
+              }}
+            >
+              <h3 style={{ margin: "0 0 0.5rem 0", color: "#f8fafc", fontSize: "1.15rem" }}>
+                Refus motivé de l analyse (Human-in-the-Loop)
+              </h3>
+              <p style={{ fontSize: "0.85rem", color: "#94a3b8", margin: "0 0 1rem 0" }}>
+                Indiquez à l Agent d Analyse ce qui doit être corrigé ou enrichi (ex: tables manquantes, verrous NOWAIT, tests unitaires). L agent produira une nouvelle version conforme.
+              </p>
+              <textarea
+                value={rejectReason}
+                onChange={(e) => setRejectReason(e.target.value)}
+                rows={4}
+                placeholder="Ex: Il manque une sous-tâche pour la vérification du plafond journalier dans STTM_CUST_ACCOUNT..."
+                style={{
+                  width: "100%",
+                  padding: "0.75rem",
+                  background: "#1e293b",
+                  border: "1px solid var(--border-light)",
+                  borderRadius: "6px",
+                  color: "#ffffff",
+                  fontSize: "0.85rem",
+                  marginBottom: "1rem",
+                }}
+              />
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.75rem" }}>
+                <button
+                  type="button"
+                  onClick={() => setShowRejectModal(false)}
+                  style={{
+                    background: "transparent",
+                    border: "1px solid var(--border-light)",
+                    color: "#cbd5e1",
+                    padding: "0.45rem 0.9rem",
+                    borderRadius: "6px",
+                    cursor: "pointer",
+                  }}
+                >
+                  Annuler
+                </button>
+                <button
+                  type="button"
+                  onClick={handleRejectAnalysis}
+                  disabled={isRejecting || rejectReason.trim().length < 10}
+                  style={{
+                    background: "#ef4444",
+                    color: "#ffffff",
+                    border: "none",
+                    padding: "0.45rem 1rem",
+                    borderRadius: "6px",
+                    fontWeight: 700,
+                    cursor: "pointer",
+                  }}
+                >
+                  {isRejecting ? "Régénération par l agent..." : "Soumettre à l Agent IA →"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Modal des projets sauvegardés */}
+        {showProjectsModal && (
+          <div
+            style={{
+              position: "fixed",
+              inset: 0,
+              background: "rgba(0,0,0,0.75)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              zIndex: 1000,
+              padding: "1rem",
+            }}
+          >
+            <div
+              style={{
+                background: "#0f172a",
+                border: "1px solid rgba(255,255,255,0.15)",
+                borderRadius: "var(--radius-lg)",
+                padding: "1.5rem",
+                maxWidth: "640px",
+                width: "100%",
+                maxHeight: "80vh",
+                overflowY: "auto",
+              }}
+            >
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+                <h3 style={{ margin: 0, color: "#ffffff", fontSize: "1.15rem" }}>
+                  Projets Oracle FLEXCUBE Enregistrés
+                </h3>
+                <button
+                  onClick={() => setShowProjectsModal(false)}
+                  style={{ background: "transparent", border: "none", color: "#94a3b8", cursor: "pointer", fontSize: "1.2rem" }}
+                >
+                  ✕
+                </button>
+              </div>
+
+              {savedProjects.length === 0 ? (
+                <p style={{ color: "#94a3b8", fontSize: "0.9rem" }}>Aucun projet FLEXCUBE sauvegardé pour l instant.</p>
+              ) : (
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                  {savedProjects.map((p) => (
+                    <div
+                      key={p.id}
+                      style={{
+                        background: "#1e293b",
+                        border: "1px solid rgba(255,255,255,0.08)",
+                        borderRadius: "8px",
+                        padding: "0.9rem 1.1rem",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
                     >
-                      {copiedCode ? "✓ Copié !" : "📋 Copier le code"}
-                    </button>
-                  </div>
-
-                  <pre className="p-4 bg-slate-950 text-slate-100 rounded-xl text-[11px] font-mono overflow-x-auto max-h-[500px] leading-relaxed border border-slate-800">
-                    {plan.plsqlProposal.packageBody}
-                  </pre>
-                </div>
-              )}
-
-              {/* Onglet 3 : SQL & Indexation */}
-              {activeTab === "sql" && (
-                <div className="space-y-3">
-                  <h3 className="text-xs font-bold text-slate-900">Requête d accès et indexation recommandée :</h3>
-                  <pre className="p-4 bg-slate-950 text-slate-100 rounded-xl text-[11px] font-mono overflow-x-auto max-h-[300px] leading-relaxed border border-slate-800">
-                    {plan.sqlProposal.sqlCode}
-                  </pre>
-
-                  <h3 className="text-xs font-bold text-slate-900 pt-2">Index recommandé pour éviter les FTS :</h3>
-                  <pre className="p-3 bg-slate-900 text-emerald-400 rounded-xl text-[11px] font-mono overflow-x-auto">
-                    {plan.sqlProposal.indexRecommendations.join("\n")}
-                  </pre>
-                </div>
-              )}
-
-              {/* Onglet 4 : Cas de Tests */}
-              {activeTab === "tests" && (
-                <div className="space-y-2.5">
-                  <h3 className="text-xs font-bold text-slate-900 mb-2">Matrice de validation et cas de tests unitaires :</h3>
-                  {plan.testCases.map((tc) => (
-                    <div key={tc.id} className="p-3 rounded-xl border border-slate-200 bg-slate-50 text-xs space-y-1">
-                      <div className="flex items-center justify-between">
-                        <span className="font-bold text-slate-900">{tc.id} : {tc.title}</span>
-                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800">
-                          {tc.category}
+                      <div>
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                          <span style={{ fontSize: "0.72rem", padding: "2px 6px", background: "#ea580c", color: "#fff", borderRadius: "4px", fontWeight: 700 }}>
+                            {p.module || "FT"}
+                          </span>
+                          <h4 style={{ margin: 0, fontSize: "0.95rem", color: "#f8fafc" }}>{p.name}</h4>
+                        </div>
+                        <span style={{ fontSize: "0.75rem", color: "#94a3b8" }}>
+                          FCUBS {p.flexcubeVersion} • {new Date(p.updatedAt).toLocaleDateString()}
                         </span>
                       </div>
-                      <div className="text-slate-600"><b>Précondition :</b> {tc.preconditions}</div>
-                      <div className="text-slate-600"><b>Résultat attendu :</b> {tc.expectedResult}</div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setInput(p.input);
+                          setPlan(p.plan);
+                          setShowProjectsModal(false);
+                          setActionFeedback(`Projet « ${p.name} » chargé avec succès !`);
+                        }}
+                        style={{
+                          background: "#0284c7",
+                          color: "#ffffff",
+                          border: "none",
+                          padding: "0.4rem 0.8rem",
+                          borderRadius: "6px",
+                          fontSize: "0.8rem",
+                          fontWeight: 600,
+                          cursor: "pointer",
+                        }}
+                      >
+                        Charger
+                      </button>
                     </div>
                   ))}
                 </div>
               )}
+            </div>
+          </div>
+        )}
 
-              {/* Onglet 5 : Déploiement & Repli */}
-              {activeTab === "delivery" && (
-                <div className="space-y-3 text-xs">
-                  <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-1.5">
-                    <div className="font-bold text-slate-900">Ordre d exécution du package de release :</div>
-                    <ol className="list-decimal list-inside space-y-1 text-slate-700">
-                      {plan.deliveryPackage.deploymentOrder.map((step, idx) => (
-                        <li key={idx}>{step}</li>
-                      ))}
-                    </ol>
+        {/* Grille principale : Formulaire & Sortie */}
+        <div style={{ display: "grid", gridTemplateColumns: "minmax(320px, 420px) 1fr", gap: "1.5rem", alignItems: "start" }}>
+          
+          {/* Colonne Gauche : Formulaire de Spécification */}
+          <div className="card" style={{ padding: "1.25rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <h3 style={{ margin: 0, fontSize: "1.05rem", fontWeight: 700, color: "var(--text-primary)" }}>
+                Spécification du Besoin
+              </h3>
+              <span style={{ fontSize: "0.75rem", color: "#fb923c", fontWeight: 600 }}>Préréglages bancaires :</span>
+            </div>
+
+            {/* Sélecteur de Préréglages */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
+              {PRESET_NEEDS.map((preset) => (
+                <button
+                  key={preset.label}
+                  type="button"
+                  onClick={() => {
+                    setInput(preset.input);
+                    handleGenerateLocal();
+                  }}
+                  style={{
+                    background: input.title === preset.input.title ? "rgba(234, 88, 12, 0.2)" : "rgba(255,255,255,0.04)",
+                    border: `1px solid ${input.title === preset.input.title ? "#ea580c" : "var(--border-light)"}`,
+                    color: input.title === preset.input.title ? "#fb923c" : "var(--text-secondary)",
+                    padding: "0.5rem",
+                    borderRadius: "6px",
+                    fontSize: "0.72rem",
+                    fontWeight: 600,
+                    textAlign: "left",
+                    cursor: "pointer",
+                    lineHeight: "1.25",
+                  }}
+                >
+                  <span style={{ marginRight: "4px" }}>{preset.icon}</span>
+                  {preset.label.split("(")[0]}
+                </button>
+              ))}
+            </div>
+
+            <form onSubmit={(e) => { e.preventDefault(); handleGenerateLocal(); }} style={{ display: "flex", flexDirection: "column", gap: "0.85rem" }}>
+              <div>
+                <label style={{ display: "block", fontSize: "0.78rem", fontWeight: 700, color: "var(--text-muted)", marginBottom: "4px" }}>
+                  Titre du Besoin / User Story
+                </label>
+                <input
+                  type="text"
+                  value={input.title}
+                  onChange={(e) => setInput({ ...input, title: e.target.value })}
+                  style={{
+                    width: "100%",
+                    padding: "0.55rem 0.75rem",
+                    borderRadius: "6px",
+                    background: "var(--bg-secondary)",
+                    border: "1px solid var(--border-light)",
+                    color: "var(--text-primary)",
+                    fontSize: "0.85rem",
+                  }}
+                />
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
+                <div>
+                  <label style={{ display: "block", fontSize: "0.78rem", fontWeight: 700, color: "var(--text-muted)", marginBottom: "4px" }}>
+                    Module FCUBS
+                  </label>
+                  <select
+                    value={input.module}
+                    onChange={(e) => setInput({ ...input, module: e.target.value as FlexcubeModule })}
+                    style={{
+                      width: "100%",
+                      padding: "0.55rem",
+                      borderRadius: "6px",
+                      background: "var(--bg-secondary)",
+                      border: "1px solid var(--border-light)",
+                      color: "var(--text-primary)",
+                      fontSize: "0.82rem",
+                    }}
+                  >
+                    <option value="FT">FT - Funds Transfer</option>
+                    <option value="AC">AC - Accounts &amp; Balances</option>
+                    <option value="GL">GL - General Ledger</option>
+                    <option value="CL">CL - Consumer Lending</option>
+                    <option value="ST">ST - Core Customer</option>
+                    <option value="LC">LC - Letters of Credit</option>
+                    <option value="DE">DE - Data Entry</option>
+                    <option value="GW">GW - Gateway Interface</option>
+                    <option value="AEOD">AEOD - Batch Engine</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label style={{ display: "block", fontSize: "0.78rem", fontWeight: 700, color: "var(--text-muted)", marginBottom: "4px" }}>
+                    Version FLEXCUBE
+                  </label>
+                  <select
+                    value={input.flexcubeVersion}
+                    onChange={(e) => setInput({ ...input, flexcubeVersion: e.target.value as FlexcubeVersion })}
+                    style={{
+                      width: "100%",
+                      padding: "0.55rem",
+                      borderRadius: "6px",
+                      background: "var(--bg-secondary)",
+                      border: "1px solid var(--border-light)",
+                      color: "var(--text-primary)",
+                      fontSize: "0.82rem",
+                    }}
+                  >
+                    <option value="14.x">FLEXCUBE 14.x</option>
+                    <option value="12.4">FLEXCUBE 12.4</option>
+                    <option value="UNCONFIRMED">Non confirmé</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label style={{ display: "block", fontSize: "0.78rem", fontWeight: 700, color: "var(--text-muted)", marginBottom: "4px" }}>
+                  Description Fonctionnelle
+                </label>
+                <textarea
+                  rows={3}
+                  value={input.functionalDescription}
+                  onChange={(e) => setInput({ ...input, functionalDescription: e.target.value })}
+                  style={{
+                    width: "100%",
+                    padding: "0.55rem 0.75rem",
+                    borderRadius: "6px",
+                    background: "var(--bg-secondary)",
+                    border: "1px solid var(--border-light)",
+                    color: "var(--text-primary)",
+                    fontSize: "0.82rem",
+                  }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: "block", fontSize: "0.78rem", fontWeight: 700, color: "var(--text-muted)", marginBottom: "4px" }}>
+                  Règles Métier &amp; Tables
+                </label>
+                <textarea
+                  rows={2}
+                  value={input.knownBusinessRules}
+                  onChange={(e) => setInput({ ...input, knownBusinessRules: e.target.value })}
+                  style={{
+                    width: "100%",
+                    padding: "0.55rem 0.75rem",
+                    borderRadius: "6px",
+                    background: "var(--bg-secondary)",
+                    border: "1px solid var(--border-light)",
+                    color: "var(--text-primary)",
+                    fontSize: "0.82rem",
+                  }}
+                />
+              </div>
+
+              {/* Boutons d actions : Workflow Agentique vs Mode Autonome */}
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem", marginTop: "0.5rem" }}>
+                {dockerHealth.status === "ok" ? (
+                  <button
+                    type="button"
+                    onClick={handleRunAgenticWorkflow}
+                    disabled={agentLoading}
+                    style={{
+                      background: "linear-gradient(135deg, #ea580c 0%, #c2410c 100%)",
+                      color: "#ffffff",
+                      border: "none",
+                      padding: "0.75rem",
+                      borderRadius: "8px",
+                      fontSize: "0.9rem",
+                      fontWeight: 800,
+                      cursor: "pointer",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      gap: "0.5rem",
+                      boxShadow: "0 4px 12px rgba(234, 88, 12, 0.3)",
+                    }}
+                  >
+                    <span>🤖</span>
+                    <span>{agentLoading ? agentStepMessage : "Lancer le Workflow Agent IA (Docker :8080)"}</span>
+                  </button>
+                ) : null}
+
+                <div style={{ display: "flex", gap: "0.5rem" }}>
+                  <button
+                    type="submit"
+                    style={{
+                      flex: 1,
+                      background: dockerHealth.status === "ok" ? "rgba(255,255,255,0.06)" : "linear-gradient(135deg, #0284c7 0%, #0369a1 100%)",
+                      color: "#ffffff",
+                      border: dockerHealth.status === "ok" ? "1px solid var(--border-light)" : "none",
+                      padding: "0.65rem",
+                      borderRadius: "8px",
+                      fontSize: "0.82rem",
+                      fontWeight: 700,
+                      cursor: "pointer",
+                    }}
+                  >
+                    ⚡ {dockerHealth.status === "ok" ? "Moteur Local (Rapide)" : "Générer le Plan (Autonome)"}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleSaveProject}
+                    style={{
+                      background: "rgba(16, 185, 129, 0.15)",
+                      border: "1px solid #10b981",
+                      color: "#34d399",
+                      padding: "0.65rem 0.9rem",
+                      borderRadius: "8px",
+                      fontSize: "0.82rem",
+                      fontWeight: 700,
+                      cursor: "pointer",
+                    }}
+                  >
+                    💾 Sauvegarder
+                  </button>
+                </div>
+                {saveStatus && <span style={{ fontSize: "0.75rem", color: "#34d399", textAlign: "center" }}>{saveStatus}</span>}
+              </div>
+            </form>
+          </div>
+
+          {/* Colonne Droite : Visualiseur & Résultats */}
+          <div className="card" style={{ padding: "1.25rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
+            {/* Onglets de Navigation */}
+            <div style={{ display: "flex", gap: "0.4rem", borderBottom: "1px solid var(--border-light)", paddingBottom: "0.75rem", overflowX: "auto" }}>
+              {[
+                { key: "plan", label: "Plan & Tâches", icon: "📋" },
+                { key: "plsql", label: "Package PL/SQL", icon: "⚡" },
+                { key: "sql", label: "DDL & Requêtes", icon: "🗄️" },
+                { key: "tests", label: "Tests Unitaires", icon: "🧪" },
+                { key: "delivery", label: "Déploiement & Rollback", icon: "📦" },
+                { key: "audit", label: "Audit PL/SQL", icon: "🔍" },
+              ].map((tab) => (
+                <button
+                  key={tab.key}
+                  type="button"
+                  onClick={() => setActiveTab(tab.key as any)}
+                  style={{
+                    background: activeTab === tab.key ? "rgba(234, 88, 12, 0.15)" : "transparent",
+                    color: activeTab === tab.key ? "#ea580c" : "var(--text-muted)",
+                    border: `1px solid ${activeTab === tab.key ? "#ea580c" : "transparent"}`,
+                    padding: "0.45rem 0.85rem",
+                    borderRadius: "6px",
+                    fontSize: "0.82rem",
+                    fontWeight: activeTab === tab.key ? 700 : 500,
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.35rem",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  <span>{tab.icon}</span>
+                  <span>{tab.label}</span>
+                </button>
+              ))}
+            </div>
+
+            {/* TAB 1: Plan & Tâches Ordonnées */}
+            {activeTab === "plan" && (
+              <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                <div style={{ background: "rgba(15, 23, 42, 0.6)", padding: "1rem", borderRadius: "8px", border: "1px solid var(--border-light)" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem" }}>
+                    <span style={{ fontSize: "0.75rem", color: "#fb923c", fontWeight: 700, textTransform: "uppercase" }}>
+                      RÉSUMÉ ARCHITECTURE &amp; RISQUES ACID
+                    </span>
+                    <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>Module {plan.need.module}</span>
                   </div>
-
-                  <div className="p-3.5 bg-red-50 rounded-xl border border-red-200 space-y-1.5">
-                    <div className="font-bold text-red-950">Plan de Rollback (Retour Arrière d Urgence) :</div>
-                    <pre className="p-2.5 bg-white text-red-900 rounded border border-red-200 font-mono text-[11px]">
-                      {plan.deliveryPackage.rollbackPlan.join("\n")}
-                    </pre>
+                  <p style={{ fontSize: "0.88rem", color: "#cbd5e1", margin: "0 0 0.5rem 0", lineHeight: "1.5" }}>
+                    {plan.analysis.summary}
+                  </p>
+                  <div style={{ fontSize: "0.8rem", color: "#94a3b8" }}>
+                    <strong>Objectif Bancaire :</strong> {plan.analysis.businessObjective}
                   </div>
                 </div>
-              )}
 
-              {/* Onglet 6 : Audit PL/SQL interactif */}
-              {activeTab === "audit" && (
-                <div className="space-y-3 text-xs">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-slate-900">Testeur & Auditeur de Code PL/SQL FLEXCUBE</span>
-                    <span className={`px-2.5 py-1 rounded-full font-bold ${auditResult.score >= 80 ? "bg-emerald-100 text-emerald-800" : "bg-red-100 text-red-800"}`}>
-                      Score Qualité : {auditResult.score} / 100
-                    </span>
-                  </div>
+                <h4 style={{ margin: 0, fontSize: "0.95rem", color: "var(--text-primary)", fontWeight: 700 }}>
+                  Sous-Tâches Découpées ({plan.subTasks.length})
+                </h4>
 
-                  <textarea
-                    rows={6}
-                    value={customPlsql}
-                    onChange={(e) => {
-                      setCustomPlsql(e.target.value);
-                      setAuditResult(reviewFlexcubePlSql(e.target.value));
-                    }}
-                    className="w-full p-3 font-mono text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-red-600 outline-none"
-                    placeholder="Collez ici votre procédure PL/SQL pour vérifier les verrous, COMMIT, bind variables..."
-                  />
-
-                  <div>
-                    <h4 className="font-bold text-slate-900 mb-1.5">Anomalies détectées ({auditResult.issues.length}) :</h4>
-                    {auditResult.issues.length === 0 ? (
-                      <div className="p-3 bg-emerald-50 text-emerald-900 rounded-xl font-medium border border-emerald-200">
-                        ✓ Aucune anomalie critique détectée. Ce code respecte les règles d atomicité et de concurrence.
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                  {plan.subTasks.map((task) => (
+                    <div
+                      key={task.id}
+                      style={{
+                        background: "var(--bg-secondary)",
+                        border: "1px solid var(--border-light)",
+                        borderRadius: "8px",
+                        padding: "0.85rem 1rem",
+                      }}
+                    >
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.35rem" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                          <span style={{ fontWeight: 800, fontSize: "0.8rem", color: "#ea580c" }}>{task.id}</span>
+                          <span style={{ fontWeight: 700, fontSize: "0.88rem", color: "var(--text-primary)" }}>{task.title}</span>
+                        </div>
+                        <span style={{ fontSize: "0.72rem", padding: "2px 6px", background: "rgba(255,255,255,0.06)", borderRadius: "4px", color: "#94a3b8" }}>
+                          {task.estimation}
+                        </span>
                       </div>
-                    ) : (
-                      <div className="space-y-2">
-                        {auditResult.issues.map((iss, i) => (
-                          <div key={i} className="p-3 bg-red-50 rounded-xl border border-red-200 space-y-1">
-                            <div className="font-bold text-red-950 flex items-center gap-1.5">
-                              <span className="px-1.5 py-0.5 rounded text-[10px] bg-red-600 text-white font-bold">{iss.severity}</span>
-                              <span>{iss.message}</span>
-                            </div>
-                            <div className="text-red-900 text-[11px]"><b>Correction :</b> {iss.fix}</div>
-                          </div>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem", marginTop: "0.4rem" }}>
+                        {task.concernedObjects.map((tbl) => (
+                          <span key={tbl} style={{ fontSize: "0.7rem", padding: "1px 6px", background: "rgba(2, 132, 199, 0.15)", color: "#38bdf8", borderRadius: "4px" }}>
+                            {tbl}
+                          </span>
                         ))}
+                      </div>
+                      <div style={{ marginTop: "0.5rem", fontSize: "0.78rem", color: "var(--text-muted)" }}>
+                        <strong>Critères :</strong> {task.acceptanceCriteria.join(" • ")}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* TAB 2: Package PL/SQL _CUSTOM */}
+            {activeTab === "plsql" && (
+              <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ fontSize: "0.82rem", color: "var(--text-muted)" }}>
+                    Package Spécification &amp; Body conforme aux règles Oracle FLEXCUBE ({plan.plsqlProposal.packageName})
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => copyToClipboard(plan.plsqlProposal.packageSpec + "\n/\n\n" + plan.plsqlProposal.packageBody)}
+                    style={{
+                      background: "rgba(255,255,255,0.08)",
+                      border: "1px solid var(--border-light)",
+                      color: "#ffffff",
+                      padding: "4px 10px",
+                      borderRadius: "6px",
+                      fontSize: "0.78rem",
+                      cursor: "pointer",
+                    }}
+                  >
+                    {copiedCode ? "Copié !" : "📋 Copier Package"}
+                  </button>
+                </div>
+
+                <div style={{ background: "#0f172a", borderRadius: "8px", padding: "1rem", overflowX: "auto" }}>
+                  <pre style={{ margin: 0, fontFamily: "monospace", fontSize: "0.82rem", color: "#e2e8f0", lineHeight: "1.5" }}>
+                    {plan.plsqlProposal.packageSpec}
+                    {"\n/\n\n"}
+                    {plan.plsqlProposal.packageBody}
+                  </pre>
+                </div>
+              </div>
+            )}
+
+            {/* TAB 3: DDL & Requêtes SQL */}
+            {activeTab === "sql" && (
+              <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                <h4 style={{ margin: 0, fontSize: "0.95rem", color: "var(--text-primary)" }}>
+                  Scripts DDL &amp; Requêtes SGBD Optimisées ({plan.sqlProposal.targetTables.join(", ")})
+                </h4>
+                <div style={{ background: "#0f172a", borderRadius: "8px", padding: "1rem", overflowX: "auto" }}>
+                  <pre style={{ margin: 0, fontFamily: "monospace", fontSize: "0.82rem", color: "#38bdf8" }}>
+                    {plan.sqlProposal.sqlCode}
+                  </pre>
+                </div>
+              </div>
+            )}
+
+            {/* TAB 4: Tests Unitaires PL/SQL */}
+            {activeTab === "tests" && (
+              <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                <h4 style={{ margin: 0, fontSize: "0.95rem", color: "var(--text-primary)" }}>
+                  Scénarios de Validation &amp; Assertions ({plan.testCases.length})
+                </h4>
+                {plan.testCases.map((t) => (
+                  <div key={t.id} style={{ background: "var(--bg-secondary)", borderRadius: "8px", padding: "1rem", border: "1px solid var(--border-light)" }}>
+                    <div style={{ fontWeight: 700, fontSize: "0.9rem", color: "#34d399", marginBottom: "0.25rem" }}>
+                      [{t.id}] {t.title} ({t.category})
+                    </div>
+                    <p style={{ margin: "0 0 0.5rem 0", fontSize: "0.82rem", color: "var(--text-secondary)" }}>
+                      Précondition: {t.preconditions} • Résultat attendu : <code>{t.expectedResult}</code>
+                    </p>
+                    {t.verificationQuery && (
+                      <div style={{ background: "#0f172a", padding: "0.75rem", borderRadius: "6px", overflowX: "auto" }}>
+                        <pre style={{ margin: 0, fontFamily: "monospace", fontSize: "0.8rem", color: "#e2e8f0" }}>
+                          {t.verificationQuery}
+                        </pre>
                       </div>
                     )}
                   </div>
+                ))}
+              </div>
+            )}
+
+            {/* TAB 5: Déploiement & Rollback */}
+            {activeTab === "delivery" && (
+              <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                <div style={{ background: "rgba(239, 68, 68, 0.08)", border: "1px solid rgba(239, 68, 68, 0.3)", padding: "1rem", borderRadius: "8px" }}>
+                  <h4 style={{ margin: "0 0 0.5rem 0", fontSize: "0.95rem", color: "#f87171" }}>
+                    Procédure de Retour Arrière (Rollback Plan)
+                  </h4>
+                  <div style={{ background: "#0f172a", padding: "0.75rem", borderRadius: "6px", overflowX: "auto" }}>
+                    <pre style={{ margin: 0, fontFamily: "monospace", fontSize: "0.8rem", color: "#fca5a5" }}>
+                      {plan.sqlProposal.rollbackScript || plan.deliveryPackage.rollbackPlan.join("\n")}
+                    </pre>
+                  </div>
                 </div>
-              )}
-            </div>
+
+                <div style={{ background: "var(--bg-secondary)", border: "1px solid var(--border-light)", padding: "1rem", borderRadius: "8px" }}>
+                  <h4 style={{ margin: "0 0 0.5rem 0", fontSize: "0.95rem", color: "var(--text-primary)" }}>
+                    Ordre de Déploiement SQL*Plus / Liquibase
+                  </h4>
+                  <ol style={{ margin: 0, paddingLeft: "1.25rem", fontSize: "0.82rem", color: "var(--text-secondary)", lineHeight: "1.6" }}>
+                    {plan.deliveryPackage.deploymentOrder.map((inst, i) => (
+                      <li key={i}>{inst}</li>
+                    ))}
+                  </ol>
+                </div>
+              </div>
+            )}
+
+            {/* TAB 6: Audit de Code PL/SQL */}
+            {activeTab === "audit" && (
+              <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                <h4 style={{ margin: 0, fontSize: "0.95rem", color: "var(--text-primary)" }}>
+                  Analyseur de Conformité PL/SQL &amp; Anti-Patterns
+                </h4>
+                <p style={{ margin: 0, fontSize: "0.82rem", color: "var(--text-secondary)" }}>
+                  Collez un script ou une procédure pour auditer la conformité aux règles Oracle FLEXCUBE (pas de COMMIT direct, utilisation de NOWAIT, capture ORA-00054).
+                </p>
+                <textarea
+                  rows={4}
+                  value={customPlsql}
+                  onChange={(e) => {
+                    setCustomPlsql(e.target.value);
+                    setAuditResult(reviewFlexcubePlSql(e.target.value));
+                  }}
+                  style={{
+                    width: "100%",
+                    padding: "0.75rem",
+                    borderRadius: "6px",
+                    background: "#0f172a",
+                    border: "1px solid var(--border-light)",
+                    color: "#38bdf8",
+                    fontFamily: "monospace",
+                    fontSize: "0.82rem",
+                  }}
+                />
+
+                <div
+                  style={{
+                    background: isAuditPassed ? "rgba(16, 185, 129, 0.1)" : "rgba(239, 68, 68, 0.1)",
+                    border: `1px solid ${isAuditPassed ? "#10b981" : "#ef4444"}`,
+                    borderRadius: "8px",
+                    padding: "1rem",
+                  }}
+                >
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem" }}>
+                    <strong style={{ color: isAuditPassed ? "#34d399" : "#f87171", fontSize: "0.9rem" }}>
+                      Score de Qualité : {auditResult.score} / 100 — {isAuditPassed ? "CONFORME" : "NON CONFORME"}
+                    </strong>
+                  </div>
+                  {auditResult.issues.length > 0 && (
+                    <ul style={{ margin: 0, paddingLeft: "1.25rem", fontSize: "0.82rem", color: "#f87171" }}>
+                      {auditResult.issues.map((iss, i) => (
+                        <li key={i}>
+                          <strong>[{iss.severity}]</strong> {iss.message} <em>(Correction : {iss.fix})</em>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </div>
+            )}
+
           </div>
         </div>
+
       </div>
     </AppShell>
   );

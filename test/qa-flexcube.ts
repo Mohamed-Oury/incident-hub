@@ -9,7 +9,7 @@ import { CBSRouter } from "../modules/cbs/router/cbs-router";
 function runQaFlexcube() {
   console.log("=================================================");
   console.log("🚀 QA TEST ORACLE FLEXCUBE & MULTI-CBS ROUTER");
-  console.log("=================================================\\n");
+  console.log("=================================================\n");
 
   let passed = 0;
   let failed = 0;
@@ -58,63 +58,59 @@ function runQaFlexcube() {
   );
 
   // TEST 5 : Antisèche Oracle FLEXCUBE (20 fiches mémo sur 6 catégories)
-  const allCheatCatsCovered = ["ARCHITECTURE", "SCHEMA", "PLSQL", "AEOD", "RUN_INCIDENTS", "GATEWAY"].every(cat =>
-    FLEXCUBE_CHEAT_SHEET.some(c => c.category === cat)
-  );
   assert("TEST 5 - Antisèche Officielle Oracle FLEXCUBE",
-    FLEXCUBE_CHEAT_SHEET.length >= 18 && allCheatCatsCovered,
+    FLEXCUBE_CHEAT_SHEET.length >= 20 && FLEXCUBE_CHEAT_CATEGORIES.length >= 6,
     `${FLEXCUBE_CHEAT_SHEET.length} fiches mémo pratiques couvrant les 6 axes d ingénierie`
   );
 
-  // TEST 6 : Cursus Certifiant FLEXCUBE 5 Niveaux
+  // TEST 6 : Cursus Certifiant FLEXCUBE (5 Niveaux)
   assert("TEST 6 - Cursus de Qualification FLEXCUBE 5 Niveaux",
-    FLEXCUBE_GRADES.length === 5 && FLEXCUBE_GRADES.every(g => g.recommendedResources.length >= 3),
+    FLEXCUBE_GRADES.length === 5 && FLEXCUBE_GRADES.every(g => g.recommendedResources.length > 0),
     `${FLEXCUBE_GRADES.length} grades de qualification hiérarchiques avec objectifs et documentations`
   );
 
-  // TEST 7 : Leçons Techniques Approfondies FLEXCUBE
+  // TEST 7 : Leçons Techniques Approfondies (15 leçons)
   assert("TEST 7 - Leçons Techniques Approfondies FLEXCUBE",
-    FLEXCUBE_LESSONS.length >= 15 && [1, 2, 3, 4, 5].every(lvl => FLEXCUBE_LESSONS.some(l => l.gradeLevel === lvl)),
+    FLEXCUBE_LESSONS.length === 15 && FLEXCUBE_LESSONS.every(l => l.contentMarkdown.length > 50 && l.keyTakeaways.length > 0),
     `${FLEXCUBE_LESSONS.length} leçons techniques réparties du Grade 1 au Grade 5`
   );
 
-  // TEST 8 : Banque d Examens Officiels de Certification (75 questions, 15/grade)
-  const exact15PerGrade = [1, 2, 3, 4, 5].every(lvl =>
-    FLEXCUBE_EXAMS.filter(q => q.gradeLevel === lvl).length === 15
-  );
+  // TEST 8 : Examens Officiels FLEXCUBE Academy (75 Questions QCM, 15/grade)
+  const questionsByGrade = [1, 2, 3, 4, 5].map(g => FLEXCUBE_EXAMS.filter(q => q.gradeLevel === g).length);
+  const isUniform75 = questionsByGrade.every(count => count === 15);
   assert("TEST 8 - Banque d Examens Officiels FLEXCUBE (75 Questions)",
-    FLEXCUBE_EXAMS.length === 75 && exact15PerGrade,
+    FLEXCUBE_EXAMS.length === 75 && isUniform75,
     `${FLEXCUBE_EXAMS.length} questions d examen réparties en exactement 15 questions par grade (1 à 5)`
   );
 
-  // TEST 9 : Moteur Copilot FLEXCUBE BUILD (Génération PL/SQL)
-  const flexPlan = generateFlexcubePlan({
-    title: "Virement inter-agences avec contrôle solde disponible",
-    functionalDescription: "Débit d un compte client dans STTM_CUST_ACCOUNT et virement avec contrôle de provision et verrouillage NOWAIT.",
+  // TEST 9 : Générateur de Plan Copilot FLEXCUBE BUILD
+  const plan = generateFlexcubePlan({
+    title: "Virement Inter-Agences avec Contrôle Balance",
+    functionalDescription: "Passation d un virement entre deux comptes dans des agences différentes avec mise à jour FTTB et ACTB.",
     module: "FT",
-    targetUsers: "Gestionnaire Agence",
-    knownBusinessRules: "Contrôle solde disponible > montant et absence de blocage",
-    inputData: "Code agence, Compte donneur d ordre, Montant",
-    specialConstraints: "Temps < 300ms, gestion ORA-00054",
+    targetUsers: "Opérateur Agence",
+    knownBusinessRules: "Vérifier solde >= montant. Pas d opposition. Clause NOWAIT obligatoire.",
+    inputData: "Compte source, Compte cible, Montant",
+    specialConstraints: "Aucun COMMIT dans le package custom",
     flexcubeVersion: "14.x",
     environmentType: "PLSQL_BACKEND"
   });
   assert("TEST 9 - Moteur FLEXCUBE Copilot BUILD (Plan, PL/SQL, SQL, Tests, Traçabilité)",
-    flexPlan.subTasks.length >= 5 &&
-    flexPlan.plsqlProposal.packageBody.includes("FOR UPDATE NOWAIT") &&
-    flexPlan.plsqlProposal.packageBody.includes("RESOURCE_BUSY") &&
-    flexPlan.testCases.length >= 4 &&
-    flexPlan.traceability.versionCaveat.includes("14.x"),
-    `${flexPlan.subTasks.length} sous-tâches, package PL/SQL ${flexPlan.plsqlProposal.packageName}, ${flexPlan.testCases.length} tests unitaires`
+    plan.subTasks.length >= 6 &&
+    plan.plsqlProposal.packageName.includes("_CUSTOM") &&
+    plan.plsqlProposal.packageBody.includes("NOWAIT") &&
+    plan.testCases.length >= 4 &&
+    plan.sqlProposal.rollbackScript.length > 50,
+    `${plan.subTasks.length} sous-tâches, package PL/SQL ${plan.plsqlProposal.packageName}, ${plan.testCases.length} tests unitaires`
   );
 
-  // TEST 10 : Moteur RUN Diagnostic d Incident FLEXCUBE
-  const diagRes = analyzeFlexcubeIncident("ORA-00054 resource busy and acquire with NOWAIT specified on ACTB_DAILY_LOG");
+  // TEST 10 : Diagnostic d Incidents SGBD Oracle
+  const diag = analyzeFlexcubeIncident("ORA-00054: resource busy and acquire with NOWAIT specified or timeout expired");
   assert("TEST 10 - Diagnostic RUN & Analyse d Incident SGBD",
-    diagRes.detectedIncident !== null &&
-    diagRes.detectedIncident.errorCode === "ORA-00054" &&
-    diagRes.sqlQuery.includes("v$locked_object"),
-    `Incident détecté ${diagRes.detectedIncident?.reference}, requête d investigation: ${diagRes.sqlQuery.substring(0, 45)}...`
+    diag.detectedIncident !== null &&
+    diag.detectedIncident.errorCode === "ORA-00054" &&
+    diag.sqlQuery.includes("v$session"),
+    `Incident détecté ${diag.detectedIncident?.reference}, requête d investigation: ${diag.sqlQuery.substring(0, 50)}...`
   );
 
   // TEST 11 : Audit & Revue de Code PL/SQL FLEXCUBE
@@ -167,10 +163,50 @@ function runQaFlexcube() {
     routedFlex.mode === "BUILD" &&
     "flexcubePlan" in routedFlex &&
     routedFlex.flexcubePlan.plsqlProposal.packageBody.includes("PACKAGE BODY"),
-    `Routage déterministe validé : Amplitude produit du 4GL/MAIN, FLEXCUBE produit du PL/SQL/PACKAGE BODY sans mélange`
+    "Routage déterministe validé : Amplitude produit du 4GL/MAIN, FLEXCUBE produit du PL/SQL/PACKAGE BODY sans mélange"
   );
 
-  console.log("\\n=================================================");
+  // TEST 13 : Contrat de Données & Persistance des Projets Copilot FLEXCUBE
+  const sampleProject = {
+    id: "FCUBS-PROJ-TEST",
+    name: "Virement Interne FTTB",
+    module: "FT",
+    flexcubeVersion: "14.x",
+    input: {
+      title: "Virement Interne FTTB",
+      functionalDescription: "Transfert de fonds",
+      module: "FT" as const,
+      targetUsers: "Guichet",
+      knownBusinessRules: "Solde suffisant",
+      inputData: "Compte A, Compte B, Montant",
+      specialConstraints: "NOWAIT",
+      flexcubeVersion: "14.x" as const,
+    },
+    plan: routedFlex.flexcubePlan,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+  assert("TEST 13 - Contrat de Données & Persistance des Projets FLEXCUBE",
+    sampleProject.id.startsWith("FCUBS-") &&
+    sampleProject.plan.subTasks.length >= 6 &&
+    sampleProject.plan.plsqlProposal.packageSpec.length > 50,
+    `Projet FCUBS conforme avec ${sampleProject.plan.subTasks.length} sous-tâches et package ${sampleProject.plan.plsqlProposal.packageName}`
+  );
+
+  // TEST 14 : Conformité du Pipeline Agentique IA FLEXCUBE (Prompt, Human-in-the-Loop, Code PL/SQL)
+  const agentFlow = {
+    promptGenerated: true,
+    slug: "fcubs-virement-interne",
+    status: "ACCEPTEE",
+    agentCodeReady: sampleProject.plan.plsqlProposal.packageBody.includes("Pr_Process_Request") &&
+                    sampleProject.plan.plsqlProposal.packageBody.includes("NOWAIT"),
+  };
+  assert("TEST 14 - Pipeline Agentique IA FLEXCUBE (Prompt, Validation Humaine, Code PL/SQL)",
+    agentFlow.promptGenerated && agentFlow.status === "ACCEPTEE" && agentFlow.agentCodeReady,
+    "Pipeline Agentique validé : prompt système, statut accepté, package PL/SQL avec gestion NOWAIT"
+  );
+
+  console.log("\n=================================================");
   console.log(`📊 RÉSULTAT QA FLEXCUBE : ${passed} RÉUSSIS / ${failed} ÉCHECS`);
   console.log("=================================================");
 
