@@ -97,9 +97,9 @@ export default function CbsDashboardPage() {
   ];
 
   return (
-    <AppShell pageTitle="Core Banking Amplitude & IT Banking" eyebrow="UNIVERS PRODUCTION BANCAIRE">
+    <AppShell pageTitle="Core Banking Amplitude" eyebrow="UNIVERS PRODUCTION BANCAIRE">
       <div style={{ display: "flex", flexDirection: "column", gap: "1.75rem" }}>
-        
+
         {/* Sélecteur de Plateforme Multi-CBS */}
         <div
           style={{

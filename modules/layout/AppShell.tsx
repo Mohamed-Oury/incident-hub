@@ -149,7 +149,6 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
         { href: "/cbs/log-analyzer", label: "Analyseur de Logs & Traces", icon: "📜" },
         { href: "/cbs/unix", label: "Commandes AIX/Unix", icon: "💻" },
         { href: "/cbs/incidents", label: "Incidents RCA & Run", icon: "🚨" },
-        { href: "/cbs/flexcube", label: "Espace Oracle FLEXCUBE", icon: "🏛️" },
       ],
     },
   ];
@@ -185,7 +184,6 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
       roleRequired: "ROLE_EXPERTISE",
       items: [
         { href: "/cbs/flexcube/incidents", label: "Incidents RUN & AEOD", icon: "🚨" },
-        { href: "/cbs", label: "Basculer vers Amplitude", icon: "↩️" },
       ],
     },
   ];
@@ -193,8 +191,8 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
   const currentNavSections = isFlexcubeUniverse
     ? flexcubeNavSections
     : isCbsUniverse
-    ? cbsNavSections
-    : monetiqueNavSections;
+      ? cbsNavSections
+      : monetiqueNavSections;
 
   // Filtrage strict : Seul ADMIN voit TOUT. Les autres ne voient QUE leur section respective.
   const authorizedSections = currentNavSections.filter((section) => {
@@ -366,20 +364,6 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
               <b>Données sensibles masquées</b>
             </div>
           </div>
-          {/* <div
-            style={{
-              fontSize: "0.72rem",
-              color: "#94a3b8",
-              borderTop: "1px solid rgba(255,255,255,0.08)",
-              paddingTop: "0.6rem",
-              width: "100%",
-              lineHeight: "1.3",
-            }}
-          >
-            © {new Date().getFullYear()} <b>M.Oury</b>
-            <br />
-            <span style={{ color: "#e60028", fontWeight: 600 }}>Ingénieur IT BANKING &amp; Expert Monétique - CBS</span>
-          </div> */}
         </div>
       </aside>
 
@@ -424,7 +408,7 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
               }}
             >
               <Link
-                href="/"
+                href="/hub"
                 title="Monétique Hub"
                 style={{
                   fontSize: "0.75rem",

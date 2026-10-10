@@ -69,7 +69,7 @@ export default function FlexcubeDashboardPage() {
   ];
 
   return (
-    <AppShell pageTitle="Oracle FLEXCUBE Universal Banking" eyebrow="ESPACE CORE BANKING ORACLE">
+    <AppShell pageTitle="Oracle FLEXCUBE" eyebrow="ESPACE CORE BANKING ORACLE">
       <div className="space-y-6">
         {/* Switcher d'environnement CBS */}
         <div className="bg-gradient-to-r from-red-950 via-slate-900 to-red-900 rounded-2xl p-6 text-white shadow-xl border border-red-800/40">
