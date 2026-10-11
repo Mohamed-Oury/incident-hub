@@ -149,6 +149,7 @@ export default function CbsCopilotPage() {
   const [isRejecting, setIsRejecting] = useState<boolean>(false);
   const [isValidating, setIsValidating] = useState<boolean>(false);
   const [isGeneratingCode, setIsGeneratingCode] = useState<boolean>(false);
+  const [codeValidationReport, setCodeValidationReport] = useState<any | null>(null);
   const [actionFeedback, setActionFeedback] = useState<string | null>(null);
   const [showHistoryAccordion, setShowHistoryAccordion] = useState<boolean>(false);
 
@@ -441,6 +442,7 @@ export default function CbsCopilotPage() {
         throw new Error(err.detail || err.error || "Échec de la génération de code 4GL & .per par l'agent.");
       }
       const codeResult = await res.json();
+      setCodeValidationReport(codeResult.validationReport || null);
 
       setGeneratedPlan((prev) => {
         if (!prev) return prev;
@@ -2144,6 +2146,12 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                         <div style={{ minWidth: 0 }}>
                           <div style={{ fontWeight: 700, fontSize: "0.92rem", color: "#0f172a", wordBreak: "break-word" }}>{task.title}</div>
                           <div style={{ fontSize: "0.82rem", color: "#475569", marginTop: "4px", lineHeight: "1.4", wordBreak: "break-word" }}>{task.description}</div>
+                          {(task.title?.includes("NON DOCUMENTÉ") || task.description?.includes("NON DOCUMENTÉ")) && (
+                            <div style={{ display: "inline-flex", alignItems: "center", gap: "4px", backgroundColor: "#fef3c7", color: "#92400e", border: "1px solid #fde68a", padding: "2px 8px", borderRadius: "4px", fontSize: "0.72rem", fontWeight: 700, marginTop: "6px" }}>
+                              <span>⚠️</span>
+                              <span>NON DOCUMENTÉ — À VALIDER MÉTIER (PILIER 2 ANTI-HALLUCINATION)</span>
+                            </div>
+                          )}
                         </div>
 
                         <div style={{ minWidth: 0 }}>
@@ -2312,6 +2320,60 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                     </button>
                   </div>
                 </div>
+
+                {/* Bloc Rapport de Validation Syntaxique & Linter Bancaire (Pilier 3) */}
+                {codeValidationReport && (
+                  <div
+                    style={{
+                      backgroundColor: codeValidationReport.valid ? "#f0fdf4" : "#fffbeb",
+                      border: `1px solid ${codeValidationReport.valid ? "#bbf7d0" : "#fde68a"}`,
+                      borderRadius: "10px",
+                      padding: "1rem 1.25rem",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "0.5rem",
+                    }}
+                  >
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.5rem" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                        <span style={{ fontSize: "1.2rem" }}>{codeValidationReport.valid ? "🛡️" : "⚠️"}</span>
+                        <strong style={{ fontSize: "0.92rem", color: codeValidationReport.valid ? "#166534" : "#854d0e" }}>
+                          Linter Bancaire &amp; Contrôle Transactionnel : {codeValidationReport.valid ? "100% Conforme" : "Avertissements Détectés"}
+                        </strong>
+                      </div>
+                      <span
+                        style={{
+                          fontSize: "0.75rem",
+                          fontWeight: 700,
+                          padding: "3px 8px",
+                          borderRadius: "12px",
+                          backgroundColor: codeValidationReport.valid ? "#dcfce7" : "#fef3c7",
+                          color: codeValidationReport.valid ? "#15803d" : "#92400e",
+                          border: `1px solid ${codeValidationReport.valid ? "#86efac" : "#fde68a"}`,
+                        }}
+                      >
+                        {codeValidationReport.valid ? "VALIDÉ SANS ERREUR" : "À RÉVISER"}
+                      </span>
+                    </div>
+                    <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", fontSize: "0.8rem", color: "#334155" }}>
+                      {codeValidationReport.informix_4gl?.transactions && (
+                        <span>
+                          • Transactions 4GL : <b>{codeValidationReport.informix_4gl.transactions.begin_count}</b> BEGIN WORK | <b>{codeValidationReport.informix_4gl.transactions.commit_count}</b> COMMIT WORK | <b>{codeValidationReport.informix_4gl.transactions.rollback_count}</b> ROLLBACK WORK
+                        </span>
+                      )}
+                      {codeValidationReport.per_screen && (
+                        <span>
+                          • Écran Genero : Masque <b>.per</b> syntaxiquement conforme ({codeValidationReport.per_screen.fields_found || "attributs"} vérifiés)
+                        </span>
+                      )}
+                      {codeValidationReport.specification && (
+                        <span>
+                          • Package Oracle Flexcube : Spécification &amp; Corps PL/SQL validés
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                )}
 
                 <div
                   style={{

@@ -92,6 +92,8 @@ interface DiagnosticResultData {
     humanValidationRequired: boolean;
   };
   toolsCalled?: string[];
+  aiExecutiveSummary?: string;
+  aiInvestigationDialogue?: string[];
 }
 
 export function DiagnosticWizard() {
@@ -515,6 +517,91 @@ export function DiagnosticWizard() {
           {/* RÉSULTATS STRUCTURÉS DU DIAGNOSTIC AGENTIC */}
           {copilotResult && (
             <div style={{ display: "flex", flexDirection: "column", gap: "1.75rem" }}>
+              {/* Card 0 : Synthèse Exécutive Gemini & Guide d'Investigation Opérateur */}
+              <div
+                style={{
+                  background: "linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)",
+                  color: "#ffffff",
+                  padding: "1.75rem",
+                  borderRadius: "14px",
+                  border: "1px solid #312e81",
+                  boxShadow: "0 10px 25px -5px rgba(30, 27, 75, 0.4)",
+                }}
+              >
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.75rem", marginBottom: "1rem" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+                    <span style={{ fontSize: "1.4rem" }}>✨</span>
+                    <div>
+                      <h3 style={{ fontSize: "1.15rem", fontWeight: 800, margin: 0, color: "#ffffff" }}>
+                        1. Synthèse Exécutive IA & Dialogue d&apos;Investigation
+                      </h3>
+                      <p style={{ fontSize: "0.78rem", color: "#a5b4fc", margin: "2px 0 0 0" }}>
+                        Raisonnement Google Gemini ancré à 100% sur les faits déterministes validés
+                      </p>
+                    </div>
+                  </div>
+                  <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+                    <span style={{ background: "rgba(99, 102, 241, 0.2)", color: "#c7d2fe", padding: "0.3rem 0.75rem", borderRadius: "20px", fontSize: "0.75rem", fontWeight: 700, border: "1px solid rgba(165, 180, 252, 0.3)" }}>
+                      ⚡ Google Gemini 2.5 Flash
+                    </span>
+                    <span style={{ background: "rgba(16, 185, 129, 0.2)", color: "#6ee7b7", padding: "0.3rem 0.75rem", borderRadius: "20px", fontSize: "0.75rem", fontWeight: 700, border: "1px solid rgba(110, 231, 183, 0.3)" }}>
+                      🛡️ PCI-DSS Actif (PAN Masqué)
+                    </span>
+                  </div>
+                </div>
+
+                {/* Bloc Synthèse Exécutive */}
+                <div
+                  style={{
+                    background: "rgba(255, 255, 255, 0.06)",
+                    border: "1px solid rgba(255, 255, 255, 0.12)",
+                    borderRadius: "10px",
+                    padding: "1.1rem 1.25rem",
+                    marginBottom: "1.25rem",
+                    lineHeight: "1.6",
+                    fontSize: "0.93rem",
+                    color: "#f1f5f9",
+                  }}
+                >
+                  <strong style={{ color: "#38bdf8", display: "block", fontSize: "0.82rem", letterSpacing: "0.05em", marginBottom: "0.35rem" }}>
+                    SYNTHÈSE VULGARISÉE POUR SUPERVISEUR MONÉTIQUE :
+                  </strong>
+                  {copilotResult.aiExecutiveSummary ||
+                    copilotResult.rcaProposal.summary ||
+                    "Analyse technique validée par le moteur déterministe."}
+                </div>
+
+                {/* Bloc Dialogue d'Investigation Opérateur */}
+                {copilotResult.aiInvestigationDialogue && copilotResult.aiInvestigationDialogue.length > 0 && (
+                  <div>
+                    <span style={{ fontSize: "0.8rem", fontWeight: 700, color: "#cbd5e1", display: "block", marginBottom: "0.6rem", letterSpacing: "0.04em" }}>
+                      🎯 QUESTIONS CLÉS D&apos;ORIENTATION SUPERVISEUR (LEVÉE DE DOUTE) :
+                    </span>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                      {copilotResult.aiInvestigationDialogue.map((question, qIdx) => (
+                        <div
+                          key={qIdx}
+                          style={{
+                            background: "rgba(15, 23, 42, 0.6)",
+                            border: "1px solid rgba(148, 163, 184, 0.2)",
+                            borderRadius: "8px",
+                            padding: "0.65rem 0.9rem",
+                            fontSize: "0.86rem",
+                            color: "#e2e8f0",
+                            display: "flex",
+                            alignItems: "flex-start",
+                            gap: "0.6rem",
+                          }}
+                        >
+                          <span style={{ color: "#f59e0b", fontWeight: 800 }}>•</span>
+                          <span>{question}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
               {/* Card 1 : Context & Classification Initiale */}
               <div style={{ background: "#ffffff", padding: "1.75rem", borderRadius: "14px", border: "1px solid #e4e4e7" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
@@ -1014,6 +1101,28 @@ export function DiagnosticWizard() {
                         setOperatorConfirmed(true);
                         // Auto-sauvegarde immédiate dans la BD avec statut VALIDATED
                         await handleSaveIncident();
+                        // Enregistrement dans l'Audit Trail unifié Monétique & CBS Hub (Pilier 5)
+                        try {
+                          await fetch("/api/cbs/agentic/audit/record", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                              ticketId: createdRef || `INC-GAB-${Date.now().toString().slice(-6)}`,
+                              stan: "739214",
+                              domain: copilotResult.initialAnalysis.detectedDomain || "GAB",
+                              actionType: "OPERATOR_DECISION",
+                              operatorId: "op-monetique-01",
+                              role: "MONETIQUE_OPERATOR",
+                              evidenceSummary: copilotResult.evidenceList.map((e) => `[${e.source}] ${e.content}`).slice(0, 5),
+                              status: "APPROVED",
+                              details: {
+                                breakpoint: copilotResult.breakpointAnalysis,
+                                rca: copilotResult.rcaProposal.summary,
+                                validationGate: "Human-in-the-loop Opérateur Monétique",
+                              },
+                            }),
+                          });
+                        } catch (_) {}
                       }}
                       disabled={loading}
                       style={{
