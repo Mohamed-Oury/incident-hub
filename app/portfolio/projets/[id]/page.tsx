@@ -53,7 +53,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="mb-8">
               <Link
-                href="/projets"
+                href="/portfolio/projets"
                 className="inline-flex items-center text-rose-200 hover:text-white font-semibold transition-colors text-sm"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
@@ -261,13 +261,13 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-2">
               <Link
-                href="/contact"
+                href="/portfolio/contact"
                 className="inline-flex items-center justify-center px-8 py-3 bg-[#7d1538] hover:bg-[#63102c] text-white transition-colors rounded-xl text-sm font-semibold shadow-md"
               >
                 Discutons de votre projet
               </Link>
               <Link
-                href="/projets"
+                href="/portfolio/projets"
                 className="inline-flex items-center justify-center px-8 py-3 border border-[#7d1538] text-[#7d1538] hover:bg-[#7d1538] hover:text-white transition-colors rounded-xl text-sm font-semibold"
               >
                 Voir mes autres projets

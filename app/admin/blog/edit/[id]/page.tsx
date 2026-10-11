@@ -182,7 +182,7 @@ export default function EditBlogPage({ params }: EditBlogPageProps) {
         <div className="flex items-center space-x-3">
           {slug && (
             <Link
-              href={`/blog/${slug}`}
+              href={`/portfolio/blog/${slug}`}
               target="_blank"
               className="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl text-xs sm:text-sm transition-colors flex items-center shadow-2xs"
             >

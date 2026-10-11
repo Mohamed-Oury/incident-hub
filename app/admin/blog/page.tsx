@@ -290,7 +290,7 @@ export default function BlogAdminPage() {
 
             {/* Actions */}
             <div className="flex flex-wrap items-center gap-2 pt-6 mt-6 border-t border-gray-100">
-              <Link href={`/blog/${post.slug}`} target="_blank" className="flex-1 min-w-[100px]">
+              <Link href={`/portfolio/blog/${post.slug}`} target="_blank" className="flex-1 min-w-[100px]">
                 <button className="w-full py-2 px-3 bg-gray-50 hover:bg-gray-100 text-gray-700 font-bold rounded-xl text-xs border border-gray-200 transition-colors flex items-center justify-center cursor-pointer">
                   <Eye className="w-3.5 h-3.5 mr-1.5" />
                   Détails

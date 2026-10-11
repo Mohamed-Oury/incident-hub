@@ -333,7 +333,7 @@ export function MTIDirectory() {
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid #e2e8f0", paddingTop: "0.75rem" }}>
                   <span style={{ fontSize: "0.75rem", color: "#64748b", fontWeight: 500 }}>{mti.isoVersion}</span>
                   <Link
-                    href={`/knowledge?search=${mti.mti}`}
+                    href={`/hub/knowledge?search=${mti.mti}`}
                     className="btn-ghost"
                     style={{ fontSize: "0.8rem", color: "#059669", textDecoration: "none", fontWeight: 600 }}
                   >

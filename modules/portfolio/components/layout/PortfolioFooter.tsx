@@ -5,10 +5,10 @@ import { GithubIcon, LinkedinIcon } from "@/modules/portfolio/components/common/
 export function PortfolioFooter() {
   const navigation = [
     { label: "Accueil", href: "/" },
-    { label: "Mon Portfolio", href: "/a-propos" },
-    { label: "Mes Projets", href: "/projets" },
-    { label: "Mon Blog", href: "/blog" },
-    { label: "Me contacter", href: "/contact" },
+    { label: "Mon Portfolio", href: "/portfolio/a-propos" },
+    { label: "Mes Projets", href: "/portfolio/projets" },
+    { label: "Mon Blog", href: "/portfolio/blog" },
+    { label: "Me contacter", href: "/portfolio/contact" },
   ];
 
   return (
@@ -92,7 +92,7 @@ export function PortfolioFooter() {
                 Collaboration
               </h3>
               <Link
-                href="/contact"
+                href="/portfolio/contact"
                 className="inline-flex items-center px-4 py-2 bg-[#7d1538] text-white rounded-full hover:bg-[#a01e4a] transition-all duration-300 shadow-md text-xs md:text-sm font-medium text-decoration-none"
               >
                 Démarrer un projet

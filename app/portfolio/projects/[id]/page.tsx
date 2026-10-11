@@ -6,5 +6,5 @@ interface PageProps {
 
 export default async function PortfolioProjectRedirect({ params }: PageProps) {
   const { id } = await params;
-  redirect(`/projets/${id}`);
+  redirect(`/portfolio/projets/${id}`);
 }

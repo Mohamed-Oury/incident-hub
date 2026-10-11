@@ -142,7 +142,7 @@ export function IsoMessageParserTool() {
               {parsed.mti || "—"}
             </p>
             {parsed.mtiDef && (
-              <Link href={`/mti?search=${parsed.mti}`} style={{ fontSize: "0.75rem", color: "#0369a1", textDecoration: "underline" }}>
+              <Link href={`/hub/mti?search=${parsed.mti}`} style={{ fontSize: "0.75rem", color: "#0369a1", textDecoration: "underline" }}>
                 Fiche MTI ➜
               </Link>
             )}
@@ -186,7 +186,7 @@ export function IsoMessageParserTool() {
             </p>
             {parsed.criticalInsights.responseCode && (
               <Link
-                href={`/de39?search=${parsed.criticalInsights.responseCode}`}
+                href={`/hub/de39?search=${parsed.criticalInsights.responseCode}`}
                 style={{ fontSize: "0.75rem", color: "#0369a1", textDecoration: "underline" }}
               >
                 Diagnostic DE39 ➜

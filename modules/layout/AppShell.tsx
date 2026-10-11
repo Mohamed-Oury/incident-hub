@@ -67,13 +67,12 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
       roleRequired: "ROLE_EXPLOITATION",
       items: [
         { href: "/hub", label: "Vue d'ensemble", icon: "⊞" },
-        { href: "/knowledge", label: "Base de connaissance", icon: "📚" },
-        { href: "/diagnostic", label: "Diagnostic Assistant", icon: "⚡" },
-        { href: "/training-monetique/antiseche", label: "Antisèche Monétique", icon: "🧠" },
-        { href: "/mti", label: "Référentiel MTI", icon: "📬" },
-        { href: "/de39", label: "Référentiel DE39", icon: "🏷️" },
-        { href: "/run-supervision", label: "Supervision & Runbook", icon: "🖥️" },
-
+        { href: "/hub/knowledge", label: "Base de connaissance", icon: "📚" },
+        { href: "/hub/diagnostic", label: "Diagnostic Assistant", icon: "⚡" },
+        { href: "/hub/training-monetique/antiseche", label: "Antisèche Monétique", icon: "🧠" },
+        { href: "/hub/mti", label: "Référentiel MTI", icon: "📬" },
+        { href: "/hub/de39", label: "Référentiel DE39", icon: "🏷️" },
+        { href: "/hub/run-supervision", label: "Supervision & Runbook", icon: "🖥️" },
       ],
     },
     {
@@ -82,10 +81,10 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
       icon: "🧮",
       roleRequired: "ROLE_DECODEURS",
       items: [
-        { href: "/parser", label: "Parseur Trame ISO", icon: "🔍" },
-        { href: "/bitmap", label: "Décodeur Bitmap", icon: "🧮" },
-        { href: "/emv", label: "Décodeur EMV / DE55", icon: "💳" },
-        { href: "/atm-ej", label: "Journal GAB (ATM EJ)", icon: "🖨️" },
+        { href: "/hub/parser", label: "Parseur Trame ISO", icon: "🔍" },
+        { href: "/hub/bitmap", label: "Décodeur Bitmap", icon: "🧮" },
+        { href: "/hub/emv", label: "Décodeur EMV / DE55", icon: "💳" },
+        { href: "/hub/atm-ej", label: "Journal GAB (ATM EJ)", icon: "🖨️" },
       ],
     },
     {
@@ -94,9 +93,9 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
       icon: "🛠️",
       roleRequired: "ROLE_EXPERTISE",
       items: [
-        { href: "/crypto-hsm", label: "Diagnostic Clés HSM", icon: "🔐" },
-        //{ href: "/timeout-matrix", label: "Matrice Time-Outs", icon: "⏱️" },
-        { href: "/post-mortem", label: "Générateur Rapport", icon: "📑" },
+        { href: "/hub/crypto-hsm", label: "Diagnostic Clés HSM", icon: "🔐" },
+        //{ href: "/hub/timeout-matrix", label: "Matrice Time-Outs", icon: "⏱️" },
+        { href: "/hub/post-mortem", label: "Générateur Rapport", icon: "📑" },
       ],
     },
     {
@@ -105,8 +104,8 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
       icon: "🎓",
       roleRequired: "ROLE_REFERENTIELS",
       items: [
-        { href: "/training-monetique", label: "Formation Monétique & Certif", icon: "💳" },
-        //{ href: "/audit", label: "Piste d'audit", icon: "🛡️" },
+        { href: "/hub/training-monetique", label: "Formation Monétique & Certif", icon: "💳" },
+        //{ href: "/hub/audit", label: "Piste d'audit", icon: "🛡️" },
       ],
     },
   ];

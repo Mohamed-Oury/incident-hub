@@ -185,7 +185,7 @@ export function ProjectsSection({ recentProjects, stats }: ProjectsSectionProps)
 
         {/* CTA */}
         <div className="text-center">
-          <Link href="/projets" className="text-decoration-none">
+          <Link href="/portfolio/projets" className="text-decoration-none">
             <button className="bg-[#7d1538] hover:bg-[#a01e4a] text-white px-10 py-4 rounded-full text-base sm:text-lg font-bold transition-all duration-300 shadow-lg hover:shadow-xl inline-flex items-center cursor-pointer border-0">
               <Rocket className="w-5 h-5 mr-3" />
               Découvrir tous mes projets

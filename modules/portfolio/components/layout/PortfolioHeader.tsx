@@ -8,9 +8,9 @@ export function PortfolioHeader() {
 
   const navigation = [
     { label: "Accueil", href: "/" },
-    { label: "À propos", href: "/a-propos" },
-    { label: "Projets", href: "/projets" },
-    { label: "Blog", href: "/blog" },
+    { label: "À propos", href: "/portfolio/a-propos" },
+    { label: "Projets", href: "/portfolio/projets" },
+    { label: "Mes reflexions", href: "/portfolio/blog" },
   ];
 
   return (
@@ -43,7 +43,7 @@ export function PortfolioHeader() {
             ))}
 
             <Link
-              href="/contact"
+              href="/portfolio/contact"
               className="bg-[#7d1538] text-white px-5 py-2.5 rounded-full hover:bg-[#a01e4a] transition-all duration-300 shadow-md text-sm font-medium text-decoration-none"
             >
               Contact
@@ -98,7 +98,7 @@ export function PortfolioHeader() {
                 💳 Plateforme Monétique &amp; CBS (HUB)
               </Link>
               <Link
-                href="/contact"
+                href="/portfolio/contact"
                 className="block bg-[#7d1538] text-white px-4 py-3 rounded-lg text-center font-medium hover:bg-[#a01e4a] text-decoration-none"
                 onClick={() => setIsMobileMenuOpen(false)}
               >

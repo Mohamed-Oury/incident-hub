@@ -243,7 +243,7 @@ export function EditIncidentForm({ incident }: { incident: IncidentRecord }) {
 
       {/* Boutons d'action */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: "1rem" }}>
-        <Link href={`/incidents/${incident.reference}`} className="btn-secondary">
+        <Link href={`/hub/incidents/${incident.reference}`} className="btn-secondary">
           Annuler
         </Link>
         <button type="submit" disabled={loading} className="btn-emerald" style={{ padding: "0.85rem 1.75rem" }}>

@@ -75,7 +75,7 @@ export default function BlogCard({ post, featured = false }: BlogCardProps) {
           <span>{post.readTime} min de lecture</span>
         </div>
 
-        <Link href={`/blog/${post.slug}`} className="block text-decoration-none">
+        <Link href={`/portfolio/blog/${post.slug}`} className="block text-decoration-none">
           <button className="w-full bg-[#7d1538] hover:bg-[#a01e4a] text-white rounded-full py-2.5 px-4 font-bold text-sm transition-all duration-300 shadow hover:shadow-lg flex items-center justify-center group/btn cursor-pointer border-0">
             Lire l&apos;article
             <ArrowRight className="ml-2 w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />

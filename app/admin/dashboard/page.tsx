@@ -200,7 +200,7 @@ export default async function AdminDashboardPage() {
                     </p>
                   </div>
                   <Link
-                    href={`/blog/${post.slug}`}
+                    href={`/portfolio/blog/${post.slug}`}
                     target="_blank"
                     className="p-2 bg-white rounded-lg border border-gray-200 text-gray-600 hover:text-[#7d1538] hover:border-[#7d1538] transition-colors"
                   >
@@ -242,7 +242,7 @@ export default async function AdminDashboardPage() {
                     </p>
                   </div>
                   <Link
-                    href={`/projets/${project.id}`}
+                    href={`/portfolio/projets/${project.id}`}
                     target="_blank"
                     className="p-2 bg-white rounded-lg border border-gray-200 text-gray-600 hover:text-blue-600 hover:border-blue-600 transition-colors"
                   >

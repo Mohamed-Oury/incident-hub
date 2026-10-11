@@ -198,7 +198,7 @@ export function DE39Directory() {
                   </td>
                   <td style={{ textAlign: "right" }}>
                     <Link
-                      href={`/knowledge?search=${item.code}`}
+                      href={`/hub/knowledge?search=${item.code}`}
                       className="btn-secondary"
                       style={{ padding: "0.35rem 0.65rem", fontSize: "0.78rem", whiteSpace: "nowrap" }}
                     >

@@ -177,14 +177,14 @@ export function AboutSection() {
 
             {/* Boutons d'Action */}
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <Link href="/a-propos" className="text-decoration-none w-full sm:w-auto">
+              <Link href="/portfolio/a-propos" className="text-decoration-none w-full sm:w-auto">
                 <button className="w-full sm:w-auto bg-[#7d1538] hover:bg-[#63102c] text-white px-8 py-3.5 rounded-full font-bold text-sm sm:text-base shadow-lg hover:shadow-xl transition-all duration-300 inline-flex items-center justify-center border-0 cursor-pointer">
                   Découvrir mon parcours complet
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </button>
               </Link>
 
-              <Link href="/projets" className="text-decoration-none w-full sm:w-auto">
+              <Link href="/portfolio/projets" className="text-decoration-none w-full sm:w-auto">
                 <button className="w-full sm:w-auto border-2 border-[#7d1538] text-[#7d1538] hover:bg-[#7d1538] hover:text-white px-8 py-3.5 rounded-full font-bold text-sm sm:text-base transition-all duration-300 inline-flex items-center justify-center bg-transparent cursor-pointer">
                   Voir les projets &amp; solutions
                 </button>

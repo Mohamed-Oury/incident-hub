@@ -224,7 +224,7 @@ export function KnowledgeCatalog({ initialIncidents, initialSearch = "" }: Knowl
                     <td style={{ textAlign: "right" }}>
                       <div style={{ display: "inline-flex", gap: "0.4rem" }}>
                         <Link
-                          href={`/incidents/${inc.reference}`}
+                          href={`/hub/incidents/${inc.reference}`}
                           className="btn-secondary"
                           style={{ padding: "0.35rem 0.65rem", fontSize: "0.78rem" }}
                         >
@@ -232,7 +232,7 @@ export function KnowledgeCatalog({ initialIncidents, initialSearch = "" }: Knowl
                         </Link>
                         {!isValidated && (
                           <Link
-                            href={`/incidents/${inc.reference}/edit`}
+                            href={`/hub/incidents/${inc.reference}/edit`}
                             className="btn-emerald"
                             style={{ padding: "0.35rem 0.65rem", fontSize: "0.78rem" }}
                           >

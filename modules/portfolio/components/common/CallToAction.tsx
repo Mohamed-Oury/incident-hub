@@ -14,9 +14,9 @@ export function CallToAction({
   title = "Envie de collaborer sur un projet ?",
   description = "Je suis toujours ouvert aux nouvelles opportunités de collaboration, que ce soit pour des projets techniques, des recherches ou des échanges d'idées.",
   primaryButtonText = "Discutons de votre projet",
-  primaryButtonHref = "/contact",
+  primaryButtonHref = "/portfolio/contact",
   secondaryButtonText = "Voir mes projets",
-  secondaryButtonHref = "/projets",
+  secondaryButtonHref = "/portfolio/projets",
 }: CallToActionProps) {
   return (
     <section className="py-20 bg-gradient-to-br from-[#7d1538] via-[#a01e4a] to-[#5c0f28] text-white">

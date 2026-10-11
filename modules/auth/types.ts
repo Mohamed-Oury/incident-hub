@@ -19,27 +19,27 @@ export interface SessionUser {
 // 1ère page par défaut pour chaque rôle
 export const ROLE_DEFAULT_PAGES: Record<UserRole, string> = {
   ADMIN: "/",
-  OPERATOR: "/",
+  OPERATOR: "/hub",
   EXPERT: "/cbs",
-  VALIDATOR: "/incidents",
-  VIEWER: "/",
-  ROLE_EXPLOITATION: "/",
-  ROLE_DECODEURS: "/parser",
-  ROLE_REFERENTIELS: "/mti",
-  ROLE_EXPERTISE: "/crypto-hsm",
+  VALIDATOR: "/hub/incidents",
+  VIEWER: "/hub",
+  ROLE_EXPLOITATION: "/hub",
+  ROLE_DECODEURS: "/hub/parser",
+  ROLE_REFERENTIELS: "/hub/mti",
+  ROLE_EXPERTISE: "/hub/crypto-hsm",
 };
 
 // Liste des routes autorisées pour chaque rôle
 export const ROLE_ALLOWED_ROUTES: Record<UserRole, string[]> = {
   ADMIN: ["*"], // Tout est autorisé
-  OPERATOR: ["/", "/knowledge", "/diagnostic", "/incidents", "/cbs", "/parser", "/bitmap", "/emv", "/atm-ej"],
+  OPERATOR: ["/", "/hub", "/hub/knowledge", "/hub/diagnostic", "/hub/incidents", "/cbs", "/hub/parser", "/hub/bitmap", "/hub/emv", "/hub/atm-ej"],
   EXPERT: ["*"],
-  VALIDATOR: ["/", "/knowledge", "/diagnostic", "/incidents", "/audit"],
-  VIEWER: ["/", "/knowledge", "/mti", "/de39"],
-  ROLE_EXPLOITATION: ["/", "/knowledge", "/diagnostic", "/incidents", "/cbs"],
-  ROLE_DECODEURS: ["/parser", "/bitmap", "/emv", "/atm-ej", "/cbs"],
-  ROLE_REFERENTIELS: ["/mti", "/de39", "/audit", "/cbs"],
-  ROLE_EXPERTISE: ["/crypto-hsm", "/timeout-matrix", "/post-mortem", "/cbs"],
+  VALIDATOR: ["/", "/hub", "/hub/knowledge", "/hub/diagnostic", "/hub/incidents", "/hub/audit"],
+  VIEWER: ["/", "/hub", "/hub/knowledge", "/hub/mti", "/hub/de39"],
+  ROLE_EXPLOITATION: ["/", "/hub", "/hub/knowledge", "/hub/diagnostic", "/hub/incidents", "/cbs"],
+  ROLE_DECODEURS: ["/hub/parser", "/hub/bitmap", "/hub/emv", "/hub/atm-ej", "/cbs"],
+  ROLE_REFERENTIELS: ["/hub/mti", "/hub/de39", "/hub/audit", "/cbs"],
+  ROLE_EXPERTISE: ["/hub/crypto-hsm", "/hub/timeout-matrix", "/hub/post-mortem", "/cbs"],
 };
 
 export const ROLE_LABELS: Record<UserRole, string> = {

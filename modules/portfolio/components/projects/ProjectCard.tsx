@@ -113,7 +113,7 @@ export default function ProjectCard({ project, featured = false }: ProjectCardPr
 
       {/* Actions */}
       <div className="px-6 pb-6 pt-0">
-        <Link href={`/projets/${project.id}`} className="block text-decoration-none">
+        <Link href={`/portfolio/projets/${project.id}`} className="block text-decoration-none">
           <button className="w-full bg-[#7d1538] hover:bg-[#a01e4a] text-white rounded-full py-2.5 px-4 font-bold text-sm transition-all duration-300 shadow hover:shadow-lg flex items-center justify-center group/btn cursor-pointer border-0">
             Découvrir le projet
             <ArrowRight className="ml-2 w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />

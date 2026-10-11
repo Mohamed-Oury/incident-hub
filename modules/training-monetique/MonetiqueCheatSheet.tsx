@@ -300,7 +300,7 @@ export function MonetiqueCheatSheet() {
                 />
               </Note>
             </div>
-            <ToolLink href="/diagnostic">Ouvrir le module Diagnostic</ToolLink>
+            <ToolLink href="/hub/diagnostic">Ouvrir le module Diagnostic</ToolLink>
           </div>
         );
 
@@ -397,7 +397,7 @@ export function MonetiqueCheatSheet() {
             <Note title="🎯 Réflexe" color="#8b5cf6">
               Une requête sans réponse (0100 sans 0110, 0200 sans 0210) = <strong>time-out</strong> → on doit trouver un 0400/0420 derrière.
             </Note>
-            <ToolLink href="/mti">Référentiel MTI complet</ToolLink>
+            <ToolLink href="/hub/mti">Référentiel MTI complet</ToolLink>
           </div>
         );
 
@@ -433,7 +433,7 @@ Champs: 2,3,4  7  11,12 13       22        32      37,39  41        49
                 ["7", "0111", "F", "1111"],
               ]}
             />
-            <ToolLink href="/bitmap">Décoder un bitmap automatiquement</ToolLink>
+            <ToolLink href="/hub/bitmap">Décoder un bitmap automatiquement</ToolLink>
           </div>
         );
 
@@ -502,7 +502,7 @@ Champs: 2,3,4  7  11,12 13       22        32      37,39  41        49
             <Note title="🧠 Règle d'or" color="#ef4444">
               <strong>Un code isolé = un porteur. Un code en masse = un système.</strong> Avant d&apos;accuser l&apos;émetteur, vérifie qui a réellement généré la réponse (émetteur, stand-in ou switch).
             </Note>
-            <ToolLink href="/de39">Référentiel DE39 complet</ToolLink>
+            <ToolLink href="/hub/de39">Référentiel DE39 complet</ToolLink>
           </div>
         );
 
@@ -561,7 +561,7 @@ Champs: 2,3,4  7  11,12 13       22        32      37,39  41        49
             <Note title="🧾 « Débité non servi »" color="#f59e0b">
               1) EJ : NOTES TAKEN ou RETRACTED ? 2) Un 0420 est-il parti et acquitté (0430) ? 3) Écart de comptage cassettes à l&apos;arrêté ? ⇒ Décision de recrédit documentée.
             </Note>
-            <ToolLink href="/atm-ej">Analyser un journal GAB</ToolLink>
+            <ToolLink href="/hub/atm-ej">Analyser un journal GAB</ToolLink>
           </div>
         );
 
@@ -598,7 +598,7 @@ Champs: 2,3,4  7  11,12 13       22        32      37,39  41        49
 
 Chaque maillon doit attendre PLUS longtemps que la somme des maillons en aval.
 Sinon : l'émetteur approuve, l'amont a déjà abandonné ⇒ double débit / débité non servi.`}</Code>
-            <ToolLink href="/timeout-matrix">Matrice des time-outs</ToolLink>
+            <ToolLink href="/hub/timeout-matrix">Matrice des time-outs</ToolLink>
           </div>
         );
 
@@ -635,7 +635,7 @@ Sinon : l'émetteur approuve, l'amont a déjà abandonné ⇒ double débit / d�
                 ["71 / 72", "Scripts émetteur", "9F36 / 9F37", "ATC / Nombre imprévisible"],
               ]}
             />
-            <ToolLink href="/emv">Décoder un DE55 automatiquement</ToolLink>
+            <ToolLink href="/hub/emv">Décoder un DE55 automatiquement</ToolLink>
           </div>
         );
 
@@ -686,7 +686,7 @@ Carte : vérifie l'ARPC ──▶ 2nd GENERATE AC ──▶ TC (OK) ou AAC (refu
             <Note title="🔥 ARQC KO en masse : suspects" color="#ef4444">
               Mauvaise IMK / MK-AC chargée en HSM · mauvais schéma de dérivation ou CVN (9F10) · tags mal mappés dans le DE55 · PSN (5F34) absent ou erroné · ATC incohérent.
             </Note>
-            <ToolLink href="/crypto-hsm">Diagnostic clés HSM</ToolLink>
+            <ToolLink href="/hub/crypto-hsm">Diagnostic clés HSM</ToolLink>
           </div>
         );
 

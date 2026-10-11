@@ -42,7 +42,7 @@ export default async function MonetiqueHubPage() {
         </div>
 
         <Link
-          href="/diagnostic"
+          href="/hub/diagnostic"
           style={{
             background: "linear-gradient(135deg, #7d1538 0%, #a01e4a 100%)",
             color: "#ffffff",

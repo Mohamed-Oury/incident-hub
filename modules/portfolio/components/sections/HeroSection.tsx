@@ -24,9 +24,7 @@ export function HeroSection() {
             {/* Titre principal */}
             <div className="space-y-3 md:space-y-4">
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-gray-900 leading-tight tracking-tight">
-                Bonjour,
-                <br />
-                je suis <span className="text-[#7d1538]">Mr.Oury</span>
+                <span className="text-[#7d1538]">Mr.Oury</span>
               </h1>
               <p className="text-gray-600 text-base sm:text-lg lg:text-xl leading-relaxed max-w-2xl mx-auto lg:mx-0 font-normal">
                 Ingénieur Logiciel &amp; Mathématicien spécialisé dans l&apos;ingénierie bancaire. Mon expertise s&apos;articule autour de 4 piliers d&apos;excellence  <strong className="text-gray-900 font-semibold">Mathématiques</strong>, <strong className="text-gray-900 font-semibold">CBS Amplitude &amp; Flex</strong>, <strong className="text-gray-900 font-semibold">Informix 4GL</strong> et <strong className="text-gray-900 font-semibold">Monétique Payway &amp; Powercard</strong>.
@@ -35,12 +33,12 @@ export function HeroSection() {
 
             {/* Sous-description */}
             <p className="text-gray-500 text-sm sm:text-base max-w-xl mx-auto lg:mx-0 leading-relaxed">
-              De l&apos;optimisation mathématique à la conception de modules 4GL complexes et la supervision monétique bancaire ISO 8583 / Powercard / Payway.
+              De l&apos;optimisation mathématique à la conception de modules CBS complexes et la supervision monétique bancaire ISO 8583 / Powercard / Payway.
             </p>
 
             {/* Boutons d'action */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-2">
-              <Link href="/projets" className="text-decoration-none">
+              <Link href="/portfolio/projets" className="text-decoration-none">
                 <button className="bg-[#7d1538] hover:bg-[#a01e4a] text-white px-8 py-3.5 rounded-full font-bold text-base shadow-lg hover:shadow-xl transition-all duration-300 w-full sm:w-auto inline-flex items-center justify-center border-0 cursor-pointer">
                   Découvrir les solutions &amp; projets
                   <ArrowRight className="ml-2 h-5 w-5" />
