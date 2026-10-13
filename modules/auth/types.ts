@@ -18,7 +18,7 @@ export interface SessionUser {
 
 // 1ère page par défaut pour chaque rôle
 export const ROLE_DEFAULT_PAGES: Record<UserRole, string> = {
-  ADMIN: "/",
+  ADMIN: "/hub",
   OPERATOR: "/hub",
   EXPERT: "/cbs",
   VALIDATOR: "/hub/incidents",

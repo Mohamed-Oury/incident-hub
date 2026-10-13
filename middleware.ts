@@ -8,7 +8,6 @@ export function middleware(request: NextRequest) {
   if (
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api/auth") ||
-    pathname.startsWith("/api/portfolio") ||
     pathname.startsWith("/api/cbs/agentic") ||
     pathname === "/login" ||
     pathname.includes(".")
@@ -16,30 +15,16 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // 2. Définir les routes publiques du Portfolio (accessibles à tous sans connexion)
-  const isPublicRoute =
-    pathname === "/" ||
-    pathname.startsWith("/portfolio") ||
-    pathname.startsWith("/a-propos") ||
-    pathname.startsWith("/projets") ||
-    pathname.startsWith("/blog") ||
-    pathname.startsWith("/contact");
-
-  // 3. Vérifier la présence de la session pour les routes protégées
+  // 2. Vérifier la présence de la session pour les routes protégées
   const sessionCookie = request.cookies.get("payway_session");
 
-  if (!isPublicRoute && (!sessionCookie || !sessionCookie.value)) {
+  if (!sessionCookie || !sessionCookie.value) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(loginUrl);
   }
 
-  // 4. Si la route est publique et qu'il n'y a pas de session, laisser passer
-  if (isPublicRoute && (!sessionCookie || !sessionCookie.value)) {
-    return NextResponse.next();
-  }
-
-  // 5. Contrôle d'accès basé sur les rôles (RBAC) pour les utilisateurs connectés
+  // 3. Contrôle d'accès basé sur les rôles (RBAC) pour les utilisateurs connectés
   try {
     const rawCookie = sessionCookie?.value || "";
     const lastDot = rawCookie.lastIndexOf(".");
@@ -49,10 +34,7 @@ export function middleware(request: NextRequest) {
       const user = JSON.parse(decodedJson);
       const userRole = user?.role || "OPERATOR";
 
-      // Si l'utilisateur tente d'accéder à /admin et qu'il n'est pas ADMIN
-      if (pathname.startsWith("/admin") && userRole !== "ADMIN") {
-        return NextResponse.redirect(new URL("/hub", request.url));
-      }
+      // Tout contrôle RBAC additionnel si nécessaire
     }
   } catch (err) {
     console.warn("Erreur validation middleware session:", err);

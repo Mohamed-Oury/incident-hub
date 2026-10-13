@@ -339,28 +339,6 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: "0.65rem", flexShrink: 0 }}>
-            {/* Bouton retour vers Portfolio discret & moderne */}
-            <Link
-              href="/"
-              title="Retour au Portfolio"
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "0.35rem",
-                background: "rgba(15, 23, 42, 0.05)",
-                border: "1px solid var(--border-light)",
-                color: "var(--text-secondary)",
-                padding: "0.4rem 0.8rem",
-                borderRadius: "8px",
-                fontSize: "0.78rem",
-                fontWeight: 600,
-                textDecoration: "none",
-                transition: "all 0.15s ease",
-              }}
-            >
-              <span>←</span> Portfolio
-            </Link>
-
             {/* Switcher 3 Univers avec pillules fluides */}
             <div
               style={{

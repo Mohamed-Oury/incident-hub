@@ -40,7 +40,7 @@ export default function LoginPage() {
       const searchParams = new URLSearchParams(window.location.search);
       const callbackUrl = searchParams.get("callbackUrl");
 
-      window.location.href = callbackUrl || data.redirectTo || "/admin/dashboard";
+      window.location.href = callbackUrl || data.redirectTo || "/hub";
     } catch (err: any) {
       setError(err.message || "Impossible de se connecter.");
     } finally {
@@ -99,7 +99,7 @@ export default function LoginPage() {
             Espace Sécurisé
           </h1>
           <p style={{ fontSize: "0.82rem", fontWeight: 700, color: "#f8d0db", textTransform: "uppercase", letterSpacing: "0.06em", marginTop: "0.2rem" }}>
-            PORTFOLIO ADMIN &amp; MONÉTIQUE HUB
+            EXPLOITATION BANCAIRE MONÉTIQUE &amp; CBS
           </p>
         </div>
 
@@ -193,11 +193,7 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <div style={{ marginTop: "1.5rem", textAlign: "center" }}>
-          <Link href="/" style={{ fontSize: "0.85rem", color: "#cbd5e1", textDecoration: "none" }}>
-            ← Retourner au Portfolio public
-          </Link>
-        </div>
+
       </div>
     </div>
   );

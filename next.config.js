@@ -3,63 +3,6 @@ const nextConfig = {
   reactStrictMode: true,
   async redirects() {
     return [
-      // Portfolio redirects
-      {
-        source: "/a-propos",
-        destination: "/portfolio/a-propos",
-        permanent: true,
-      },
-      {
-        source: "/projets/:id",
-        destination: "/portfolio/projets/:id",
-        permanent: true,
-      },
-      {
-        source: "/projets",
-        destination: "/portfolio/projets",
-        permanent: true,
-      },
-      {
-        source: "/projects/:id",
-        destination: "/portfolio/projets/:id",
-        permanent: true,
-      },
-      {
-        source: "/projects",
-        destination: "/portfolio/projets",
-        permanent: true,
-      },
-      {
-        source: "/portfolio/projects/:id",
-        destination: "/portfolio/projets/:id",
-        permanent: true,
-      },
-      {
-        source: "/portfolio/projects",
-        destination: "/portfolio/projets",
-        permanent: true,
-      },
-      {
-        source: "/blog/:slug",
-        destination: "/portfolio/blog/:slug",
-        permanent: true,
-      },
-      {
-        source: "/blog",
-        destination: "/portfolio/blog",
-        permanent: true,
-      },
-      {
-        source: "/contact",
-        destination: "/portfolio/contact",
-        permanent: true,
-      },
-      {
-        source: "/portfolio",
-        destination: "/",
-        permanent: true,
-      },
-
       // Monétique Hub redirects
       {
         source: "/diagnostic",
