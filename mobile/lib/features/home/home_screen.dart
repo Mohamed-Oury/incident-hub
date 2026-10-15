@@ -13,6 +13,7 @@ import '../boss_fight/boss_fight_screen.dart';
 import '../tools/iso_raw_parser_screen.dart';
 import '../tools/crypto_toolbox_screen.dart';
 import '../tools/on_call_report_screen.dart';
+import '../tools/atm_ej_screen.dart';
 import '../training/screens/training_monetique_screen.dart';
 import '../cheat_sheet/monetique_cheat_sheet_screen.dart';
 import '../cbs/screens/cbs_copilot_screen.dart';
@@ -109,6 +110,26 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
         actions: [
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            decoration: BoxDecoration(
+              color: AppTheme.sgRed.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(6),
+              border: Border.all(color: AppTheme.sgRed.withValues(alpha: 0.5)),
+            ),
+            child: const Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.security, color: AppTheme.sgRed, size: 13),
+                SizedBox(width: 4),
+                Text(
+                  'PCI-DSS Actif',
+                  style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+          ),
           if (widget.onSwitchUniverse != null)
             IconButton(
               icon: const Icon(Icons.swap_horiz_rounded, color: Colors.blueAccent),
@@ -433,13 +454,23 @@ class _HomeScreenState extends State<HomeScreen> {
                       childAspectRatio: 1.25,
                       children: [
                         _buildNavCard(
-                          title: '500 Incidents',
+                          title: '1000 Incidents',
                           desc: 'Catalogue & Recherche hors-ligne',
                           icon: Icons.list_alt,
                           color: AppTheme.sgRed,
                           onTap: () => Navigator.push(
                             context,
                             MaterialPageRoute(builder: (_) => const IncidentListScreen()),
+                          ),
+                        ),
+                        _buildNavCard(
+                          title: 'Journal GAB (EJ)',
+                          desc: 'Décodeur ATM, Bourrages & Arbitrage Litiges',
+                          icon: Icons.receipt_long,
+                          color: Colors.tealAccent,
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => const AtmEjScreen()),
                           ),
                         ),
                         _buildNavCard(

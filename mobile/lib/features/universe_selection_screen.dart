@@ -4,12 +4,14 @@ import '../core/theme/app_theme.dart';
 class UniverseSelectionScreen extends StatelessWidget {
   final VoidCallback onSelectMonetique;
   final VoidCallback onSelectCbs;
+  final VoidCallback onSelectFlexcube;
   final VoidCallback? onLogout;
 
   const UniverseSelectionScreen({
     super.key,
     required this.onSelectMonetique,
     required this.onSelectCbs,
+    required this.onSelectFlexcube,
     this.onLogout,
   });
 
@@ -75,7 +77,7 @@ class UniverseSelectionScreen extends StatelessWidget {
               ),
               const SizedBox(height: 6),
               const Text(
-                'Deux expertises pointues réunies dans une même application mobile.',
+                'Trois expertises pointues réunies dans une même application mobile.',
                 style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 24),
@@ -84,7 +86,7 @@ class UniverseSelectionScreen extends StatelessWidget {
               _buildUniverseCard(
                 title: 'Univers Monétique & Systèmes de Paiement',
                 subtitle: 'Switching, Cartes & Terminaux',
-                description: '500 incidents de production, ISO 8583 Raw Parser, Décodeur DE39 & Bitmaps, Boîte à Outils Crypto (KCV, PIN Block, Luhn) et Simulateur DE55.',
+                description: '1000 incidents de production, ISO 8583 Raw Parser, Décodeur DE39 & Bitmaps, Boîte à Outils Crypto (KCV, PIN Block, Luhn), Analyseur GAB/ATM EJ et Simulateur DE55.',
                 badge: 'PAYMENT SYSTEMS',
                 accentColor: AppTheme.sgRed,
                 gradientColors: [
@@ -92,7 +94,7 @@ class UniverseSelectionScreen extends StatelessWidget {
                   const Color(0xFF140305),
                 ],
                 icon: Icons.credit_card_rounded,
-                tags: ['ISO 8583', 'EMV DE55', 'GAB / TPE', 'VISA / GIMAC', 'Astreinte'],
+                tags: ['ISO 8583', 'EMV DE55', 'GAB / ATM EJ', 'VISA / GIMAC', 'Astreinte'],
                 onTap: onSelectMonetique,
               ),
 
@@ -112,6 +114,24 @@ class UniverseSelectionScreen extends StatelessWidget {
                 icon: Icons.account_balance_rounded,
                 tags: ['Amplitude 11', 'Batch EOD/BOD', 'Oracle / ORA', 'Informix 4GL', 'AIX Banking'],
                 onTap: onSelectCbs,
+              ),
+
+              const SizedBox(height: 20),
+
+              // CARTE 3 : UNIVERS ORACLE FLEXCUBE
+              _buildUniverseCard(
+                title: 'Univers Oracle FLEXCUBE',
+                subtitle: 'Universal Banking Solution & PL/SQL',
+                description: 'Tables centrales ST/AC/GL/FT, Chaîne de clôture Batch AEOD 5 phases, Studio Copilot PL/SQL avec règles NOWAIT/COMMIT, 20 incidents RUN et qualification 5 niveaux.',
+                badge: 'ORACLE FLEXCUBE',
+                accentColor: const Color(0xFFEA580C),
+                gradientColors: [
+                  const Color(0xFF2E1005),
+                  const Color(0xFF140802),
+                ],
+                icon: Icons.account_balance,
+                tags: ['FLEXCUBE 14.x', 'Batch AEOD', 'PL/SQL Kernel', '16 Tables FCUBS', '5 Grades Certif'],
+                onTap: onSelectFlexcube,
               ),
 
               const SizedBox(height: 32),

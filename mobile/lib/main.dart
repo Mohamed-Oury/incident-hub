@@ -5,6 +5,7 @@ import 'core/theme/app_theme.dart';
 import 'features/universe_selection_screen.dart';
 import 'features/main_navigation_screen.dart';
 import 'features/cbs/cbs_navigation_screen.dart';
+import 'features/flexcube/flexcube_navigation_screen.dart';
 import 'features/auth/login_screen.dart';
 
 void main() async {
@@ -20,6 +21,7 @@ enum AppUniverse {
   none,
   monetique,
   cbs,
+  flexcube,
 }
 
 class MOurIncidentHubApp extends StatefulWidget {
@@ -103,10 +105,17 @@ class _MOurIncidentHubAppState extends State<MOurIncidentHubApp> {
             onLogout: _onLogout,
           );
           break;
+        case AppUniverse.flexcube:
+          currentScreen = FlexcubeNavigationScreen(
+            onSwitchUniverse: _backToUniverseSelection,
+            onLogout: _onLogout,
+          );
+          break;
         case AppUniverse.none:
           currentScreen = UniverseSelectionScreen(
             onSelectMonetique: () => _switchToUniverse(AppUniverse.monetique),
             onSelectCbs: () => _switchToUniverse(AppUniverse.cbs),
+            onSelectFlexcube: () => _switchToUniverse(AppUniverse.flexcube),
             onLogout: _onLogout,
           );
           break;

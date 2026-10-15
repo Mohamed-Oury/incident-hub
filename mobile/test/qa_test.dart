@@ -16,14 +16,14 @@ void main() {
   });
 
   group('QA SUITE 1 : Intégrité des Données & Fichiers Assets', () {
-    test('QA-1.1 : Vérification du catalogue des 500 incidents de référence', () {
+    test('QA-1.1 : Vérification du catalogue des 1000 incidents de référence', () {
       final file = File('assets/data/reference_incidents.json');
       expect(file.existsSync(), isTrue, reason: 'Le fichier reference_incidents.json doit exister');
 
       final content = file.readAsStringSync();
       final List<dynamic> jsonList = jsonDecode(content);
 
-      expect(jsonList.length, equals(500), reason: 'Le catalogue doit contenir exactement 500 incidents');
+      expect(jsonList.length, equals(1000), reason: 'Le catalogue doit contenir exactement 1000 incidents');
 
       // Vérifier chaque élément
       final Set<String> references = {};
@@ -118,7 +118,7 @@ void main() {
 
     test('QA-2.1 : Vérification de la volumétrie et indexation BDD', () async {
       final count = Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM incidents'));
-      expect(count, equals(500));
+      expect(count, equals(1000));
     });
 
     test('QA-2.2 : Requête de recherche complexe (DE39=91 & GAB)', () async {

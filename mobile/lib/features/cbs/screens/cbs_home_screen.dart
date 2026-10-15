@@ -90,6 +90,26 @@ class _CbsHomeScreenState extends State<CbsHomeScreen> {
           ],
         ),
         actions: [
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            decoration: BoxDecoration(
+              color: Colors.blueAccent.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(6),
+              border: Border.all(color: Colors.blueAccent.withValues(alpha: 0.6)),
+            ),
+            child: const Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.security, color: Colors.lightBlueAccent, size: 13),
+                SizedBox(width: 4),
+                Text(
+                  'PCI-DSS Actif',
+                  style: TextStyle(color: Colors.lightBlueAccent, fontSize: 10, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+          ),
           if (widget.onSwitchUniverse != null)
             IconButton(
               icon: const Icon(Icons.swap_horiz_rounded, color: Colors.blueAccent),
