@@ -42,11 +42,35 @@ function writeLocalIncidentsStore(store: LocalIncidentsStore): void {
   }
 }
 
+export function deduplicateIncidents(list: IncidentRecord[]): IncidentRecord[] {
+  const seenRefs = new Set<string>();
+  const seenTitles = new Set<string>();
+  const result: IncidentRecord[] = [];
+
+  for (const inc of list) {
+    const refKey = (inc.reference || inc.id || "").trim().toUpperCase();
+    const titleKey = (inc.title || "")
+      .replace(/\s*\[cas #\d+\]/gi, "")
+      .replace(/\s+/g, " ")
+      .trim()
+      .toLowerCase();
+
+    if (!refKey || seenRefs.has(refKey)) continue;
+    if (titleKey && seenTitles.has(titleKey)) continue;
+
+    seenRefs.add(refKey);
+    if (titleKey) seenTitles.add(titleKey);
+    result.push(inc);
+  }
+
+  return result;
+}
+
 export function applyStoreToIncidents(list: IncidentRecord[]): IncidentRecord[] {
   const store = readLocalIncidentsStore();
   const deletedSet = new Set(store.deletedReferences.map((r) => r.toUpperCase()));
 
-  return list
+  const mapped = list
     .filter(
       (inc) =>
         !deletedSet.has(inc.reference.toUpperCase()) &&
@@ -62,10 +86,15 @@ export function applyStoreToIncidents(list: IncidentRecord[]): IncidentRecord[] 
         ...inc,
         ...ov,
         observations: ov.observations || inc.observations,
+        hypotheses: ov.hypotheses || inc.hypotheses,
+        evidence: ov.evidence || inc.evidence,
+        prevention: ov.prevention || inc.prevention,
         rootCause: ov.rootCause ? { ...inc.rootCause, ...ov.rootCause } : inc.rootCause,
         resolution: ov.resolution ? { ...inc.resolution, ...ov.resolution } : inc.resolution,
       };
     });
+
+  return deduplicateIncidents(mapped);
 }
 
 export function saveLocalIncidentOverride(

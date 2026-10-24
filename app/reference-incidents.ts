@@ -1610,7 +1610,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-201",
-    "title": "DE39=00 (Approved / Honoré (Délivrance incomplète ou suspicion)) - Canal GAB : Pic de charge transactionnelle [Cas #1]",
+    "title": "DE39=00 (Approved / Honoré (Délivrance incomplète ou suspicion)) - Canal GAB : Pic de charge transactionnelle",
     "domain": "GAB",
     "component": "ATM/Dispenser",
     "analysisKeys": "DE39=00, STAN, RRN, ATM/Dispenser",
@@ -1618,7 +1618,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-202",
-    "title": "DE39=08 (Honor with Identification) - Canal TPE : Pic de charge transactionnelle [Cas #1]",
+    "title": "DE39=08 (Honor with Identification) - Canal TPE : Pic de charge transactionnelle",
     "domain": "TPE",
     "component": "TPE/Signature",
     "analysisKeys": "DE39=08, STAN, RRN, TPE/Signature",
@@ -1626,7 +1626,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-203",
-    "title": "DE39=10 (Partial Approval) - Canal TPE : Pic de charge transactionnelle [Cas #1]",
+    "title": "DE39=10 (Partial Approval) - Canal TPE : Pic de charge transactionnelle",
     "domain": "TPE",
     "component": "Middleware/SplitTender",
     "analysisKeys": "DE39=10, STAN, RRN, Middleware/SplitTender",
@@ -1634,7 +1634,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-204",
-    "title": "DE39=85 (No reason to decline) - Canal Switch : Pic de charge transactionnelle [Cas #1]",
+    "title": "DE39=85 (No reason to decline) - Canal Switch : Pic de charge transactionnelle",
     "domain": "Switch",
     "component": "Switch/CardCheck",
     "analysisKeys": "DE39=85, STAN, RRN, Switch/CardCheck",
@@ -1642,7 +1642,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-205",
-    "title": "DE39=01 (Refer to Card Issuer) - Canal Switch : Pic de charge transactionnelle [Cas #1]",
+    "title": "DE39=01 (Refer to Card Issuer) - Canal Switch : Pic de charge transactionnelle",
     "domain": "Switch",
     "component": "CBS/IssuerCall",
     "analysisKeys": "DE39=01, STAN, RRN, CBS/IssuerCall",
@@ -1650,7 +1650,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-206",
-    "title": "DE39=02 (Refer to Card Issuer Special Condition) - Canal Switch : Pic de charge transactionnelle [Cas #1]",
+    "title": "DE39=02 (Refer to Card Issuer Special Condition) - Canal Switch : Pic de charge transactionnelle",
     "domain": "Switch",
     "component": "CBS/RiskCondition",
     "analysisKeys": "DE39=02, STAN, RRN, CBS/RiskCondition",
@@ -1658,7 +1658,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-207",
-    "title": "DE39=04 (Pick-up Card Hold-call) - Canal GAB : Pic de charge transactionnelle [Cas #1]",
+    "title": "DE39=04 (Pick-up Card Hold-call) - Canal GAB : Pic de charge transactionnelle",
     "domain": "GAB",
     "component": "ATM/Retention",
     "analysisKeys": "DE39=04, STAN, RRN, ATM/Retention",
@@ -1666,7 +1666,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-208",
-    "title": "DE39=05 (Do Not Honor) - Canal Switch : Pic de charge transactionnelle [Cas #1]",
+    "title": "DE39=05 (Do Not Honor) - Canal Switch : Pic de charge transactionnelle",
     "domain": "Switch",
     "component": "Issuer/Scoring",
     "analysisKeys": "DE39=05, STAN, RRN, Issuer/Scoring",
@@ -1674,7 +1674,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-209",
-    "title": "DE39=12 (Invalid Transaction) - Canal Switch : Pic de charge transactionnelle [Cas #1]",
+    "title": "DE39=12 (Invalid Transaction) - Canal Switch : Pic de charge transactionnelle",
     "domain": "Switch",
     "component": "CBS/ProductRules",
     "analysisKeys": "DE39=12, STAN, RRN, CBS/ProductRules",
@@ -1682,7 +1682,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-210",
-    "title": "DE39=13 (Invalid Amount) - Canal GAB : Pic de charge transactionnelle [Cas #1]",
+    "title": "DE39=13 (Invalid Amount) - Canal GAB : Pic de charge transactionnelle",
     "domain": "GAB",
     "component": "ATM/BillMix",
     "analysisKeys": "DE39=13, STAN, RRN, ATM/BillMix",
@@ -1690,7 +1690,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-211",
-    "title": "DE39=14 (Invalid Card Number) - Canal Interface : Pic de charge transactionnelle [Cas #1]",
+    "title": "DE39=14 (Invalid Card Number) - Canal Interface : Pic de charge transactionnelle",
     "domain": "Interface",
     "component": "Frontal/LuhnValidator",
     "analysisKeys": "DE39=14, STAN, RRN, Frontal/LuhnValidator",
@@ -1698,7 +1698,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-212",
-    "title": "DE39=15 (No Such Issuer) - Canal Switch : Pic de charge transactionnelle [Cas #1]",
+    "title": "DE39=15 (No Such Issuer) - Canal Switch : Pic de charge transactionnelle",
     "domain": "Switch",
     "component": "Switch/RoutingTable",
     "analysisKeys": "DE39=15, STAN, RRN, Switch/RoutingTable",
@@ -1706,7 +1706,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-213",
-    "title": "DE39=33 (Expired Card Pick-up) - Canal GAB : Pic de charge transactionnelle [Cas #1]",
+    "title": "DE39=33 (Expired Card Pick-up) - Canal GAB : Pic de charge transactionnelle",
     "domain": "GAB",
     "component": "ATM/Retention",
     "analysisKeys": "DE39=33, STAN, RRN, ATM/Retention",
@@ -1714,7 +1714,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-214",
-    "title": "DE39=41 (Lost Card Pick-up) - Canal GAB : Pic de charge transactionnelle [Cas #1]",
+    "title": "DE39=41 (Lost Card Pick-up) - Canal GAB : Pic de charge transactionnelle",
     "domain": "GAB",
     "component": "ATM/OppositionLost",
     "analysisKeys": "DE39=41, STAN, RRN, ATM/OppositionLost",
@@ -1722,7 +1722,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-215",
-    "title": "DE39=43 (Stolen Card Pick-up) - Canal GAB : Pic de charge transactionnelle [Cas #1]",
+    "title": "DE39=43 (Stolen Card Pick-up) - Canal GAB : Pic de charge transactionnelle",
     "domain": "GAB",
     "component": "ATM/OppositionStolen",
     "analysisKeys": "DE39=43, STAN, RRN, ATM/OppositionStolen",
@@ -1730,7 +1730,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-216",
-    "title": "DE39=51 (Insufficient Funds) - Canal Core Banking : Pic de charge transactionnelle [Cas #1]",
+    "title": "DE39=51 (Insufficient Funds) - Canal Core Banking : Pic de charge transactionnelle",
     "domain": "Core Banking",
     "component": "CBS/Solvabilite",
     "analysisKeys": "DE39=51, STAN, RRN, CBS/Solvabilite",
@@ -1738,7 +1738,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-217",
-    "title": "DE39=54 (Expired Card) - Canal Carte : Pic de charge transactionnelle [Cas #1]",
+    "title": "DE39=54 (Expired Card) - Canal Carte : Pic de charge transactionnelle",
     "domain": "Carte",
     "component": "CMS/CardValidity",
     "analysisKeys": "DE39=54, STAN, RRN, CMS/CardValidity",
@@ -1746,7 +1746,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-218",
-    "title": "DE39=57 (Transaction Not Permitted to Cardholder) - Canal Carte : Pic de charge transactionnelle [Cas #1]",
+    "title": "DE39=57 (Transaction Not Permitted to Cardholder) - Canal Carte : Pic de charge transactionnelle",
     "domain": "Carte",
     "component": "CMS/ContractProfile",
     "analysisKeys": "DE39=57, STAN, RRN, CMS/ContractProfile",
@@ -1754,7 +1754,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-219",
-    "title": "DE39=61 (Exceeds Withdrawal Amount Limit) - Canal GAB : Pic de charge transactionnelle [Cas #1]",
+    "title": "DE39=61 (Exceeds Withdrawal Amount Limit) - Canal GAB : Pic de charge transactionnelle",
     "domain": "GAB",
     "component": "CMS/VelocityLimits",
     "analysisKeys": "DE39=61, STAN, RRN, CMS/VelocityLimits",
@@ -1762,7 +1762,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-220",
-    "title": "DE39=62 (Restricted Card) - Canal TPE : Pic de charge transactionnelle [Cas #1]",
+    "title": "DE39=62 (Restricted Card) - Canal TPE : Pic de charge transactionnelle",
     "domain": "TPE",
     "component": "CMS/GeoBlocking",
     "analysisKeys": "DE39=62, STAN, RRN, CMS/GeoBlocking",
@@ -1770,7 +1770,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-221",
-    "title": "DE39=65 (Exceeds Withdrawal Frequency Limit) - Canal GAB : Pic de charge transactionnelle [Cas #1]",
+    "title": "DE39=65 (Exceeds Withdrawal Frequency Limit) - Canal GAB : Pic de charge transactionnelle",
     "domain": "GAB",
     "component": "CMS/FrequencyCounter",
     "analysisKeys": "DE39=65, STAN, RRN, CMS/FrequencyCounter",
@@ -1778,7 +1778,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-222",
-    "title": "DE39=75 (Allowable PIN Tries Exceeded) - Canal Carte : Pic de charge transactionnelle [Cas #1]",
+    "title": "DE39=75 (Allowable PIN Tries Exceeded) - Canal Carte : Pic de charge transactionnelle",
     "domain": "Carte",
     "component": "CMS/PinTriesExceeded",
     "analysisKeys": "DE39=75, STAN, RRN, CMS/PinTriesExceeded",
@@ -1786,7 +1786,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-223",
-    "title": "DE39=55 (Incorrect PIN) - Canal Carte : Pic de charge transactionnelle [Cas #1]",
+    "title": "DE39=55 (Incorrect PIN) - Canal Carte : Pic de charge transactionnelle",
     "domain": "Carte",
     "component": "HSM/PinVerification",
     "analysisKeys": "DE39=55, STAN, RRN, HSM/PinVerification",
@@ -1794,7 +1794,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-224",
-    "title": "DE39=82 (Incorrect CVV / iCVV) - Canal Interface : Pic de charge transactionnelle [Cas #1]",
+    "title": "DE39=82 (Incorrect CVV / iCVV) - Canal Interface : Pic de charge transactionnelle",
     "domain": "Interface",
     "component": "HSM/CvvCheck",
     "analysisKeys": "DE39=82, STAN, RRN, HSM/CvvCheck",
@@ -1802,7 +1802,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-225",
-    "title": "DE39=88 (Cryptographic Failure) - Canal Infrastructure : Pic de charge transactionnelle [Cas #1]",
+    "title": "DE39=88 (Cryptographic Failure) - Canal Infrastructure : Pic de charge transactionnelle",
     "domain": "Infrastructure",
     "component": "HSM/CryptoEngine",
     "analysisKeys": "DE39=88, STAN, RRN, HSM/CryptoEngine",
@@ -1810,7 +1810,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-226",
-    "title": "DE39=89 (Invalid PIN Block) - Canal Infrastructure : Pic de charge transactionnelle [Cas #1]",
+    "title": "DE39=89 (Invalid PIN Block) - Canal Infrastructure : Pic de charge transactionnelle",
     "domain": "Infrastructure",
     "component": "HSM/PinTranslation",
     "analysisKeys": "DE39=89, STAN, RRN, HSM/PinTranslation",
@@ -1818,7 +1818,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-227",
-    "title": "DE39=93 (Violation / EMV Cryptogram Failure (ARQC rejeté)) - Canal Carte : Pic de charge transactionnelle [Cas #1]",
+    "title": "DE39=93 (Violation / EMV Cryptogram Failure (ARQC rejeté)) - Canal Carte : Pic de charge transactionnelle",
     "domain": "Carte",
     "component": "HSM/EmvValidation",
     "analysisKeys": "DE39=93, STAN, RRN, HSM/EmvValidation",
@@ -1826,7 +1826,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-228",
-    "title": "DE39=19 (Re-enter Transaction) - Canal Réseau : Pic de charge transactionnelle [Cas #1]",
+    "title": "DE39=19 (Re-enter Transaction) - Canal Réseau : Pic de charge transactionnelle",
     "domain": "Réseau",
     "component": "Switch/RetryBuffer",
     "analysisKeys": "DE39=19, STAN, RRN, Switch/RetryBuffer",
@@ -1834,7 +1834,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-229",
-    "title": "DE39=25 (Unable to Locate Record on File) - Canal Switch : Pic de charge transactionnelle [Cas #1]",
+    "title": "DE39=25 (Unable to Locate Record on File) - Canal Switch : Pic de charge transactionnelle",
     "domain": "Switch",
     "component": "CBS/MatchingReversal",
     "analysisKeys": "DE39=25, STAN, RRN, CBS/MatchingReversal",
@@ -1842,7 +1842,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-230",
-    "title": "DE39=30 (Format Error) - Canal Interface : Pic de charge transactionnelle [Cas #1]",
+    "title": "DE39=30 (Format Error) - Canal Interface : Pic de charge transactionnelle",
     "domain": "Interface",
     "component": "Interface/IsoParser",
     "analysisKeys": "DE39=30, STAN, RRN, Interface/IsoParser",
@@ -1850,7 +1850,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-231",
-    "title": "DE39=58 (Transaction Not Permitted to Terminal) - Canal TPE : Pic de charge transactionnelle [Cas #1]",
+    "title": "DE39=58 (Transaction Not Permitted to Terminal) - Canal TPE : Pic de charge transactionnelle",
     "domain": "TPE",
     "component": "TMS/TerminalProfile",
     "analysisKeys": "DE39=58, STAN, RRN, TMS/TerminalProfile",
@@ -1858,7 +1858,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-232",
-    "title": "DE39=68 (Response Received Too Late) - Canal Switch : Pic de charge transactionnelle [Cas #1]",
+    "title": "DE39=68 (Response Received Too Late) - Canal Switch : Pic de charge transactionnelle",
     "domain": "Switch",
     "component": "Switch/TimerQueue",
     "analysisKeys": "DE39=68, STAN, RRN, Switch/TimerQueue",
@@ -1866,7 +1866,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-233",
-    "title": "DE39=76 (Key Synchronization Error) - Canal Infrastructure : Pic de charge transactionnelle [Cas #1]",
+    "title": "DE39=76 (Key Synchronization Error) - Canal Infrastructure : Pic de charge transactionnelle",
     "domain": "Infrastructure",
     "component": "Switch/KeySync",
     "analysisKeys": "DE39=76, STAN, RRN, Switch/KeySync",
@@ -1874,7 +1874,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-234",
-    "title": "DE39=90 (System Cutover in Progress) - Canal Clearing : Pic de charge transactionnelle [Cas #1]",
+    "title": "DE39=90 (System Cutover in Progress) - Canal Clearing : Pic de charge transactionnelle",
     "domain": "Clearing",
     "component": "CBS/CutOver",
     "analysisKeys": "DE39=90, STAN, RRN, CBS/CutOver",
@@ -1882,7 +1882,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-235",
-    "title": "DE39=91 (Issuer or Switch Inoperative) - Canal Réseau : Pic de charge transactionnelle [Cas #1]",
+    "title": "DE39=91 (Issuer or Switch Inoperative) - Canal Réseau : Pic de charge transactionnelle",
     "domain": "Réseau",
     "component": "Switch/IssuerLink",
     "analysisKeys": "DE39=91, STAN, RRN, Switch/IssuerLink",
@@ -1890,7 +1890,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-236",
-    "title": "DE39=92 (Destination Unreachable) - Canal Réseau : Pic de charge transactionnelle [Cas #1]",
+    "title": "DE39=92 (Destination Unreachable) - Canal Réseau : Pic de charge transactionnelle",
     "domain": "Réseau",
     "component": "Réseau/TelecomGateway",
     "analysisKeys": "DE39=92, STAN, RRN, Réseau/TelecomGateway",
@@ -1898,7 +1898,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-237",
-    "title": "DE39=94 (Duplicate Transmission) - Canal Switch : Pic de charge transactionnelle [Cas #1]",
+    "title": "DE39=94 (Duplicate Transmission) - Canal Switch : Pic de charge transactionnelle",
     "domain": "Switch",
     "component": "Switch/DuplicateDetection",
     "analysisKeys": "DE39=94, STAN, RRN, Switch/DuplicateDetection",
@@ -1906,7 +1906,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-238",
-    "title": "DE39=96 (System Malfunction) - Canal Production : Pic de charge transactionnelle [Cas #1]",
+    "title": "DE39=96 (System Malfunction) - Canal Production : Pic de charge transactionnelle",
     "domain": "Production",
     "component": "Core/DbConnectionPool",
     "analysisKeys": "DE39=96, STAN, RRN, Core/DbConnectionPool",
@@ -1914,7 +1914,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-239",
-    "title": "DE39=98 (MAC Error) - Canal Infrastructure : Pic de charge transactionnelle [Cas #1]",
+    "title": "DE39=98 (MAC Error) - Canal Infrastructure : Pic de charge transactionnelle",
     "domain": "Infrastructure",
     "component": "HSM/MacValidator",
     "analysisKeys": "DE39=98, STAN, RRN, HSM/MacValidator",
@@ -1922,7 +1922,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-240",
-    "title": "DE39=99 (PIN Block Translation Failure) - Canal Infrastructure : Pic de charge transactionnelle [Cas #1]",
+    "title": "DE39=99 (PIN Block Translation Failure) - Canal Infrastructure : Pic de charge transactionnelle",
     "domain": "Infrastructure",
     "component": "HSM/ZpkTranslation",
     "analysisKeys": "DE39=99, STAN, RRN, HSM/ZpkTranslation",
@@ -1930,7 +1930,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-241",
-    "title": "DE39=00 (Approved / Honoré (Délivrance incomplète ou suspicion)) - Canal GAB : Transactions transfrontalières & roaming [Cas #2]",
+    "title": "DE39=00 (Approved / Honoré (Délivrance incomplète ou suspicion)) - Canal GAB : Transactions transfrontalières & roaming",
     "domain": "GAB",
     "component": "ATM/Dispenser",
     "analysisKeys": "DE39=00, STAN, RRN, ATM/Dispenser",
@@ -1938,7 +1938,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-242",
-    "title": "DE39=08 (Honor with Identification) - Canal TPE : Transactions transfrontalières & roaming [Cas #2]",
+    "title": "DE39=08 (Honor with Identification) - Canal TPE : Transactions transfrontalières & roaming",
     "domain": "TPE",
     "component": "TPE/Signature",
     "analysisKeys": "DE39=08, STAN, RRN, TPE/Signature",
@@ -1946,7 +1946,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-243",
-    "title": "DE39=10 (Partial Approval) - Canal TPE : Transactions transfrontalières & roaming [Cas #2]",
+    "title": "DE39=10 (Partial Approval) - Canal TPE : Transactions transfrontalières & roaming",
     "domain": "TPE",
     "component": "Middleware/SplitTender",
     "analysisKeys": "DE39=10, STAN, RRN, Middleware/SplitTender",
@@ -1954,7 +1954,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-244",
-    "title": "DE39=85 (No reason to decline) - Canal Switch : Transactions transfrontalières & roaming [Cas #2]",
+    "title": "DE39=85 (No reason to decline) - Canal Switch : Transactions transfrontalières & roaming",
     "domain": "Switch",
     "component": "Switch/CardCheck",
     "analysisKeys": "DE39=85, STAN, RRN, Switch/CardCheck",
@@ -1962,7 +1962,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-245",
-    "title": "DE39=01 (Refer to Card Issuer) - Canal Switch : Transactions transfrontalières & roaming [Cas #2]",
+    "title": "DE39=01 (Refer to Card Issuer) - Canal Switch : Transactions transfrontalières & roaming",
     "domain": "Switch",
     "component": "CBS/IssuerCall",
     "analysisKeys": "DE39=01, STAN, RRN, CBS/IssuerCall",
@@ -1970,7 +1970,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-246",
-    "title": "DE39=02 (Refer to Card Issuer Special Condition) - Canal Switch : Transactions transfrontalières & roaming [Cas #2]",
+    "title": "DE39=02 (Refer to Card Issuer Special Condition) - Canal Switch : Transactions transfrontalières & roaming",
     "domain": "Switch",
     "component": "CBS/RiskCondition",
     "analysisKeys": "DE39=02, STAN, RRN, CBS/RiskCondition",
@@ -1978,7 +1978,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-247",
-    "title": "DE39=04 (Pick-up Card Hold-call) - Canal GAB : Transactions transfrontalières & roaming [Cas #2]",
+    "title": "DE39=04 (Pick-up Card Hold-call) - Canal GAB : Transactions transfrontalières & roaming",
     "domain": "GAB",
     "component": "ATM/Retention",
     "analysisKeys": "DE39=04, STAN, RRN, ATM/Retention",
@@ -1986,7 +1986,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-248",
-    "title": "DE39=05 (Do Not Honor) - Canal Switch : Transactions transfrontalières & roaming [Cas #2]",
+    "title": "DE39=05 (Do Not Honor) - Canal Switch : Transactions transfrontalières & roaming",
     "domain": "Switch",
     "component": "Issuer/Scoring",
     "analysisKeys": "DE39=05, STAN, RRN, Issuer/Scoring",
@@ -1994,7 +1994,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-249",
-    "title": "DE39=12 (Invalid Transaction) - Canal Switch : Transactions transfrontalières & roaming [Cas #2]",
+    "title": "DE39=12 (Invalid Transaction) - Canal Switch : Transactions transfrontalières & roaming",
     "domain": "Switch",
     "component": "CBS/ProductRules",
     "analysisKeys": "DE39=12, STAN, RRN, CBS/ProductRules",
@@ -2002,7 +2002,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-250",
-    "title": "DE39=13 (Invalid Amount) - Canal GAB : Transactions transfrontalières & roaming [Cas #2]",
+    "title": "DE39=13 (Invalid Amount) - Canal GAB : Transactions transfrontalières & roaming",
     "domain": "GAB",
     "component": "ATM/BillMix",
     "analysisKeys": "DE39=13, STAN, RRN, ATM/BillMix",
@@ -2010,7 +2010,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-251",
-    "title": "DE39=14 (Invalid Card Number) - Canal Interface : Transactions transfrontalières & roaming [Cas #2]",
+    "title": "DE39=14 (Invalid Card Number) - Canal Interface : Transactions transfrontalières & roaming",
     "domain": "Interface",
     "component": "Frontal/LuhnValidator",
     "analysisKeys": "DE39=14, STAN, RRN, Frontal/LuhnValidator",
@@ -2018,7 +2018,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-252",
-    "title": "DE39=15 (No Such Issuer) - Canal Switch : Transactions transfrontalières & roaming [Cas #2]",
+    "title": "DE39=15 (No Such Issuer) - Canal Switch : Transactions transfrontalières & roaming",
     "domain": "Switch",
     "component": "Switch/RoutingTable",
     "analysisKeys": "DE39=15, STAN, RRN, Switch/RoutingTable",
@@ -2026,7 +2026,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-253",
-    "title": "DE39=33 (Expired Card Pick-up) - Canal GAB : Transactions transfrontalières & roaming [Cas #2]",
+    "title": "DE39=33 (Expired Card Pick-up) - Canal GAB : Transactions transfrontalières & roaming",
     "domain": "GAB",
     "component": "ATM/Retention",
     "analysisKeys": "DE39=33, STAN, RRN, ATM/Retention",
@@ -2034,7 +2034,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-254",
-    "title": "DE39=41 (Lost Card Pick-up) - Canal GAB : Transactions transfrontalières & roaming [Cas #2]",
+    "title": "DE39=41 (Lost Card Pick-up) - Canal GAB : Transactions transfrontalières & roaming",
     "domain": "GAB",
     "component": "ATM/OppositionLost",
     "analysisKeys": "DE39=41, STAN, RRN, ATM/OppositionLost",
@@ -2042,7 +2042,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-255",
-    "title": "DE39=43 (Stolen Card Pick-up) - Canal GAB : Transactions transfrontalières & roaming [Cas #2]",
+    "title": "DE39=43 (Stolen Card Pick-up) - Canal GAB : Transactions transfrontalières & roaming",
     "domain": "GAB",
     "component": "ATM/OppositionStolen",
     "analysisKeys": "DE39=43, STAN, RRN, ATM/OppositionStolen",
@@ -2050,7 +2050,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-256",
-    "title": "DE39=51 (Insufficient Funds) - Canal Core Banking : Transactions transfrontalières & roaming [Cas #2]",
+    "title": "DE39=51 (Insufficient Funds) - Canal Core Banking : Transactions transfrontalières & roaming",
     "domain": "Core Banking",
     "component": "CBS/Solvabilite",
     "analysisKeys": "DE39=51, STAN, RRN, CBS/Solvabilite",
@@ -2058,7 +2058,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-257",
-    "title": "DE39=54 (Expired Card) - Canal Carte : Transactions transfrontalières & roaming [Cas #2]",
+    "title": "DE39=54 (Expired Card) - Canal Carte : Transactions transfrontalières & roaming",
     "domain": "Carte",
     "component": "CMS/CardValidity",
     "analysisKeys": "DE39=54, STAN, RRN, CMS/CardValidity",
@@ -2066,7 +2066,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-258",
-    "title": "DE39=57 (Transaction Not Permitted to Cardholder) - Canal Carte : Transactions transfrontalières & roaming [Cas #2]",
+    "title": "DE39=57 (Transaction Not Permitted to Cardholder) - Canal Carte : Transactions transfrontalières & roaming",
     "domain": "Carte",
     "component": "CMS/ContractProfile",
     "analysisKeys": "DE39=57, STAN, RRN, CMS/ContractProfile",
@@ -2074,7 +2074,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-259",
-    "title": "DE39=61 (Exceeds Withdrawal Amount Limit) - Canal GAB : Transactions transfrontalières & roaming [Cas #2]",
+    "title": "DE39=61 (Exceeds Withdrawal Amount Limit) - Canal GAB : Transactions transfrontalières & roaming",
     "domain": "GAB",
     "component": "CMS/VelocityLimits",
     "analysisKeys": "DE39=61, STAN, RRN, CMS/VelocityLimits",
@@ -2082,7 +2082,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-260",
-    "title": "DE39=62 (Restricted Card) - Canal TPE : Transactions transfrontalières & roaming [Cas #2]",
+    "title": "DE39=62 (Restricted Card) - Canal TPE : Transactions transfrontalières & roaming",
     "domain": "TPE",
     "component": "CMS/GeoBlocking",
     "analysisKeys": "DE39=62, STAN, RRN, CMS/GeoBlocking",
@@ -2090,7 +2090,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-261",
-    "title": "DE39=65 (Exceeds Withdrawal Frequency Limit) - Canal GAB : Transactions transfrontalières & roaming [Cas #2]",
+    "title": "DE39=65 (Exceeds Withdrawal Frequency Limit) - Canal GAB : Transactions transfrontalières & roaming",
     "domain": "GAB",
     "component": "CMS/FrequencyCounter",
     "analysisKeys": "DE39=65, STAN, RRN, CMS/FrequencyCounter",
@@ -2098,7 +2098,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-262",
-    "title": "DE39=75 (Allowable PIN Tries Exceeded) - Canal Carte : Transactions transfrontalières & roaming [Cas #2]",
+    "title": "DE39=75 (Allowable PIN Tries Exceeded) - Canal Carte : Transactions transfrontalières & roaming",
     "domain": "Carte",
     "component": "CMS/PinTriesExceeded",
     "analysisKeys": "DE39=75, STAN, RRN, CMS/PinTriesExceeded",
@@ -2106,7 +2106,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-263",
-    "title": "DE39=55 (Incorrect PIN) - Canal Carte : Transactions transfrontalières & roaming [Cas #2]",
+    "title": "DE39=55 (Incorrect PIN) - Canal Carte : Transactions transfrontalières & roaming",
     "domain": "Carte",
     "component": "HSM/PinVerification",
     "analysisKeys": "DE39=55, STAN, RRN, HSM/PinVerification",
@@ -2114,7 +2114,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-264",
-    "title": "DE39=82 (Incorrect CVV / iCVV) - Canal Interface : Transactions transfrontalières & roaming [Cas #2]",
+    "title": "DE39=82 (Incorrect CVV / iCVV) - Canal Interface : Transactions transfrontalières & roaming",
     "domain": "Interface",
     "component": "HSM/CvvCheck",
     "analysisKeys": "DE39=82, STAN, RRN, HSM/CvvCheck",
@@ -2122,7 +2122,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-265",
-    "title": "DE39=88 (Cryptographic Failure) - Canal Infrastructure : Transactions transfrontalières & roaming [Cas #2]",
+    "title": "DE39=88 (Cryptographic Failure) - Canal Infrastructure : Transactions transfrontalières & roaming",
     "domain": "Infrastructure",
     "component": "HSM/CryptoEngine",
     "analysisKeys": "DE39=88, STAN, RRN, HSM/CryptoEngine",
@@ -2130,7 +2130,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-266",
-    "title": "DE39=89 (Invalid PIN Block) - Canal Infrastructure : Transactions transfrontalières & roaming [Cas #2]",
+    "title": "DE39=89 (Invalid PIN Block) - Canal Infrastructure : Transactions transfrontalières & roaming",
     "domain": "Infrastructure",
     "component": "HSM/PinTranslation",
     "analysisKeys": "DE39=89, STAN, RRN, HSM/PinTranslation",
@@ -2138,7 +2138,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-267",
-    "title": "DE39=93 (Violation / EMV Cryptogram Failure (ARQC rejeté)) - Canal Carte : Transactions transfrontalières & roaming [Cas #2]",
+    "title": "DE39=93 (Violation / EMV Cryptogram Failure (ARQC rejeté)) - Canal Carte : Transactions transfrontalières & roaming",
     "domain": "Carte",
     "component": "HSM/EmvValidation",
     "analysisKeys": "DE39=93, STAN, RRN, HSM/EmvValidation",
@@ -2146,7 +2146,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-268",
-    "title": "DE39=19 (Re-enter Transaction) - Canal Réseau : Transactions transfrontalières & roaming [Cas #2]",
+    "title": "DE39=19 (Re-enter Transaction) - Canal Réseau : Transactions transfrontalières & roaming",
     "domain": "Réseau",
     "component": "Switch/RetryBuffer",
     "analysisKeys": "DE39=19, STAN, RRN, Switch/RetryBuffer",
@@ -2154,7 +2154,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-269",
-    "title": "DE39=25 (Unable to Locate Record on File) - Canal Switch : Transactions transfrontalières & roaming [Cas #2]",
+    "title": "DE39=25 (Unable to Locate Record on File) - Canal Switch : Transactions transfrontalières & roaming",
     "domain": "Switch",
     "component": "CBS/MatchingReversal",
     "analysisKeys": "DE39=25, STAN, RRN, CBS/MatchingReversal",
@@ -2162,7 +2162,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-270",
-    "title": "DE39=30 (Format Error) - Canal Interface : Transactions transfrontalières & roaming [Cas #2]",
+    "title": "DE39=30 (Format Error) - Canal Interface : Transactions transfrontalières & roaming",
     "domain": "Interface",
     "component": "Interface/IsoParser",
     "analysisKeys": "DE39=30, STAN, RRN, Interface/IsoParser",
@@ -2170,7 +2170,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-271",
-    "title": "DE39=58 (Transaction Not Permitted to Terminal) - Canal TPE : Transactions transfrontalières & roaming [Cas #2]",
+    "title": "DE39=58 (Transaction Not Permitted to Terminal) - Canal TPE : Transactions transfrontalières & roaming",
     "domain": "TPE",
     "component": "TMS/TerminalProfile",
     "analysisKeys": "DE39=58, STAN, RRN, TMS/TerminalProfile",
@@ -2178,7 +2178,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-272",
-    "title": "DE39=68 (Response Received Too Late) - Canal Switch : Transactions transfrontalières & roaming [Cas #2]",
+    "title": "DE39=68 (Response Received Too Late) - Canal Switch : Transactions transfrontalières & roaming",
     "domain": "Switch",
     "component": "Switch/TimerQueue",
     "analysisKeys": "DE39=68, STAN, RRN, Switch/TimerQueue",
@@ -2186,7 +2186,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-273",
-    "title": "DE39=76 (Key Synchronization Error) - Canal Infrastructure : Transactions transfrontalières & roaming [Cas #2]",
+    "title": "DE39=76 (Key Synchronization Error) - Canal Infrastructure : Transactions transfrontalières & roaming",
     "domain": "Infrastructure",
     "component": "Switch/KeySync",
     "analysisKeys": "DE39=76, STAN, RRN, Switch/KeySync",
@@ -2194,7 +2194,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-274",
-    "title": "DE39=90 (System Cutover in Progress) - Canal Clearing : Transactions transfrontalières & roaming [Cas #2]",
+    "title": "DE39=90 (System Cutover in Progress) - Canal Clearing : Transactions transfrontalières & roaming",
     "domain": "Clearing",
     "component": "CBS/CutOver",
     "analysisKeys": "DE39=90, STAN, RRN, CBS/CutOver",
@@ -2202,7 +2202,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-275",
-    "title": "DE39=91 (Issuer or Switch Inoperative) - Canal Réseau : Transactions transfrontalières & roaming [Cas #2]",
+    "title": "DE39=91 (Issuer or Switch Inoperative) - Canal Réseau : Transactions transfrontalières & roaming",
     "domain": "Réseau",
     "component": "Switch/IssuerLink",
     "analysisKeys": "DE39=91, STAN, RRN, Switch/IssuerLink",
@@ -2210,7 +2210,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-276",
-    "title": "DE39=92 (Destination Unreachable) - Canal Réseau : Transactions transfrontalières & roaming [Cas #2]",
+    "title": "DE39=92 (Destination Unreachable) - Canal Réseau : Transactions transfrontalières & roaming",
     "domain": "Réseau",
     "component": "Réseau/TelecomGateway",
     "analysisKeys": "DE39=92, STAN, RRN, Réseau/TelecomGateway",
@@ -2218,7 +2218,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-277",
-    "title": "DE39=94 (Duplicate Transmission) - Canal Switch : Transactions transfrontalières & roaming [Cas #2]",
+    "title": "DE39=94 (Duplicate Transmission) - Canal Switch : Transactions transfrontalières & roaming",
     "domain": "Switch",
     "component": "Switch/DuplicateDetection",
     "analysisKeys": "DE39=94, STAN, RRN, Switch/DuplicateDetection",
@@ -2226,7 +2226,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-278",
-    "title": "DE39=96 (System Malfunction) - Canal Production : Transactions transfrontalières & roaming [Cas #2]",
+    "title": "DE39=96 (System Malfunction) - Canal Production : Transactions transfrontalières & roaming",
     "domain": "Production",
     "component": "Core/DbConnectionPool",
     "analysisKeys": "DE39=96, STAN, RRN, Core/DbConnectionPool",
@@ -2234,7 +2234,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-279",
-    "title": "DE39=98 (MAC Error) - Canal Infrastructure : Transactions transfrontalières & roaming [Cas #2]",
+    "title": "DE39=98 (MAC Error) - Canal Infrastructure : Transactions transfrontalières & roaming",
     "domain": "Infrastructure",
     "component": "HSM/MacValidator",
     "analysisKeys": "DE39=98, STAN, RRN, HSM/MacValidator",
@@ -2242,7 +2242,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-280",
-    "title": "DE39=99 (PIN Block Translation Failure) - Canal Infrastructure : Transactions transfrontalières & roaming [Cas #2]",
+    "title": "DE39=99 (PIN Block Translation Failure) - Canal Infrastructure : Transactions transfrontalières & roaming",
     "domain": "Infrastructure",
     "component": "HSM/ZpkTranslation",
     "analysisKeys": "DE39=99, STAN, RRN, HSM/ZpkTranslation",
@@ -2250,7 +2250,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-281",
-    "title": "DE39=00 (Approved / Honoré (Délivrance incomplète ou suspicion)) - Canal GAB : Désynchronisation de tables & routage [Cas #3]",
+    "title": "DE39=00 (Approved / Honoré (Délivrance incomplète ou suspicion)) - Canal GAB : Désynchronisation de tables & routage",
     "domain": "GAB",
     "component": "ATM/Dispenser",
     "analysisKeys": "DE39=00, STAN, RRN, ATM/Dispenser",
@@ -2258,7 +2258,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-282",
-    "title": "DE39=08 (Honor with Identification) - Canal TPE : Désynchronisation de tables & routage [Cas #3]",
+    "title": "DE39=08 (Honor with Identification) - Canal TPE : Désynchronisation de tables & routage",
     "domain": "TPE",
     "component": "TPE/Signature",
     "analysisKeys": "DE39=08, STAN, RRN, TPE/Signature",
@@ -2266,7 +2266,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-283",
-    "title": "DE39=10 (Partial Approval) - Canal TPE : Désynchronisation de tables & routage [Cas #3]",
+    "title": "DE39=10 (Partial Approval) - Canal TPE : Désynchronisation de tables & routage",
     "domain": "TPE",
     "component": "Middleware/SplitTender",
     "analysisKeys": "DE39=10, STAN, RRN, Middleware/SplitTender",
@@ -2274,7 +2274,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-284",
-    "title": "DE39=85 (No reason to decline) - Canal Switch : Désynchronisation de tables & routage [Cas #3]",
+    "title": "DE39=85 (No reason to decline) - Canal Switch : Désynchronisation de tables & routage",
     "domain": "Switch",
     "component": "Switch/CardCheck",
     "analysisKeys": "DE39=85, STAN, RRN, Switch/CardCheck",
@@ -2282,7 +2282,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-285",
-    "title": "DE39=01 (Refer to Card Issuer) - Canal Switch : Désynchronisation de tables & routage [Cas #3]",
+    "title": "DE39=01 (Refer to Card Issuer) - Canal Switch : Désynchronisation de tables & routage",
     "domain": "Switch",
     "component": "CBS/IssuerCall",
     "analysisKeys": "DE39=01, STAN, RRN, CBS/IssuerCall",
@@ -2290,7 +2290,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-286",
-    "title": "DE39=02 (Refer to Card Issuer Special Condition) - Canal Switch : Désynchronisation de tables & routage [Cas #3]",
+    "title": "DE39=02 (Refer to Card Issuer Special Condition) - Canal Switch : Désynchronisation de tables & routage",
     "domain": "Switch",
     "component": "CBS/RiskCondition",
     "analysisKeys": "DE39=02, STAN, RRN, CBS/RiskCondition",
@@ -2298,7 +2298,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-287",
-    "title": "DE39=04 (Pick-up Card Hold-call) - Canal GAB : Désynchronisation de tables & routage [Cas #3]",
+    "title": "DE39=04 (Pick-up Card Hold-call) - Canal GAB : Désynchronisation de tables & routage",
     "domain": "GAB",
     "component": "ATM/Retention",
     "analysisKeys": "DE39=04, STAN, RRN, ATM/Retention",
@@ -2306,7 +2306,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-288",
-    "title": "DE39=05 (Do Not Honor) - Canal Switch : Désynchronisation de tables & routage [Cas #3]",
+    "title": "DE39=05 (Do Not Honor) - Canal Switch : Désynchronisation de tables & routage",
     "domain": "Switch",
     "component": "Issuer/Scoring",
     "analysisKeys": "DE39=05, STAN, RRN, Issuer/Scoring",
@@ -2314,7 +2314,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-289",
-    "title": "DE39=12 (Invalid Transaction) - Canal Switch : Désynchronisation de tables & routage [Cas #3]",
+    "title": "DE39=12 (Invalid Transaction) - Canal Switch : Désynchronisation de tables & routage",
     "domain": "Switch",
     "component": "CBS/ProductRules",
     "analysisKeys": "DE39=12, STAN, RRN, CBS/ProductRules",
@@ -2322,7 +2322,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-290",
-    "title": "DE39=13 (Invalid Amount) - Canal GAB : Désynchronisation de tables & routage [Cas #3]",
+    "title": "DE39=13 (Invalid Amount) - Canal GAB : Désynchronisation de tables & routage",
     "domain": "GAB",
     "component": "ATM/BillMix",
     "analysisKeys": "DE39=13, STAN, RRN, ATM/BillMix",
@@ -2330,7 +2330,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-291",
-    "title": "DE39=14 (Invalid Card Number) - Canal Interface : Désynchronisation de tables & routage [Cas #3]",
+    "title": "DE39=14 (Invalid Card Number) - Canal Interface : Désynchronisation de tables & routage",
     "domain": "Interface",
     "component": "Frontal/LuhnValidator",
     "analysisKeys": "DE39=14, STAN, RRN, Frontal/LuhnValidator",
@@ -2338,7 +2338,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-292",
-    "title": "DE39=15 (No Such Issuer) - Canal Switch : Désynchronisation de tables & routage [Cas #3]",
+    "title": "DE39=15 (No Such Issuer) - Canal Switch : Désynchronisation de tables & routage",
     "domain": "Switch",
     "component": "Switch/RoutingTable",
     "analysisKeys": "DE39=15, STAN, RRN, Switch/RoutingTable",
@@ -2346,7 +2346,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-293",
-    "title": "DE39=33 (Expired Card Pick-up) - Canal GAB : Désynchronisation de tables & routage [Cas #3]",
+    "title": "DE39=33 (Expired Card Pick-up) - Canal GAB : Désynchronisation de tables & routage",
     "domain": "GAB",
     "component": "ATM/Retention",
     "analysisKeys": "DE39=33, STAN, RRN, ATM/Retention",
@@ -2354,7 +2354,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-294",
-    "title": "DE39=41 (Lost Card Pick-up) - Canal GAB : Désynchronisation de tables & routage [Cas #3]",
+    "title": "DE39=41 (Lost Card Pick-up) - Canal GAB : Désynchronisation de tables & routage",
     "domain": "GAB",
     "component": "ATM/OppositionLost",
     "analysisKeys": "DE39=41, STAN, RRN, ATM/OppositionLost",
@@ -2362,7 +2362,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-295",
-    "title": "DE39=43 (Stolen Card Pick-up) - Canal GAB : Désynchronisation de tables & routage [Cas #3]",
+    "title": "DE39=43 (Stolen Card Pick-up) - Canal GAB : Désynchronisation de tables & routage",
     "domain": "GAB",
     "component": "ATM/OppositionStolen",
     "analysisKeys": "DE39=43, STAN, RRN, ATM/OppositionStolen",
@@ -2370,7 +2370,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-296",
-    "title": "DE39=51 (Insufficient Funds) - Canal Core Banking : Désynchronisation de tables & routage [Cas #3]",
+    "title": "DE39=51 (Insufficient Funds) - Canal Core Banking : Désynchronisation de tables & routage",
     "domain": "Core Banking",
     "component": "CBS/Solvabilite",
     "analysisKeys": "DE39=51, STAN, RRN, CBS/Solvabilite",
@@ -2378,7 +2378,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-297",
-    "title": "DE39=54 (Expired Card) - Canal Carte : Désynchronisation de tables & routage [Cas #3]",
+    "title": "DE39=54 (Expired Card) - Canal Carte : Désynchronisation de tables & routage",
     "domain": "Carte",
     "component": "CMS/CardValidity",
     "analysisKeys": "DE39=54, STAN, RRN, CMS/CardValidity",
@@ -2386,7 +2386,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-298",
-    "title": "DE39=57 (Transaction Not Permitted to Cardholder) - Canal Carte : Désynchronisation de tables & routage [Cas #3]",
+    "title": "DE39=57 (Transaction Not Permitted to Cardholder) - Canal Carte : Désynchronisation de tables & routage",
     "domain": "Carte",
     "component": "CMS/ContractProfile",
     "analysisKeys": "DE39=57, STAN, RRN, CMS/ContractProfile",
@@ -2394,7 +2394,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-299",
-    "title": "DE39=61 (Exceeds Withdrawal Amount Limit) - Canal GAB : Désynchronisation de tables & routage [Cas #3]",
+    "title": "DE39=61 (Exceeds Withdrawal Amount Limit) - Canal GAB : Désynchronisation de tables & routage",
     "domain": "GAB",
     "component": "CMS/VelocityLimits",
     "analysisKeys": "DE39=61, STAN, RRN, CMS/VelocityLimits",
@@ -2402,7 +2402,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-300",
-    "title": "DE39=62 (Restricted Card) - Canal TPE : Désynchronisation de tables & routage [Cas #3]",
+    "title": "DE39=62 (Restricted Card) - Canal TPE : Désynchronisation de tables & routage",
     "domain": "TPE",
     "component": "CMS/GeoBlocking",
     "analysisKeys": "DE39=62, STAN, RRN, CMS/GeoBlocking",
@@ -2410,7 +2410,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-301",
-    "title": "DE39=65 (Exceeds Withdrawal Frequency Limit) - Canal GAB : Désynchronisation de tables & routage [Cas #3]",
+    "title": "DE39=65 (Exceeds Withdrawal Frequency Limit) - Canal GAB : Désynchronisation de tables & routage",
     "domain": "GAB",
     "component": "CMS/FrequencyCounter",
     "analysisKeys": "DE39=65, STAN, RRN, CMS/FrequencyCounter",
@@ -2418,7 +2418,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-302",
-    "title": "DE39=75 (Allowable PIN Tries Exceeded) - Canal Carte : Désynchronisation de tables & routage [Cas #3]",
+    "title": "DE39=75 (Allowable PIN Tries Exceeded) - Canal Carte : Désynchronisation de tables & routage",
     "domain": "Carte",
     "component": "CMS/PinTriesExceeded",
     "analysisKeys": "DE39=75, STAN, RRN, CMS/PinTriesExceeded",
@@ -2426,7 +2426,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-303",
-    "title": "DE39=55 (Incorrect PIN) - Canal Carte : Désynchronisation de tables & routage [Cas #3]",
+    "title": "DE39=55 (Incorrect PIN) - Canal Carte : Désynchronisation de tables & routage",
     "domain": "Carte",
     "component": "HSM/PinVerification",
     "analysisKeys": "DE39=55, STAN, RRN, HSM/PinVerification",
@@ -2434,7 +2434,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-304",
-    "title": "DE39=82 (Incorrect CVV / iCVV) - Canal Interface : Désynchronisation de tables & routage [Cas #3]",
+    "title": "DE39=82 (Incorrect CVV / iCVV) - Canal Interface : Désynchronisation de tables & routage",
     "domain": "Interface",
     "component": "HSM/CvvCheck",
     "analysisKeys": "DE39=82, STAN, RRN, HSM/CvvCheck",
@@ -2442,7 +2442,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-305",
-    "title": "DE39=88 (Cryptographic Failure) - Canal Infrastructure : Désynchronisation de tables & routage [Cas #3]",
+    "title": "DE39=88 (Cryptographic Failure) - Canal Infrastructure : Désynchronisation de tables & routage",
     "domain": "Infrastructure",
     "component": "HSM/CryptoEngine",
     "analysisKeys": "DE39=88, STAN, RRN, HSM/CryptoEngine",
@@ -2450,7 +2450,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-306",
-    "title": "DE39=89 (Invalid PIN Block) - Canal Infrastructure : Désynchronisation de tables & routage [Cas #3]",
+    "title": "DE39=89 (Invalid PIN Block) - Canal Infrastructure : Désynchronisation de tables & routage",
     "domain": "Infrastructure",
     "component": "HSM/PinTranslation",
     "analysisKeys": "DE39=89, STAN, RRN, HSM/PinTranslation",
@@ -2458,7 +2458,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-307",
-    "title": "DE39=93 (Violation / EMV Cryptogram Failure (ARQC rejeté)) - Canal Carte : Désynchronisation de tables & routage [Cas #3]",
+    "title": "DE39=93 (Violation / EMV Cryptogram Failure (ARQC rejeté)) - Canal Carte : Désynchronisation de tables & routage",
     "domain": "Carte",
     "component": "HSM/EmvValidation",
     "analysisKeys": "DE39=93, STAN, RRN, HSM/EmvValidation",
@@ -2466,7 +2466,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-308",
-    "title": "DE39=19 (Re-enter Transaction) - Canal Réseau : Désynchronisation de tables & routage [Cas #3]",
+    "title": "DE39=19 (Re-enter Transaction) - Canal Réseau : Désynchronisation de tables & routage",
     "domain": "Réseau",
     "component": "Switch/RetryBuffer",
     "analysisKeys": "DE39=19, STAN, RRN, Switch/RetryBuffer",
@@ -2474,7 +2474,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-309",
-    "title": "DE39=25 (Unable to Locate Record on File) - Canal Switch : Désynchronisation de tables & routage [Cas #3]",
+    "title": "DE39=25 (Unable to Locate Record on File) - Canal Switch : Désynchronisation de tables & routage",
     "domain": "Switch",
     "component": "CBS/MatchingReversal",
     "analysisKeys": "DE39=25, STAN, RRN, CBS/MatchingReversal",
@@ -2482,7 +2482,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-310",
-    "title": "DE39=30 (Format Error) - Canal Interface : Désynchronisation de tables & routage [Cas #3]",
+    "title": "DE39=30 (Format Error) - Canal Interface : Désynchronisation de tables & routage",
     "domain": "Interface",
     "component": "Interface/IsoParser",
     "analysisKeys": "DE39=30, STAN, RRN, Interface/IsoParser",
@@ -2490,7 +2490,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-311",
-    "title": "DE39=58 (Transaction Not Permitted to Terminal) - Canal TPE : Désynchronisation de tables & routage [Cas #3]",
+    "title": "DE39=58 (Transaction Not Permitted to Terminal) - Canal TPE : Désynchronisation de tables & routage",
     "domain": "TPE",
     "component": "TMS/TerminalProfile",
     "analysisKeys": "DE39=58, STAN, RRN, TMS/TerminalProfile",
@@ -2498,7 +2498,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-312",
-    "title": "DE39=68 (Response Received Too Late) - Canal Switch : Désynchronisation de tables & routage [Cas #3]",
+    "title": "DE39=68 (Response Received Too Late) - Canal Switch : Désynchronisation de tables & routage",
     "domain": "Switch",
     "component": "Switch/TimerQueue",
     "analysisKeys": "DE39=68, STAN, RRN, Switch/TimerQueue",
@@ -2506,7 +2506,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-313",
-    "title": "DE39=76 (Key Synchronization Error) - Canal Infrastructure : Désynchronisation de tables & routage [Cas #3]",
+    "title": "DE39=76 (Key Synchronization Error) - Canal Infrastructure : Désynchronisation de tables & routage",
     "domain": "Infrastructure",
     "component": "Switch/KeySync",
     "analysisKeys": "DE39=76, STAN, RRN, Switch/KeySync",
@@ -2514,7 +2514,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-314",
-    "title": "DE39=90 (System Cutover in Progress) - Canal Clearing : Désynchronisation de tables & routage [Cas #3]",
+    "title": "DE39=90 (System Cutover in Progress) - Canal Clearing : Désynchronisation de tables & routage",
     "domain": "Clearing",
     "component": "CBS/CutOver",
     "analysisKeys": "DE39=90, STAN, RRN, CBS/CutOver",
@@ -2522,7 +2522,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-315",
-    "title": "DE39=91 (Issuer or Switch Inoperative) - Canal Réseau : Désynchronisation de tables & routage [Cas #3]",
+    "title": "DE39=91 (Issuer or Switch Inoperative) - Canal Réseau : Désynchronisation de tables & routage",
     "domain": "Réseau",
     "component": "Switch/IssuerLink",
     "analysisKeys": "DE39=91, STAN, RRN, Switch/IssuerLink",
@@ -2530,7 +2530,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-316",
-    "title": "DE39=92 (Destination Unreachable) - Canal Réseau : Désynchronisation de tables & routage [Cas #3]",
+    "title": "DE39=92 (Destination Unreachable) - Canal Réseau : Désynchronisation de tables & routage",
     "domain": "Réseau",
     "component": "Réseau/TelecomGateway",
     "analysisKeys": "DE39=92, STAN, RRN, Réseau/TelecomGateway",
@@ -2538,7 +2538,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-317",
-    "title": "DE39=94 (Duplicate Transmission) - Canal Switch : Désynchronisation de tables & routage [Cas #3]",
+    "title": "DE39=94 (Duplicate Transmission) - Canal Switch : Désynchronisation de tables & routage",
     "domain": "Switch",
     "component": "Switch/DuplicateDetection",
     "analysisKeys": "DE39=94, STAN, RRN, Switch/DuplicateDetection",
@@ -2546,7 +2546,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-318",
-    "title": "DE39=96 (System Malfunction) - Canal Production : Désynchronisation de tables & routage [Cas #3]",
+    "title": "DE39=96 (System Malfunction) - Canal Production : Désynchronisation de tables & routage",
     "domain": "Production",
     "component": "Core/DbConnectionPool",
     "analysisKeys": "DE39=96, STAN, RRN, Core/DbConnectionPool",
@@ -2554,7 +2554,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-319",
-    "title": "DE39=98 (MAC Error) - Canal Infrastructure : Désynchronisation de tables & routage [Cas #3]",
+    "title": "DE39=98 (MAC Error) - Canal Infrastructure : Désynchronisation de tables & routage",
     "domain": "Infrastructure",
     "component": "HSM/MacValidator",
     "analysisKeys": "DE39=98, STAN, RRN, HSM/MacValidator",
@@ -2562,7 +2562,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-320",
-    "title": "DE39=99 (PIN Block Translation Failure) - Canal Infrastructure : Désynchronisation de tables & routage [Cas #3]",
+    "title": "DE39=99 (PIN Block Translation Failure) - Canal Infrastructure : Désynchronisation de tables & routage",
     "domain": "Infrastructure",
     "component": "HSM/ZpkTranslation",
     "analysisKeys": "DE39=99, STAN, RRN, HSM/ZpkTranslation",
@@ -2570,7 +2570,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-321",
-    "title": "DE39=00 (Approved / Honoré (Délivrance incomplète ou suspicion)) - Canal GAB : Micro-coupure réseau et reconnexion [Cas #4]",
+    "title": "DE39=00 (Approved / Honoré (Délivrance incomplète ou suspicion)) - Canal GAB : Micro-coupure réseau et reconnexion",
     "domain": "GAB",
     "component": "ATM/Dispenser",
     "analysisKeys": "DE39=00, STAN, RRN, ATM/Dispenser",
@@ -2578,7 +2578,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-322",
-    "title": "DE39=08 (Honor with Identification) - Canal TPE : Micro-coupure réseau et reconnexion [Cas #4]",
+    "title": "DE39=08 (Honor with Identification) - Canal TPE : Micro-coupure réseau et reconnexion",
     "domain": "TPE",
     "component": "TPE/Signature",
     "analysisKeys": "DE39=08, STAN, RRN, TPE/Signature",
@@ -2586,7 +2586,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-323",
-    "title": "DE39=10 (Partial Approval) - Canal TPE : Micro-coupure réseau et reconnexion [Cas #4]",
+    "title": "DE39=10 (Partial Approval) - Canal TPE : Micro-coupure réseau et reconnexion",
     "domain": "TPE",
     "component": "Middleware/SplitTender",
     "analysisKeys": "DE39=10, STAN, RRN, Middleware/SplitTender",
@@ -2594,7 +2594,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-324",
-    "title": "DE39=85 (No reason to decline) - Canal Switch : Micro-coupure réseau et reconnexion [Cas #4]",
+    "title": "DE39=85 (No reason to decline) - Canal Switch : Micro-coupure réseau et reconnexion",
     "domain": "Switch",
     "component": "Switch/CardCheck",
     "analysisKeys": "DE39=85, STAN, RRN, Switch/CardCheck",
@@ -2602,7 +2602,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-325",
-    "title": "DE39=01 (Refer to Card Issuer) - Canal Switch : Micro-coupure réseau et reconnexion [Cas #4]",
+    "title": "DE39=01 (Refer to Card Issuer) - Canal Switch : Micro-coupure réseau et reconnexion",
     "domain": "Switch",
     "component": "CBS/IssuerCall",
     "analysisKeys": "DE39=01, STAN, RRN, CBS/IssuerCall",
@@ -2610,7 +2610,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-326",
-    "title": "DE39=02 (Refer to Card Issuer Special Condition) - Canal Switch : Micro-coupure réseau et reconnexion [Cas #4]",
+    "title": "DE39=02 (Refer to Card Issuer Special Condition) - Canal Switch : Micro-coupure réseau et reconnexion",
     "domain": "Switch",
     "component": "CBS/RiskCondition",
     "analysisKeys": "DE39=02, STAN, RRN, CBS/RiskCondition",
@@ -2618,7 +2618,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-327",
-    "title": "DE39=04 (Pick-up Card Hold-call) - Canal GAB : Micro-coupure réseau et reconnexion [Cas #4]",
+    "title": "DE39=04 (Pick-up Card Hold-call) - Canal GAB : Micro-coupure réseau et reconnexion",
     "domain": "GAB",
     "component": "ATM/Retention",
     "analysisKeys": "DE39=04, STAN, RRN, ATM/Retention",
@@ -2626,7 +2626,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-328",
-    "title": "DE39=05 (Do Not Honor) - Canal Switch : Micro-coupure réseau et reconnexion [Cas #4]",
+    "title": "DE39=05 (Do Not Honor) - Canal Switch : Micro-coupure réseau et reconnexion",
     "domain": "Switch",
     "component": "Issuer/Scoring",
     "analysisKeys": "DE39=05, STAN, RRN, Issuer/Scoring",
@@ -2634,7 +2634,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-329",
-    "title": "DE39=12 (Invalid Transaction) - Canal Switch : Micro-coupure réseau et reconnexion [Cas #4]",
+    "title": "DE39=12 (Invalid Transaction) - Canal Switch : Micro-coupure réseau et reconnexion",
     "domain": "Switch",
     "component": "CBS/ProductRules",
     "analysisKeys": "DE39=12, STAN, RRN, CBS/ProductRules",
@@ -2642,7 +2642,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-330",
-    "title": "DE39=13 (Invalid Amount) - Canal GAB : Micro-coupure réseau et reconnexion [Cas #4]",
+    "title": "DE39=13 (Invalid Amount) - Canal GAB : Micro-coupure réseau et reconnexion",
     "domain": "GAB",
     "component": "ATM/BillMix",
     "analysisKeys": "DE39=13, STAN, RRN, ATM/BillMix",
@@ -2650,7 +2650,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-331",
-    "title": "DE39=14 (Invalid Card Number) - Canal Interface : Micro-coupure réseau et reconnexion [Cas #4]",
+    "title": "DE39=14 (Invalid Card Number) - Canal Interface : Micro-coupure réseau et reconnexion",
     "domain": "Interface",
     "component": "Frontal/LuhnValidator",
     "analysisKeys": "DE39=14, STAN, RRN, Frontal/LuhnValidator",
@@ -2658,7 +2658,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-332",
-    "title": "DE39=15 (No Such Issuer) - Canal Switch : Micro-coupure réseau et reconnexion [Cas #4]",
+    "title": "DE39=15 (No Such Issuer) - Canal Switch : Micro-coupure réseau et reconnexion",
     "domain": "Switch",
     "component": "Switch/RoutingTable",
     "analysisKeys": "DE39=15, STAN, RRN, Switch/RoutingTable",
@@ -2666,7 +2666,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-333",
-    "title": "DE39=33 (Expired Card Pick-up) - Canal GAB : Micro-coupure réseau et reconnexion [Cas #4]",
+    "title": "DE39=33 (Expired Card Pick-up) - Canal GAB : Micro-coupure réseau et reconnexion",
     "domain": "GAB",
     "component": "ATM/Retention",
     "analysisKeys": "DE39=33, STAN, RRN, ATM/Retention",
@@ -2674,7 +2674,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-334",
-    "title": "DE39=41 (Lost Card Pick-up) - Canal GAB : Micro-coupure réseau et reconnexion [Cas #4]",
+    "title": "DE39=41 (Lost Card Pick-up) - Canal GAB : Micro-coupure réseau et reconnexion",
     "domain": "GAB",
     "component": "ATM/OppositionLost",
     "analysisKeys": "DE39=41, STAN, RRN, ATM/OppositionLost",
@@ -2682,7 +2682,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-335",
-    "title": "DE39=43 (Stolen Card Pick-up) - Canal GAB : Micro-coupure réseau et reconnexion [Cas #4]",
+    "title": "DE39=43 (Stolen Card Pick-up) - Canal GAB : Micro-coupure réseau et reconnexion",
     "domain": "GAB",
     "component": "ATM/OppositionStolen",
     "analysisKeys": "DE39=43, STAN, RRN, ATM/OppositionStolen",
@@ -2690,7 +2690,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-336",
-    "title": "DE39=51 (Insufficient Funds) - Canal Core Banking : Micro-coupure réseau et reconnexion [Cas #4]",
+    "title": "DE39=51 (Insufficient Funds) - Canal Core Banking : Micro-coupure réseau et reconnexion",
     "domain": "Core Banking",
     "component": "CBS/Solvabilite",
     "analysisKeys": "DE39=51, STAN, RRN, CBS/Solvabilite",
@@ -2698,7 +2698,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-337",
-    "title": "DE39=54 (Expired Card) - Canal Carte : Micro-coupure réseau et reconnexion [Cas #4]",
+    "title": "DE39=54 (Expired Card) - Canal Carte : Micro-coupure réseau et reconnexion",
     "domain": "Carte",
     "component": "CMS/CardValidity",
     "analysisKeys": "DE39=54, STAN, RRN, CMS/CardValidity",
@@ -2706,7 +2706,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-338",
-    "title": "DE39=57 (Transaction Not Permitted to Cardholder) - Canal Carte : Micro-coupure réseau et reconnexion [Cas #4]",
+    "title": "DE39=57 (Transaction Not Permitted to Cardholder) - Canal Carte : Micro-coupure réseau et reconnexion",
     "domain": "Carte",
     "component": "CMS/ContractProfile",
     "analysisKeys": "DE39=57, STAN, RRN, CMS/ContractProfile",
@@ -2714,7 +2714,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-339",
-    "title": "DE39=61 (Exceeds Withdrawal Amount Limit) - Canal GAB : Micro-coupure réseau et reconnexion [Cas #4]",
+    "title": "DE39=61 (Exceeds Withdrawal Amount Limit) - Canal GAB : Micro-coupure réseau et reconnexion",
     "domain": "GAB",
     "component": "CMS/VelocityLimits",
     "analysisKeys": "DE39=61, STAN, RRN, CMS/VelocityLimits",
@@ -2722,7 +2722,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-340",
-    "title": "DE39=62 (Restricted Card) - Canal TPE : Micro-coupure réseau et reconnexion [Cas #4]",
+    "title": "DE39=62 (Restricted Card) - Canal TPE : Micro-coupure réseau et reconnexion",
     "domain": "TPE",
     "component": "CMS/GeoBlocking",
     "analysisKeys": "DE39=62, STAN, RRN, CMS/GeoBlocking",
@@ -2730,7 +2730,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-341",
-    "title": "DE39=65 (Exceeds Withdrawal Frequency Limit) - Canal GAB : Micro-coupure réseau et reconnexion [Cas #4]",
+    "title": "DE39=65 (Exceeds Withdrawal Frequency Limit) - Canal GAB : Micro-coupure réseau et reconnexion",
     "domain": "GAB",
     "component": "CMS/FrequencyCounter",
     "analysisKeys": "DE39=65, STAN, RRN, CMS/FrequencyCounter",
@@ -2738,7 +2738,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-342",
-    "title": "DE39=75 (Allowable PIN Tries Exceeded) - Canal Carte : Micro-coupure réseau et reconnexion [Cas #4]",
+    "title": "DE39=75 (Allowable PIN Tries Exceeded) - Canal Carte : Micro-coupure réseau et reconnexion",
     "domain": "Carte",
     "component": "CMS/PinTriesExceeded",
     "analysisKeys": "DE39=75, STAN, RRN, CMS/PinTriesExceeded",
@@ -2746,7 +2746,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-343",
-    "title": "DE39=55 (Incorrect PIN) - Canal Carte : Micro-coupure réseau et reconnexion [Cas #4]",
+    "title": "DE39=55 (Incorrect PIN) - Canal Carte : Micro-coupure réseau et reconnexion",
     "domain": "Carte",
     "component": "HSM/PinVerification",
     "analysisKeys": "DE39=55, STAN, RRN, HSM/PinVerification",
@@ -2754,7 +2754,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-344",
-    "title": "DE39=82 (Incorrect CVV / iCVV) - Canal Interface : Micro-coupure réseau et reconnexion [Cas #4]",
+    "title": "DE39=82 (Incorrect CVV / iCVV) - Canal Interface : Micro-coupure réseau et reconnexion",
     "domain": "Interface",
     "component": "HSM/CvvCheck",
     "analysisKeys": "DE39=82, STAN, RRN, HSM/CvvCheck",
@@ -2762,7 +2762,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-345",
-    "title": "DE39=88 (Cryptographic Failure) - Canal Infrastructure : Micro-coupure réseau et reconnexion [Cas #4]",
+    "title": "DE39=88 (Cryptographic Failure) - Canal Infrastructure : Micro-coupure réseau et reconnexion",
     "domain": "Infrastructure",
     "component": "HSM/CryptoEngine",
     "analysisKeys": "DE39=88, STAN, RRN, HSM/CryptoEngine",
@@ -2770,7 +2770,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-346",
-    "title": "DE39=89 (Invalid PIN Block) - Canal Infrastructure : Micro-coupure réseau et reconnexion [Cas #4]",
+    "title": "DE39=89 (Invalid PIN Block) - Canal Infrastructure : Micro-coupure réseau et reconnexion",
     "domain": "Infrastructure",
     "component": "HSM/PinTranslation",
     "analysisKeys": "DE39=89, STAN, RRN, HSM/PinTranslation",
@@ -2778,7 +2778,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-347",
-    "title": "DE39=93 (Violation / EMV Cryptogram Failure (ARQC rejeté)) - Canal Carte : Micro-coupure réseau et reconnexion [Cas #4]",
+    "title": "DE39=93 (Violation / EMV Cryptogram Failure (ARQC rejeté)) - Canal Carte : Micro-coupure réseau et reconnexion",
     "domain": "Carte",
     "component": "HSM/EmvValidation",
     "analysisKeys": "DE39=93, STAN, RRN, HSM/EmvValidation",
@@ -2786,7 +2786,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-348",
-    "title": "DE39=19 (Re-enter Transaction) - Canal Réseau : Micro-coupure réseau et reconnexion [Cas #4]",
+    "title": "DE39=19 (Re-enter Transaction) - Canal Réseau : Micro-coupure réseau et reconnexion",
     "domain": "Réseau",
     "component": "Switch/RetryBuffer",
     "analysisKeys": "DE39=19, STAN, RRN, Switch/RetryBuffer",
@@ -2794,7 +2794,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-349",
-    "title": "DE39=25 (Unable to Locate Record on File) - Canal Switch : Micro-coupure réseau et reconnexion [Cas #4]",
+    "title": "DE39=25 (Unable to Locate Record on File) - Canal Switch : Micro-coupure réseau et reconnexion",
     "domain": "Switch",
     "component": "CBS/MatchingReversal",
     "analysisKeys": "DE39=25, STAN, RRN, CBS/MatchingReversal",
@@ -2802,7 +2802,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-350",
-    "title": "DE39=30 (Format Error) - Canal Interface : Micro-coupure réseau et reconnexion [Cas #4]",
+    "title": "DE39=30 (Format Error) - Canal Interface : Micro-coupure réseau et reconnexion",
     "domain": "Interface",
     "component": "Interface/IsoParser",
     "analysisKeys": "DE39=30, STAN, RRN, Interface/IsoParser",
@@ -2810,7 +2810,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-351",
-    "title": "DE39=58 (Transaction Not Permitted to Terminal) - Canal TPE : Micro-coupure réseau et reconnexion [Cas #4]",
+    "title": "DE39=58 (Transaction Not Permitted to Terminal) - Canal TPE : Micro-coupure réseau et reconnexion",
     "domain": "TPE",
     "component": "TMS/TerminalProfile",
     "analysisKeys": "DE39=58, STAN, RRN, TMS/TerminalProfile",
@@ -2818,7 +2818,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-352",
-    "title": "DE39=68 (Response Received Too Late) - Canal Switch : Micro-coupure réseau et reconnexion [Cas #4]",
+    "title": "DE39=68 (Response Received Too Late) - Canal Switch : Micro-coupure réseau et reconnexion",
     "domain": "Switch",
     "component": "Switch/TimerQueue",
     "analysisKeys": "DE39=68, STAN, RRN, Switch/TimerQueue",
@@ -2826,7 +2826,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-353",
-    "title": "DE39=76 (Key Synchronization Error) - Canal Infrastructure : Micro-coupure réseau et reconnexion [Cas #4]",
+    "title": "DE39=76 (Key Synchronization Error) - Canal Infrastructure : Micro-coupure réseau et reconnexion",
     "domain": "Infrastructure",
     "component": "Switch/KeySync",
     "analysisKeys": "DE39=76, STAN, RRN, Switch/KeySync",
@@ -2834,7 +2834,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-354",
-    "title": "DE39=90 (System Cutover in Progress) - Canal Clearing : Micro-coupure réseau et reconnexion [Cas #4]",
+    "title": "DE39=90 (System Cutover in Progress) - Canal Clearing : Micro-coupure réseau et reconnexion",
     "domain": "Clearing",
     "component": "CBS/CutOver",
     "analysisKeys": "DE39=90, STAN, RRN, CBS/CutOver",
@@ -2842,7 +2842,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-355",
-    "title": "DE39=91 (Issuer or Switch Inoperative) - Canal Réseau : Micro-coupure réseau et reconnexion [Cas #4]",
+    "title": "DE39=91 (Issuer or Switch Inoperative) - Canal Réseau : Micro-coupure réseau et reconnexion",
     "domain": "Réseau",
     "component": "Switch/IssuerLink",
     "analysisKeys": "DE39=91, STAN, RRN, Switch/IssuerLink",
@@ -2850,7 +2850,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-356",
-    "title": "DE39=92 (Destination Unreachable) - Canal Réseau : Micro-coupure réseau et reconnexion [Cas #4]",
+    "title": "DE39=92 (Destination Unreachable) - Canal Réseau : Micro-coupure réseau et reconnexion",
     "domain": "Réseau",
     "component": "Réseau/TelecomGateway",
     "analysisKeys": "DE39=92, STAN, RRN, Réseau/TelecomGateway",
@@ -2858,7 +2858,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-357",
-    "title": "DE39=94 (Duplicate Transmission) - Canal Switch : Micro-coupure réseau et reconnexion [Cas #4]",
+    "title": "DE39=94 (Duplicate Transmission) - Canal Switch : Micro-coupure réseau et reconnexion",
     "domain": "Switch",
     "component": "Switch/DuplicateDetection",
     "analysisKeys": "DE39=94, STAN, RRN, Switch/DuplicateDetection",
@@ -2866,7 +2866,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-358",
-    "title": "DE39=96 (System Malfunction) - Canal Production : Micro-coupure réseau et reconnexion [Cas #4]",
+    "title": "DE39=96 (System Malfunction) - Canal Production : Micro-coupure réseau et reconnexion",
     "domain": "Production",
     "component": "Core/DbConnectionPool",
     "analysisKeys": "DE39=96, STAN, RRN, Core/DbConnectionPool",
@@ -2874,7 +2874,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-359",
-    "title": "DE39=98 (MAC Error) - Canal Infrastructure : Micro-coupure réseau et reconnexion [Cas #4]",
+    "title": "DE39=98 (MAC Error) - Canal Infrastructure : Micro-coupure réseau et reconnexion",
     "domain": "Infrastructure",
     "component": "HSM/MacValidator",
     "analysisKeys": "DE39=98, STAN, RRN, HSM/MacValidator",
@@ -2882,7 +2882,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-360",
-    "title": "DE39=99 (PIN Block Translation Failure) - Canal Infrastructure : Micro-coupure réseau et reconnexion [Cas #4]",
+    "title": "DE39=99 (PIN Block Translation Failure) - Canal Infrastructure : Micro-coupure réseau et reconnexion",
     "domain": "Infrastructure",
     "component": "HSM/ZpkTranslation",
     "analysisKeys": "DE39=99, STAN, RRN, HSM/ZpkTranslation",
@@ -2890,7 +2890,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-361",
-    "title": "DE39=00 (Approved / Honoré (Délivrance incomplète ou suspicion)) - Canal GAB : Comportement anormal porteurs & vélocité [Cas #5]",
+    "title": "DE39=00 (Approved / Honoré (Délivrance incomplète ou suspicion)) - Canal GAB : Comportement anormal porteurs & vélocité",
     "domain": "GAB",
     "component": "ATM/Dispenser",
     "analysisKeys": "DE39=00, STAN, RRN, ATM/Dispenser",
@@ -2898,7 +2898,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-362",
-    "title": "DE39=08 (Honor with Identification) - Canal TPE : Comportement anormal porteurs & vélocité [Cas #5]",
+    "title": "DE39=08 (Honor with Identification) - Canal TPE : Comportement anormal porteurs & vélocité",
     "domain": "TPE",
     "component": "TPE/Signature",
     "analysisKeys": "DE39=08, STAN, RRN, TPE/Signature",
@@ -2906,7 +2906,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-363",
-    "title": "DE39=10 (Partial Approval) - Canal TPE : Comportement anormal porteurs & vélocité [Cas #5]",
+    "title": "DE39=10 (Partial Approval) - Canal TPE : Comportement anormal porteurs & vélocité",
     "domain": "TPE",
     "component": "Middleware/SplitTender",
     "analysisKeys": "DE39=10, STAN, RRN, Middleware/SplitTender",
@@ -2914,7 +2914,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-364",
-    "title": "DE39=85 (No reason to decline) - Canal Switch : Comportement anormal porteurs & vélocité [Cas #5]",
+    "title": "DE39=85 (No reason to decline) - Canal Switch : Comportement anormal porteurs & vélocité",
     "domain": "Switch",
     "component": "Switch/CardCheck",
     "analysisKeys": "DE39=85, STAN, RRN, Switch/CardCheck",
@@ -2922,7 +2922,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-365",
-    "title": "DE39=01 (Refer to Card Issuer) - Canal Switch : Comportement anormal porteurs & vélocité [Cas #5]",
+    "title": "DE39=01 (Refer to Card Issuer) - Canal Switch : Comportement anormal porteurs & vélocité",
     "domain": "Switch",
     "component": "CBS/IssuerCall",
     "analysisKeys": "DE39=01, STAN, RRN, CBS/IssuerCall",
@@ -2930,7 +2930,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-366",
-    "title": "DE39=02 (Refer to Card Issuer Special Condition) - Canal Switch : Comportement anormal porteurs & vélocité [Cas #5]",
+    "title": "DE39=02 (Refer to Card Issuer Special Condition) - Canal Switch : Comportement anormal porteurs & vélocité",
     "domain": "Switch",
     "component": "CBS/RiskCondition",
     "analysisKeys": "DE39=02, STAN, RRN, CBS/RiskCondition",
@@ -2938,7 +2938,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-367",
-    "title": "DE39=04 (Pick-up Card Hold-call) - Canal GAB : Comportement anormal porteurs & vélocité [Cas #5]",
+    "title": "DE39=04 (Pick-up Card Hold-call) - Canal GAB : Comportement anormal porteurs & vélocité",
     "domain": "GAB",
     "component": "ATM/Retention",
     "analysisKeys": "DE39=04, STAN, RRN, ATM/Retention",
@@ -2946,7 +2946,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-368",
-    "title": "DE39=05 (Do Not Honor) - Canal Switch : Comportement anormal porteurs & vélocité [Cas #5]",
+    "title": "DE39=05 (Do Not Honor) - Canal Switch : Comportement anormal porteurs & vélocité",
     "domain": "Switch",
     "component": "Issuer/Scoring",
     "analysisKeys": "DE39=05, STAN, RRN, Issuer/Scoring",
@@ -2954,7 +2954,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-369",
-    "title": "DE39=12 (Invalid Transaction) - Canal Switch : Comportement anormal porteurs & vélocité [Cas #5]",
+    "title": "DE39=12 (Invalid Transaction) - Canal Switch : Comportement anormal porteurs & vélocité",
     "domain": "Switch",
     "component": "CBS/ProductRules",
     "analysisKeys": "DE39=12, STAN, RRN, CBS/ProductRules",
@@ -2962,7 +2962,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-370",
-    "title": "DE39=13 (Invalid Amount) - Canal GAB : Comportement anormal porteurs & vélocité [Cas #5]",
+    "title": "DE39=13 (Invalid Amount) - Canal GAB : Comportement anormal porteurs & vélocité",
     "domain": "GAB",
     "component": "ATM/BillMix",
     "analysisKeys": "DE39=13, STAN, RRN, ATM/BillMix",
@@ -2970,7 +2970,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-371",
-    "title": "DE39=14 (Invalid Card Number) - Canal Interface : Comportement anormal porteurs & vélocité [Cas #5]",
+    "title": "DE39=14 (Invalid Card Number) - Canal Interface : Comportement anormal porteurs & vélocité",
     "domain": "Interface",
     "component": "Frontal/LuhnValidator",
     "analysisKeys": "DE39=14, STAN, RRN, Frontal/LuhnValidator",
@@ -2978,7 +2978,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-372",
-    "title": "DE39=15 (No Such Issuer) - Canal Switch : Comportement anormal porteurs & vélocité [Cas #5]",
+    "title": "DE39=15 (No Such Issuer) - Canal Switch : Comportement anormal porteurs & vélocité",
     "domain": "Switch",
     "component": "Switch/RoutingTable",
     "analysisKeys": "DE39=15, STAN, RRN, Switch/RoutingTable",
@@ -2986,7 +2986,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-373",
-    "title": "DE39=33 (Expired Card Pick-up) - Canal GAB : Comportement anormal porteurs & vélocité [Cas #5]",
+    "title": "DE39=33 (Expired Card Pick-up) - Canal GAB : Comportement anormal porteurs & vélocité",
     "domain": "GAB",
     "component": "ATM/Retention",
     "analysisKeys": "DE39=33, STAN, RRN, ATM/Retention",
@@ -2994,7 +2994,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-374",
-    "title": "DE39=41 (Lost Card Pick-up) - Canal GAB : Comportement anormal porteurs & vélocité [Cas #5]",
+    "title": "DE39=41 (Lost Card Pick-up) - Canal GAB : Comportement anormal porteurs & vélocité",
     "domain": "GAB",
     "component": "ATM/OppositionLost",
     "analysisKeys": "DE39=41, STAN, RRN, ATM/OppositionLost",
@@ -3002,7 +3002,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-375",
-    "title": "DE39=43 (Stolen Card Pick-up) - Canal GAB : Comportement anormal porteurs & vélocité [Cas #5]",
+    "title": "DE39=43 (Stolen Card Pick-up) - Canal GAB : Comportement anormal porteurs & vélocité",
     "domain": "GAB",
     "component": "ATM/OppositionStolen",
     "analysisKeys": "DE39=43, STAN, RRN, ATM/OppositionStolen",
@@ -3010,7 +3010,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-376",
-    "title": "DE39=51 (Insufficient Funds) - Canal Core Banking : Comportement anormal porteurs & vélocité [Cas #5]",
+    "title": "DE39=51 (Insufficient Funds) - Canal Core Banking : Comportement anormal porteurs & vélocité",
     "domain": "Core Banking",
     "component": "CBS/Solvabilite",
     "analysisKeys": "DE39=51, STAN, RRN, CBS/Solvabilite",
@@ -3018,7 +3018,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-377",
-    "title": "DE39=54 (Expired Card) - Canal Carte : Comportement anormal porteurs & vélocité [Cas #5]",
+    "title": "DE39=54 (Expired Card) - Canal Carte : Comportement anormal porteurs & vélocité",
     "domain": "Carte",
     "component": "CMS/CardValidity",
     "analysisKeys": "DE39=54, STAN, RRN, CMS/CardValidity",
@@ -3026,7 +3026,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-378",
-    "title": "DE39=57 (Transaction Not Permitted to Cardholder) - Canal Carte : Comportement anormal porteurs & vélocité [Cas #5]",
+    "title": "DE39=57 (Transaction Not Permitted to Cardholder) - Canal Carte : Comportement anormal porteurs & vélocité",
     "domain": "Carte",
     "component": "CMS/ContractProfile",
     "analysisKeys": "DE39=57, STAN, RRN, CMS/ContractProfile",
@@ -3034,7 +3034,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-379",
-    "title": "DE39=61 (Exceeds Withdrawal Amount Limit) - Canal GAB : Comportement anormal porteurs & vélocité [Cas #5]",
+    "title": "DE39=61 (Exceeds Withdrawal Amount Limit) - Canal GAB : Comportement anormal porteurs & vélocité",
     "domain": "GAB",
     "component": "CMS/VelocityLimits",
     "analysisKeys": "DE39=61, STAN, RRN, CMS/VelocityLimits",
@@ -3042,7 +3042,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-380",
-    "title": "DE39=62 (Restricted Card) - Canal TPE : Comportement anormal porteurs & vélocité [Cas #5]",
+    "title": "DE39=62 (Restricted Card) - Canal TPE : Comportement anormal porteurs & vélocité",
     "domain": "TPE",
     "component": "CMS/GeoBlocking",
     "analysisKeys": "DE39=62, STAN, RRN, CMS/GeoBlocking",
@@ -3050,7 +3050,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-381",
-    "title": "DE39=65 (Exceeds Withdrawal Frequency Limit) - Canal GAB : Comportement anormal porteurs & vélocité [Cas #5]",
+    "title": "DE39=65 (Exceeds Withdrawal Frequency Limit) - Canal GAB : Comportement anormal porteurs & vélocité",
     "domain": "GAB",
     "component": "CMS/FrequencyCounter",
     "analysisKeys": "DE39=65, STAN, RRN, CMS/FrequencyCounter",
@@ -3058,7 +3058,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-382",
-    "title": "DE39=75 (Allowable PIN Tries Exceeded) - Canal Carte : Comportement anormal porteurs & vélocité [Cas #5]",
+    "title": "DE39=75 (Allowable PIN Tries Exceeded) - Canal Carte : Comportement anormal porteurs & vélocité",
     "domain": "Carte",
     "component": "CMS/PinTriesExceeded",
     "analysisKeys": "DE39=75, STAN, RRN, CMS/PinTriesExceeded",
@@ -3066,7 +3066,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-383",
-    "title": "DE39=55 (Incorrect PIN) - Canal Carte : Comportement anormal porteurs & vélocité [Cas #5]",
+    "title": "DE39=55 (Incorrect PIN) - Canal Carte : Comportement anormal porteurs & vélocité",
     "domain": "Carte",
     "component": "HSM/PinVerification",
     "analysisKeys": "DE39=55, STAN, RRN, HSM/PinVerification",
@@ -3074,7 +3074,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-384",
-    "title": "DE39=82 (Incorrect CVV / iCVV) - Canal Interface : Comportement anormal porteurs & vélocité [Cas #5]",
+    "title": "DE39=82 (Incorrect CVV / iCVV) - Canal Interface : Comportement anormal porteurs & vélocité",
     "domain": "Interface",
     "component": "HSM/CvvCheck",
     "analysisKeys": "DE39=82, STAN, RRN, HSM/CvvCheck",
@@ -3082,7 +3082,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-385",
-    "title": "DE39=88 (Cryptographic Failure) - Canal Infrastructure : Comportement anormal porteurs & vélocité [Cas #5]",
+    "title": "DE39=88 (Cryptographic Failure) - Canal Infrastructure : Comportement anormal porteurs & vélocité",
     "domain": "Infrastructure",
     "component": "HSM/CryptoEngine",
     "analysisKeys": "DE39=88, STAN, RRN, HSM/CryptoEngine",
@@ -3090,7 +3090,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-386",
-    "title": "DE39=89 (Invalid PIN Block) - Canal Infrastructure : Comportement anormal porteurs & vélocité [Cas #5]",
+    "title": "DE39=89 (Invalid PIN Block) - Canal Infrastructure : Comportement anormal porteurs & vélocité",
     "domain": "Infrastructure",
     "component": "HSM/PinTranslation",
     "analysisKeys": "DE39=89, STAN, RRN, HSM/PinTranslation",
@@ -3098,7 +3098,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-387",
-    "title": "DE39=93 (Violation / EMV Cryptogram Failure (ARQC rejeté)) - Canal Carte : Comportement anormal porteurs & vélocité [Cas #5]",
+    "title": "DE39=93 (Violation / EMV Cryptogram Failure (ARQC rejeté)) - Canal Carte : Comportement anormal porteurs & vélocité",
     "domain": "Carte",
     "component": "HSM/EmvValidation",
     "analysisKeys": "DE39=93, STAN, RRN, HSM/EmvValidation",
@@ -3106,7 +3106,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-388",
-    "title": "DE39=19 (Re-enter Transaction) - Canal Réseau : Comportement anormal porteurs & vélocité [Cas #5]",
+    "title": "DE39=19 (Re-enter Transaction) - Canal Réseau : Comportement anormal porteurs & vélocité",
     "domain": "Réseau",
     "component": "Switch/RetryBuffer",
     "analysisKeys": "DE39=19, STAN, RRN, Switch/RetryBuffer",
@@ -3114,7 +3114,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-389",
-    "title": "DE39=25 (Unable to Locate Record on File) - Canal Switch : Comportement anormal porteurs & vélocité [Cas #5]",
+    "title": "DE39=25 (Unable to Locate Record on File) - Canal Switch : Comportement anormal porteurs & vélocité",
     "domain": "Switch",
     "component": "CBS/MatchingReversal",
     "analysisKeys": "DE39=25, STAN, RRN, CBS/MatchingReversal",
@@ -3122,7 +3122,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-390",
-    "title": "DE39=30 (Format Error) - Canal Interface : Comportement anormal porteurs & vélocité [Cas #5]",
+    "title": "DE39=30 (Format Error) - Canal Interface : Comportement anormal porteurs & vélocité",
     "domain": "Interface",
     "component": "Interface/IsoParser",
     "analysisKeys": "DE39=30, STAN, RRN, Interface/IsoParser",
@@ -3130,7 +3130,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-391",
-    "title": "DE39=58 (Transaction Not Permitted to Terminal) - Canal TPE : Comportement anormal porteurs & vélocité [Cas #5]",
+    "title": "DE39=58 (Transaction Not Permitted to Terminal) - Canal TPE : Comportement anormal porteurs & vélocité",
     "domain": "TPE",
     "component": "TMS/TerminalProfile",
     "analysisKeys": "DE39=58, STAN, RRN, TMS/TerminalProfile",
@@ -3138,7 +3138,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-392",
-    "title": "DE39=68 (Response Received Too Late) - Canal Switch : Comportement anormal porteurs & vélocité [Cas #5]",
+    "title": "DE39=68 (Response Received Too Late) - Canal Switch : Comportement anormal porteurs & vélocité",
     "domain": "Switch",
     "component": "Switch/TimerQueue",
     "analysisKeys": "DE39=68, STAN, RRN, Switch/TimerQueue",
@@ -3146,7 +3146,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-393",
-    "title": "DE39=76 (Key Synchronization Error) - Canal Infrastructure : Comportement anormal porteurs & vélocité [Cas #5]",
+    "title": "DE39=76 (Key Synchronization Error) - Canal Infrastructure : Comportement anormal porteurs & vélocité",
     "domain": "Infrastructure",
     "component": "Switch/KeySync",
     "analysisKeys": "DE39=76, STAN, RRN, Switch/KeySync",
@@ -3154,7 +3154,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-394",
-    "title": "DE39=90 (System Cutover in Progress) - Canal Clearing : Comportement anormal porteurs & vélocité [Cas #5]",
+    "title": "DE39=90 (System Cutover in Progress) - Canal Clearing : Comportement anormal porteurs & vélocité",
     "domain": "Clearing",
     "component": "CBS/CutOver",
     "analysisKeys": "DE39=90, STAN, RRN, CBS/CutOver",
@@ -3162,7 +3162,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-395",
-    "title": "DE39=91 (Issuer or Switch Inoperative) - Canal Réseau : Comportement anormal porteurs & vélocité [Cas #5]",
+    "title": "DE39=91 (Issuer or Switch Inoperative) - Canal Réseau : Comportement anormal porteurs & vélocité",
     "domain": "Réseau",
     "component": "Switch/IssuerLink",
     "analysisKeys": "DE39=91, STAN, RRN, Switch/IssuerLink",
@@ -3170,7 +3170,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-396",
-    "title": "DE39=92 (Destination Unreachable) - Canal Réseau : Comportement anormal porteurs & vélocité [Cas #5]",
+    "title": "DE39=92 (Destination Unreachable) - Canal Réseau : Comportement anormal porteurs & vélocité",
     "domain": "Réseau",
     "component": "Réseau/TelecomGateway",
     "analysisKeys": "DE39=92, STAN, RRN, Réseau/TelecomGateway",
@@ -3178,7 +3178,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-397",
-    "title": "DE39=94 (Duplicate Transmission) - Canal Switch : Comportement anormal porteurs & vélocité [Cas #5]",
+    "title": "DE39=94 (Duplicate Transmission) - Canal Switch : Comportement anormal porteurs & vélocité",
     "domain": "Switch",
     "component": "Switch/DuplicateDetection",
     "analysisKeys": "DE39=94, STAN, RRN, Switch/DuplicateDetection",
@@ -3186,7 +3186,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-398",
-    "title": "DE39=96 (System Malfunction) - Canal Production : Comportement anormal porteurs & vélocité [Cas #5]",
+    "title": "DE39=96 (System Malfunction) - Canal Production : Comportement anormal porteurs & vélocité",
     "domain": "Production",
     "component": "Core/DbConnectionPool",
     "analysisKeys": "DE39=96, STAN, RRN, Core/DbConnectionPool",
@@ -3194,7 +3194,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-399",
-    "title": "DE39=98 (MAC Error) - Canal Infrastructure : Comportement anormal porteurs & vélocité [Cas #5]",
+    "title": "DE39=98 (MAC Error) - Canal Infrastructure : Comportement anormal porteurs & vélocité",
     "domain": "Infrastructure",
     "component": "HSM/MacValidator",
     "analysisKeys": "DE39=98, STAN, RRN, HSM/MacValidator",
@@ -3202,7 +3202,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-400",
-    "title": "DE39=99 (PIN Block Translation Failure) - Canal Infrastructure : Comportement anormal porteurs & vélocité [Cas #5]",
+    "title": "DE39=99 (PIN Block Translation Failure) - Canal Infrastructure : Comportement anormal porteurs & vélocité",
     "domain": "Infrastructure",
     "component": "HSM/ZpkTranslation",
     "analysisKeys": "DE39=99, STAN, RRN, HSM/ZpkTranslation",
@@ -3210,7 +3210,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-401",
-    "title": "DE39=00 (Approved / Honoré (Délivrance incomplète ou suspicion)) - Canal GAB : Timeouts et gestion des annulations [Cas #6]",
+    "title": "DE39=00 (Approved / Honoré (Délivrance incomplète ou suspicion)) - Canal GAB : Timeouts et gestion des annulations",
     "domain": "GAB",
     "component": "ATM/Dispenser",
     "analysisKeys": "DE39=00, STAN, RRN, ATM/Dispenser",
@@ -3218,7 +3218,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-402",
-    "title": "DE39=08 (Honor with Identification) - Canal TPE : Timeouts et gestion des annulations [Cas #6]",
+    "title": "DE39=08 (Honor with Identification) - Canal TPE : Timeouts et gestion des annulations",
     "domain": "TPE",
     "component": "TPE/Signature",
     "analysisKeys": "DE39=08, STAN, RRN, TPE/Signature",
@@ -3226,7 +3226,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-403",
-    "title": "DE39=10 (Partial Approval) - Canal TPE : Timeouts et gestion des annulations [Cas #6]",
+    "title": "DE39=10 (Partial Approval) - Canal TPE : Timeouts et gestion des annulations",
     "domain": "TPE",
     "component": "Middleware/SplitTender",
     "analysisKeys": "DE39=10, STAN, RRN, Middleware/SplitTender",
@@ -3234,7 +3234,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-404",
-    "title": "DE39=85 (No reason to decline) - Canal Switch : Timeouts et gestion des annulations [Cas #6]",
+    "title": "DE39=85 (No reason to decline) - Canal Switch : Timeouts et gestion des annulations",
     "domain": "Switch",
     "component": "Switch/CardCheck",
     "analysisKeys": "DE39=85, STAN, RRN, Switch/CardCheck",
@@ -3242,7 +3242,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-405",
-    "title": "DE39=01 (Refer to Card Issuer) - Canal Switch : Timeouts et gestion des annulations [Cas #6]",
+    "title": "DE39=01 (Refer to Card Issuer) - Canal Switch : Timeouts et gestion des annulations",
     "domain": "Switch",
     "component": "CBS/IssuerCall",
     "analysisKeys": "DE39=01, STAN, RRN, CBS/IssuerCall",
@@ -3250,7 +3250,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-406",
-    "title": "DE39=02 (Refer to Card Issuer Special Condition) - Canal Switch : Timeouts et gestion des annulations [Cas #6]",
+    "title": "DE39=02 (Refer to Card Issuer Special Condition) - Canal Switch : Timeouts et gestion des annulations",
     "domain": "Switch",
     "component": "CBS/RiskCondition",
     "analysisKeys": "DE39=02, STAN, RRN, CBS/RiskCondition",
@@ -3258,7 +3258,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-407",
-    "title": "DE39=04 (Pick-up Card Hold-call) - Canal GAB : Timeouts et gestion des annulations [Cas #6]",
+    "title": "DE39=04 (Pick-up Card Hold-call) - Canal GAB : Timeouts et gestion des annulations",
     "domain": "GAB",
     "component": "ATM/Retention",
     "analysisKeys": "DE39=04, STAN, RRN, ATM/Retention",
@@ -3266,7 +3266,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-408",
-    "title": "DE39=05 (Do Not Honor) - Canal Switch : Timeouts et gestion des annulations [Cas #6]",
+    "title": "DE39=05 (Do Not Honor) - Canal Switch : Timeouts et gestion des annulations",
     "domain": "Switch",
     "component": "Issuer/Scoring",
     "analysisKeys": "DE39=05, STAN, RRN, Issuer/Scoring",
@@ -3274,7 +3274,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-409",
-    "title": "DE39=12 (Invalid Transaction) - Canal Switch : Timeouts et gestion des annulations [Cas #6]",
+    "title": "DE39=12 (Invalid Transaction) - Canal Switch : Timeouts et gestion des annulations",
     "domain": "Switch",
     "component": "CBS/ProductRules",
     "analysisKeys": "DE39=12, STAN, RRN, CBS/ProductRules",
@@ -3282,7 +3282,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-410",
-    "title": "DE39=13 (Invalid Amount) - Canal GAB : Timeouts et gestion des annulations [Cas #6]",
+    "title": "DE39=13 (Invalid Amount) - Canal GAB : Timeouts et gestion des annulations",
     "domain": "GAB",
     "component": "ATM/BillMix",
     "analysisKeys": "DE39=13, STAN, RRN, ATM/BillMix",
@@ -3290,7 +3290,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-411",
-    "title": "DE39=14 (Invalid Card Number) - Canal Interface : Timeouts et gestion des annulations [Cas #6]",
+    "title": "DE39=14 (Invalid Card Number) - Canal Interface : Timeouts et gestion des annulations",
     "domain": "Interface",
     "component": "Frontal/LuhnValidator",
     "analysisKeys": "DE39=14, STAN, RRN, Frontal/LuhnValidator",
@@ -3298,7 +3298,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-412",
-    "title": "DE39=15 (No Such Issuer) - Canal Switch : Timeouts et gestion des annulations [Cas #6]",
+    "title": "DE39=15 (No Such Issuer) - Canal Switch : Timeouts et gestion des annulations",
     "domain": "Switch",
     "component": "Switch/RoutingTable",
     "analysisKeys": "DE39=15, STAN, RRN, Switch/RoutingTable",
@@ -3306,7 +3306,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-413",
-    "title": "DE39=33 (Expired Card Pick-up) - Canal GAB : Timeouts et gestion des annulations [Cas #6]",
+    "title": "DE39=33 (Expired Card Pick-up) - Canal GAB : Timeouts et gestion des annulations",
     "domain": "GAB",
     "component": "ATM/Retention",
     "analysisKeys": "DE39=33, STAN, RRN, ATM/Retention",
@@ -3314,7 +3314,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-414",
-    "title": "DE39=41 (Lost Card Pick-up) - Canal GAB : Timeouts et gestion des annulations [Cas #6]",
+    "title": "DE39=41 (Lost Card Pick-up) - Canal GAB : Timeouts et gestion des annulations",
     "domain": "GAB",
     "component": "ATM/OppositionLost",
     "analysisKeys": "DE39=41, STAN, RRN, ATM/OppositionLost",
@@ -3322,7 +3322,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-415",
-    "title": "DE39=43 (Stolen Card Pick-up) - Canal GAB : Timeouts et gestion des annulations [Cas #6]",
+    "title": "DE39=43 (Stolen Card Pick-up) - Canal GAB : Timeouts et gestion des annulations",
     "domain": "GAB",
     "component": "ATM/OppositionStolen",
     "analysisKeys": "DE39=43, STAN, RRN, ATM/OppositionStolen",
@@ -3330,7 +3330,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-416",
-    "title": "DE39=51 (Insufficient Funds) - Canal Core Banking : Timeouts et gestion des annulations [Cas #6]",
+    "title": "DE39=51 (Insufficient Funds) - Canal Core Banking : Timeouts et gestion des annulations",
     "domain": "Core Banking",
     "component": "CBS/Solvabilite",
     "analysisKeys": "DE39=51, STAN, RRN, CBS/Solvabilite",
@@ -3338,7 +3338,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-417",
-    "title": "DE39=54 (Expired Card) - Canal Carte : Timeouts et gestion des annulations [Cas #6]",
+    "title": "DE39=54 (Expired Card) - Canal Carte : Timeouts et gestion des annulations",
     "domain": "Carte",
     "component": "CMS/CardValidity",
     "analysisKeys": "DE39=54, STAN, RRN, CMS/CardValidity",
@@ -3346,7 +3346,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-418",
-    "title": "DE39=57 (Transaction Not Permitted to Cardholder) - Canal Carte : Timeouts et gestion des annulations [Cas #6]",
+    "title": "DE39=57 (Transaction Not Permitted to Cardholder) - Canal Carte : Timeouts et gestion des annulations",
     "domain": "Carte",
     "component": "CMS/ContractProfile",
     "analysisKeys": "DE39=57, STAN, RRN, CMS/ContractProfile",
@@ -3354,7 +3354,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-419",
-    "title": "DE39=61 (Exceeds Withdrawal Amount Limit) - Canal GAB : Timeouts et gestion des annulations [Cas #6]",
+    "title": "DE39=61 (Exceeds Withdrawal Amount Limit) - Canal GAB : Timeouts et gestion des annulations",
     "domain": "GAB",
     "component": "CMS/VelocityLimits",
     "analysisKeys": "DE39=61, STAN, RRN, CMS/VelocityLimits",
@@ -3362,7 +3362,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-420",
-    "title": "DE39=62 (Restricted Card) - Canal TPE : Timeouts et gestion des annulations [Cas #6]",
+    "title": "DE39=62 (Restricted Card) - Canal TPE : Timeouts et gestion des annulations",
     "domain": "TPE",
     "component": "CMS/GeoBlocking",
     "analysisKeys": "DE39=62, STAN, RRN, CMS/GeoBlocking",
@@ -3370,7 +3370,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-421",
-    "title": "DE39=65 (Exceeds Withdrawal Frequency Limit) - Canal GAB : Timeouts et gestion des annulations [Cas #6]",
+    "title": "DE39=65 (Exceeds Withdrawal Frequency Limit) - Canal GAB : Timeouts et gestion des annulations",
     "domain": "GAB",
     "component": "CMS/FrequencyCounter",
     "analysisKeys": "DE39=65, STAN, RRN, CMS/FrequencyCounter",
@@ -3378,7 +3378,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-422",
-    "title": "DE39=75 (Allowable PIN Tries Exceeded) - Canal Carte : Timeouts et gestion des annulations [Cas #6]",
+    "title": "DE39=75 (Allowable PIN Tries Exceeded) - Canal Carte : Timeouts et gestion des annulations",
     "domain": "Carte",
     "component": "CMS/PinTriesExceeded",
     "analysisKeys": "DE39=75, STAN, RRN, CMS/PinTriesExceeded",
@@ -3386,7 +3386,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-423",
-    "title": "DE39=55 (Incorrect PIN) - Canal Carte : Timeouts et gestion des annulations [Cas #6]",
+    "title": "DE39=55 (Incorrect PIN) - Canal Carte : Timeouts et gestion des annulations",
     "domain": "Carte",
     "component": "HSM/PinVerification",
     "analysisKeys": "DE39=55, STAN, RRN, HSM/PinVerification",
@@ -3394,7 +3394,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-424",
-    "title": "DE39=82 (Incorrect CVV / iCVV) - Canal Interface : Timeouts et gestion des annulations [Cas #6]",
+    "title": "DE39=82 (Incorrect CVV / iCVV) - Canal Interface : Timeouts et gestion des annulations",
     "domain": "Interface",
     "component": "HSM/CvvCheck",
     "analysisKeys": "DE39=82, STAN, RRN, HSM/CvvCheck",
@@ -3402,7 +3402,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-425",
-    "title": "DE39=88 (Cryptographic Failure) - Canal Infrastructure : Timeouts et gestion des annulations [Cas #6]",
+    "title": "DE39=88 (Cryptographic Failure) - Canal Infrastructure : Timeouts et gestion des annulations",
     "domain": "Infrastructure",
     "component": "HSM/CryptoEngine",
     "analysisKeys": "DE39=88, STAN, RRN, HSM/CryptoEngine",
@@ -3410,7 +3410,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-426",
-    "title": "DE39=89 (Invalid PIN Block) - Canal Infrastructure : Timeouts et gestion des annulations [Cas #6]",
+    "title": "DE39=89 (Invalid PIN Block) - Canal Infrastructure : Timeouts et gestion des annulations",
     "domain": "Infrastructure",
     "component": "HSM/PinTranslation",
     "analysisKeys": "DE39=89, STAN, RRN, HSM/PinTranslation",
@@ -3418,7 +3418,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-427",
-    "title": "DE39=93 (Violation / EMV Cryptogram Failure (ARQC rejeté)) - Canal Carte : Timeouts et gestion des annulations [Cas #6]",
+    "title": "DE39=93 (Violation / EMV Cryptogram Failure (ARQC rejeté)) - Canal Carte : Timeouts et gestion des annulations",
     "domain": "Carte",
     "component": "HSM/EmvValidation",
     "analysisKeys": "DE39=93, STAN, RRN, HSM/EmvValidation",
@@ -3426,7 +3426,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-428",
-    "title": "DE39=19 (Re-enter Transaction) - Canal Réseau : Timeouts et gestion des annulations [Cas #6]",
+    "title": "DE39=19 (Re-enter Transaction) - Canal Réseau : Timeouts et gestion des annulations",
     "domain": "Réseau",
     "component": "Switch/RetryBuffer",
     "analysisKeys": "DE39=19, STAN, RRN, Switch/RetryBuffer",
@@ -3434,7 +3434,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-429",
-    "title": "DE39=25 (Unable to Locate Record on File) - Canal Switch : Timeouts et gestion des annulations [Cas #6]",
+    "title": "DE39=25 (Unable to Locate Record on File) - Canal Switch : Timeouts et gestion des annulations",
     "domain": "Switch",
     "component": "CBS/MatchingReversal",
     "analysisKeys": "DE39=25, STAN, RRN, CBS/MatchingReversal",
@@ -3442,7 +3442,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-430",
-    "title": "DE39=30 (Format Error) - Canal Interface : Timeouts et gestion des annulations [Cas #6]",
+    "title": "DE39=30 (Format Error) - Canal Interface : Timeouts et gestion des annulations",
     "domain": "Interface",
     "component": "Interface/IsoParser",
     "analysisKeys": "DE39=30, STAN, RRN, Interface/IsoParser",
@@ -3450,7 +3450,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-431",
-    "title": "DE39=58 (Transaction Not Permitted to Terminal) - Canal TPE : Timeouts et gestion des annulations [Cas #6]",
+    "title": "DE39=58 (Transaction Not Permitted to Terminal) - Canal TPE : Timeouts et gestion des annulations",
     "domain": "TPE",
     "component": "TMS/TerminalProfile",
     "analysisKeys": "DE39=58, STAN, RRN, TMS/TerminalProfile",
@@ -3458,7 +3458,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-432",
-    "title": "DE39=68 (Response Received Too Late) - Canal Switch : Timeouts et gestion des annulations [Cas #6]",
+    "title": "DE39=68 (Response Received Too Late) - Canal Switch : Timeouts et gestion des annulations",
     "domain": "Switch",
     "component": "Switch/TimerQueue",
     "analysisKeys": "DE39=68, STAN, RRN, Switch/TimerQueue",
@@ -3466,7 +3466,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-433",
-    "title": "DE39=76 (Key Synchronization Error) - Canal Infrastructure : Timeouts et gestion des annulations [Cas #6]",
+    "title": "DE39=76 (Key Synchronization Error) - Canal Infrastructure : Timeouts et gestion des annulations",
     "domain": "Infrastructure",
     "component": "Switch/KeySync",
     "analysisKeys": "DE39=76, STAN, RRN, Switch/KeySync",
@@ -3474,7 +3474,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-434",
-    "title": "DE39=90 (System Cutover in Progress) - Canal Clearing : Timeouts et gestion des annulations [Cas #6]",
+    "title": "DE39=90 (System Cutover in Progress) - Canal Clearing : Timeouts et gestion des annulations",
     "domain": "Clearing",
     "component": "CBS/CutOver",
     "analysisKeys": "DE39=90, STAN, RRN, CBS/CutOver",
@@ -3482,7 +3482,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-435",
-    "title": "DE39=91 (Issuer or Switch Inoperative) - Canal Réseau : Timeouts et gestion des annulations [Cas #6]",
+    "title": "DE39=91 (Issuer or Switch Inoperative) - Canal Réseau : Timeouts et gestion des annulations",
     "domain": "Réseau",
     "component": "Switch/IssuerLink",
     "analysisKeys": "DE39=91, STAN, RRN, Switch/IssuerLink",
@@ -3490,7 +3490,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-436",
-    "title": "DE39=92 (Destination Unreachable) - Canal Réseau : Timeouts et gestion des annulations [Cas #6]",
+    "title": "DE39=92 (Destination Unreachable) - Canal Réseau : Timeouts et gestion des annulations",
     "domain": "Réseau",
     "component": "Réseau/TelecomGateway",
     "analysisKeys": "DE39=92, STAN, RRN, Réseau/TelecomGateway",
@@ -3498,7 +3498,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-437",
-    "title": "DE39=94 (Duplicate Transmission) - Canal Switch : Timeouts et gestion des annulations [Cas #6]",
+    "title": "DE39=94 (Duplicate Transmission) - Canal Switch : Timeouts et gestion des annulations",
     "domain": "Switch",
     "component": "Switch/DuplicateDetection",
     "analysisKeys": "DE39=94, STAN, RRN, Switch/DuplicateDetection",
@@ -3506,7 +3506,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-438",
-    "title": "DE39=96 (System Malfunction) - Canal Production : Timeouts et gestion des annulations [Cas #6]",
+    "title": "DE39=96 (System Malfunction) - Canal Production : Timeouts et gestion des annulations",
     "domain": "Production",
     "component": "Core/DbConnectionPool",
     "analysisKeys": "DE39=96, STAN, RRN, Core/DbConnectionPool",
@@ -3514,7 +3514,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-439",
-    "title": "DE39=98 (MAC Error) - Canal Infrastructure : Timeouts et gestion des annulations [Cas #6]",
+    "title": "DE39=98 (MAC Error) - Canal Infrastructure : Timeouts et gestion des annulations",
     "domain": "Infrastructure",
     "component": "HSM/MacValidator",
     "analysisKeys": "DE39=98, STAN, RRN, HSM/MacValidator",
@@ -3522,7 +3522,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-440",
-    "title": "DE39=99 (PIN Block Translation Failure) - Canal Infrastructure : Timeouts et gestion des annulations [Cas #6]",
+    "title": "DE39=99 (PIN Block Translation Failure) - Canal Infrastructure : Timeouts et gestion des annulations",
     "domain": "Infrastructure",
     "component": "HSM/ZpkTranslation",
     "analysisKeys": "DE39=99, STAN, RRN, HSM/ZpkTranslation",
@@ -3530,7 +3530,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-441",
-    "title": "DE39=00 (Approved / Honoré (Délivrance incomplète ou suspicion)) - Canal GAB : Réconciliation, balance et compensation [Cas #7]",
+    "title": "DE39=00 (Approved / Honoré (Délivrance incomplète ou suspicion)) - Canal GAB : Réconciliation, balance et compensation",
     "domain": "GAB",
     "component": "ATM/Dispenser",
     "analysisKeys": "DE39=00, STAN, RRN, ATM/Dispenser",
@@ -3538,7 +3538,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-442",
-    "title": "DE39=08 (Honor with Identification) - Canal TPE : Réconciliation, balance et compensation [Cas #7]",
+    "title": "DE39=08 (Honor with Identification) - Canal TPE : Réconciliation, balance et compensation",
     "domain": "TPE",
     "component": "TPE/Signature",
     "analysisKeys": "DE39=08, STAN, RRN, TPE/Signature",
@@ -3546,7 +3546,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-443",
-    "title": "DE39=10 (Partial Approval) - Canal TPE : Réconciliation, balance et compensation [Cas #7]",
+    "title": "DE39=10 (Partial Approval) - Canal TPE : Réconciliation, balance et compensation",
     "domain": "TPE",
     "component": "Middleware/SplitTender",
     "analysisKeys": "DE39=10, STAN, RRN, Middleware/SplitTender",
@@ -3554,7 +3554,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-444",
-    "title": "DE39=85 (No reason to decline) - Canal Switch : Réconciliation, balance et compensation [Cas #7]",
+    "title": "DE39=85 (No reason to decline) - Canal Switch : Réconciliation, balance et compensation",
     "domain": "Switch",
     "component": "Switch/CardCheck",
     "analysisKeys": "DE39=85, STAN, RRN, Switch/CardCheck",
@@ -3562,7 +3562,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-445",
-    "title": "DE39=01 (Refer to Card Issuer) - Canal Switch : Réconciliation, balance et compensation [Cas #7]",
+    "title": "DE39=01 (Refer to Card Issuer) - Canal Switch : Réconciliation, balance et compensation",
     "domain": "Switch",
     "component": "CBS/IssuerCall",
     "analysisKeys": "DE39=01, STAN, RRN, CBS/IssuerCall",
@@ -3570,7 +3570,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-446",
-    "title": "DE39=02 (Refer to Card Issuer Special Condition) - Canal Switch : Réconciliation, balance et compensation [Cas #7]",
+    "title": "DE39=02 (Refer to Card Issuer Special Condition) - Canal Switch : Réconciliation, balance et compensation",
     "domain": "Switch",
     "component": "CBS/RiskCondition",
     "analysisKeys": "DE39=02, STAN, RRN, CBS/RiskCondition",
@@ -3578,7 +3578,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-447",
-    "title": "DE39=04 (Pick-up Card Hold-call) - Canal GAB : Réconciliation, balance et compensation [Cas #7]",
+    "title": "DE39=04 (Pick-up Card Hold-call) - Canal GAB : Réconciliation, balance et compensation",
     "domain": "GAB",
     "component": "ATM/Retention",
     "analysisKeys": "DE39=04, STAN, RRN, ATM/Retention",
@@ -3586,7 +3586,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-448",
-    "title": "DE39=05 (Do Not Honor) - Canal Switch : Réconciliation, balance et compensation [Cas #7]",
+    "title": "DE39=05 (Do Not Honor) - Canal Switch : Réconciliation, balance et compensation",
     "domain": "Switch",
     "component": "Issuer/Scoring",
     "analysisKeys": "DE39=05, STAN, RRN, Issuer/Scoring",
@@ -3594,7 +3594,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-449",
-    "title": "DE39=12 (Invalid Transaction) - Canal Switch : Réconciliation, balance et compensation [Cas #7]",
+    "title": "DE39=12 (Invalid Transaction) - Canal Switch : Réconciliation, balance et compensation",
     "domain": "Switch",
     "component": "CBS/ProductRules",
     "analysisKeys": "DE39=12, STAN, RRN, CBS/ProductRules",
@@ -3602,7 +3602,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-450",
-    "title": "DE39=13 (Invalid Amount) - Canal GAB : Réconciliation, balance et compensation [Cas #7]",
+    "title": "DE39=13 (Invalid Amount) - Canal GAB : Réconciliation, balance et compensation",
     "domain": "GAB",
     "component": "ATM/BillMix",
     "analysisKeys": "DE39=13, STAN, RRN, ATM/BillMix",
@@ -3610,7 +3610,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-451",
-    "title": "DE39=14 (Invalid Card Number) - Canal Interface : Réconciliation, balance et compensation [Cas #7]",
+    "title": "DE39=14 (Invalid Card Number) - Canal Interface : Réconciliation, balance et compensation",
     "domain": "Interface",
     "component": "Frontal/LuhnValidator",
     "analysisKeys": "DE39=14, STAN, RRN, Frontal/LuhnValidator",
@@ -3618,7 +3618,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-452",
-    "title": "DE39=15 (No Such Issuer) - Canal Switch : Réconciliation, balance et compensation [Cas #7]",
+    "title": "DE39=15 (No Such Issuer) - Canal Switch : Réconciliation, balance et compensation",
     "domain": "Switch",
     "component": "Switch/RoutingTable",
     "analysisKeys": "DE39=15, STAN, RRN, Switch/RoutingTable",
@@ -3626,7 +3626,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-453",
-    "title": "DE39=33 (Expired Card Pick-up) - Canal GAB : Réconciliation, balance et compensation [Cas #7]",
+    "title": "DE39=33 (Expired Card Pick-up) - Canal GAB : Réconciliation, balance et compensation",
     "domain": "GAB",
     "component": "ATM/Retention",
     "analysisKeys": "DE39=33, STAN, RRN, ATM/Retention",
@@ -3634,7 +3634,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-454",
-    "title": "DE39=41 (Lost Card Pick-up) - Canal GAB : Réconciliation, balance et compensation [Cas #7]",
+    "title": "DE39=41 (Lost Card Pick-up) - Canal GAB : Réconciliation, balance et compensation",
     "domain": "GAB",
     "component": "ATM/OppositionLost",
     "analysisKeys": "DE39=41, STAN, RRN, ATM/OppositionLost",
@@ -3642,7 +3642,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-455",
-    "title": "DE39=43 (Stolen Card Pick-up) - Canal GAB : Réconciliation, balance et compensation [Cas #7]",
+    "title": "DE39=43 (Stolen Card Pick-up) - Canal GAB : Réconciliation, balance et compensation",
     "domain": "GAB",
     "component": "ATM/OppositionStolen",
     "analysisKeys": "DE39=43, STAN, RRN, ATM/OppositionStolen",
@@ -3650,7 +3650,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-456",
-    "title": "DE39=51 (Insufficient Funds) - Canal Core Banking : Réconciliation, balance et compensation [Cas #7]",
+    "title": "DE39=51 (Insufficient Funds) - Canal Core Banking : Réconciliation, balance et compensation",
     "domain": "Core Banking",
     "component": "CBS/Solvabilite",
     "analysisKeys": "DE39=51, STAN, RRN, CBS/Solvabilite",
@@ -3658,7 +3658,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-457",
-    "title": "DE39=54 (Expired Card) - Canal Carte : Réconciliation, balance et compensation [Cas #7]",
+    "title": "DE39=54 (Expired Card) - Canal Carte : Réconciliation, balance et compensation",
     "domain": "Carte",
     "component": "CMS/CardValidity",
     "analysisKeys": "DE39=54, STAN, RRN, CMS/CardValidity",
@@ -3666,7 +3666,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-458",
-    "title": "DE39=57 (Transaction Not Permitted to Cardholder) - Canal Carte : Réconciliation, balance et compensation [Cas #7]",
+    "title": "DE39=57 (Transaction Not Permitted to Cardholder) - Canal Carte : Réconciliation, balance et compensation",
     "domain": "Carte",
     "component": "CMS/ContractProfile",
     "analysisKeys": "DE39=57, STAN, RRN, CMS/ContractProfile",
@@ -3674,7 +3674,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-459",
-    "title": "DE39=61 (Exceeds Withdrawal Amount Limit) - Canal GAB : Réconciliation, balance et compensation [Cas #7]",
+    "title": "DE39=61 (Exceeds Withdrawal Amount Limit) - Canal GAB : Réconciliation, balance et compensation",
     "domain": "GAB",
     "component": "CMS/VelocityLimits",
     "analysisKeys": "DE39=61, STAN, RRN, CMS/VelocityLimits",
@@ -3682,7 +3682,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-460",
-    "title": "DE39=62 (Restricted Card) - Canal TPE : Réconciliation, balance et compensation [Cas #7]",
+    "title": "DE39=62 (Restricted Card) - Canal TPE : Réconciliation, balance et compensation",
     "domain": "TPE",
     "component": "CMS/GeoBlocking",
     "analysisKeys": "DE39=62, STAN, RRN, CMS/GeoBlocking",
@@ -3690,7 +3690,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-461",
-    "title": "DE39=65 (Exceeds Withdrawal Frequency Limit) - Canal GAB : Réconciliation, balance et compensation [Cas #7]",
+    "title": "DE39=65 (Exceeds Withdrawal Frequency Limit) - Canal GAB : Réconciliation, balance et compensation",
     "domain": "GAB",
     "component": "CMS/FrequencyCounter",
     "analysisKeys": "DE39=65, STAN, RRN, CMS/FrequencyCounter",
@@ -3698,7 +3698,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-462",
-    "title": "DE39=75 (Allowable PIN Tries Exceeded) - Canal Carte : Réconciliation, balance et compensation [Cas #7]",
+    "title": "DE39=75 (Allowable PIN Tries Exceeded) - Canal Carte : Réconciliation, balance et compensation",
     "domain": "Carte",
     "component": "CMS/PinTriesExceeded",
     "analysisKeys": "DE39=75, STAN, RRN, CMS/PinTriesExceeded",
@@ -3706,7 +3706,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-463",
-    "title": "DE39=55 (Incorrect PIN) - Canal Carte : Réconciliation, balance et compensation [Cas #7]",
+    "title": "DE39=55 (Incorrect PIN) - Canal Carte : Réconciliation, balance et compensation",
     "domain": "Carte",
     "component": "HSM/PinVerification",
     "analysisKeys": "DE39=55, STAN, RRN, HSM/PinVerification",
@@ -3714,7 +3714,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-464",
-    "title": "DE39=82 (Incorrect CVV / iCVV) - Canal Interface : Réconciliation, balance et compensation [Cas #7]",
+    "title": "DE39=82 (Incorrect CVV / iCVV) - Canal Interface : Réconciliation, balance et compensation",
     "domain": "Interface",
     "component": "HSM/CvvCheck",
     "analysisKeys": "DE39=82, STAN, RRN, HSM/CvvCheck",
@@ -3722,7 +3722,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-465",
-    "title": "DE39=88 (Cryptographic Failure) - Canal Infrastructure : Réconciliation, balance et compensation [Cas #7]",
+    "title": "DE39=88 (Cryptographic Failure) - Canal Infrastructure : Réconciliation, balance et compensation",
     "domain": "Infrastructure",
     "component": "HSM/CryptoEngine",
     "analysisKeys": "DE39=88, STAN, RRN, HSM/CryptoEngine",
@@ -3730,7 +3730,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-466",
-    "title": "DE39=89 (Invalid PIN Block) - Canal Infrastructure : Réconciliation, balance et compensation [Cas #7]",
+    "title": "DE39=89 (Invalid PIN Block) - Canal Infrastructure : Réconciliation, balance et compensation",
     "domain": "Infrastructure",
     "component": "HSM/PinTranslation",
     "analysisKeys": "DE39=89, STAN, RRN, HSM/PinTranslation",
@@ -3738,7 +3738,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-467",
-    "title": "DE39=93 (Violation / EMV Cryptogram Failure (ARQC rejeté)) - Canal Carte : Réconciliation, balance et compensation [Cas #7]",
+    "title": "DE39=93 (Violation / EMV Cryptogram Failure (ARQC rejeté)) - Canal Carte : Réconciliation, balance et compensation",
     "domain": "Carte",
     "component": "HSM/EmvValidation",
     "analysisKeys": "DE39=93, STAN, RRN, HSM/EmvValidation",
@@ -3746,7 +3746,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-468",
-    "title": "DE39=19 (Re-enter Transaction) - Canal Réseau : Réconciliation, balance et compensation [Cas #7]",
+    "title": "DE39=19 (Re-enter Transaction) - Canal Réseau : Réconciliation, balance et compensation",
     "domain": "Réseau",
     "component": "Switch/RetryBuffer",
     "analysisKeys": "DE39=19, STAN, RRN, Switch/RetryBuffer",
@@ -3754,7 +3754,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-469",
-    "title": "DE39=25 (Unable to Locate Record on File) - Canal Switch : Réconciliation, balance et compensation [Cas #7]",
+    "title": "DE39=25 (Unable to Locate Record on File) - Canal Switch : Réconciliation, balance et compensation",
     "domain": "Switch",
     "component": "CBS/MatchingReversal",
     "analysisKeys": "DE39=25, STAN, RRN, CBS/MatchingReversal",
@@ -3762,7 +3762,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-470",
-    "title": "DE39=30 (Format Error) - Canal Interface : Réconciliation, balance et compensation [Cas #7]",
+    "title": "DE39=30 (Format Error) - Canal Interface : Réconciliation, balance et compensation",
     "domain": "Interface",
     "component": "Interface/IsoParser",
     "analysisKeys": "DE39=30, STAN, RRN, Interface/IsoParser",
@@ -3770,7 +3770,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-471",
-    "title": "DE39=58 (Transaction Not Permitted to Terminal) - Canal TPE : Réconciliation, balance et compensation [Cas #7]",
+    "title": "DE39=58 (Transaction Not Permitted to Terminal) - Canal TPE : Réconciliation, balance et compensation",
     "domain": "TPE",
     "component": "TMS/TerminalProfile",
     "analysisKeys": "DE39=58, STAN, RRN, TMS/TerminalProfile",
@@ -3778,7 +3778,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-472",
-    "title": "DE39=68 (Response Received Too Late) - Canal Switch : Réconciliation, balance et compensation [Cas #7]",
+    "title": "DE39=68 (Response Received Too Late) - Canal Switch : Réconciliation, balance et compensation",
     "domain": "Switch",
     "component": "Switch/TimerQueue",
     "analysisKeys": "DE39=68, STAN, RRN, Switch/TimerQueue",
@@ -3786,7 +3786,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-473",
-    "title": "DE39=76 (Key Synchronization Error) - Canal Infrastructure : Réconciliation, balance et compensation [Cas #7]",
+    "title": "DE39=76 (Key Synchronization Error) - Canal Infrastructure : Réconciliation, balance et compensation",
     "domain": "Infrastructure",
     "component": "Switch/KeySync",
     "analysisKeys": "DE39=76, STAN, RRN, Switch/KeySync",
@@ -3794,7 +3794,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-474",
-    "title": "DE39=90 (System Cutover in Progress) - Canal Clearing : Réconciliation, balance et compensation [Cas #7]",
+    "title": "DE39=90 (System Cutover in Progress) - Canal Clearing : Réconciliation, balance et compensation",
     "domain": "Clearing",
     "component": "CBS/CutOver",
     "analysisKeys": "DE39=90, STAN, RRN, CBS/CutOver",
@@ -3802,7 +3802,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-475",
-    "title": "DE39=91 (Issuer or Switch Inoperative) - Canal Réseau : Réconciliation, balance et compensation [Cas #7]",
+    "title": "DE39=91 (Issuer or Switch Inoperative) - Canal Réseau : Réconciliation, balance et compensation",
     "domain": "Réseau",
     "component": "Switch/IssuerLink",
     "analysisKeys": "DE39=91, STAN, RRN, Switch/IssuerLink",
@@ -3810,7 +3810,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-476",
-    "title": "DE39=92 (Destination Unreachable) - Canal Réseau : Réconciliation, balance et compensation [Cas #7]",
+    "title": "DE39=92 (Destination Unreachable) - Canal Réseau : Réconciliation, balance et compensation",
     "domain": "Réseau",
     "component": "Réseau/TelecomGateway",
     "analysisKeys": "DE39=92, STAN, RRN, Réseau/TelecomGateway",
@@ -3818,7 +3818,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-477",
-    "title": "DE39=94 (Duplicate Transmission) - Canal Switch : Réconciliation, balance et compensation [Cas #7]",
+    "title": "DE39=94 (Duplicate Transmission) - Canal Switch : Réconciliation, balance et compensation",
     "domain": "Switch",
     "component": "Switch/DuplicateDetection",
     "analysisKeys": "DE39=94, STAN, RRN, Switch/DuplicateDetection",
@@ -3826,7 +3826,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-478",
-    "title": "DE39=96 (System Malfunction) - Canal Production : Réconciliation, balance et compensation [Cas #7]",
+    "title": "DE39=96 (System Malfunction) - Canal Production : Réconciliation, balance et compensation",
     "domain": "Production",
     "component": "Core/DbConnectionPool",
     "analysisKeys": "DE39=96, STAN, RRN, Core/DbConnectionPool",
@@ -3834,7 +3834,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-479",
-    "title": "DE39=98 (MAC Error) - Canal Infrastructure : Réconciliation, balance et compensation [Cas #7]",
+    "title": "DE39=98 (MAC Error) - Canal Infrastructure : Réconciliation, balance et compensation",
     "domain": "Infrastructure",
     "component": "HSM/MacValidator",
     "analysisKeys": "DE39=98, STAN, RRN, HSM/MacValidator",
@@ -3842,7 +3842,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-480",
-    "title": "DE39=99 (PIN Block Translation Failure) - Canal Infrastructure : Réconciliation, balance et compensation [Cas #7]",
+    "title": "DE39=99 (PIN Block Translation Failure) - Canal Infrastructure : Réconciliation, balance et compensation",
     "domain": "Infrastructure",
     "component": "HSM/ZpkTranslation",
     "analysisKeys": "DE39=99, STAN, RRN, HSM/ZpkTranslation",
@@ -3850,7 +3850,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-481",
-    "title": "DE39=00 (Approved / Honoré (Délivrance incomplète ou suspicion)) - Canal GAB : Basculement secours Haute Disponibilité [Cas #8]",
+    "title": "DE39=00 (Approved / Honoré (Délivrance incomplète ou suspicion)) - Canal GAB : Basculement secours Haute Disponibilité",
     "domain": "GAB",
     "component": "ATM/Dispenser",
     "analysisKeys": "DE39=00, STAN, RRN, ATM/Dispenser",
@@ -3858,7 +3858,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-482",
-    "title": "DE39=08 (Honor with Identification) - Canal TPE : Basculement secours Haute Disponibilité [Cas #8]",
+    "title": "DE39=08 (Honor with Identification) - Canal TPE : Basculement secours Haute Disponibilité",
     "domain": "TPE",
     "component": "TPE/Signature",
     "analysisKeys": "DE39=08, STAN, RRN, TPE/Signature",
@@ -3866,7 +3866,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-483",
-    "title": "DE39=10 (Partial Approval) - Canal TPE : Basculement secours Haute Disponibilité [Cas #8]",
+    "title": "DE39=10 (Partial Approval) - Canal TPE : Basculement secours Haute Disponibilité",
     "domain": "TPE",
     "component": "Middleware/SplitTender",
     "analysisKeys": "DE39=10, STAN, RRN, Middleware/SplitTender",
@@ -3874,7 +3874,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-484",
-    "title": "DE39=85 (No reason to decline) - Canal Switch : Basculement secours Haute Disponibilité [Cas #8]",
+    "title": "DE39=85 (No reason to decline) - Canal Switch : Basculement secours Haute Disponibilité",
     "domain": "Switch",
     "component": "Switch/CardCheck",
     "analysisKeys": "DE39=85, STAN, RRN, Switch/CardCheck",
@@ -3882,7 +3882,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-485",
-    "title": "DE39=01 (Refer to Card Issuer) - Canal Switch : Basculement secours Haute Disponibilité [Cas #8]",
+    "title": "DE39=01 (Refer to Card Issuer) - Canal Switch : Basculement secours Haute Disponibilité",
     "domain": "Switch",
     "component": "CBS/IssuerCall",
     "analysisKeys": "DE39=01, STAN, RRN, CBS/IssuerCall",
@@ -3890,7 +3890,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-486",
-    "title": "DE39=02 (Refer to Card Issuer Special Condition) - Canal Switch : Basculement secours Haute Disponibilité [Cas #8]",
+    "title": "DE39=02 (Refer to Card Issuer Special Condition) - Canal Switch : Basculement secours Haute Disponibilité",
     "domain": "Switch",
     "component": "CBS/RiskCondition",
     "analysisKeys": "DE39=02, STAN, RRN, CBS/RiskCondition",
@@ -3898,7 +3898,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-487",
-    "title": "DE39=04 (Pick-up Card Hold-call) - Canal GAB : Basculement secours Haute Disponibilité [Cas #8]",
+    "title": "DE39=04 (Pick-up Card Hold-call) - Canal GAB : Basculement secours Haute Disponibilité",
     "domain": "GAB",
     "component": "ATM/Retention",
     "analysisKeys": "DE39=04, STAN, RRN, ATM/Retention",
@@ -3906,7 +3906,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-488",
-    "title": "DE39=05 (Do Not Honor) - Canal Switch : Basculement secours Haute Disponibilité [Cas #8]",
+    "title": "DE39=05 (Do Not Honor) - Canal Switch : Basculement secours Haute Disponibilité",
     "domain": "Switch",
     "component": "Issuer/Scoring",
     "analysisKeys": "DE39=05, STAN, RRN, Issuer/Scoring",
@@ -3914,7 +3914,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-489",
-    "title": "DE39=12 (Invalid Transaction) - Canal Switch : Basculement secours Haute Disponibilité [Cas #8]",
+    "title": "DE39=12 (Invalid Transaction) - Canal Switch : Basculement secours Haute Disponibilité",
     "domain": "Switch",
     "component": "CBS/ProductRules",
     "analysisKeys": "DE39=12, STAN, RRN, CBS/ProductRules",
@@ -3922,7 +3922,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-490",
-    "title": "DE39=13 (Invalid Amount) - Canal GAB : Basculement secours Haute Disponibilité [Cas #8]",
+    "title": "DE39=13 (Invalid Amount) - Canal GAB : Basculement secours Haute Disponibilité",
     "domain": "GAB",
     "component": "ATM/BillMix",
     "analysisKeys": "DE39=13, STAN, RRN, ATM/BillMix",
@@ -3930,7 +3930,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-491",
-    "title": "DE39=14 (Invalid Card Number) - Canal Interface : Basculement secours Haute Disponibilité [Cas #8]",
+    "title": "DE39=14 (Invalid Card Number) - Canal Interface : Basculement secours Haute Disponibilité",
     "domain": "Interface",
     "component": "Frontal/LuhnValidator",
     "analysisKeys": "DE39=14, STAN, RRN, Frontal/LuhnValidator",
@@ -3938,7 +3938,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-492",
-    "title": "DE39=15 (No Such Issuer) - Canal Switch : Basculement secours Haute Disponibilité [Cas #8]",
+    "title": "DE39=15 (No Such Issuer) - Canal Switch : Basculement secours Haute Disponibilité",
     "domain": "Switch",
     "component": "Switch/RoutingTable",
     "analysisKeys": "DE39=15, STAN, RRN, Switch/RoutingTable",
@@ -3946,7 +3946,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-493",
-    "title": "DE39=33 (Expired Card Pick-up) - Canal GAB : Basculement secours Haute Disponibilité [Cas #8]",
+    "title": "DE39=33 (Expired Card Pick-up) - Canal GAB : Basculement secours Haute Disponibilité",
     "domain": "GAB",
     "component": "ATM/Retention",
     "analysisKeys": "DE39=33, STAN, RRN, ATM/Retention",
@@ -3954,7 +3954,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-494",
-    "title": "DE39=41 (Lost Card Pick-up) - Canal GAB : Basculement secours Haute Disponibilité [Cas #8]",
+    "title": "DE39=41 (Lost Card Pick-up) - Canal GAB : Basculement secours Haute Disponibilité",
     "domain": "GAB",
     "component": "ATM/OppositionLost",
     "analysisKeys": "DE39=41, STAN, RRN, ATM/OppositionLost",
@@ -3962,7 +3962,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-495",
-    "title": "DE39=43 (Stolen Card Pick-up) - Canal GAB : Basculement secours Haute Disponibilité [Cas #8]",
+    "title": "DE39=43 (Stolen Card Pick-up) - Canal GAB : Basculement secours Haute Disponibilité",
     "domain": "GAB",
     "component": "ATM/OppositionStolen",
     "analysisKeys": "DE39=43, STAN, RRN, ATM/OppositionStolen",
@@ -3970,7 +3970,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-496",
-    "title": "DE39=51 (Insufficient Funds) - Canal Core Banking : Basculement secours Haute Disponibilité [Cas #8]",
+    "title": "DE39=51 (Insufficient Funds) - Canal Core Banking : Basculement secours Haute Disponibilité",
     "domain": "Core Banking",
     "component": "CBS/Solvabilite",
     "analysisKeys": "DE39=51, STAN, RRN, CBS/Solvabilite",
@@ -3978,7 +3978,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-497",
-    "title": "DE39=54 (Expired Card) - Canal Carte : Basculement secours Haute Disponibilité [Cas #8]",
+    "title": "DE39=54 (Expired Card) - Canal Carte : Basculement secours Haute Disponibilité",
     "domain": "Carte",
     "component": "CMS/CardValidity",
     "analysisKeys": "DE39=54, STAN, RRN, CMS/CardValidity",
@@ -3986,7 +3986,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-498",
-    "title": "DE39=57 (Transaction Not Permitted to Cardholder) - Canal Carte : Basculement secours Haute Disponibilité [Cas #8]",
+    "title": "DE39=57 (Transaction Not Permitted to Cardholder) - Canal Carte : Basculement secours Haute Disponibilité",
     "domain": "Carte",
     "component": "CMS/ContractProfile",
     "analysisKeys": "DE39=57, STAN, RRN, CMS/ContractProfile",
@@ -3994,7 +3994,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-499",
-    "title": "DE39=61 (Exceeds Withdrawal Amount Limit) - Canal GAB : Basculement secours Haute Disponibilité [Cas #8]",
+    "title": "DE39=61 (Exceeds Withdrawal Amount Limit) - Canal GAB : Basculement secours Haute Disponibilité",
     "domain": "GAB",
     "component": "CMS/VelocityLimits",
     "analysisKeys": "DE39=61, STAN, RRN, CMS/VelocityLimits",
@@ -4002,7 +4002,7 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-500",
-    "title": "DE39=62 (Restricted Card) - Canal TPE : Basculement secours Haute Disponibilité [Cas #8]",
+    "title": "DE39=62 (Restricted Card) - Canal TPE : Basculement secours Haute Disponibilité",
     "domain": "TPE",
     "component": "CMS/GeoBlocking",
     "analysisKeys": "DE39=62, STAN, RRN, CMS/GeoBlocking",

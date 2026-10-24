@@ -449,7 +449,7 @@ export default function CbsDashboardPage() {
                 ESPACE DE TRAVAIL DÉDIÉ
               </span>
               <span style={{ color: "#a5b4fc", fontSize: "0.8rem", fontWeight: 600 }}>
-                ⚡ Studio Plein Écran sans Sidebar ni Header
+                ⚡ Studio 4GL | PER | SQL
               </span>
             </div>
             <h3 style={{ fontSize: "1.3rem", fontWeight: 800, color: "#ffffff", margin: "0 0 0.4rem 0" }}>

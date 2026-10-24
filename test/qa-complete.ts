@@ -224,6 +224,19 @@ function runQaAll() {
     "Filtrage multi-modules (Monétique, Amplitude, FLEXCUBE) et redirection par défaut validés"
   );
 
+  const uniqueRefCodes = new Set(referenceIncidents.map((i) => i.reference.toUpperCase()));
+  const uniqueRefTitles = new Set(referenceIncidents.map((i) => i.title.trim().toLowerCase()));
+  const hasCasSuffix = referenceIncidents.some((i) => /\[cas #\d+\]/i.test(i.title));
+  const uniqueCbsIds = new Set(CBS_INCIDENTS.map((i) => i.id));
+  assert(
+    "TEST 31 - Assainissement & Dédoublonnage Base d'Incidents (0 doublon de référence ou de titre)",
+    uniqueRefCodes.size === referenceIncidents.length &&
+      uniqueRefTitles.size === referenceIncidents.length &&
+      !hasCasSuffix &&
+      uniqueCbsIds.size === CBS_INCIDENTS.length,
+    `${uniqueRefCodes.size} incidents Monétique uniques + ${uniqueCbsIds.size} incidents CBS uniques (0 doublon)`
+  );
+
   console.log("\n=================================================");
   console.log(`📊 RÉSULTAT QA TEST : ${passed} RÉUSSIS / ${failed} ÉCHECS`);
   console.log("=================================================");

@@ -80,8 +80,22 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Le titre est requis" }, { status: 400 });
     }
 
-    const count = await prisma.incident.count();
-    const reference = `INC-${String(count + 1).padStart(3, "0")}`;
+    // Vérifier qu'un incident avec le même titre n'existe pas déjà en base
+    const existingDuplicate = await prisma.incident.findFirst({
+      where: { title: title.trim() },
+    });
+    if (existingDuplicate) {
+      return NextResponse.json({ success: true, incident: existingDuplicate, deduplicated: true });
+    }
+
+    // Générer une référence unique hors plage du référentiel statique (INC-1001+)
+    const allDbRefs = await prisma.incident.findMany({ select: { reference: true } });
+    const maxDbNum = allDbRefs.reduce((max, r) => {
+      const m = r.reference.match(/^INC-(\d+)$/i);
+      const n = m ? parseInt(m[1], 10) : 0;
+      return n > max ? n : max;
+    }, 1000);
+    const reference = `INC-${maxDbNum + 1}`;
 
     const authorId = user?.id || (await prisma.user.findFirst())?.id;
     if (!authorId) {

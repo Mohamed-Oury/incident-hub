@@ -54,28 +54,33 @@ export async function PUT(request: Request, { params }: RouteParams) {
       domain,
       component,
       errorCode,
+      environment,
       severity,
       status,
       knowledgeStatus,
       symptom,
       facts,
       scope,
+      context,
+      hypotheses,
+      evidence,
       rootCauseCategory,
       rootCauseDescription,
       rootCauseJustification,
       resolutionActions,
       resolutionResult,
+      prevention,
     } = body;
 
     // 1. Persistance locale garantie (fonctionne aussi sur les incidents de référence et incidents validés)
     const updatedObservations =
-      symptom !== undefined || facts !== undefined || scope !== undefined
+      symptom !== undefined || facts !== undefined || scope !== undefined || context !== undefined
         ? [
             {
               symptom: symptom ?? currentIncident.observations?.[0]?.symptom ?? "",
               facts: facts ?? currentIncident.observations?.[0]?.facts ?? "",
               scope: scope ?? currentIncident.observations?.[0]?.scope,
-              context: currentIncident.observations?.[0]?.context,
+              context: context ?? currentIncident.observations?.[0]?.context,
             },
           ]
         : currentIncident.observations;
@@ -110,13 +115,17 @@ export async function PUT(request: Request, { params }: RouteParams) {
       domain: domain || currentIncident.domain,
       component: component || currentIncident.component,
       errorCode: errorCode || currentIncident.errorCode,
+      environment: environment || currentIncident.environment || "PRODUCTION",
       severity: (severity || currentIncident.severity) as any,
       status: (status || currentIncident.status || "RESOLVED") as any,
       knowledgeStatus: (knowledgeStatus || currentIncident.knowledgeStatus || "VALIDATED") as any,
       updatedAt: new Date().toISOString(),
       observations: updatedObservations,
+      hypotheses: Array.isArray(hypotheses) ? hypotheses : currentIncident.hypotheses,
+      evidence: Array.isArray(evidence) ? evidence : currentIncident.evidence,
       rootCause: updatedRootCause,
       resolution: updatedResolution,
+      prevention: Array.isArray(prevention) ? prevention : currentIncident.prevention,
     });
 
     // 2. Synchronisation Prisma / MySQL si l'incident existe en base
