@@ -14,7 +14,7 @@ export default async function KnowledgePage({ searchParams }: KnowledgePageProps
 
   return (
     <AppShell user={user} pageTitle="Base de Connaissances" eyebrow="CAPITALISATION TECHNIQUE">
-      <KnowledgeCatalog initialIncidents={incidents} initialSearch={search || ""} />
+      <KnowledgeCatalog initialIncidents={incidents} initialSearch={search || ""} currentUser={user} />
     </AppShell>
   );
 }

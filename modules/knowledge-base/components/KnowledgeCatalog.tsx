@@ -3,26 +3,80 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import { IncidentRecord } from "@/modules/incidents/types";
+import {
+  SessionUser,
+  canEditIncident,
+  canDeleteIncident,
+} from "@/modules/auth/types";
 
 interface KnowledgeCatalogProps {
   initialIncidents: IncidentRecord[];
   initialSearch?: string;
+  currentUser?: SessionUser | null;
 }
 
-export function KnowledgeCatalog({ initialIncidents, initialSearch = "" }: KnowledgeCatalogProps) {
+export function KnowledgeCatalog({
+  initialIncidents,
+  initialSearch = "",
+  currentUser,
+}: KnowledgeCatalogProps) {
+  const [incidents, setIncidents] = useState<IncidentRecord[]>(initialIncidents);
   const [search, setSearch] = useState(initialSearch);
   const [selectedDomain, setSelectedDomain] = useState<string>("ALL");
   const [selectedStatus, setSelectedStatus] = useState<string>("ALL");
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [deletingRef, setDeletingRef] = useState<string | null>(null);
+  const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null);
   const pageSize = 10;
 
+  // Seul le SuperAdmin peut supprimer ou modifier; l'Admin ne peut que modifier; les autres rôles n'ont pas accès
+  const allowEdit = canEditIncident(currentUser);
+  const allowDelete = canDeleteIncident(currentUser);
+
+  const handleDeleteIncident = async (inc: IncidentRecord) => {
+    if (!allowDelete) return;
+    if (
+      !window.confirm(
+        `Confirmez-vous la suppression définitive de l'incident ${inc.reference} ("${inc.title}") de la base de connaissances ?`
+      )
+    ) {
+      return;
+    }
+
+    setDeletingRef(inc.reference);
+    setFeedback(null);
+
+    try {
+      const res = await fetch(`/api/incidents/${encodeURIComponent(inc.reference)}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Impossible de supprimer l'incident.");
+      }
+
+      setIncidents((prev) => prev.filter((item) => item.reference !== inc.reference));
+      setFeedback({
+        type: "success",
+        message: `L'incident ${inc.reference} ("${inc.title}") a été supprimé de la base de connaissances.`,
+      });
+    } catch (err: any) {
+      setFeedback({
+        type: "error",
+        message: err.message || "Erreur lors de la suppression.",
+      });
+    } finally {
+      setDeletingRef(null);
+    }
+  };
+
   const domains = useMemo(() => {
-    const list = Array.from(new Set(initialIncidents.map((i) => i.domain).filter(Boolean)));
+    const list = Array.from(new Set(incidents.map((i) => i.domain).filter(Boolean)));
     return ["ALL", ...list];
-  }, [initialIncidents]);
+  }, [incidents]);
 
   const filteredIncidents = useMemo(() => {
-    return initialIncidents.filter((inc) => {
+    return incidents.filter((inc) => {
       const q = search.toLowerCase();
       const matchQuery =
         !search ||
@@ -40,7 +94,7 @@ export function KnowledgeCatalog({ initialIncidents, initialSearch = "" }: Knowl
 
       return matchQuery && matchDomain && matchStatus;
     });
-  }, [initialIncidents, search, selectedDomain, selectedStatus]);
+  }, [incidents, search, selectedDomain, selectedStatus]);
 
   const totalPages = Math.ceil(filteredIncidents.length / pageSize) || 1;
   const safePage = Math.min(currentPage, totalPages);
@@ -52,6 +106,34 @@ export function KnowledgeCatalog({ initialIncidents, initialSearch = "" }: Knowl
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+      {feedback && (
+        <div
+          style={{
+            padding: "0.9rem 1.25rem",
+            borderRadius: "12px",
+            fontWeight: 700,
+            fontSize: "0.88rem",
+            background: feedback.type === "success" ? "#ecfdf5" : "#fef2f2",
+            color: feedback.type === "success" ? "#065f46" : "#991b1b",
+            border: `1px solid ${feedback.type === "success" ? "#a7f3d0" : "#fecaca"}`,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <span>
+            {feedback.type === "success" ? "✅ " : "⚠️ "}
+            {feedback.message}
+          </span>
+          <button
+            type="button"
+            onClick={() => setFeedback(null)}
+            style={{ background: "none", border: "none", cursor: "pointer", fontWeight: 800, color: "inherit" }}
+          >
+            ✕
+          </button>
+        </div>
+      )}
       {/* Barre de recherche et filtres */}
       <div className="hero-search">
         <div>
@@ -222,7 +304,7 @@ export function KnowledgeCatalog({ initialIncidents, initialSearch = "" }: Knowl
                       </span>
                     </td>
                     <td style={{ textAlign: "right" }}>
-                      <div style={{ display: "inline-flex", gap: "0.4rem" }}>
+                      <div style={{ display: "inline-flex", gap: "0.4rem", alignItems: "center", justifyContent: "flex-end" }}>
                         <Link
                           href={`/hub/incidents/${inc.reference}`}
                           className="btn-secondary"
@@ -230,14 +312,33 @@ export function KnowledgeCatalog({ initialIncidents, initialSearch = "" }: Knowl
                         >
                           Consulter
                         </Link>
-                        {!isValidated && (
+                        {allowEdit && (
                           <Link
                             href={`/hub/incidents/${inc.reference}/edit`}
                             className="btn-emerald"
-                            style={{ padding: "0.35rem 0.65rem", fontSize: "0.78rem" }}
+                            style={{ padding: "0.35rem 0.65rem", fontSize: "0.78rem", fontWeight: 700 }}
                           >
-                            Traiter →
+                            ✏️ Modifier
                           </Link>
+                        )}
+                        {allowDelete && (
+                          <button
+                            type="button"
+                            disabled={deletingRef === inc.reference}
+                            onClick={() => handleDeleteIncident(inc)}
+                            style={{
+                              padding: "0.35rem 0.65rem",
+                              fontSize: "0.78rem",
+                              fontWeight: 700,
+                              borderRadius: "8px",
+                              border: "1px solid #fecaca",
+                              background: "#fef2f2",
+                              color: "#dc2626",
+                              cursor: deletingRef === inc.reference ? "wait" : "pointer",
+                            }}
+                          >
+                            {deletingRef === inc.reference ? "..." : "🗑️ Supprimer"}
+                          </button>
                         )}
                       </div>
                     </td>

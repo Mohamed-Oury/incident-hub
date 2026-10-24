@@ -1,9 +1,11 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getSession } from "@/modules/auth/auth-service";
+import { canEditIncident, canDeleteIncident } from "@/modules/auth/types";
 import { getIncidentByReference } from "@/modules/incidents/data-store";
 import { AppShell } from "@/modules/layout/AppShell";
 import { maskSensitiveFields } from "@/modules/security/masking";
+import { DeleteIncidentButton } from "./DeleteIncidentButton";
 
 interface IncidentDetailPageProps {
   params: Promise<{ id: string }>;
@@ -19,6 +21,8 @@ export default async function IncidentDetailPage({ params }: IncidentDetailPageP
   }
 
   const isValidated = incident.knowledgeStatus === "VALIDATED";
+  const allowEdit = canEditIncident(user);
+  const allowDelete = canDeleteIncident(user);
 
   return (
     <AppShell user={user} pageTitle={`${incident.reference} — ${incident.title}`} eyebrow="FICHE D'INCIDENT MONÉTIQUE">
@@ -84,18 +88,21 @@ export default async function IncidentDetailPage({ params }: IncidentDetailPageP
             )}
           </div>
 
-          <div style={{ display: "flex", gap: "0.75rem" }}>
+          <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", alignItems: "center" }}>
             <Link href="/hub/knowledge" className="btn-secondary" style={{ fontSize: "0.85rem" }}>
               ← Retour au catalogue
             </Link>
-            {!isValidated && (
+            {allowEdit && (
               <Link
                 href={`/hub/incidents/${incident.reference}/edit`}
                 className="btn-emerald"
-                style={{ fontSize: "0.85rem", padding: "0.5rem 1rem" }}
+                style={{ fontSize: "0.85rem", padding: "0.5rem 1rem", fontWeight: 700 }}
               >
-                ✏️ Traiter & Valider l'incident
+                ✏️ Modifier l&apos;incident
               </Link>
+            )}
+            {allowDelete && (
+              <DeleteIncidentButton reference={incident.reference} title={incident.title} />
             )}
             <Link
               href={`/hub/post-mortem?ref=${incident.reference}`}

@@ -1,5 +1,11 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import {
+  canAccessModule,
+  canManageUsers,
+  getDefaultRedirectForUser,
+  SessionUser,
+} from "@/modules/auth/types";
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -24,17 +30,38 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  // 3. Contrôle d'accès basé sur les rôles (RBAC) pour les utilisateurs connectés
+  // 3. Contrôle d'accès basé sur les rôles (RBAC) et modules cochés
   try {
     const rawCookie = sessionCookie?.value || "";
     const lastDot = rawCookie.lastIndexOf(".");
     if (lastDot !== -1) {
       const payloadBase64 = rawCookie.slice(0, lastDot);
       const decodedJson = atob(payloadBase64.replace(/-/g, "+").replace(/_/g, "/"));
-      const user = JSON.parse(decodedJson);
-      const userRole = user?.role || "OPERATOR";
+      const user = JSON.parse(decodedJson) as SessionUser;
 
-      // Tout contrôle RBAC additionnel si nécessaire
+      // Protection de l'onglet Gestion des Utilisateurs (Seul SuperAdmin)
+      if (pathname.startsWith("/hub/users") && !canManageUsers(user)) {
+        const fallback = getDefaultRedirectForUser(user);
+        return NextResponse.redirect(new URL(fallback, request.url));
+      }
+
+      // Protection des 3 modules (Monétique, Amplitude, FLEXCUBE)
+      if (pathname.startsWith("/cbs/flexcube")) {
+        if (!canAccessModule(user, "FLEXCUBE")) {
+          const fallback = getDefaultRedirectForUser(user);
+          return NextResponse.redirect(new URL(fallback, request.url));
+        }
+      } else if (pathname.startsWith("/cbs")) {
+        if (!canAccessModule(user, "AMPLITUDE")) {
+          const fallback = getDefaultRedirectForUser(user);
+          return NextResponse.redirect(new URL(fallback, request.url));
+        }
+      } else if (pathname.startsWith("/hub") && !pathname.startsWith("/hub/users")) {
+        if (!canAccessModule(user, "MONETIQUE")) {
+          const fallback = getDefaultRedirectForUser(user);
+          return NextResponse.redirect(new URL(fallback, request.url));
+        }
+      }
     }
   } catch (err) {
     console.warn("Erreur validation middleware session:", err);

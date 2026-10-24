@@ -11,7 +11,12 @@ export function EditIncidentForm({ incident }: { incident: IncidentRecord }) {
   const [error, setError] = useState<string | null>(null);
 
   const [title, setTitle] = useState(incident.title);
+  const [description, setDescription] = useState(incident.description || "");
+  const [domain, setDomain] = useState(incident.domain || "GAB");
+  const [component, setComponent] = useState(incident.component || "Switch");
+  const [errorCode, setErrorCode] = useState(incident.errorCode || "DE39=91");
   const [severity, setSeverity] = useState(incident.severity);
+  const [knowledgeStatus, setKnowledgeStatus] = useState(incident.knowledgeStatus || "VALIDATED");
   const [symptom, setSymptom] = useState(incident.observations?.[0]?.symptom || "");
   const [facts, setFacts] = useState(incident.observations?.[0]?.facts || "");
   
@@ -30,12 +35,17 @@ export function EditIncidentForm({ incident }: { incident: IncidentRecord }) {
     setError(null);
 
     try {
-      const res = await fetch(`/api/incidents/${incident.reference}`, {
+      const res = await fetch(`/api/incidents/${encodeURIComponent(incident.reference)}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           title,
+          description,
+          domain,
+          component,
+          errorCode,
           severity,
+          knowledgeStatus,
           symptom,
           facts,
           rootCauseCategory,
@@ -51,7 +61,7 @@ export function EditIncidentForm({ incident }: { incident: IncidentRecord }) {
         throw new Error(data.error || "Erreur lors de la mise à jour de l'incident.");
       }
 
-      router.push(`/incidents/${incident.reference}`);
+      router.push(`/hub/incidents/${incident.reference}`);
       router.refresh();
     } catch (err: any) {
       setError(err.message || "Impossible de sauvegarder.");
@@ -87,7 +97,52 @@ export function EditIncidentForm({ incident }: { incident: IncidentRecord }) {
             />
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+          <div>
+            <label style={{ display: "block", fontSize: "0.85rem", fontWeight: 700, color: "#0f172a", marginBottom: "0.3rem" }}>
+              Description synthétique
+            </label>
+            <textarea
+              rows={2}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              style={{ width: "100%", padding: "0.75rem", borderRadius: "8px", border: "1px solid #cbd5e1" }}
+            />
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "1rem" }}>
+            <div>
+              <label style={{ display: "block", fontSize: "0.85rem", fontWeight: 700, color: "#0f172a", marginBottom: "0.3rem" }}>
+                Domaine
+              </label>
+              <input
+                type="text"
+                value={domain}
+                onChange={(e) => setDomain(e.target.value)}
+                style={{ width: "100%", padding: "0.75rem", borderRadius: "8px", border: "1px solid #cbd5e1" }}
+              />
+            </div>
+            <div>
+              <label style={{ display: "block", fontSize: "0.85rem", fontWeight: 700, color: "#0f172a", marginBottom: "0.3rem" }}>
+                Composant concerné
+              </label>
+              <input
+                type="text"
+                value={component}
+                onChange={(e) => setComponent(e.target.value)}
+                style={{ width: "100%", padding: "0.75rem", borderRadius: "8px", border: "1px solid #cbd5e1" }}
+              />
+            </div>
+            <div>
+              <label style={{ display: "block", fontSize: "0.85rem", fontWeight: 700, color: "#0f172a", marginBottom: "0.3rem" }}>
+                Code Erreur / Clé
+              </label>
+              <input
+                type="text"
+                value={errorCode}
+                onChange={(e) => setErrorCode(e.target.value)}
+                style={{ width: "100%", padding: "0.75rem", borderRadius: "8px", border: "1px solid #cbd5e1" }}
+              />
+            </div>
             <div>
               <label style={{ display: "block", fontSize: "0.85rem", fontWeight: 700, color: "#0f172a", marginBottom: "0.3rem" }}>
                 Criticité
@@ -105,14 +160,16 @@ export function EditIncidentForm({ incident }: { incident: IncidentRecord }) {
             </div>
             <div>
               <label style={{ display: "block", fontSize: "0.85rem", fontWeight: 700, color: "#0f172a", marginBottom: "0.3rem" }}>
-                Composant concerné
+                Statut Connaissance
               </label>
-              <input
-                type="text"
-                disabled
-                value={incident.component || "—"}
-                style={{ width: "100%", padding: "0.75rem", borderRadius: "8px", border: "1px solid #e2e8f0", background: "#f8fafc" }}
-              />
+              <select
+                value={knowledgeStatus}
+                onChange={(e) => setKnowledgeStatus(e.target.value as any)}
+                style={{ width: "100%", padding: "0.75rem", borderRadius: "8px", border: "1px solid #cbd5e1" }}
+              >
+                <option value="VALIDATED">✓ Validé</option>
+                <option value="REFERENCE_SCENARIO">Scénario de Référence</option>
+              </select>
             </div>
           </div>
         </div>

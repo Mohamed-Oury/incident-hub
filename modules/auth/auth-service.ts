@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import crypto from "crypto";
-import { SessionUser, DEMO_USERS } from "./types";
+import { SessionUser, getUserRoles, SUPER_ADMIN_EMAILS } from "./types";
 
 export * from "./types";
 
@@ -29,7 +29,16 @@ function verify(cookieValue: string): string | null {
 
 export async function createSession(user: SessionUser) {
   const cookieStore = await cookies();
-  const rawPayload = JSON.stringify(user);
+  const normalizedRoles = getUserRoles(user);
+  const isSuper =
+    normalizedRoles.includes("SUPER_ADMIN") ||
+    (user.email && SUPER_ADMIN_EMAILS.includes(user.email.trim().toLowerCase()));
+  const enrichedUser: SessionUser = {
+    ...user,
+    role: isSuper ? "SUPER_ADMIN" : user.role,
+    roles: normalizedRoles,
+  };
+  const rawPayload = JSON.stringify(enrichedUser);
   const signedToken = sign(Buffer.from(rawPayload).toString("base64url"));
 
   cookieStore.set(SESSION_COOKIE, signedToken, {
@@ -53,7 +62,16 @@ export async function getSession(): Promise<SessionUser | null> {
 
   try {
     const decoded = Buffer.from(payload, "base64url").toString("utf-8");
-    return JSON.parse(decoded) as SessionUser;
+    const parsed = JSON.parse(decoded) as SessionUser;
+    const normalizedRoles = getUserRoles(parsed);
+    const isSuper =
+      normalizedRoles.includes("SUPER_ADMIN") ||
+      (parsed.email && SUPER_ADMIN_EMAILS.includes(parsed.email.trim().toLowerCase()));
+    return {
+      ...parsed,
+      role: isSuper ? "SUPER_ADMIN" : parsed.role,
+      roles: normalizedRoles,
+    };
   } catch {
     return null;
   }

@@ -1,6 +1,96 @@
+import fs from "fs";
+import path from "path";
 import { prisma } from "@/lib/prisma";
 import { referenceIncidents } from "@/app/reference-incidents";
 import { IncidentRecord } from "./types";
+
+const DATA_DIR = path.join(process.cwd(), ".data");
+const INCIDENTS_STORE_FILE = path.join(DATA_DIR, "incidents_store.json");
+
+interface LocalIncidentsStore {
+  overrides: Record<string, Partial<IncidentRecord>>;
+  deletedReferences: string[];
+}
+
+function readLocalIncidentsStore(): LocalIncidentsStore {
+  try {
+    if (!fs.existsSync(DATA_DIR)) {
+      fs.mkdirSync(DATA_DIR, { recursive: true });
+    }
+    if (!fs.existsSync(INCIDENTS_STORE_FILE)) {
+      return { overrides: {}, deletedReferences: [] };
+    }
+    const raw = fs.readFileSync(INCIDENTS_STORE_FILE, "utf-8");
+    const parsed = JSON.parse(raw);
+    return {
+      overrides: parsed.overrides || {},
+      deletedReferences: Array.isArray(parsed.deletedReferences) ? parsed.deletedReferences : [],
+    };
+  } catch {
+    return { overrides: {}, deletedReferences: [] };
+  }
+}
+
+function writeLocalIncidentsStore(store: LocalIncidentsStore): void {
+  try {
+    if (!fs.existsSync(DATA_DIR)) {
+      fs.mkdirSync(DATA_DIR, { recursive: true });
+    }
+    fs.writeFileSync(INCIDENTS_STORE_FILE, JSON.stringify(store, null, 2), "utf-8");
+  } catch (err) {
+    console.error("Erreur écriture incidents_store.json:", err);
+  }
+}
+
+export function applyStoreToIncidents(list: IncidentRecord[]): IncidentRecord[] {
+  const store = readLocalIncidentsStore();
+  const deletedSet = new Set(store.deletedReferences.map((r) => r.toUpperCase()));
+
+  return list
+    .filter(
+      (inc) =>
+        !deletedSet.has(inc.reference.toUpperCase()) &&
+        !deletedSet.has(inc.id.toUpperCase())
+    )
+    .map((inc) => {
+      const ov =
+        store.overrides[inc.reference.toUpperCase()] ||
+        store.overrides[inc.reference] ||
+        store.overrides[inc.id];
+      if (!ov) return inc;
+      return {
+        ...inc,
+        ...ov,
+        observations: ov.observations || inc.observations,
+        rootCause: ov.rootCause ? { ...inc.rootCause, ...ov.rootCause } : inc.rootCause,
+        resolution: ov.resolution ? { ...inc.resolution, ...ov.resolution } : inc.resolution,
+      };
+    });
+}
+
+export function saveLocalIncidentOverride(
+  reference: string,
+  overrideData: Partial<IncidentRecord>
+): void {
+  const store = readLocalIncidentsStore();
+  const key = reference.toUpperCase();
+  store.overrides[key] = {
+    ...(store.overrides[key] || {}),
+    ...overrideData,
+  };
+  writeLocalIncidentsStore(store);
+}
+
+export function markLocalIncidentDeleted(reference: string): void {
+  const store = readLocalIncidentsStore();
+  const key = reference.toUpperCase();
+  if (!store.deletedReferences.includes(key)) {
+    store.deletedReferences.push(key);
+  }
+  delete store.overrides[key];
+  delete store.overrides[reference];
+  writeLocalIncidentsStore(store);
+}
 
 // Scénarios enrichis pour INC-001 et INC-002 issus du cahier des charges
 const DETAILED_CASES: Record<string, Partial<IncidentRecord>> = {
@@ -458,7 +548,7 @@ export async function getAllIncidents(): Promise<IncidentRecord[]> {
       });
 
       // Mettre TOUS les incidents réels de la BD au DÉBUT de la liste (1ère position)
-      return [...mappedDb, ...refMapped];
+      return applyStoreToIncidents([...mappedDb, ...refMapped]);
     }
   } catch (err) {
     // Si la BD n'a pas encore été migrée ou démarre, fallback en mémoire sur le catalogue complet
@@ -466,7 +556,7 @@ export async function getAllIncidents(): Promise<IncidentRecord[]> {
   }
 
   // Source de données résiliente et catalogue de référence avec méthodologie experte
-  return referenceIncidents.map((ref, idx) => {
+  const fallbackList = referenceIncidents.map((ref, idx) => {
     const detailed = DETAILED_CASES[ref.reference];
     const num = parseInt(ref.reference.replace("INC-", ""), 10) || idx + 1;
     const domain = ref.domain;
@@ -642,6 +732,8 @@ export async function getAllIncidents(): Promise<IncidentRecord[]> {
       ],
     };
   });
+
+  return applyStoreToIncidents(fallbackList);
 }
 
 export async function getIncidentByReference(reference: string): Promise<IncidentRecord | null> {

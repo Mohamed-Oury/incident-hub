@@ -3,70 +3,75 @@ export const dynamic = "force-dynamic";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/modules/auth/auth-service";
-import crypto from "crypto";
+import { canManageUsers, UserRole } from "@/modules/auth/types";
+import { getAllUsers, createStoredUser } from "@/modules/auth/user-store";
 
-function hashPassword(p: string) {
-  return crypto.createHash("sha256").update(p).digest("hex");
-}
-
-// Récupération de la liste des utilisateurs (Seul ADMIN autorisé)
+// Récupération de la liste des utilisateurs (Seul SUPER_ADMIN autorisé)
 export async function GET() {
   const session = await getSession();
-  if (!session || session.role !== "ADMIN") {
-    return NextResponse.json({ error: "Accès réservé aux administrateurs." }, { status: 403 });
+  if (!session || !canManageUsers(session)) {
+    return NextResponse.json(
+      { error: "Accès réservé exclusivement au Super Administrateur." },
+      { status: 403 }
+    );
   }
 
   try {
-    const users = await prisma.user.findMany({
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        role: true,
-        active: true,
-        createdAt: true,
-      },
-      orderBy: { createdAt: "desc" },
-    });
-    return NextResponse.json({ users });
+    const users = await getAllUsers();
+    const sanitized = users.map((u) => ({
+      id: u.id,
+      email: u.email,
+      name: u.name,
+      role: u.role,
+      roles: u.roles,
+      active: u.active,
+      createdAt: u.createdAt,
+      updatedAt: u.updatedAt,
+    }));
+    return NextResponse.json({ users: sanitized });
   } catch (err: any) {
-    return NextResponse.json({ error: "Erreur base de données: " + err.message }, { status: 500 });
+    return NextResponse.json(
+      { error: "Erreur lecture utilisateurs: " + err.message },
+      { status: 500 }
+    );
   }
 }
 
-// Création d'un nouvel utilisateur avec mot de passe par défaut 123456
+// Création d'un nouvel utilisateur avec sélection des rôles (cases à cocher)
 export async function POST(request: Request) {
   const session = await getSession();
-  if (!session || session.role !== "ADMIN") {
-    return NextResponse.json({ error: "Accès réservé aux administrateurs." }, { status: 403 });
+  if (!session || !canManageUsers(session)) {
+    return NextResponse.json(
+      { error: "Accès réservé exclusivement au Super Administrateur." },
+      { status: 403 }
+    );
   }
 
   try {
     const body = await request.json();
-    const { name, email, role } = body;
+    const { name, email, role, roles, password } = body;
 
-    if (!name || !email || !role) {
-      return NextResponse.json({ error: "Nom, email et rôle sont obligatoires." }, { status: 400 });
+    const checkedRoles: UserRole[] =
+      Array.isArray(roles) && roles.length > 0
+        ? roles
+        : role
+          ? [role]
+          : [];
+
+    if (!name || !email || checkedRoles.length === 0) {
+      return NextResponse.json(
+        { error: "Nom, email et au moins un rôle coché sont obligatoires." },
+        { status: 400 }
+      );
     }
 
-    const cleanEmail = email.trim().toLowerCase();
-    const defaultPassword = "123456";
-    const passwordHash = hashPassword(defaultPassword);
-
-    // Vérifier l'unicité
-    const existing = await prisma.user.findUnique({ where: { email: cleanEmail } });
-    if (existing) {
-      return NextResponse.json({ error: "Un utilisateur avec cet email existe déjà." }, { status: 400 });
-    }
-
-    const newUser = await prisma.user.create({
-      data: {
-        name: name.trim(),
-        email: cleanEmail,
-        role: role as any,
-        passwordHash: passwordHash,
-        active: true,
-      },
+    const defaultPassword = password && password.trim() ? password.trim() : "123456";
+    const newUser = await createStoredUser({
+      name,
+      email,
+      role: role as UserRole,
+      roles: checkedRoles,
+      password: defaultPassword,
     });
 
     // Enregistrement dans l'Audit Log
@@ -77,7 +82,11 @@ export async function POST(request: Request) {
           entity: "USER",
           entityId: newUser.id,
           userId: session.id,
-          metadata: { createdEmail: cleanEmail, role: role, defaultPassword: true },
+          metadata: {
+            createdEmail: newUser.email,
+            role: newUser.role,
+            roles: newUser.roles,
+          },
         },
       });
     } catch {
@@ -91,10 +100,13 @@ export async function POST(request: Request) {
         name: newUser.name,
         email: newUser.email,
         role: newUser.role,
-        defaultPassword: defaultPassword,
+        roles: newUser.roles,
+        active: newUser.active,
+        createdAt: newUser.createdAt,
+        defaultPassword,
       },
     });
   } catch (err: any) {
-    return NextResponse.json({ error: "Échec création: " + err.message }, { status: 500 });
+    return NextResponse.json({ error: err.message || "Échec création" }, { status: 400 });
   }
 }

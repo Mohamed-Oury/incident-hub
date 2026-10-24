@@ -3,7 +3,14 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { SessionUser, ROLE_LABELS, UserRole } from "@/modules/auth/types";
+import {
+  SessionUser,
+  UserRole,
+  canManageUsers,
+  canAccessModule,
+  getUserRoles,
+  isSuperAdminUser,
+} from "@/modules/auth/types";
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -38,13 +45,21 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
     router.refresh();
   };
 
-  const userRole: UserRole = currentUser?.role || initialUser?.role || "ADMIN";
+  const activeUser = currentUser || initialUser || null;
+  const userRoles = getUserRoles(activeUser);
+  const isSuperAdmin = isSuperAdminUser(activeUser);
+  const showUserManagementTab = canManageUsers(activeUser);
+
+  const allowMonetique = !activeUser ? true : canAccessModule(activeUser, "MONETIQUE");
+  const allowAmplitude = !activeUser ? true : canAccessModule(activeUser, "AMPLITUDE");
+  const allowFlexcube = !activeUser ? true : canAccessModule(activeUser, "FLEXCUBE");
 
   const isCbsUniverse = pathname.startsWith("/cbs");
   const isFlexcubeUniverse = pathname.startsWith("/cbs/flexcube");
   const isAmplitudeUniverse = isCbsUniverse && !isFlexcubeUniverse;
 
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({
+    administration: true,
     exploitation: true,
     decoders: true,
     referentials: true,
@@ -193,11 +208,39 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
       ? cbsNavSections
       : monetiqueNavSections;
 
-  // Filtrage strict : Seul ADMIN voit TOUT. Les autres ne voient QUE leur section respective.
-  const authorizedSections = currentNavSections.filter((section) => {
-    if (userRole === "ADMIN") return true;
-    return section.roleRequired === userRole;
+  const hasSpecificPoleRestriction =
+    userRoles.includes("ROLE_EXPLOITATION") ||
+    userRoles.includes("ROLE_DECODEURS") ||
+    userRoles.includes("ROLE_REFERENTIELS") ||
+    userRoles.includes("ROLE_EXPERTISE");
+
+  const filteredUniverseSections = currentNavSections.filter((section) => {
+    if (!activeUser) return true;
+    if (isSuperAdmin || userRoles.includes("ADMIN") || userRoles.includes("EXPERT")) {
+      return true;
+    }
+    if (hasSpecificPoleRestriction) {
+      return userRoles.includes(section.roleRequired as UserRole);
+    }
+    // Si l'utilisateur a accès au module (ex: ROLE_MONETIQUE, ROLE_AMPLITUDE, ROLE_FLEXCUBE) sans restriction de sous-pôle
+    return true;
   });
+
+  // L'onglet Gestion des Utilisateurs dans la sidebar est visible UNIQUEMENT par le SuperAdmin
+  const authorizedSections = showUserManagementTab
+    ? [
+        ...filteredUniverseSections,
+        {
+          key: "administration",
+          title: "ADMINISTRATION",
+          icon: "👑",
+          roleRequired: "SUPER_ADMIN",
+          items: [
+            { href: "/hub/users", label: "Gestion des Utilisateurs", icon: "👥" },
+          ],
+        },
+      ]
+    : filteredUniverseSections;
 
   return (
     <div className="shell">
@@ -339,7 +382,7 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: "0.65rem", flexShrink: 0 }}>
-            {/* Switcher 3 Univers avec pillules fluides */}
+            {/* Switcher 3 Univers filtré selon les rôles modules cochés */}
             <div
               style={{
                 display: "flex",
@@ -351,61 +394,82 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
                 gap: "2px",
               }}
             >
-              <Link
-                href="/hub"
-                title="Espace Monétique & Cartes"
-                style={{
-                  fontSize: "0.75rem",
-                  fontWeight: !isCbsUniverse ? 700 : 500,
-                  color: !isCbsUniverse ? "#ffffff" : "var(--text-muted)",
-                  background: !isCbsUniverse ? "var(--sg-red-600)" : "transparent",
-                  padding: "4px 10px",
-                  borderRadius: "7px",
-                  textDecoration: "none",
-                  transition: "all 0.15s ease",
-                  boxShadow: !isCbsUniverse ? "0 1px 3px rgba(125, 21, 56, 0.3)" : "none",
-                }}
-              >
-                💳 Monétique
-              </Link>
-              <Link
-                href="/cbs"
-                title="Espace Sopra Amplitude 4GL"
-                style={{
-                  fontSize: "0.75rem",
-                  fontWeight: isAmplitudeUniverse ? 700 : 500,
-                  color: isAmplitudeUniverse ? "#ffffff" : "var(--text-muted)",
-                  background: isAmplitudeUniverse ? "#0284c7" : "transparent",
-                  padding: "4px 10px",
-                  borderRadius: "7px",
-                  textDecoration: "none",
-                  transition: "all 0.15s ease",
-                  boxShadow: isAmplitudeUniverse ? "0 1px 3px rgba(2, 132, 199, 0.3)" : "none",
-                }}
-              >
-                🏦 Amplitude
-              </Link>
-              <Link
-                href="/cbs/flexcube"
-                title="Espace Oracle FLEXCUBE"
-                style={{
-                  fontSize: "0.75rem",
-                  fontWeight: isFlexcubeUniverse ? 700 : 500,
-                  color: isFlexcubeUniverse ? "#ffffff" : "var(--text-muted)",
-                  background: isFlexcubeUniverse ? "#ea580c" : "transparent",
-                  padding: "4px 10px",
-                  borderRadius: "7px",
-                  textDecoration: "none",
-                  transition: "all 0.15s ease",
-                  boxShadow: isFlexcubeUniverse ? "0 1px 3px rgba(234, 88, 12, 0.3)" : "none",
-                }}
-              >
-                🏛️ FLEXCUBE
-              </Link>
+              {allowMonetique && (
+                <Link
+                  href="/hub"
+                  title="Espace Monétique & Cartes"
+                  style={{
+                    fontSize: "0.75rem",
+                    fontWeight: !isCbsUniverse ? 700 : 500,
+                    color: !isCbsUniverse ? "#ffffff" : "var(--text-muted)",
+                    background: !isCbsUniverse ? "var(--sg-red-600)" : "transparent",
+                    padding: "4px 10px",
+                    borderRadius: "7px",
+                    textDecoration: "none",
+                    transition: "all 0.15s ease",
+                    boxShadow: !isCbsUniverse ? "0 1px 3px rgba(125, 21, 56, 0.3)" : "none",
+                  }}
+                >
+                  💳 Monétique
+                </Link>
+              )}
+              {allowAmplitude && (
+                <Link
+                  href="/cbs"
+                  title="Espace Sopra Amplitude 4GL"
+                  style={{
+                    fontSize: "0.75rem",
+                    fontWeight: isAmplitudeUniverse ? 700 : 500,
+                    color: isAmplitudeUniverse ? "#ffffff" : "var(--text-muted)",
+                    background: isAmplitudeUniverse ? "#0284c7" : "transparent",
+                    padding: "4px 10px",
+                    borderRadius: "7px",
+                    textDecoration: "none",
+                    transition: "all 0.15s ease",
+                    boxShadow: isAmplitudeUniverse ? "0 1px 3px rgba(2, 132, 199, 0.3)" : "none",
+                  }}
+                >
+                  🏦 Amplitude
+                </Link>
+              )}
+              {allowFlexcube && (
+                <Link
+                  href="/cbs/flexcube"
+                  title="Espace Oracle FLEXCUBE"
+                  style={{
+                    fontSize: "0.75rem",
+                    fontWeight: isFlexcubeUniverse ? 700 : 500,
+                    color: isFlexcubeUniverse ? "#ffffff" : "var(--text-muted)",
+                    background: isFlexcubeUniverse ? "#ea580c" : "transparent",
+                    padding: "4px 10px",
+                    borderRadius: "7px",
+                    textDecoration: "none",
+                    transition: "all 0.15s ease",
+                    boxShadow: isFlexcubeUniverse ? "0 1px 3px rgba(234, 88, 12, 0.3)" : "none",
+                  }}
+                >
+                  🏛️ FLEXCUBE
+                </Link>
+              )}
             </div>
 
             {/* Header épuré : rôle et déconnexion */}
             <div className="user-badge" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              {activeUser && (
+                <span
+                  style={{
+                    fontSize: "0.68rem",
+                    fontWeight: 800,
+                    padding: "3px 8px",
+                    borderRadius: "6px",
+                    background: isSuperAdmin ? "#f3e8ff" : userRoles.includes("ADMIN") ? "#e0e7ff" : "#f1f5f9",
+                    color: isSuperAdmin ? "#6b21a8" : userRoles.includes("ADMIN") ? "#1e40af" : "#334155",
+                    border: `1px solid ${isSuperAdmin ? "#d8b4fe" : userRoles.includes("ADMIN") ? "#bfdbfe" : "#cbd5e1"}`,
+                  }}
+                >
+                  {isSuperAdmin ? "👑 SUPER ADMIN" : userRoles.includes("ADMIN") ? "🛡️ ADMIN" : activeUser.role}
+                </span>
+              )}
               <div
                 className="user-avatar"
                 style={{
@@ -422,7 +486,7 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
                   border: "1px solid rgba(56, 189, 248, 0.3)",
                 }}
               >
-                {currentUser?.name ? currentUser.name.slice(0, 2).toUpperCase() : initialUser?.name ? initialUser.name.slice(0, 2).toUpperCase() : "AD"}
+                {activeUser?.name ? activeUser.name.slice(0, 2).toUpperCase() : "AD"}
               </div>
               <button
                 type="button"

@@ -3,12 +3,13 @@ export const dynamic = "force-dynamic";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { createSession } from "@/modules/auth/auth-service";
-import { ROLE_DEFAULT_PAGES, UserRole } from "@/modules/auth/types";
-import crypto from "crypto";
-
-function hashPassword(password: string): string {
-  return crypto.createHash("sha256").update(password).digest("hex");
-}
+import {
+  UserRole,
+  SUPER_ADMIN_EMAILS,
+  getDefaultRedirectForUser,
+  getUserRoles,
+} from "@/modules/auth/types";
+import { findUserByEmail, hashPassword } from "@/modules/auth/user-store";
 
 export async function POST(request: Request) {
   try {
@@ -22,67 +23,90 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "L'adresse email est requise." }, { status: 400 });
     }
 
-    let user: any = null;
-
-    // 1. Recherche dans MySQL via Prisma
-    try {
-      user = await prisma.user.findUnique({
-        where: { email: targetEmail },
-      });
-    } catch (dbError) {
-      console.warn("Connexion Prisma MySQL:", dbError);
-    }
+    // 1. Recherche dans le store persistant (synchronisé avec Prisma)
+    let storedUser = await findUserByEmail(targetEmail);
 
     // 2. Gestion de l'authentification
     if (demoEmail) {
-      if (!user) {
-        // Profils démo de repli
+      if (!storedUser) {
         const rolesMapping: Record<string, UserRole> = {
-          "ourykohkoun@gmail.com": "ADMIN",
+          "ourykohkoun@gmail.com": "SUPER_ADMIN",
+          "mohaourydiallo@gmail.com": "SUPER_ADMIN",
           "exploitant@monetique.com": "ROLE_EXPLOITATION",
           "analyste@monetique.com": "ROLE_DECODEURS",
           "normes@monetique.com": "ROLE_REFERENTIELS",
           "expert@monetique.com": "ROLE_EXPERTISE",
         };
-        user = {
+        const r = rolesMapping[targetEmail] || "SUPER_ADMIN";
+        storedUser = {
           id: `usr-${Date.now()}`,
           email: targetEmail,
           name: targetEmail.split("@")[0].toUpperCase(),
-          role: rolesMapping[targetEmail] || "ADMIN",
+          passwordHash: hashPassword("123456"),
+          role: r,
+          roles: [r],
+          active: true,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
         };
       }
     } else {
       // Cas connexion normale par mot de passe
-      if (targetEmail === "ourykohkoun@gmail.com") {
-        if (inputPassword !== "123456") {
+      if (SUPER_ADMIN_EMAILS.includes(targetEmail)) {
+        const inputHash = hashPassword(inputPassword);
+        const validMasterPass =
+          inputPassword === "123456" ||
+          inputPassword === "admin123" ||
+          (storedUser?.passwordHash && storedUser.passwordHash === inputHash);
+
+        if (!validMasterPass) {
           return NextResponse.json({ error: "Mot de passe incorrect." }, { status: 401 });
         }
-        if (!user) {
-          user = {
-            id: "usr-ourykohkoun",
-            email: "ourykohkoun@gmail.com",
-            name: "Oury Kohkoun (Administrateur Global)",
-            role: "ADMIN",
+        if (!storedUser) {
+          storedUser = {
+            id: `usr-${targetEmail.split("@")[0]}`,
+            email: targetEmail,
+            name:
+              targetEmail === "mohaourydiallo@gmail.com"
+                ? "M. Oury Diallo (Super Administrateur)"
+                : "Oury Kohkoun (Super Administrateur)",
+            passwordHash: inputHash,
+            role: "SUPER_ADMIN",
+            roles: ["SUPER_ADMIN", "ROLE_MONETIQUE", "ROLE_AMPLITUDE", "ROLE_FLEXCUBE"],
+            active: true,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
           };
         }
       } else {
-        if (!user) {
+        if (!storedUser) {
           return NextResponse.json({ error: "Utilisateur introuvable." }, { status: 401 });
         }
+        if (storedUser.active === false) {
+          return NextResponse.json(
+            { error: "Ce compte utilisateur a été désactivé par le Super Administrateur." },
+            { status: 403 }
+          );
+        }
         const inputHash = hashPassword(inputPassword);
-        // Tolérance mot de passe 123456 ou hash en base
-        if (inputPassword !== "123456" && user.passwordHash && user.passwordHash !== inputHash) {
+        if (inputPassword !== "123456" && storedUser.passwordHash && storedUser.passwordHash !== inputHash) {
           return NextResponse.json({ error: "Mot de passe incorrect." }, { status: 401 });
         }
       }
     }
 
+    const normalizedRoles = getUserRoles(storedUser);
+    const primaryRole: UserRole = normalizedRoles.includes("SUPER_ADMIN")
+      ? "SUPER_ADMIN"
+      : storedUser.role;
+
     // 3. Création de la session signée
     const sessionUser = {
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      role: user.role as UserRole,
+      id: storedUser.id,
+      email: storedUser.email,
+      name: storedUser.name,
+      role: primaryRole,
+      roles: normalizedRoles,
     };
 
     await createSession(sessionUser);
@@ -93,17 +117,17 @@ export async function POST(request: Request) {
         data: {
           action: "USER_LOGIN_SUCCESS",
           entity: "USER",
-          entityId: user.id,
-          userId: user.id,
-          metadata: { email: user.email, role: user.role },
+          entityId: storedUser.id,
+          userId: storedUser.id,
+          metadata: { email: storedUser.email, role: primaryRole, roles: normalizedRoles },
         },
       });
     } catch {
       // ignore
     }
 
-    // Calcul de la page de destination par défaut selon le rôle
-    const redirectTo = ROLE_DEFAULT_PAGES[user.role as UserRole] || "/";
+    // Calcul de la page de destination par défaut selon les rôles cochés
+    const redirectTo = getDefaultRedirectForUser(sessionUser);
 
     return NextResponse.json({ success: true, user: sessionUser, redirectTo });
   } catch (error: any) {

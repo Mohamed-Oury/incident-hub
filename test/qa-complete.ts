@@ -17,6 +17,14 @@ import { MONETIQUE_CHEAT_SHEET } from "../modules/training-monetique/cheat-sheet
 import { referenceIncidents } from "../app/reference-incidents";
 import { computeEmvCryptograms } from "../modules/crypto/emv-arqc";
 import { generateCopilotPlan, review4GlCode, analyzeCbsFailure } from "../modules/cbs/copilot/engine";
+import {
+  canManageUsers,
+  canEditIncident,
+  canDeleteIncident,
+  canAccessModule,
+  getDefaultRedirectForUser,
+  SessionUser,
+} from "../modules/auth/types";
 
 function runQaAll() {
   console.log("=================================================");
@@ -153,6 +161,67 @@ function runQaAll() {
     failRes.rootCause.includes("verrouillage") &&
     hasBkTables,
     `Revue détecte ${reviewRes.length} anomalies, RCA deadlock validée, tables BKCPT/BKCLI/BKTRA/BKCOM connectées`
+  );
+
+  // --- NOUVEAUX TESTS QA : GESTION DES USERS, RÔLES MODULES & BASE DE CONNAISSANCES ---
+  const superAdminUser: SessionUser = {
+    id: "usr-super",
+    email: "mohaourydiallo@gmail.com",
+    name: "Super Admin",
+    role: "SUPER_ADMIN",
+    roles: ["SUPER_ADMIN", "ROLE_MONETIQUE", "ROLE_AMPLITUDE", "ROLE_FLEXCUBE"],
+  };
+  const adminUser: SessionUser = {
+    id: "usr-admin",
+    email: "admin@banque.com",
+    name: "Admin Standard",
+    role: "ADMIN",
+    roles: ["ADMIN", "ROLE_MONETIQUE"],
+  };
+  const operatorUser: SessionUser = {
+    id: "usr-op",
+    email: "op@banque.com",
+    name: "Exploitant",
+    role: "ROLE_MONETIQUE",
+    roles: ["ROLE_MONETIQUE", "ROLE_FLEXCUBE"],
+  };
+
+  assert(
+    "TEST 28 - RBAC Gestion des Utilisateurs (Réservé exclusivement au SUPER_ADMIN)",
+    canManageUsers(superAdminUser) === true &&
+      canManageUsers(adminUser) === false &&
+      canManageUsers(operatorUser) === false,
+    "Seul SUPER_ADMIN voit l'onglet et peut créer/modifier/supprimer un user"
+  );
+
+  assert(
+    "TEST 29 - RBAC Base de Connaissances (Supprimer = SUPER_ADMIN seul, Modifier = SUPER_ADMIN & ADMIN)",
+    canDeleteIncident(superAdminUser) === true &&
+      canEditIncident(superAdminUser) === true &&
+      canDeleteIncident(adminUser) === false &&
+      canEditIncident(adminUser) === true &&
+      canDeleteIncident(operatorUser) === false &&
+      canEditIncident(operatorUser) === false,
+    "SUPER_ADMIN (Modifier+Supprimer), ADMIN (Modifier uniquement), Autres (Aucun accès)"
+  );
+
+  const amplitudeOnlyUser: SessionUser = {
+    id: "usr-amp",
+    email: "amplitude@banque.com",
+    name: "Dev Amplitude",
+    role: "ROLE_AMPLITUDE",
+    roles: ["ROLE_AMPLITUDE"],
+  };
+
+  assert(
+    "TEST 30 - Rôles par Module (ROLE_MONETIQUE, ROLE_AMPLITUDE, ROLE_FLEXCUBE) & Multi-Rôles cochés",
+    canAccessModule(operatorUser, "MONETIQUE") === true &&
+      canAccessModule(operatorUser, "AMPLITUDE") === false &&
+      canAccessModule(operatorUser, "FLEXCUBE") === true &&
+      canAccessModule(amplitudeOnlyUser, "MONETIQUE") === false &&
+      canAccessModule(amplitudeOnlyUser, "AMPLITUDE") === true &&
+      getDefaultRedirectForUser(amplitudeOnlyUser) === "/cbs",
+    "Filtrage multi-modules (Monétique, Amplitude, FLEXCUBE) et redirection par défaut validés"
   );
 
   console.log("\n=================================================");
