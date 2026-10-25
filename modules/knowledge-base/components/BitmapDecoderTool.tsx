@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import Link from "next/link";
 import { decodeIsoBitmap, ISO_DE_DEFINITIONS } from "../data/iso-bitmap-decoder";
 
 const SAMPLE_BITMAPS = [
@@ -292,7 +293,9 @@ export function BitmapDecoderTool() {
                     >
                       {/* Badge DE */}
                       <td style={{ padding: "1rem 1.25rem", verticalAlign: "middle" }}>
-                        <span
+                        <Link
+                          href={`/hub/de?search=DE${field.de}`}
+                          title={`Voir la fiche détaillée de DE${field.de} dans le Référentiel Champs DE`}
                           style={{
                             display: "inline-flex",
                             alignItems: "center",
@@ -306,10 +309,11 @@ export function BitmapDecoderTool() {
                             fontSize: "0.85rem",
                             fontFamily: "monospace",
                             boxShadow: "0 1px 2px rgba(5, 150, 105, 0.15)",
+                            textDecoration: "none",
                           }}
                         >
                           DE {field.de}
-                        </span>
+                        </Link>
                       </td>
 
                       {/* Nom normatif */}

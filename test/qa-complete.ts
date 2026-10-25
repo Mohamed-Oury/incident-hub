@@ -2,8 +2,10 @@ import { CBS_DOMAINS, CBS_EOD_STEPS, CBS_DB_ERRORS, CBS_UNIX_COMMANDS, CBS_INCID
 import { CBS_SCHEMA_TABLES, CBS_SQL_PLAYBOOKS, CBS_BATCH_DIAGNOSTICS, CBS_LOG_RULES, CBS_RECONCILIATION_DATA } from "../modules/cbs/cbs-advanced-data";
 import { DE39_CATALOG } from "../modules/knowledge-base/data/iso-de39-reference";
 import { MTI_CATALOG } from "../modules/knowledge-base/data/iso-mti-reference";
+import { DE_CATALOG, DE_FORMAT_GUIDES } from "../modules/knowledge-base/data/iso-de-reference";
 import { decodeIsoBitmap } from "../modules/knowledge-base/data/iso-bitmap-decoder";
 import { parseIso8583Message } from "../modules/knowledge-base/data/iso-message-parser";
+import { maskPAN, maskPinBlock, maskSensitiveFields } from "../modules/security/masking";
 import { parseEmvTlv, decodeTvrHex } from "../modules/knowledge-base/data/emv-tlv-decoder";
 import { parseAtmElectronicJournal } from "../modules/knowledge-base/data/atm-ej-analyzer";
 import { CBS_4GL_GRADES, CBS_4GL_LESSONS, CBS_4GL_EXAMS } from "../modules/cbs/cbs-4gl-data";
@@ -237,6 +239,52 @@ function runQaAll() {
     `${uniqueRefCodes.size} incidents Monétique uniques + ${uniqueCbsIds.size} incidents CBS uniques (0 doublon)`
   );
 
+  // --- RÉFÉRENTIEL DES CHAMPS DE (DE1 À DE128) & CONFORMITÉ PCI-DSS ---
+  const requiredDEList = [1, 2, 3, 4, 7, 11, 14, 22, 32, 35, 37, 38, 39, 41, 42, 43, 49, 52, 54, 55, 64, 70, 90, 95, 102, 103, 128];
+  const hasAllRequiredDEs = requiredDEList.every((de) => DE_CATALOG.some((item) => item.de === de));
+  const allDEsHaveRoleAndDiag = DE_CATALOG.every(
+    (item) =>
+      Boolean(item.code) &&
+      Boolean(item.name) &&
+      Boolean(item.frenchTitle) &&
+      Boolean(item.description) &&
+      Boolean(item.monetiqueRole) &&
+      Boolean(item.diagnosticAdvice) &&
+      Boolean(item.exampleValue)
+  );
+  assert(
+    "TEST 32 - Référentiel Champs DE ISO 8583 (DE1 à DE128, Description, Rôle Monétique & Diagnostic)",
+    DE_CATALOG.length >= 40 && hasAllRequiredDEs && allDEsHaveRoleAndDiag && DE_FORMAT_GUIDES.length === 4,
+    `${DE_CATALOG.length} champs DE documentés (Primaire & Secondaire) + ${DE_FORMAT_GUIDES.length} guides de formatage ISO 8583`
+  );
+
+  const pciSensitiveDEs = [2, 14, 35, 45, 52, 55];
+  const allSensitiveFlagged = pciSensitiveDEs.every(
+    (de) => DE_CATALOG.find((item) => item.de === de)?.pciSensitive === true
+  );
+  const maskedPanSample = maskPAN("4970101234567890");
+  const maskedPinSample = maskPinBlock("A84F91C03E7B1209");
+  const maskedLogSample = maskSensitiveFields("PAN 4970101234567890 CVV=842 PINBLOCK=A84F91C03E7B1209");
+  const de2InIsoMasked = parsedIso.criticalInsights.pan === "497010******7890";
+  const deCatalogExamplesSafe =
+    DE_CATALOG.find((i) => i.de === 2)?.exampleValue.includes("******") &&
+    DE_CATALOG.find((i) => i.de === 35)?.exampleValue.includes("******") &&
+    DE_CATALOG.find((i) => i.de === 45)?.exampleValue.includes("******") &&
+    DE_CATALOG.find((i) => i.de === 52)?.exampleValue.includes("****************");
+
+  assert(
+    "TEST 33 - Conformité Norme PCI-DSS (Masquage PAN 6+4, Pistes 1/2, PIN Block, CVV & Exemples Référentiel DE)",
+    allSensitiveFlagged &&
+      maskedPanSample === "497010******7890" &&
+      maskedPinSample.includes("****************") &&
+      !maskedLogSample.includes("123456") &&
+      !maskedLogSample.includes("842") &&
+      !maskedLogSample.includes("A84F91C03E7B1209") &&
+      de2InIsoMasked &&
+      Boolean(deCatalogExamplesSafe),
+    `PAN masqué (${maskedPanSample}), PIN/CVV/Pistes protégés, ${pciSensitiveDEs.length} champs DE tagués PCI-DSS`
+  );
+
   console.log("\n=================================================");
   console.log(`📊 RÉSULTAT QA TEST : ${passed} RÉUSSIS / ${failed} ÉCHECS`);
   console.log("=================================================");
@@ -247,4 +295,5 @@ function runQaAll() {
 }
 
 runQaAll();
+
 

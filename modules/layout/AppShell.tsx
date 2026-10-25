@@ -25,7 +25,6 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
   const [collapsed, setCollapsed] = useState(false);
   const [currentUser, setCurrentUser] = useState<SessionUser | null>(initialUser || null);
 
-  // Si le composant parent (ex: Page Client) n'a pas passé user, on le récupère automatiquement via la session
   useEffect(() => {
     if (!currentUser) {
       fetch("/api/auth/me")
@@ -84,10 +83,10 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
         { href: "/hub", label: "Vue d'ensemble", icon: "⊞" },
         { href: "/hub/knowledge", label: "Base de connaissance", icon: "📚" },
         { href: "/hub/diagnostic", label: "Diagnostic Assistant", icon: "⚡" },
-        { href: "/hub/training-monetique/antiseche", label: "Antisèche Monétique", icon: "🧠" },
         { href: "/hub/mti", label: "Référentiel MTI", icon: "📬" },
+        { href: "/hub/de", label: "Référentiel Champs DE", icon: "🗂️" },
         { href: "/hub/de39", label: "Référentiel DE39", icon: "🏷️" },
-        { href: "/hub/run-supervision", label: "Supervision & Runbook", icon: "🖥️" },
+        //{ href: "/hub/run-supervision", label: "Supervision & Runbook", icon: "🖥️" },
       ],
     },
     {
@@ -121,6 +120,8 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
       items: [
         { href: "/hub/training-monetique", label: "Formation Monétique & Certif", icon: "💳" },
         //{ href: "/hub/audit", label: "Piste d'audit", icon: "🛡️" },
+        { href: "/hub/training-monetique/antiseche", label: "Antisèche Monétique", icon: "🧠" },
+
       ],
     },
   ];
@@ -135,23 +136,9 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
       items: [
         { href: "/cbs", label: "Tableau de bord CBS", icon: "⊞" },
         { href: "/cbs/copilot", label: "4GL Development Copilot", icon: "🤖" },
-        { href: "/cbs/memo-conception", label: "Antisèche 4GL & .PER", icon: "🧠" },
         { href: "/cbs/per-studio", label: "Studio Créateur .per", icon: "✨" },
         { href: "/cbs/domains", label: "Domaines Métier", icon: "📑" },
         { href: "/cbs/schema", label: "Dictionnaire de Données", icon: "🔍" },
-      ],
-    },
-    {
-      key: "cbs_academy",
-      title: "FORMATION & CERTIF",
-      icon: "🎓",
-      roleRequired: "ROLE_REFERENTIELS",
-      items: [
-
-        { href: "/cbs/training-4gl", label: "Cursus Développement 4GL", icon: "👨‍💻" },
-        { href: "/cbs/per-screens", label: "Écrans .per", icon: "🖥️" },
-        { href: "/cbs/academy", label: "CBS Academy", icon: "🎯" },
-
       ],
     },
     {
@@ -163,6 +150,20 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
         { href: "/cbs/log-analyzer", label: "Analyseur de Logs & Traces", icon: "📜" },
         { href: "/cbs/unix", label: "Commandes AIX/Unix", icon: "💻" },
         { href: "/cbs/incidents", label: "Incidents RCA & Run", icon: "🚨" },
+      ],
+    },
+    {
+      key: "cbs_academy",
+      title: "FORMATION & CERTIF",
+      icon: "🎓",
+      roleRequired: "ROLE_REFERENTIELS",
+      items: [
+
+        { href: "/cbs/training-4gl", label: "Cursus Développement 4GL", icon: "👨‍💻" },
+        { href: "/cbs/per-screens", label: "Écrans .per", icon: "🖥️" },
+        { href: "/cbs/memo-conception", label: "Antisèche 4GL & .PER", icon: "🧠" },
+        { href: "/cbs/academy", label: "CBS Academy", icon: "🎯" },
+
       ],
     },
   ];
@@ -229,17 +230,17 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
   // L'onglet Gestion des Utilisateurs dans la sidebar est visible UNIQUEMENT par le SuperAdmin
   const authorizedSections = showUserManagementTab
     ? [
-        ...filteredUniverseSections,
-        {
-          key: "administration",
-          title: "ADMINISTRATION",
-          icon: "👑",
-          roleRequired: "SUPER_ADMIN",
-          items: [
-            { href: "/hub/users", label: "Gestion des Utilisateurs", icon: "👥" },
-          ],
-        },
-      ]
+      ...filteredUniverseSections,
+      {
+        key: "administration",
+        title: "ADMINISTRATION",
+        icon: "👑",
+        roleRequired: "SUPER_ADMIN",
+        items: [
+          { href: "/hub/users", label: "Gestion des Utilisateurs", icon: "👥" },
+        ],
+      },
+    ]
     : filteredUniverseSections;
 
   return (

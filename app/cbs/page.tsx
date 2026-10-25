@@ -108,6 +108,7 @@ export default function CbsDashboardPage() {
             borderRadius: "var(--radius-lg)",
             padding: "1.25rem 1.5rem",
             boxShadow: "0 4px 16px rgba(0,0,0,0.2)",
+            display: "none"
           }}
         >
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem", flexWrap: "wrap", gap: "0.5rem" }}>

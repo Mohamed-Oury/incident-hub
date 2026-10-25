@@ -44,6 +44,7 @@ export const ISO_DE_DEFINITIONS: Record<number, DataElementSpec> = {
   42: { de: 42, name: "Card Acceptor Identification Code (MID)", format: "ans 15", lengthType: "FIXED", maxLength: 15, category: "TERMINAL", description: "Identifiant commerçant ou agence." },
   43: { de: 43, name: "Card Acceptor Name/Location", format: "ans 40", lengthType: "FIXED", maxLength: 40, category: "TERMINAL", description: "Nom et localisation de l'établissement." },
   44: { de: 44, name: "Additional Response Data", format: "an ..25", lengthType: "LLVAR", maxLength: 25, category: "TRACE", description: "Données de réponse complémentaires." },
+  45: { de: 45, name: "Track 1 Data", format: "ans ..76", lengthType: "LLVAR", maxLength: 76, category: "DONNEES_CARTE", description: "Piste 1 magnétique (Nom porteur + PAN, sensible PCI-DSS)." },
   48: { de: 48, name: "Additional Data - Private", format: "ans ..999", lengthType: "LLLVAR", maxLength: 999, category: "RESEAU", description: "Données privatives réseau / Switch." },
   49: { de: 49, name: "Currency Code, Transaction", format: "n 3", lengthType: "FIXED", maxLength: 3, category: "MONTANT", description: "Code ISO devise de transaction (ex: 952 XOF, 978 EUR)." },
   50: { de: 50, name: "Currency Code, Settlement", format: "n 3", lengthType: "FIXED", maxLength: 3, category: "MONTANT", description: "Code devise de compensation." },
@@ -64,6 +65,7 @@ export const ISO_DE_DEFINITIONS: Record<number, DataElementSpec> = {
   100: { de: 100, name: "Receiving Institution Identification Code", format: "n ..11", lengthType: "LLVAR", maxLength: 11, category: "IDENTIFICATION", description: "Code banque réceptrice." },
   102: { de: 102, name: "Account Identification 1", format: "ans ..28", lengthType: "LLVAR", maxLength: 28, category: "IDENTIFICATION", description: "Numéro de compte source (RIB/IBAN)." },
   103: { de: 103, name: "Account Identification 2", format: "ans ..28", lengthType: "LLVAR", maxLength: 28, category: "IDENTIFICATION", description: "Numéro de compte cible (virement)." },
+  123: { de: 123, name: "POS / Verification Data", format: "ans ..999", lengthType: "LLLVAR", maxLength: 999, category: "SECURITE", description: "Données de vérification canal et capacités étendues POS." },
   128: { de: 128, name: "Message Authentication Code (Secondary MAC)", format: "b 64", lengthType: "FIXED", maxLength: 64, category: "SECURITE", description: "MAC secondaire calculé sur DE65 à DE127." },
 };
 

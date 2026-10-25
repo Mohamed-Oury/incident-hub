@@ -192,8 +192,8 @@ export function parseIso8583Message(rawMessage: string): IsoParseResult {
       displayValue = maskPAN(rawValue);
       isMasked = true;
       criticalInsights.pan = displayValue;
-    } else if (deNumber === 35) {
-      displayValue = maskPAN(rawValue.slice(0, 16)) + "=****************";
+    } else if (deNumber === 35 || deNumber === 45) {
+      displayValue = maskPAN(rawValue.slice(0, 16)) + "=**************** (PISTE MASQUÉE PCI-DSS)";
       isMasked = true;
     } else if (deNumber === 52) {
       displayValue = maskPinBlock(rawValue);

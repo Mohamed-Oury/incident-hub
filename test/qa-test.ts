@@ -171,6 +171,51 @@ async function runQATest() {
     failed++;
   }
 
+  // TEST 6 bis : Vérification de conformité du Référentiel des Champs DE (ISO 8583) & PCI-DSS
+  try {
+    const { DE_CATALOG, DE_FORMAT_GUIDES } = await import("../modules/knowledge-base/data/iso-de-reference");
+    const requiredDEs = [1, 2, 3, 4, 7, 11, 14, 22, 32, 35, 37, 38, 39, 41, 42, 43, 49, 52, 54, 55, 64, 70, 90, 95, 102, 103, 128];
+    const hasAllDEs = requiredDEs.every((de) => DE_CATALOG.some((item) => item.de === de));
+    const hasCompleteDEFields = DE_CATALOG.every(
+      (item) =>
+        item.de >= 1 &&
+        item.de <= 128 &&
+        item.code &&
+        item.name &&
+        item.frenchTitle &&
+        item.description &&
+        item.monetiqueRole &&
+        item.diagnosticAdvice &&
+        item.exampleValue
+    );
+    const pciFieldsMarked = [2, 14, 35, 45, 52, 55].every(
+      (de) => DE_CATALOG.find((item) => item.de === de)?.pciSensitive === true
+    );
+    const de2ExampleMasked = DE_CATALOG.find((item) => item.de === 2)?.exampleValue.includes("******");
+    const de35ExampleMasked = DE_CATALOG.find((item) => item.de === 35)?.exampleValue.includes("******");
+    const de52ExampleMasked = DE_CATALOG.find((item) => item.de === 52)?.exampleValue.includes("****************");
+
+    if (
+      hasAllDEs &&
+      hasCompleteDEFields &&
+      pciFieldsMarked &&
+      de2ExampleMasked &&
+      de35ExampleMasked &&
+      de52ExampleMasked &&
+      DE_FORMAT_GUIDES.length === 4
+    ) {
+      console.log(
+        `✅ TEST 6 bis - Référentiel Champs DE ISO 8583 & Conformité PCI-DSS (${DE_CATALOG.length} champs DE1–DE128 documentés, rôles & masquage PCI-DSS validés).`
+      );
+      passed++;
+    } else {
+      throw new Error(`Incohérence dans le référentiel des champs DE (total: ${DE_CATALOG.length})`);
+    }
+  } catch (err: any) {
+    console.error("❌ TEST 6 bis ÉCHOUÉ :", err.message);
+    failed++;
+  }
+
   // TEST 7 : Vérification du Moteur de Déchiffrement des Bitmaps ISO 8583
   try {
     const { decodeIsoBitmap } = await import("../modules/knowledge-base/data/iso-bitmap-decoder");

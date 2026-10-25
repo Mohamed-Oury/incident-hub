@@ -263,7 +263,9 @@ export function IsoMessageParserTool() {
                   return (
                     <tr key={f.de} style={{ borderBottom: "1px solid #f1f5f9" }}>
                       <td style={{ padding: "0.85rem 1rem", verticalAlign: "middle" }}>
-                        <span
+                        <Link
+                          href={`/hub/de?search=DE${f.de}`}
+                          title={`Voir la fiche détaillée de DE${f.de} dans le Référentiel Champs DE`}
                           style={{
                             display: "inline-flex",
                             alignItems: "center",
@@ -276,10 +278,11 @@ export function IsoMessageParserTool() {
                             fontWeight: 900,
                             fontSize: "0.82rem",
                             fontFamily: "monospace",
+                            textDecoration: "none",
                           }}
                         >
                           DE {f.de}
-                        </span>
+                        </Link>
                       </td>
 
                       <td style={{ padding: "0.85rem 1rem", verticalAlign: "middle" }}>

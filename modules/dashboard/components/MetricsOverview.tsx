@@ -23,15 +23,9 @@ export function MetricsOverview({ incidents }: { incidents: IncidentRecord[] }) 
       </article>
 
       <article className="metric-card">
-        <span>MTTR Moyen</span>
-        <strong>1 h 45</strong>
-        <small>↓ 18 % sur 30 jours</small>
-      </article>
-
-      <article className="metric-card">
         <span>Composants Surveillés</span>
         <strong>{componentsSet.size}</strong>
-        <small>Payway, CBS, Switch, HSM, GAB…</small>
+        <small>PowerCard & Payway, CBS, Switch, HSM, GAB…</small>
       </article>
     </section>
   );

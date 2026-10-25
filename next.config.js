@@ -30,6 +30,11 @@ const nextConfig = {
         permanent: true,
       },
       {
+        source: "/de",
+        destination: "/hub/de",
+        permanent: true,
+      },
+      {
         source: "/de39",
         destination: "/hub/de39",
         permanent: true,

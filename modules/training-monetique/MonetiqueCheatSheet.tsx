@@ -468,6 +468,7 @@ Champs: 2,3,4  7  11,12 13       22        32      37,39  41        49
                 ["DE95", "Montants de remplacement", "an 42", "Reversal partiel (distribution partielle GAB)"],
               ]}
             />
+            <ToolLink href="/hub/de">Référentiel des Champs DE complet</ToolLink>
           </div>
         );
 
