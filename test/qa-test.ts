@@ -137,11 +137,13 @@ async function runQATest() {
       (item) => item.code && item.meaning && item.impactIncident && item.recommendedAction && item.category
     );
 
-    if (hasAllRequired && hasCompleteMetadata && DE39_CATALOG.length >= 25) {
-      console.log(`✅ TEST 5 - Référentiel DE39 ISO 8583 conforme (${DE39_CATALOG.length} codes catalogués avec diagnostic et actions).`);
+    const uniqueDe39 = new Set(DE39_CATALOG.map((item) => item.code));
+
+    if (hasAllRequired && hasCompleteMetadata && DE39_CATALOG.length >= 80 && uniqueDe39.size === DE39_CATALOG.length) {
+      console.log(`✅ TEST 5 - Référentiel DE39 ISO 8583 conforme (${DE39_CATALOG.length} codes uniques catalogués avec diagnostic et actions).`);
       passed++;
     } else {
-      throw new Error(`Incohérence dans le dictionnaire DE39 (total: ${DE39_CATALOG.length})`);
+      throw new Error(`Incohérence dans le dictionnaire DE39 (total: ${DE39_CATALOG.length}, uniques: ${uniqueDe39.size})`);
     }
   } catch (err: any) {
     console.error("❌ TEST 5 ÉCHOUÉ :", err.message);

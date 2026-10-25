@@ -47,7 +47,12 @@ function runQaAll() {
   }
 
   // --- VOLET MONÉTIQUE ---
-  assert("TEST 1 - Référentiel DE39 ISO 8583", DE39_CATALOG.length >= 25, `${DE39_CATALOG.length} codes catalogués`);
+  const uniqueDe39Codes = new Set(DE39_CATALOG.map((c) => c.code));
+  assert(
+    "TEST 1 - Référentiel DE39 ISO 8583",
+    DE39_CATALOG.length >= 80 && uniqueDe39Codes.size === DE39_CATALOG.length,
+    `${DE39_CATALOG.length} codes uniques catalogués`
+  );
   assert("TEST 2 - Référentiel MTI ISO 8583", MTI_CATALOG.length >= 15, `${MTI_CATALOG.length} MTI documentés`);
   
   const bitmapRes = decodeIsoBitmap("7238200108E18000");
