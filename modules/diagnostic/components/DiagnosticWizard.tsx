@@ -396,7 +396,7 @@ export function DiagnosticWizard() {
                   list="domain-suggestions"
                   value={formData.domain}
                   onChange={(e) => setFormData({ ...formData, domain: e.target.value })}
-                  placeholder="Ex: GAB, TPE, CARTE, PAYWAY, HOST, MOBILE..."
+                  placeholder="Ex: GAB, TPE, CARTE, POWERCARD, HOST, MOBILE..."
                   style={{ width: "100%", padding: "0.7rem", borderRadius: "8px", border: "1px solid #d4d4d8", fontSize: "0.9rem" }}
                 />
                 <datalist id="domain-suggestions">
@@ -404,7 +404,7 @@ export function DiagnosticWizard() {
                   <option value="TPE" />
                   <option value="CARTE" />
                   <option value="INTERFACE ISO 8583" />
-                  <option value="PAYWAY" />
+                  <option value="POWERCARD" />
                   <option value="HOST & CORE BANKING" />
                   <option value="MOBILE BANKING" />
                   <option value="CLEARING & RÈGLEMENT" />
@@ -964,7 +964,7 @@ export function DiagnosticWizard() {
                                   template = "[LOG HOST APPLICATIF] 10:15:22.019 ERR - Socket pool (host-01.bank.internal:10443) saturated: 64/64 active connections busy. Dropping incoming 0200 requests for STAN 739214.";
                                   setSelectedPresetCategory("HOST");
                                 } else if (item.toLowerCase().includes("tcp") || item.toLowerCase().includes("reseau")) {
-                                  template = "[TRACE TCP NETWORK] 10:15:25.802 WARN - TCP SYN-ACK timeout on port 10443 (Payway -> Host). Retries 3/3 exhausted.";
+                                  template = "[TRACE TCP NETWORK] 10:15:25.802 WARN - TCP SYN-ACK timeout on port 10443 (PowerCard -> Host). Retries 3/3 exhausted.";
                                   setSelectedPresetCategory("TCP");
                                 } else if (item.toLowerCase().includes("ej") || item.toLowerCase().includes("journal")) {
                                   template = "[ELECTRONIC JOURNAL ATM] 10:42:18.951 WARN - Presenter module sensor error code 04: Motor movement timeout on note transport.";
@@ -1301,7 +1301,7 @@ export function DiagnosticWizard() {
                         list="domain-suggestions"
                         value={formData.domain}
                         onChange={(e) => setFormData({ ...formData, domain: e.target.value })}
-                        placeholder="Ex: GAB, TPE, CARTE, PAYWAY, HOST, MOBILE..."
+                        placeholder="Ex: GAB, TPE, CARTE, POWERCARD, HOST, MOBILE..."
                         style={{ width: "100%", padding: "0.75rem", borderRadius: "8px", border: "1px solid #d4d4d8" }}
                       />
                     </div>
@@ -1378,7 +1378,7 @@ export function DiagnosticWizard() {
                 <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
                   <h4 style={{ fontSize: "1.1rem", fontWeight: 700 }}>4. Localisation du Point de Rupture</h4>
                   <p style={{ fontSize: "0.85rem", color: "#71717a" }}>
-                    Chaîne technique : GAB/TPE → Frontal Payway → Host Switch → Issuer / Core Banking / HSM
+                    Chaîne technique : GAB/TPE → Frontal PowerCard → Host Switch → Issuer / Core Banking / HSM
                   </p>
                   <div>
                     <label style={{ display: "block", fontSize: "0.85rem", fontWeight: 600, marginBottom: "0.3rem" }}>
@@ -1656,7 +1656,7 @@ export function DiagnosticWizard() {
                     onClick={() => {
                       setSelectedPresetCategory("TCP");
                       setInvestigationLogInput(
-                        "[TRACE TCP NETWORK] 10:15:25.802 WARN - TCP SYN-ACK timeout on port 10443 (Payway -> Host). Retries 3/3 exhausted."
+                        "[TRACE TCP NETWORK] 10:15:25.802 WARN - TCP SYN-ACK timeout on port 10443 (PowerCard -> Host). Retries 3/3 exhausted."
                       );
                     }}
                     style={{

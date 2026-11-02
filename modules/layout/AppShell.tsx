@@ -96,6 +96,7 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
       roleRequired: "ROLE_DECODEURS",
       items: [
         { href: "/hub/parser", label: "Parseur Trame ISO", icon: "🔍" },
+        { href: "/hub/ndc", label: "Décodeur Trames NDC", icon: "🏧" },
         { href: "/hub/bitmap", label: "Décodeur Bitmap", icon: "🧮" },
         { href: "/hub/emv", label: "Décodeur EMV / DE55", icon: "💳" },
         { href: "/hub/atm-ej", label: "Journal GAB (ATM EJ)", icon: "🖨️" },
@@ -456,7 +457,7 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
 
             {/* Header épuré : rôle et déconnexion */}
             <div className="user-badge" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-              {activeUser && (
+              {/* {activeUser && (
                 <span
                   style={{
                     fontSize: "0.68rem",
@@ -470,7 +471,7 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
                 >
                   {isSuperAdmin ? "👑 SUPER ADMIN" : userRoles.includes("ADMIN") ? "🛡️ ADMIN" : activeUser.role}
                 </span>
-              )}
+              )} */}
               <div
                 className="user-avatar"
                 style={{

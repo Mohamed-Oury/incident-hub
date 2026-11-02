@@ -25,7 +25,7 @@ export function MetricsOverview({ incidents }: { incidents: IncidentRecord[] }) 
       <article className="metric-card">
         <span>Composants Surveillés</span>
         <strong>{componentsSet.size}</strong>
-        <small>PowerCard & Payway, CBS, Switch, HSM, GAB…</small>
+        <small>PowerCard, Amplitude, Switch, HSM, GAB…</small>
       </article>
     </section>
   );

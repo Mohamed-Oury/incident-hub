@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
-import { prisma } from "@/lib/prisma";
-import { referenceIncidents } from "@/app/reference-incidents";
+import { prisma } from "../../lib/prisma";
+import { referenceIncidents } from "../../app/reference-incidents";
 import { IncidentRecord } from "./types";
 
 const DATA_DIR = path.join(process.cwd(), ".data");
@@ -147,11 +147,11 @@ const DETAILED_CASES: Record<string, Partial<IncidentRecord>> = {
       },
     ],
     flowSteps: [
-      { position: 1, source: "GAB/ATM", destination: "Payway Frontal", event: "ISO 0200 Demande d'autorisation de retrait (DE4=50000 XAF)", status: "OK" },
-      { position: 2, source: "Payway Frontal", destination: "Host Switch", event: "Routage vers CBS Core Banking", status: "OK" },
+      { position: 1, source: "GAB/ATM", destination: "PowerCard Frontal", event: "ISO 0200 Demande d'autorisation de retrait (DE4=50000 XAF)", status: "OK" },
+      { position: 2, source: "PowerCard Frontal", destination: "Host Switch", event: "Routage vers CBS Core Banking", status: "OK" },
       { position: 3, source: "Host Switch", destination: "CBS Database", event: "SELECT FOR UPDATE sur table ACCOUNTS", status: "TIMEOUT_BLOCKED" },
-      { position: 4, source: "Host Switch", destination: "Payway Frontal", event: "ISO 0210 Réponse générée par Switch (DE39=91 Timeout)", status: "ERROR" },
-      { position: 5, source: "Payway Frontal", destination: "GAB/ATM", event: "Affichage Abandon Client + Éjection Carte", status: "COMPLETED" },
+      { position: 4, source: "Host Switch", destination: "PowerCard Frontal", event: "ISO 0210 Réponse générée par Switch (DE39=91 Timeout)", status: "ERROR" },
+      { position: 5, source: "PowerCard Frontal", destination: "GAB/ATM", event: "Affichage Abandon Client + Éjection Carte", status: "COMPLETED" },
     ],
     isoMessages: [
       {
@@ -176,7 +176,7 @@ const DETAILED_CASES: Record<string, Partial<IncidentRecord>> = {
       },
     ],
     hypotheses: [
-      { description: "Coupure liaison réseau WAN entre Payway et le Host CBS", status: "REJECTED", evidence: "Pings réguliers et requêtes écho test 0800 stables à 12ms." },
+      { description: "Coupure liaison réseau WAN entre PowerCard et le Host CBS", status: "REJECTED", evidence: "Pings réguliers et requêtes écho test 0800 stables à 12ms." },
       { description: "Verrou exclusif (Row Lock) prolongé sur la table COMPTES bloquant les autorisations de solde", status: "CONFIRMED", evidence: "Dump des sessions Oracle montrant un lock en cascade provoqué par le job BATCH_INTEREST_CALC." },
     ],
     evidence: [
@@ -225,10 +225,10 @@ const DETAILED_CASES: Record<string, Partial<IncidentRecord>> = {
       },
     ],
     flowSteps: [
-      { position: 1, source: "GAB", destination: "Payway", event: "ISO 0200 Demande retrait", status: "OK" },
-      { position: 2, source: "Payway", destination: "Switch National", event: "Routage selon BIN vers Issuer", status: "OK" },
+      { position: 1, source: "GAB", destination: "PowerCard", event: "ISO 0200 Demande retrait", status: "OK" },
+      { position: 2, source: "PowerCard", destination: "Switch National", event: "Routage selon BIN vers Issuer", status: "OK" },
       { position: 3, source: "Switch National", destination: "Issuer Distant", event: "Aucune réponse à l'expiration du délai 25s", status: "TIMEOUT" },
-      { position: 4, source: "Payway", destination: "GAB", event: "Retour 0210 avec DE39=91", status: "COMPLETED" },
+      { position: 4, source: "PowerCard", destination: "GAB", event: "Retour 0210 avec DE39=91", status: "COMPLETED" },
     ],
     isoMessages: [
       {
@@ -268,7 +268,20 @@ const DETAILED_CASES: Record<string, Partial<IncidentRecord>> = {
   },
 };
 
-export async function getAllIncidents(): Promise<IncidentRecord[]> {
+export const KNOWLEDGE_BASE_DISPLAY_LIMIT = 250;
+
+export function sanitizeIncidentPayway(inc: IncidentRecord): IncidentRecord {
+  if (!inc) return inc;
+  const jsonStr = JSON.stringify(inc)
+    .replace(/Payway Frontal/g, "PowerCard Frontal")
+    .replace(/Frontal Payway/g, "Frontal PowerCard")
+    .replace(/PAYWAY/g, "POWERCARD")
+    .replace(/Payway/g, "PowerCard")
+    .replace(/payway/g, "PowerCard");
+  return JSON.parse(jsonStr);
+}
+
+export async function getAllIncidents(options?: { all?: boolean }): Promise<IncidentRecord[]> {
   try {
     // Essayer de lire depuis Prisma / MySQL
     const dbIncidents = await prisma.incident.findMany({
@@ -350,7 +363,7 @@ export async function getAllIncidents(): Promise<IncidentRecord[]> {
           {
             type: "Capture Trame",
             content: `Trame ISO 8583 0210 retournée avec ${inc.errorCode || "DE39=05"} à la milliseconde 14:22:05.112`,
-            source: "Wireshark Frontal Payway",
+            source: "Wireshark Frontal PowerCard",
           },
         ],
         rootCause: inc.rootCause ? {
@@ -433,7 +446,7 @@ export async function getAllIncidents(): Promise<IncidentRecord[]> {
           network: "VISA / GIMAC / Mastercard",
           environment: "PRODUCTION",
           component: ref.component,
-          host: "HOST-PAYWAY-SWITCH-01",
+          host: "HOST-POWERCARD-SWITCH-01",
           errorCode: `DE39=${respCode}`,
           occurredAt: new Date(Date.now() - 3600000 * 24).toISOString(),
           resolvedAt: new Date().toISOString(),
@@ -453,13 +466,13 @@ export async function getAllIncidents(): Promise<IncidentRecord[]> {
             {
               position: 1,
               source: domain === "GAB" ? "GAB/ATM" : domain === "TPE" ? "Terminal TPE" : "Frontal Partenaire",
-              destination: "Frontal Payway",
+              destination: "Frontal PowerCard",
               event: `ISO 0200 Demande d'autorisation (${keys})`,
               status: "OK",
             },
             {
               position: 2,
-              source: "Frontal Payway",
+              source: "Frontal PowerCard",
               destination: component,
               event: `Routage et contrôle du message transactionnel [${keys}]`,
               status: "OK",
@@ -474,13 +487,13 @@ export async function getAllIncidents(): Promise<IncidentRecord[]> {
             {
               position: 4,
               source: component,
-              destination: "Frontal Payway",
+              destination: "Frontal PowerCard",
               event: `Génération de la réponse ISO 0210 (DE39=${respCode})`,
               status: "ERROR",
             },
             {
               position: 5,
-              source: "Frontal Payway",
+              source: "Frontal PowerCard",
               destination: domain === "GAB" ? "GAB/ATM" : domain === "TPE" ? "Terminal TPE" : "Partenaire",
               event: "Restitution au porteur avec message d'abandon explicite",
               status: "COMPLETED",
@@ -543,7 +556,7 @@ export async function getAllIncidents(): Promise<IncidentRecord[]> {
             {
               type: "Capture Trame",
               content: `Trame ISO 8583 0210 retournée avec DE39=${respCode} à la milliseconde 14:22:05.112`,
-              source: "Wireshark Frontal Payway",
+              source: "Wireshark Frontal PowerCard",
             },
           ],
           rootCause: detailed?.rootCause || {
@@ -577,7 +590,12 @@ export async function getAllIncidents(): Promise<IncidentRecord[]> {
       });
 
       // Mettre TOUS les incidents réels de la BD au DÉBUT de la liste (1ère position)
-      return applyStoreToIncidents([...mappedDb, ...refMapped]);
+      const allDbList = applyStoreToIncidents([...mappedDb, ...refMapped]).map(sanitizeIncidentPayway);
+      if (options?.all) {
+        return allDbList;
+      }
+      // Afficher seulement 250 incidents dans la base de connaissances (les autres sont conservés)
+      return allDbList.slice(0, KNOWLEDGE_BASE_DISPLAY_LIMIT);
     }
   } catch (err) {
     // Si la BD n'a pas encore été migrée ou démarre, fallback en mémoire sur le catalogue complet
@@ -619,7 +637,7 @@ export async function getAllIncidents(): Promise<IncidentRecord[]> {
       network: "VISA / GIMAC / Mastercard",
       environment: "PRODUCTION",
       component: ref.component,
-      host: "HOST-PAYWAY-SWITCH-01",
+      host: "HOST-POWERCARD-SWITCH-01",
       errorCode: `DE39=${respCode}`,
       occurredAt: new Date(Date.now() - 3600000 * 24).toISOString(),
       resolvedAt: new Date().toISOString(),
@@ -639,13 +657,13 @@ export async function getAllIncidents(): Promise<IncidentRecord[]> {
         {
           position: 1,
           source: domain === "GAB" ? "GAB/ATM" : domain === "TPE" ? "Terminal TPE" : "Frontal Partenaire",
-          destination: "Frontal Payway",
+          destination: "Frontal PowerCard",
           event: `ISO 0200 Demande d'autorisation (${keys})`,
           status: "OK",
         },
         {
           position: 2,
-          source: "Frontal Payway",
+          source: "Frontal PowerCard",
           destination: component,
           event: `Routage et contrôle du message transactionnel [${keys}]`,
           status: "OK",
@@ -660,13 +678,13 @@ export async function getAllIncidents(): Promise<IncidentRecord[]> {
         {
           position: 4,
           source: component,
-          destination: "Frontal Payway",
+          destination: "Frontal PowerCard",
           event: `Génération de la réponse ISO 0210 (DE39=${respCode})`,
           status: "ERROR",
         },
         {
           position: 5,
-          source: "Frontal Payway",
+          source: "Frontal PowerCard",
           destination: domain === "GAB" ? "GAB/ATM" : domain === "TPE" ? "Terminal TPE" : "Partenaire",
           event: "Restitution au porteur avec message d'abandon explicite",
           status: "COMPLETED",
@@ -729,7 +747,7 @@ export async function getAllIncidents(): Promise<IncidentRecord[]> {
         {
           type: "Capture Trame",
           content: `Trame ISO 8583 0210 retournée avec DE39=${respCode} à la milliseconde 14:22:05.112`,
-          source: "Wireshark Frontal Payway",
+          source: "Wireshark Frontal PowerCard",
         },
       ],
       rootCause: detailed?.rootCause || {
@@ -762,10 +780,19 @@ export async function getAllIncidents(): Promise<IncidentRecord[]> {
     };
   });
 
-  return applyStoreToIncidents(fallbackList);
+  const allFallbackList = applyStoreToIncidents(fallbackList).map(sanitizeIncidentPayway);
+  if (options?.all) {
+    return allFallbackList;
+  }
+  // Afficher seulement 250 incidents dans la base de connaissances (les autres sont conservés)
+  return allFallbackList.slice(0, KNOWLEDGE_BASE_DISPLAY_LIMIT);
 }
 
 export async function getIncidentByReference(reference: string): Promise<IncidentRecord | null> {
-  const incidents = await getAllIncidents();
+  const incidents = await getAllIncidents({ all: true });
   return incidents.find((i) => i.reference.toLowerCase() === reference.toLowerCase() || i.id === reference) || null;
+}
+
+export async function getAllIncidentsRaw(): Promise<IncidentRecord[]> {
+  return getAllIncidents({ all: true });
 }

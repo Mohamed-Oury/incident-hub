@@ -33,11 +33,11 @@ function PostMortemContent() {
 
   const [generatedDoc, setGeneratedDoc] = useState<string | null>(null);
 
-  // Recherche automatique d'un incident par sa référence (ex: INC-001 à INC-1000)
+  // Recherche automatique d'un incident par sa référence (ex: INC-001 à INC-250)
   const handleSearchIncident = async (refToSearch?: string) => {
     const targetRef = (refToSearch || incidentRef).trim();
     if (!targetRef) {
-      setSearchFeedback({ type: "error", message: "Veuillez saisir une référence d'incident (ex: INC-001, INC-500, INC-750...)" });
+      setSearchFeedback({ type: "error", message: "Veuillez saisir une référence d'incident (ex: INC-001, INC-150, INC-200...)" });
       return;
     }
 
@@ -51,7 +51,7 @@ function PostMortemContent() {
       if (!res.ok || !data.incident) {
         setSearchFeedback({
           type: "error",
-          message: `Aucun incident trouvé avec la référence '${targetRef}'. Vérifiez la syntaxe (ex: INC-001 à INC-1000).`,
+          message: `Aucun incident trouvé avec la référence '${targetRef}'. Vérifiez la syntaxe (ex: INC-001 à INC-250).`,
         });
         setIsSearching(false);
         return;
@@ -227,7 +227,7 @@ ${params.prev}
                 Générer un Rapport à partir d&apos;un Incident Existant
               </h2>
               <p style={{ fontSize: "0.85rem", color: "#94a3b8", marginTop: "0.25rem" }}>
-                Collez n&apos;importe quelle référence (ex : <code>INC-001</code>, <code>INC-004</code>, <code>INC-500</code>, <code>INC-750</code>, <code>INC-1000</code>). Tous les champs, causes racines et résolutions sont automatiquement injectés.
+                Collez n&apos;importe quelle référence (ex : <code>INC-001</code>, <code>INC-004</code>, <code>INC-150</code>, <code>INC-200</code>, <code>INC-250</code>). Tous les champs, causes racines et résolutions sont automatiquement injectés.
               </p>
             </div>
 
@@ -239,7 +239,7 @@ ${params.prev}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") handleSearchIncident();
                 }}
-                placeholder="Ex: INC-001, INC-500..."
+                placeholder="Ex: INC-001, INC-150..."
                 className="input"
                 style={{
                   fontFamily: "monospace",
@@ -267,7 +267,7 @@ ${params.prev}
           {/* Raccourcis d'exemples d'incidents */}
           <div style={{ display: "flex", gap: "0.5rem", marginTop: "1rem", flexWrap: "wrap", alignItems: "center" }}>
             <span style={{ fontSize: "0.75rem", color: "#94a3b8", fontWeight: 600 }}>Exemples rapides :</span>
-            {["INC-001", "INC-004", "INC-120", "INC-350", "INC-500", "INC-750", "INC-1000"].map((r) => (
+            {["INC-001", "INC-004", "INC-120", "INC-100", "INC-150", "INC-200", "INC-250"].map((r) => (
               <button
                 key={r}
                 type="button"
