@@ -72,7 +72,7 @@ const DOMAIN_SUGGESTIONS = [
 ];
 
 const COMPONENT_SUGGESTIONS = [
-  "Frontal Payway",
+  "Frontal PowerCard",
   "Switch National",
   "Host CBS",
   "HSM Thales PayShield",
@@ -160,7 +160,7 @@ export function EditIncidentForm({ incident }: { incident: IncidentRecord }) {
   const [title, setTitle] = useState(incident.title);
   const [description, setDescription] = useState(incident.description || "");
   const [domain, setDomain] = useState(incident.domain || "GAB");
-  const [component, setComponent] = useState(incident.component || "Frontal Payway");
+  const [component, setComponent] = useState(incident.component || "Frontal PowerCard");
   const [errorCode, setErrorCode] = useState(incident.errorCode || "DE39=91");
   const [environment, setEnvironment] = useState(incident.environment || "PRODUCTION");
   const [severity, setSeverity] = useState<Severity>(incident.severity || "HIGH");
@@ -972,7 +972,7 @@ export function EditIncidentForm({ incident }: { incident: IncidentRecord }) {
                     type="text"
                     value={component}
                     onChange={(e) => setComponent(e.target.value)}
-                    placeholder="Ex: Frontal Payway"
+                    placeholder="Ex: Frontal PowerCard"
                     style={{ ...inputStyle, background: "#ffffff" }}
                   />
                   <div
@@ -1260,7 +1260,7 @@ export function EditIncidentForm({ incident }: { incident: IncidentRecord }) {
                   rows={4}
                   value={facts}
                   onChange={(e) => setFacts(e.target.value)}
-                  placeholder="Ex: 42 transactions rejetées entre 11h15 et 11h40 avec code DE39=91 sur le frontal Payway..."
+                  placeholder="Ex: 42 transactions rejetées entre 11h15 et 11h40 avec code DE39=91 sur le frontal PowerCard..."
                   style={{ ...inputStyle, background: "#ffffff", lineHeight: 1.55 }}
                 />
               </div>
@@ -1543,7 +1543,7 @@ export function EditIncidentForm({ incident }: { incident: IncidentRecord }) {
                           type="text"
                           value={ev.source || ""}
                           onChange={(e) => updateEvidence(idx, "source", e.target.value)}
-                          placeholder="Source (ex: Syslog Frontal Payway, Oracle Alert Log...)"
+                          placeholder="Source (ex: Syslog Frontal PowerCard, Oracle Alert Log...)"
                           style={{
                             ...inputStyle,
                             flex: 1,

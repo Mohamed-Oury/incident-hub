@@ -6,8 +6,9 @@ import { DE_CATALOG, DE_FORMAT_GUIDES } from "../modules/knowledge-base/data/iso
 import { decodeIsoBitmap } from "../modules/knowledge-base/data/iso-bitmap-decoder";
 import { parseIso8583Message } from "../modules/knowledge-base/data/iso-message-parser";
 import { maskPAN, maskPinBlock, maskSensitiveFields } from "../modules/security/masking";
-import { parseEmvTlv, decodeTvrHex } from "../modules/knowledge-base/data/emv-tlv-decoder";
+import { parseEmvTlv, decodeTvrHex, decodeTsiHex, decodeAipHex } from "../modules/knowledge-base/data/emv-tlv-decoder";
 import { parseAtmElectronicJournal } from "../modules/knowledge-base/data/atm-ej-analyzer";
+import { parseNdcMessage } from "../modules/knowledge-base/data/ndc-parser";
 import { CBS_4GL_GRADES, CBS_4GL_LESSONS, CBS_4GL_EXAMS } from "../modules/cbs/cbs-4gl-data";
 import { CBS_4GL_KEYWORDS_CHEAT_SHEET } from "../modules/cbs/cbs-4gl-cheat-sheet";
 import { CBS_4GL_PER_COURSES } from "../modules/cbs/cbs-4gl-per-screens-data";
@@ -65,12 +66,22 @@ function runQaAll() {
   const sampleDe55 = "9F26084D5E12F9884511A29F2701809F10120110A00003220000000000000000000000009F3704C8912A349F3602005A950500000480009A032409179C01019F02060000000500005F2A020952820238009F1A020952";
   const emvRes = parseEmvTlv(sampleDe55);
   const tvrRes = decodeTvrHex("0000208000");
-  assert("TEST 5 - Décodeur EMV TLV & TVR (Tag 95)", emvRes.tags.length >= 8 && tvrRes.criticalFlags.some(f => f.includes("PIN")), `${emvRes.tags.length} tags TLV, TVR décodé bit-à-bit`);
+  const tsiRes = decodeTsiHex("E800");
+  const aipRes = decodeAipHex("3800");
+  assert(
+    "TEST 5 - Décodeur EMV Avancé (TLV DE55, TVR 95, TSI 9B, AIP 82 & Audit de Sécurité)",
+    emvRes.tags.length >= 8 &&
+      tvrRes.criticalFlags.some((f) => f.includes("PIN")) &&
+      tsiRes.executedSteps.length >= 4 &&
+      aipRes.supportedFeatures.some((f) => f.includes("DDA")) &&
+      emvRes.securityAudit.cryptogramType === "ARQC",
+    `${emvRes.tags.length} tags TLV, TVR/TSI/AIP décodés, Audit ${emvRes.securityAudit.cryptogramType} validé`
+  );
 
   const sampleEj = `14:32:01 ATM: GAB-AG-04 TID: 88776655\n14:32:03 CARD INSERTED: PAN 4970101234567890\n14:32:17 HARDWARE ERROR: STACKER JAMMED IN TRANSPORT MODULE\n14:32:25 TRANSACTION ABORTED - SHUTTER NOT OPENED`;
   const ejRes = parseAtmElectronicJournal(sampleEj);
   assert("TEST 6 - Analyseur Journal GAB (ATM EJ)", ejRes.summary.hasBillJam && ejRes.summary.claimAdvice === "FAVORABLE_RECREDIT", `Bourrage détecté, Décision ${ejRes.summary.claimAdvice}`);
-  assert("TEST 6 bis - Base de Connaissance Monétique (1000 incidents résolus)", referenceIncidents.length === 1000 && referenceIncidents.every(i => i.knowledgeStatus === "VALIDATED"), `${referenceIncidents.length} incidents monétiques capitalisés & résolus`);
+  assert("TEST 6 bis - Base de Connaissance Monétique (1000 incidents préservés, 250 affichés, 0 Payway)", referenceIncidents.length === 1000 && referenceIncidents.every(i => i.knowledgeStatus === "VALIDATED") && !referenceIncidents.some(i => /payway/i.test(JSON.stringify(i))), `${referenceIncidents.length} incidents monétiques capitalisés (1000 préservés, 250 affichés dans le catalogue, 0 Payway)`);
 
   // --- VOLET CBS AMPLITUDE FONDAMENTAL ---
   assert("TEST 7 - Référentiel Domaines Métier CBS", CBS_DOMAINS.length === 8, `${CBS_DOMAINS.length} domaines métier Amplitude`);
@@ -288,6 +299,26 @@ function runQaAll() {
       de2InIsoMasked &&
       Boolean(deCatalogExamplesSafe),
     `PAN masqué (${maskedPanSample}), PIN/CVV/Pistes protégés, ${pciSensitiveDEs.length} champs DE tagués PCI-DSS`
+  );
+
+  // --- DÉCODEUR DE TRAMES NDC / NDC+ (ATM / GAB) ---
+  const ndcSampleT2H = "00000111\x1c143201\x1cA\x1c;4970101234567890=2812201123456789\x1c01\x1c000000050000\x1cA1B2C3D4E5F60718\x1c";
+  const ndcSampleAlarm = "00000312\x1c0042\x1cD03\x1cM-STATUS:23 R-STATUS:02 STACKER_JAM";
+  const ndcParsedT2H = parseNdcMessage(ndcSampleT2H);
+  const ndcParsedAlarm = parseNdcMessage(ndcSampleAlarm);
+
+  assert(
+    "TEST 34 - Décodeur Trames NDC / NDC+ GAB (T2H Retrait, Alarme 12-D, Runbook & Masquage PCI-DSS)",
+    ndcParsedT2H.direction === "TERMINAL_TO_HOST" &&
+      ndcParsedT2H.messageCategory === "TRANSACTION_REQUEST" &&
+      ndcParsedT2H.criticalInsights.pan === "497010******7890" &&
+      ndcParsedT2H.criticalInsights.amount === "500.00" &&
+      ndcParsedT2H.criticalInsights.hasPinBlock === true &&
+      ndcParsedAlarm.criticalInsights.deviceAffected === "D" &&
+      ndcParsedAlarm.criticalInsights.hasBillJam === true &&
+      ndcParsedAlarm.deviceDiagnostic?.runbook !== undefined &&
+      ndcParsedAlarm.deviceDiagnostic.runbook.phase1Security.includes("Hors-Service"),
+    `LUNO ${ndcParsedT2H.luno}, Retrait ${ndcParsedT2H.criticalInsights.amount}, Runbook ${ndcParsedAlarm.deviceDiagnostic?.runbook?.title}`
   );
 
   console.log("\n=================================================");

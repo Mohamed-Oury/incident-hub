@@ -200,7 +200,7 @@ export default async function IncidentDetailPage({ params }: IncidentDetailPageP
               </h3>
             </div>
             <span style={{ fontSize: "0.82rem", color: "#71717a" }}>
-              Chaîne de bout en bout : GAB/TPE ➔ Payway ➔ Switch ➔ Host / DB / HSM
+              Chaîne de bout en bout : GAB/TPE ➔ PowerCard ➔ Switch ➔ Host / DB / HSM
             </span>
           </div>
           <p style={{ fontSize: "0.88rem", color: "#71717a", marginBottom: "1.5rem" }}>

@@ -1,4 +1,4 @@
-import { maskPAN } from "@/modules/security/masking";
+import { maskPAN } from "../../security/masking";
 
 export type EjVendor = "NCR" | "DIEBOLD_NIXDORF" | "WINCOR" | "HYOSUNG" | "GENERIC";
 

@@ -52,7 +52,7 @@ export const referenceIncidents: ReferenceIncident[] = [
     "reference": "INC-006",
     "title": "GAB - Reversal absent après transaction timeout",
     "domain": "GAB",
-    "component": "Payway/Switch",
+    "component": "PowerCard/Switch",
     "analysisKeys": "0400/0410, DE90",
     "knowledgeStatus": "VALIDATED"
   },
@@ -68,7 +68,7 @@ export const referenceIncidents: ReferenceIncident[] = [
     "reference": "INC-008",
     "title": "GAB - STAN dupliqué",
     "domain": "GAB",
-    "component": "Payway/Switch",
+    "component": "PowerCard/Switch",
     "analysisKeys": "DE11",
     "knowledgeStatus": "VALIDATED"
   },
@@ -76,7 +76,7 @@ export const referenceIncidents: ReferenceIncident[] = [
     "reference": "INC-009",
     "title": "GAB - RRN dupliqué ou incohérent",
     "domain": "GAB",
-    "component": "Payway/Switch",
+    "component": "PowerCard/Switch",
     "analysisKeys": "DE37",
     "knowledgeStatus": "VALIDATED"
   },
@@ -84,7 +84,7 @@ export const referenceIncidents: ReferenceIncident[] = [
     "reference": "INC-010",
     "title": "GAB - Terminal ID inconnu ou mal routé",
     "domain": "GAB",
-    "component": "Payway/Routing",
+    "component": "PowerCard/Routing",
     "analysisKeys": "DE41",
     "knowledgeStatus": "VALIDATED"
   },
@@ -92,7 +92,7 @@ export const referenceIncidents: ReferenceIncident[] = [
     "reference": "INC-011",
     "title": "TPE - Paiements systématiquement rejetés",
     "domain": "TPE",
-    "component": "Payway/Host",
+    "component": "PowerCard/Host",
     "analysisKeys": "DE39, DE41",
     "knowledgeStatus": "VALIDATED"
   },
@@ -114,9 +114,9 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-014",
-    "title": "TPE - Timeout entre Payway et Host",
+    "title": "TPE - Timeout entre PowerCard et Host",
     "domain": "TPE",
-    "component": "Payway/Host",
+    "component": "PowerCard/Host",
     "analysisKeys": "timeout, MTI",
     "knowledgeStatus": "VALIDATED"
   },
@@ -132,7 +132,7 @@ export const referenceIncidents: ReferenceIncident[] = [
     "reference": "INC-016",
     "title": "TPE - Reversal automatique non généré",
     "domain": "TPE",
-    "component": "Payway",
+    "component": "PowerCard",
     "analysisKeys": "0400/0410",
     "knowledgeStatus": "VALIDATED"
   },
@@ -266,49 +266,49 @@ export const referenceIncidents: ReferenceIncident[] = [
   },
   {
     "reference": "INC-033",
-    "title": "Payway - Problème de routage vers un Host",
-    "domain": "Payway",
+    "title": "PowerCard - Problème de routage vers un Host",
+    "domain": "PowerCard",
     "component": "Routing",
     "analysisKeys": "destination/Host",
     "knowledgeStatus": "VALIDATED"
   },
   {
     "reference": "INC-034",
-    "title": "Payway - Queue de messages en accumulation",
-    "domain": "Payway",
-    "component": "Payway/Messaging",
+    "title": "PowerCard - Queue de messages en accumulation",
+    "domain": "PowerCard",
+    "component": "PowerCard/Messaging",
     "analysisKeys": "queue",
     "knowledgeStatus": "VALIDATED"
   },
   {
     "reference": "INC-035",
-    "title": "Payway - Service d'interface arrêté",
-    "domain": "Payway",
-    "component": "Payway",
+    "title": "PowerCard - Service d'interface arrêté",
+    "domain": "PowerCard",
+    "component": "PowerCard",
     "analysisKeys": "service/status",
     "knowledgeStatus": "VALIDATED"
   },
   {
     "reference": "INC-036",
-    "title": "Payway - Pool de connexions saturé",
-    "domain": "Payway",
-    "component": "Payway/DB",
+    "title": "PowerCard - Pool de connexions saturé",
+    "domain": "PowerCard",
+    "component": "PowerCard/DB",
     "analysisKeys": "connection pool",
     "knowledgeStatus": "VALIDATED"
   },
   {
     "reference": "INC-037",
-    "title": "Payway - Latence anormale d'un Host",
-    "domain": "Payway",
+    "title": "PowerCard - Latence anormale d'un Host",
+    "domain": "PowerCard",
     "component": "Host/Réseau",
     "analysisKeys": "latence",
     "knowledgeStatus": "VALIDATED"
   },
   {
     "reference": "INC-038",
-    "title": "Payway - Réponse reçue mais non corrélée",
-    "domain": "Payway",
-    "component": "Payway/Switch",
+    "title": "PowerCard - Réponse reçue mais non corrélée",
+    "domain": "PowerCard",
+    "component": "PowerCard/Switch",
     "analysisKeys": "STAN/RRN",
     "knowledgeStatus": "VALIDATED"
   },
@@ -404,7 +404,7 @@ export const referenceIncidents: ReferenceIncident[] = [
     "reference": "INC-050",
     "title": "Production - Déploiement monétique avec régression de transactions",
     "domain": "Production",
-    "component": "Release/Payway",
+    "component": "Release/PowerCard",
     "analysisKeys": "MTI/DE39/logs",
     "knowledgeStatus": "VALIDATED"
   },

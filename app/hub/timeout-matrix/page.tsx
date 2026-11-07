@@ -178,7 +178,7 @@ export default function TimeoutMatrixPage() {
 
               <div style={{ background: "#1f2937", padding: "0.9rem", borderRadius: "8px", borderLeft: "4px solid #e60028" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.85rem", fontWeight: 700 }}>
-                  <span>Frontal Payway / Switch</span>
+                  <span>Frontal PowerCard / Switch</span>
                   <span>Max {switchTimeout}s</span>
                 </div>
                 <p style={{ fontSize: "0.78rem", color: "#94a3b8", marginTop: "0.2rem" }}>
