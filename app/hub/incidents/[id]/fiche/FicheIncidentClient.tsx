@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import Link from "next/link";
 import { IncidentRecord } from "@/modules/incidents/types";
+import { exportSingleIncidentToPowerPoint } from "@/modules/knowledge-base/services/export-service";
 
 interface FicheIncidentClientProps {
   incident: IncidentRecord;
@@ -405,6 +406,27 @@ export function FicheIncidentClient({ incident }: FicheIncidentClientProps) {
           >
             Vue Détaillée
           </Link>
+          <button
+            type="button"
+            onClick={() => exportSingleIncidentToPowerPoint(incident, isAFG ? "AFG" : "SGABS")}
+            style={{
+              background: "#fff7ed",
+              color: "#c2410c",
+              border: "1.5px solid #fdba74",
+              padding: "0.55rem 1.15rem",
+              borderRadius: "8px",
+              fontSize: "0.85rem",
+              fontWeight: 800,
+              cursor: "pointer",
+              boxShadow: "0 2px 8px rgba(194, 65, 12, 0.2)",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.45rem",
+            }}
+            title="Télécharger la présentation PowerPoint (.ppt) de cet incident conforme au template officiel"
+          >
+            <span>📙 Présentation PPT</span>
+          </button>
           <button
             type="button"
             onClick={handlePrint}

@@ -104,17 +104,17 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
         { href: "/hub/atm-ej", label: "Journal GAB (ATM EJ)", icon: "🖨️" },
       ],
     },
-    {
-      key: "advanced",
-      title: "EXPERTISE & OUTILS",
-      icon: "🛠️",
-      roleRequired: "ROLE_EXPERTISE",
-      items: [
-        { href: "/hub/crypto-hsm", label: "Diagnostic Clés HSM", icon: "🔐" },
-        //{ href: "/hub/timeout-matrix", label: "Matrice Time-Outs", icon: "⏱️" },
-        { href: "/hub/post-mortem", label: "Générateur Rapport", icon: "📑" },
-      ],
-    },
+    // {
+    //   key: "advanced",
+    //   title: "EXPERTISE & OUTILS",
+    //   icon: "🛠️",
+    //   roleRequired: "ROLE_EXPERTISE",
+    //   items: [
+    //     { href: "/hub/crypto-hsm", label: "Diagnostic Clés HSM", icon: "🔐" },
+    //     { href: "/hub/timeout-matrix", label: "Matrice Time-Outs", icon: "⏱️" },
+    //      { href: "/hub/post-mortem", label: "Générateur Rapport", icon: "📑" },
+    //   ],
+    // },
     {
       key: "referentials",
       title: "FORMATION & CERTIF",
@@ -323,10 +323,10 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
               {isFlexcubeUniverse
                 ? "ORACLE FLEXCUBE"
                 : isCbsUniverse
-                ? "CBS AMPLITUDE"
-                : isAFG
-                ? "AFG BANK • MONÉTIQUE"
-                : "SGABS • MONÉTIQUE"}
+                  ? "CBS AMPLITUDE"
+                  : isAFG
+                    ? "AFG BANK • MONÉTIQUE"
+                    : "SGABS • MONÉTIQUE"}
             </b>
           </div>
           <button
@@ -350,19 +350,18 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
                 background: isFlexcubeUniverse
                   ? "rgba(234, 88, 12, 0.12)"
                   : isAmplitudeUniverse
-                  ? "rgba(2, 132, 199, 0.12)"
-                  : isAFG
-                  ? "rgba(0, 168, 0, 0.15)"
-                  : "rgba(230, 0, 40, 0.14)",
-                border: `1px solid ${
-                  isFlexcubeUniverse
-                    ? "rgba(234, 88, 12, 0.3)"
-                    : isAmplitudeUniverse
+                    ? "rgba(2, 132, 199, 0.12)"
+                    : isAFG
+                      ? "rgba(0, 168, 0, 0.15)"
+                      : "rgba(230, 0, 40, 0.14)",
+                border: `1px solid ${isFlexcubeUniverse
+                  ? "rgba(234, 88, 12, 0.3)"
+                  : isAmplitudeUniverse
                     ? "rgba(2, 132, 199, 0.3)"
                     : isAFG
-                    ? "rgba(34, 197, 94, 0.35)"
-                    : "rgba(230, 0, 40, 0.35)"
-                }`,
+                      ? "rgba(34, 197, 94, 0.35)"
+                      : "rgba(230, 0, 40, 0.35)"
+                  }`,
                 borderRadius: "8px",
                 padding: "6px 10px",
               }}
@@ -378,19 +377,19 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
                     color: isFlexcubeUniverse
                       ? "#fb923c"
                       : isAmplitudeUniverse
-                      ? "#38bdf8"
-                      : isAFG
-                      ? "#4ade80"
-                      : "#fca5a5",
+                        ? "#38bdf8"
+                        : isAFG
+                          ? "#4ade80"
+                          : "#fca5a5",
                   }}
                 >
                   {isFlexcubeUniverse
                     ? "Oracle FLEXCUBE"
                     : isAmplitudeUniverse
-                    ? "Sopra Amplitude"
-                    : isAFG
-                    ? "AFG Bank (Atlantic)"
-                    : "SGABS (SocGen)"}
+                      ? "Sopra Amplitude"
+                      : isAFG
+                        ? "AFG Bank (Atlantic)"
+                        : "SGABS (SocGen)"}
                 </span>
               </div>
               <span
@@ -403,10 +402,10 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
                   background: isFlexcubeUniverse
                     ? "#ea580c"
                     : isAmplitudeUniverse
-                    ? "#0284c7"
-                    : isAFG
-                    ? "#00a800"
-                    : "#e60028",
+                      ? "#0284c7"
+                      : isAFG
+                        ? "#00a800"
+                        : "#e60028",
                   color: "#ffffff",
                 }}
               >

@@ -37,6 +37,17 @@ export function getEnrichedSgabsIncident(ref: ReferenceIncident, index: number):
   // Profilage technique précis selon le type d'incident monétique
   const profile = buildIncidentTechnicalProfile(ref, num, respCode, stanStr, rrnStr, tidStr, midStr);
 
+  // Répartition chronologique réaliste des 80 incidents SGABS sur la période Juin 2025 à Octobre 2026
+  const startMs = new Date("2025-06-01T08:00:00.000Z").getTime();
+  const endMs = new Date("2026-10-31T18:00:00.000Z").getTime();
+  const totalSpanMs = endMs - startMs;
+  const progress = (num - 1) / (SGABS_DISPLAY_LIMIT - 1);
+  const hourOffset = ((num * 13) % 14) * 3600000;
+  const occurredTimestamp = endMs - progress * totalSpanMs - hourOffset;
+  const occurredDate = new Date(occurredTimestamp);
+  const createdDate = new Date(occurredTimestamp + 1800000);
+  const resolvedDate = new Date(occurredTimestamp + 3600000 * (2 + (num % 6)));
+
   return {
     id: ref.reference,
     reference: ref.reference,
@@ -54,12 +65,12 @@ export function getEnrichedSgabsIncident(ref: ReferenceIncident, index: number):
     component: ref.component,
     host: profile.host,
     errorCode: `DE39=${respCode}`,
-    occurredAt: new Date(Date.now() - 3600000 * (24 + (num % 15))).toISOString(),
-    resolvedAt: new Date(Date.now() - 3600000 * (20 + (num % 15))).toISOString(),
+    occurredAt: occurredDate.toISOString(),
+    resolvedAt: resolvedDate.toISOString(),
     authorId: "usr-sgabs-prod-01",
     authorName: "Oury Kohkoun (Expert Monétique SGABS)",
-    createdAt: new Date(Date.now() - 3600000 * 72).toISOString(),
-    updatedAt: new Date().toISOString(),
+    createdAt: createdDate.toISOString(),
+    updatedAt: resolvedDate.toISOString(),
     observations: [profile.observation],
     flowSteps: profile.flowSteps,
     isoMessages: profile.isoMessages,

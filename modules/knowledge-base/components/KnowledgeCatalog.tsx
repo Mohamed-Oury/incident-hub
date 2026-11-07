@@ -12,12 +12,61 @@ import { useSubsidiary } from "@/modules/layout/SubsidiaryContext";
 import {
   exportIncidentsToExcel,
   exportIncidentsToPowerPoint,
+  exportSingleIncidentToPowerPoint,
 } from "../services/export-service";
 
 interface KnowledgeCatalogProps {
   initialIncidents: IncidentRecord[];
   initialSearch?: string;
   currentUser?: SessionUser | null;
+}
+
+function formatDateFr(dateStr?: string | null): string {
+  if (!dateStr) return "—";
+  try {
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return "—";
+    return d.toLocaleDateString("fr-FR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  } catch {
+    return "—";
+  }
+}
+
+function isoToFr(iso?: string): string {
+  if (!iso) return "";
+  const parts = iso.slice(0, 10).split("-");
+  if (parts.length === 3) {
+    return `${parts[2]}/${parts[1]}/${parts[0]}`;
+  }
+  return iso;
+}
+
+function parseToIso(dateStr?: string): string {
+  if (!dateStr) return "";
+  const cleaned = dateStr.trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(cleaned)) return cleaned;
+  const parts = cleaned.split(/[/.-]/);
+  if (parts.length === 3) {
+    const day = parts[0].padStart(2, "0");
+    const month = parts[1].padStart(2, "0");
+    let year = parts[2];
+    if (year.length === 2) year = `20${year}`;
+    if (year.length === 4 && Number(day) >= 1 && Number(day) <= 31 && Number(month) >= 1 && Number(month) <= 12) {
+      return `${year}-${month}-${day}`;
+    }
+  }
+  return "";
+}
+
+function formatInputDateFr(val: string): string {
+  const digits = val.replace(/\D/g, "").slice(0, 8);
+  if (digits.length <= 2) return digits;
+  if (digits.length <= 4) return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+  return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`;
 }
 
 export function KnowledgeCatalog({
@@ -30,6 +79,9 @@ export function KnowledgeCatalog({
   const [search, setSearch] = useState(initialSearch);
   const [selectedDomain, setSelectedDomain] = useState<string>("ALL");
   const [selectedStatus, setSelectedStatus] = useState<string>("ALL");
+  const [startDate, setStartDate] = useState<string>("");
+  const [endDate, setEndDate] = useState<string>("");
+  const [datePreset, setDatePreset] = useState<"ALL" | "2026" | "2025" | "S2_2026" | "OCT_2026">("ALL");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [deletingRef, setDeletingRef] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null);
@@ -61,6 +113,48 @@ export function KnowledgeCatalog({
     setSubsidiary(subsidiary);
     setCurrentPage(1);
     setSelectedDomain("ALL");
+  };
+
+  const handleApplyPreset = (preset: "ALL" | "2026" | "2025" | "S2_2026" | "OCT_2026") => {
+    setDatePreset(preset);
+    setCurrentPage(1);
+
+    if (preset === "ALL") {
+      setStartDate("");
+      setEndDate("");
+      return;
+    }
+
+    if (preset === "2026") {
+      setStartDate("01/01/2026");
+      setEndDate("31/10/2026");
+      return;
+    }
+
+    if (preset === "2025") {
+      setStartDate("01/06/2025");
+      setEndDate("31/12/2025");
+      return;
+    }
+
+    if (preset === "S2_2026") {
+      setStartDate("01/07/2026");
+      setEndDate("31/10/2026");
+      return;
+    }
+
+    if (preset === "OCT_2026") {
+      setStartDate("01/10/2026");
+      setEndDate("31/10/2026");
+      return;
+    }
+  };
+
+  const handleResetDates = () => {
+    setStartDate("");
+    setEndDate("");
+    setDatePreset("ALL");
+    setCurrentPage(1);
   };
 
   // Seul le SuperAdmin peut supprimer ou modifier; l'Admin ne peut que modifier; les autres rôles n'ont pas accès
@@ -126,9 +220,35 @@ export function KnowledgeCatalog({
         (selectedStatus === "VALIDATED" && inc.knowledgeStatus === "VALIDATED") ||
         (selectedStatus === "REFERENCE_SCENARIO" && inc.knowledgeStatus === "REFERENCE_SCENARIO");
 
-      return matchQuery && matchDomain && matchStatus;
+      // Filtre Date de Création (Période format JJ/MM/AAAA)
+      let matchDate = true;
+      const startIso = parseToIso(startDate);
+      const endIso = parseToIso(endDate);
+
+      if (startIso || endIso) {
+        const targetStr = inc.createdAt || inc.occurredAt;
+        if (!targetStr) {
+          matchDate = false;
+        } else {
+          const incDate = new Date(targetStr);
+          if (isNaN(incDate.getTime())) {
+            matchDate = false;
+          } else {
+            if (startIso) {
+              const start = new Date(`${startIso}T00:00:00.000`);
+              if (incDate < start) matchDate = false;
+            }
+            if (endIso) {
+              const end = new Date(`${endIso}T23:59:59.999`);
+              if (incDate > end) matchDate = false;
+            }
+          }
+        }
+      }
+
+      return matchQuery && matchDomain && matchStatus && matchDate;
     });
-  }, [subsidiaryIncidents, search, selectedDomain, selectedStatus]);
+  }, [subsidiaryIncidents, search, selectedDomain, selectedStatus, startDate, endDate]);
 
   const totalPages = Math.ceil(filteredIncidents.length / pageSize) || 1;
   const safePage = Math.min(currentPage, totalPages);
@@ -200,7 +320,7 @@ export function KnowledgeCatalog({
               </span>
             </div>
             <div style={{ fontSize: "1rem", fontWeight: 800, color: "#0f172a", marginTop: "0.15rem" }}>
-              {selectedSubsidiary === "AFG" ? "AFG Bank (Atlantic Group)" : "SGABS (Société Générale Sénégal)"}
+              {selectedSubsidiary === "AFG" ? "AFG Bank (Atlantic Group)" : "SGABS (Société Générale African Business Services)"}
             </div>
           </div>
         </div>
@@ -400,6 +520,211 @@ export function KnowledgeCatalog({
             <option value="REFERENCE_SCENARIO">Scénario de référence</option>
           </select>
         </div>
+
+        {/* 📅 FILTRE PAR DATE DE CRÉATION (PÉRIODE AVEC RACCOURCIS & DATES PERSONNALISÉES) */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+            gap: "0.75rem",
+            padding: "0.75rem 1rem",
+            background: "rgba(15, 23, 42, 0.75)",
+            border: "1px solid #334155",
+            borderRadius: "10px",
+            marginTop: "0.75rem",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", flexWrap: "wrap" }}>
+            <span style={{ fontSize: "0.82rem", color: "#f1f5f9", fontWeight: 700, display: "inline-flex", alignItems: "center", gap: "0.35rem" }}>
+              <span>📅</span> Période de création :
+            </span>
+
+            {/* Presets rapides de filtrage */}
+            <div style={{ display: "inline-flex", gap: "0.3rem", flexWrap: "wrap" }}>
+              {[
+                { id: "ALL", label: "Toutes (Juin 25 - Oct 26)" },
+                { id: "2026", label: "Année 2026" },
+                { id: "2025", label: "Année 2025" },
+                { id: "S2_2026", label: "S2 2026 (Juil-Oct)" },
+                { id: "OCT_2026", label: "Octobre 2026" },
+              ].map((p) => {
+                const isActive =
+                  (p.id === "ALL" && !startDate && !endDate) ||
+                  (datePreset === p.id && (startDate || endDate));
+                return (
+                  <button
+                    key={p.id}
+                    type="button"
+                    onClick={() => handleApplyPreset(p.id as any)}
+                    style={{
+                      background: isActive ? (selectedSubsidiary === "AFG" ? "#00a800" : "#e60028") : "#1e293b",
+                      color: isActive ? "#ffffff" : "#94a3b8",
+                      border: `1px solid ${isActive ? (selectedSubsidiary === "AFG" ? "#166534" : "#99001b") : "#475569"}`,
+                      padding: "0.25rem 0.65rem",
+                      borderRadius: "6px",
+                      fontSize: "0.76rem",
+                      cursor: "pointer",
+                      fontWeight: 700,
+                      transition: "all 0.15s ease",
+                    }}
+                  >
+                    {p.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Sélecteurs de date début et date fin au format JJ/MM/AAAA */}
+          <div style={{ display: "flex", alignItems: "center", gap: "0.65rem", flexWrap: "wrap" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.35rem" }}>
+              <span style={{ fontSize: "0.76rem", color: "#94a3b8", fontWeight: 700 }}>Du :</span>
+              <div
+                style={{
+                  position: "relative",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  background: "#0f172a",
+                  border: "1px solid #475569",
+                  borderRadius: "6px",
+                  padding: "0.2rem 0.45rem",
+                }}
+              >
+                <input
+                  type="text"
+                  value={startDate}
+                  onChange={(e) => {
+                    const formatted = formatInputDateFr(e.target.value);
+                    setStartDate(formatted);
+                    setDatePreset("ALL");
+                    setCurrentPage(1);
+                  }}
+                  placeholder="JJ/MM/AAAA"
+                  maxLength={10}
+                  style={{
+                    background: "transparent",
+                    color: "#ffffff",
+                    border: "none",
+                    outline: "none",
+                    fontSize: "0.78rem",
+                    width: "88px",
+                    fontWeight: 700,
+                    letterSpacing: "0.03em",
+                  }}
+                />
+                <input
+                  type="date"
+                  tabIndex={-1}
+                  aria-hidden="true"
+                  style={{
+                    position: "absolute",
+                    right: 4,
+                    width: "22px",
+                    height: "22px",
+                    opacity: 0,
+                    cursor: "pointer",
+                  }}
+                  onChange={(e) => {
+                    if (e.target.value) {
+                      setStartDate(isoToFr(e.target.value));
+                      setDatePreset("ALL");
+                      setCurrentPage(1);
+                    }
+                  }}
+                />
+                <span style={{ fontSize: "0.85rem", cursor: "pointer", pointerEvents: "none" }} title="Choisir sur le calendrier">
+                  📅
+                </span>
+              </div>
+            </div>
+
+            <div style={{ display: "flex", alignItems: "center", gap: "0.35rem" }}>
+              <span style={{ fontSize: "0.76rem", color: "#94a3b8", fontWeight: 700 }}>Au :</span>
+              <div
+                style={{
+                  position: "relative",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  background: "#0f172a",
+                  border: "1px solid #475569",
+                  borderRadius: "6px",
+                  padding: "0.2rem 0.45rem",
+                }}
+              >
+                <input
+                  type="text"
+                  value={endDate}
+                  onChange={(e) => {
+                    const formatted = formatInputDateFr(e.target.value);
+                    setEndDate(formatted);
+                    setDatePreset("ALL");
+                    setCurrentPage(1);
+                  }}
+                  placeholder="JJ/MM/AAAA"
+                  maxLength={10}
+                  style={{
+                    background: "transparent",
+                    color: "#ffffff",
+                    border: "none",
+                    outline: "none",
+                    fontSize: "0.78rem",
+                    width: "88px",
+                    fontWeight: 700,
+                    letterSpacing: "0.03em",
+                  }}
+                />
+                <input
+                  type="date"
+                  tabIndex={-1}
+                  aria-hidden="true"
+                  style={{
+                    position: "absolute",
+                    right: 4,
+                    width: "22px",
+                    height: "22px",
+                    opacity: 0,
+                    cursor: "pointer",
+                  }}
+                  onChange={(e) => {
+                    if (e.target.value) {
+                      setEndDate(isoToFr(e.target.value));
+                      setDatePreset("ALL");
+                      setCurrentPage(1);
+                    }
+                  }}
+                />
+                <span style={{ fontSize: "0.85rem", cursor: "pointer", pointerEvents: "none" }} title="Choisir sur le calendrier">
+                  📅
+                </span>
+              </div>
+            </div>
+
+            {(startDate || endDate) && (
+              <button
+                type="button"
+                onClick={handleResetDates}
+                style={{
+                  background: "#334155",
+                  color: "#f87171",
+                  border: "1px solid #ef4444",
+                  borderRadius: "6px",
+                  padding: "0.25rem 0.6rem",
+                  fontSize: "0.76rem",
+                  cursor: "pointer",
+                  fontWeight: 700,
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.25rem",
+                }}
+                title="Réinitialiser le filtre de dates"
+              >
+                ✕ Effacer
+              </button>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Barre d'Export Élaborée (Excel & PowerPoint) & Contrôles */}
@@ -424,6 +749,25 @@ export function KnowledgeCatalog({
             <strong style={{ color: selectedSubsidiary === "AFG" ? "#15803d" : "#e60028" }}>{filteredIncidents.length}</strong> incidents (
             <strong>{selectedSubsidiary === "AFG" ? "AFG Bank" : "SGABS"}</strong>)
           </span>
+          {(startDate || endDate) && (
+            <span
+              style={{
+                fontSize: "0.76rem",
+                fontWeight: 700,
+                background: "#f1f5f9",
+                color: "#0f172a",
+                border: "1px solid #cbd5e1",
+                padding: "0.15rem 0.55rem",
+                borderRadius: "999px",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "0.3rem",
+              }}
+            >
+              <span>🎯 Période :</span>
+              <span>{startDate || "Début"} → {endDate || "Ce jour"}</span>
+            </span>
+          )}
         </div>
 
         {/* Boutons d'export élaboré Excel & PowerPoint distincts par filiale */}
@@ -432,7 +776,7 @@ export function KnowledgeCatalog({
           <button
             type="button"
             disabled={filteredIncidents.length === 0}
-            onClick={() => exportIncidentsToExcel(filteredIncidents, selectedSubsidiary)}
+            onClick={() => exportIncidentsToExcel(filteredIncidents, selectedSubsidiary, { startDate, endDate })}
             style={{
               display: "inline-flex",
               alignItems: "center",
@@ -449,7 +793,7 @@ export function KnowledgeCatalog({
               boxShadow: "0 1px 3px rgba(22, 163, 74, 0.15)",
               transition: "all 0.15s ease",
             }}
-            title={`Exporter l'ensemble des ${filteredIncidents.length} incidents de ${selectedSubsidiary} au format Excel élaboré (.xls)`}
+            title={`Exporter les ${filteredIncidents.length} incidents de la sélection actuelle au format Excel (.xlsx)`}
           >
             <span>📊</span>
             <span>Exporter Excel ({selectedSubsidiary})</span>
@@ -471,7 +815,7 @@ export function KnowledgeCatalog({
           <button
             type="button"
             disabled={filteredIncidents.length === 0}
-            onClick={() => exportIncidentsToPowerPoint(filteredIncidents, selectedSubsidiary)}
+            onClick={() => exportIncidentsToPowerPoint(filteredIncidents, selectedSubsidiary, { startDate, endDate })}
             style={{
               display: "inline-flex",
               alignItems: "center",
@@ -488,10 +832,22 @@ export function KnowledgeCatalog({
               boxShadow: "0 1px 3px rgba(194, 65, 12, 0.15)",
               transition: "all 0.15s ease",
             }}
-            title={`Générer le rapport exécutif PowerPoint (.ppt) des incidents pour ${selectedSubsidiary}`}
+            title={`Générer la présentation PowerPoint (.pptx) pour les ${filteredIncidents.length} incidents de la période`}
           >
             <span>📙</span>
             <span>Exporter PowerPoint ({selectedSubsidiary})</span>
+            <span
+              style={{
+                background: "#ffedd5",
+                color: "#9a3412",
+                padding: "0.1rem 0.45rem",
+                borderRadius: "999px",
+                fontSize: "0.72rem",
+                fontWeight: 800,
+              }}
+            >
+              {filteredIncidents.length}
+            </span>
           </button>
 
           {/* Contrôles de pagination en haut */}
@@ -528,6 +884,7 @@ export function KnowledgeCatalog({
             <tr>
               <th style={{ width: "110px" }}>Référence</th>
               <th style={{ width: "95px" }}>Filiale</th>
+              <th style={{ width: "115px" }}>Date Création</th>
               <th>Titre de l&apos;incident</th>
               <th>Domaine</th>
               <th>Composant</th>
@@ -539,7 +896,7 @@ export function KnowledgeCatalog({
           <tbody>
             {paginatedIncidents.length === 0 ? (
               <tr>
-                <td colSpan={8} style={{ textAlign: "center", padding: "3.5rem 1.5rem", color: "#64748b" }}>
+                <td colSpan={9} style={{ textAlign: "center", padding: "3.5rem 1.5rem", color: "#64748b" }}>
                   {selectedSubsidiary === "AFG" && counts.afg === 0 ? (
                     <div style={{ maxWidth: "560px", margin: "0 auto", display: "flex", flexDirection: "column", alignItems: "center", gap: "1rem" }}>
                       <div
@@ -626,6 +983,21 @@ export function KnowledgeCatalog({
                       </span>
                     </td>
                     <td>
+                      <span
+                        style={{
+                          fontSize: "0.8rem",
+                          color: "#334155",
+                          fontWeight: 700,
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "0.25rem",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        📅 {formatDateFr(inc.createdAt || inc.occurredAt)}
+                      </span>
+                    </td>
+                    <td>
                       <div style={{ fontWeight: 600, color: "#0f172a" }}>{inc.title}</div>
                       {inc.description && (
                         <div style={{ fontSize: "0.8rem", color: "#64748b", marginTop: "0.15rem", maxWidth: "480px" }}>
@@ -671,6 +1043,27 @@ export function KnowledgeCatalog({
                         >
                           📄 Fiche PDF
                         </Link>
+                        <button
+                          type="button"
+                          onClick={() => exportSingleIncidentToPowerPoint(inc, incSubsidiary)}
+                          style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "0.25rem",
+                            padding: "0.35rem 0.65rem",
+                            fontSize: "0.78rem",
+                            fontWeight: 800,
+                            borderRadius: "8px",
+                            background: "#fff7ed",
+                            border: "1.5px solid #fdba74",
+                            color: "#c2410c",
+                            cursor: "pointer",
+                            transition: "all 0.15s ease",
+                          }}
+                          title={`Générer et télécharger la présentation PowerPoint (.pptx) de l'incident ${inc.reference} conforme au template officiel`}
+                        >
+                          📙 Fiche PPT
+                        </button>
                         <Link
                           href={`/hub/incidents/${inc.reference}`}
                           className="btn-secondary"

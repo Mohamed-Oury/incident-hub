@@ -105,6 +105,25 @@ export default async function IncidentDetailPage({ params }: IncidentDetailPageP
             <Link href="/hub/knowledge" className="btn-secondary" style={{ fontSize: "0.85rem" }}>
               ← Retour au catalogue
             </Link>
+            <Link
+              href={`/hub/incidents/${incident.reference}/fiche`}
+              target="_blank"
+              style={{
+                fontSize: "0.85rem",
+                padding: "0.5rem 1rem",
+                fontWeight: 700,
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "0.4rem",
+                borderRadius: "8px",
+                background: "#eff6ff",
+                border: "1px solid #bfdbfe",
+                color: "#1d4ed8",
+                textDecoration: "none",
+              }}
+            >
+              📄 Fiche PDF
+            </Link>
             {allowEdit && (
               <Link
                 href={`/hub/incidents/${incident.reference}/edit`}
