@@ -338,7 +338,7 @@ export default function LoginPage() {
           </div>
 
           {/* En-tête inférieur gauche : Signature experte en Glassmorphism */}
-          <div className="visual-content-bottom">
+          {/* <div className="visual-content-bottom">
             <div
               style={{
                 padding: "1rem 1.35rem",
@@ -408,7 +408,7 @@ export default function LoginPage() {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
         </section>
 
         {/* =================================================================== */}
