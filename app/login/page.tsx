@@ -4,8 +4,8 @@ import { useState, useEffect } from "react";
 
 export default function LoginPage() {
   const [mounted, setMounted] = useState(false);
-  const [email, setEmail] = useState("mohaourydiallo@gmail.com");
-  const [password, setPassword] = useState("admin123");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -80,66 +80,45 @@ export default function LoginPage() {
           overflow: hidden;
         }
 
-        /* COLONNE GAUCHE : IMAGE PLEIN ÉCRAN SANS AUCUN DÉBORDEMENT */
+        /* COLONNE GAUCHE : L'IMAGE D'ARCHITECTURE S'AFFICHE ENTIÈREMENT SANS ROGNAGE */
         .login-visual-pane {
           position: relative;
-          flex: 1 1 56%;
+          flex: 1 1 auto;
           height: 100vh;
           max-height: 100vh;
-          background: #020617;
+          background: #030712;
           overflow: hidden;
           display: flex;
-          flex-direction: column;
-          justifyContent: space-between;
+          align-items: center;
+          justify-content: center;
+          padding: 1.5rem;
+          box-sizing: border-box;
         }
 
         .login-hero-img {
-          position: absolute;
-          top: 0;
-          left: 0;
           width: 100%;
           height: 100%;
-          object-fit: cover;
+          max-width: 100%;
+          max-height: 100%;
+          object-fit: contain;
           object-position: center;
           display: block;
+          filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.85));
         }
 
-        .login-visual-overlay {
+        .login-visual-pane::after {
+          content: "";
           position: absolute;
           inset: 0;
-          background: linear-gradient(
-            180deg,
-            rgba(6, 11, 19, 0.85) 0%,
-            rgba(6, 11, 19, 0.25) 35%,
-            rgba(6, 11, 19, 0.55) 65%,
-            rgba(6, 11, 19, 0.95) 100%
-          );
-          z-index: 1;
-        }
-
-        .visual-content-top {
-          position: relative;
-          z-index: 2;
-          padding: 1.75rem 2.25rem;
-          display: flex;
-          justifyContent: space-between;
-          align-items: center;
-          flex-wrap: wrap;
-          gap: 0.75rem;
-        }
-
-        .visual-content-bottom {
-          position: relative;
-          z-index: 2;
-          padding: 1.75rem 2.25rem;
-          display: flex;
-          flex-direction: column;
-          gap: 1rem;
+          pointer-events: none;
+          box-shadow: inset 0 0 60px 20px #030712;
         }
 
         /* COLONNE DROITE : FORMULAIRE PARFAITEMENT CENTRÉ VERTICALEMENT */
         .login-form-pane {
-          flex: 0 0 44%;
+          flex: 0 0 440px;
+          width: 440px;
+          min-width: 380px;
           height: 100vh;
           max-height: 100vh;
           background: #080e1a;
@@ -148,7 +127,7 @@ export default function LoginPage() {
           flex-direction: column;
           justifyContent: center;
           align-items: center;
-          padding: 2rem 3rem;
+          padding: 2rem 2.75rem;
           box-sizing: border-box;
           overflow: hidden;
           position: relative;
@@ -252,22 +231,23 @@ export default function LoginPage() {
 
       <div className="login-container">
         {/* =================================================================== */}
-        {/* 1. COLONNE GAUCHE : L'IMAGE PREND TOUT L'ESPACE                     */}
+        {/* 1. COLONNE GAUCHE : L'IMAGE D'ARCHITECTURE EN PLEINE RÉSOLUTION    */}
         {/* =================================================================== */}
         <section className="login-visual-pane" aria-label="Visualisation Architecture IT Banking">
-          {/* L'image de fond qui couvre toute la surface */}
           <img
             src="/login-hero.jpg"
             alt="Architecture Monétique & Core Banking — Mohamed Oury Diallo"
             className="login-hero-img"
           />
+        </section>
 
-          {/* Voile sombre dégradé pour sublimer les informations */}
-          <div className="login-visual-overlay" />
-
-          {/* En-tête supérieur gauche : Identité de la plateforme */}
-          <div className="visual-content-top">
-            <div style={{ display: "flex", alignItems: "center", gap: "0.85rem" }}>
+        {/* =================================================================== */}
+        {/* 2. COLONNE DROITE : FORMULAIRE DE CONNEXION (CENTRÉ, SANS SCROLL)   */}
+        {/* =================================================================== */}
+        <section className="login-form-pane" aria-label="Formulaire d'authentification">
+          <div className="login-card-inner">
+            {/* Header Identité Plateforme */}
+            <div style={{ display: "flex", alignItems: "center", gap: "0.85rem", marginBottom: "1.25rem" }}>
               <div
                 style={{
                   width: "44px",
@@ -280,6 +260,7 @@ export default function LoginPage() {
                   fontSize: "1.15rem",
                   color: "#ffffff",
                   boxShadow: "0 4px 16px rgba(0, 168, 0, 0.45)",
+                  flexShrink: 0,
                 }}
               >
                 ⚡
@@ -287,7 +268,7 @@ export default function LoginPage() {
               <div>
                 <div
                   style={{
-                    fontSize: "0.72rem",
+                    fontSize: "0.7rem",
                     fontWeight: 800,
                     letterSpacing: "0.12em",
                     color: "#4ade80",
@@ -309,115 +290,8 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <span
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "0.5rem",
-                padding: "0.4rem 0.9rem",
-                borderRadius: "999px",
-                background: "rgba(0, 168, 0, 0.16)",
-                border: "1px solid rgba(74, 222, 128, 0.35)",
-                color: "#86efac",
-                fontSize: "0.75rem",
-                fontWeight: 700,
-                backdropFilter: "blur(8px)",
-              }}
-            >
-              <span
-                style={{
-                  width: "7px",
-                  height: "7px",
-                  borderRadius: "50%",
-                  background: "#4ade80",
-                  boxShadow: "0 0 8px #4ade80",
-                }}
-              />
-              PCI-DSS • ISO 8583 • CORE BANKING
-            </span>
-          </div>
-
-          {/* En-tête inférieur gauche : Signature experte en Glassmorphism */}
-          {/* <div className="visual-content-bottom">
-            <div
-              style={{
-                padding: "1rem 1.35rem",
-                borderRadius: "16px",
-                background: "rgba(8, 14, 26, 0.85)",
-                backdropFilter: "blur(16px)",
-                border: "1px solid rgba(255, 255, 255, 0.12)",
-                boxShadow: "0 16px 36px -8px rgba(0, 0, 0, 0.65)",
-                display: "flex",
-                flexDirection: "column",
-                gap: "0.5rem",
-              }}
-            >
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "0.5rem" }}>
-                <span
-                  style={{
-                    fontSize: "0.7rem",
-                    fontWeight: 800,
-                    color: "#4ade80",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.08em",
-                  }}
-                >
-                  Supervision &amp; Ingénierie de Production
-                </span>
-                <span
-                  style={{
-                    fontSize: "0.72rem",
-                    color: "#fde68a",
-                    fontWeight: 800,
-                    background: "rgba(251, 191, 36, 0.14)",
-                    padding: "0.15rem 0.5rem",
-                    borderRadius: "6px",
-                    border: "1px solid rgba(251, 191, 36, 0.3)",
-                  }}
-                >
-                  Expert IT Banking
-                </span>
-              </div>
-
-              <div style={{ fontSize: "0.9rem", fontWeight: 800, color: "#ffffff", lineHeight: 1.35 }}>
-                Architecture Monétique &amp; Systèmes Bancaires Core
-              </div>
-
-              <p style={{ fontSize: "0.8rem", color: "#cbd5e1", margin: 0, lineHeight: 1.45 }}>
-                GAB / TPE • Switch ISO 8583 • HSM PayShield • CBS Sopra Amplitude &amp; Oracle FLEXCUBE.
-              </p>
-
-              <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", marginTop: "0.2rem", paddingTop: "0.5rem", borderTop: "1px solid rgba(255, 255, 255, 0.08)" }}>
-                <div
-                  style={{
-                    width: "26px",
-                    height: "26px",
-                    borderRadius: "50%",
-                    background: "linear-gradient(135deg, #00a800 0%, #15803d 100%)",
-                    display: "grid",
-                    placeItems: "center",
-                    fontWeight: 900,
-                    fontSize: "0.7rem",
-                    color: "#ffffff",
-                  }}
-                >
-                  MO
-                </div>
-                <div style={{ fontSize: "0.78rem", color: "#f8fafc", fontWeight: 700 }}>
-                  Conception &amp; Référentiel par <strong style={{ color: "#ffffff" }}>Mohamed Oury Diallo</strong>
-                </div>
-              </div>
-            </div>
-          </div> */}
-        </section>
-
-        {/* =================================================================== */}
-        {/* 2. COLONNE DROITE : FORMULAIRE DE CONNEXION (SANS SCROLL)           */}
-        {/* =================================================================== */}
-        <section className="login-form-pane" aria-label="Formulaire d'authentification">
-          <div className="login-card-inner">
-            {/* Header Formulaire */}
-            <div style={{ marginBottom: "1.25rem" }}>
+            {/* Titre & Description de Connexion */}
+            <div style={{ marginBottom: "1.15rem" }}>
               <div
                 style={{
                   display: "inline-flex",
@@ -427,26 +301,26 @@ export default function LoginPage() {
                   borderRadius: "8px",
                   background: "rgba(0, 168, 0, 0.12)",
                   border: "1px solid rgba(74, 222, 128, 0.3)",
-                  marginBottom: "0.65rem",
+                  marginBottom: "0.6rem",
                 }}
               >
                 <span style={{ fontSize: "0.72rem" }}>🔒</span>
                 <span
                   style={{
-                    fontSize: "0.7rem",
+                    fontSize: "0.68rem",
                     fontWeight: 800,
                     color: "#4ade80",
                     textTransform: "uppercase",
                     letterSpacing: "0.08em",
                   }}
                 >
-                  AUTHENTIFICATION RBAC SÉCURISÉE
+                  AUTHENTIFICATION RBAC • PCI-DSS • ISO 8583
                 </span>
               </div>
 
               <h1
                 style={{
-                  fontSize: "1.6rem",
+                  fontSize: "1.55rem",
                   fontWeight: 900,
                   color: "#ffffff",
                   letterSpacing: "-0.02em",
@@ -457,8 +331,8 @@ export default function LoginPage() {
                 Connexion à votre espace
               </h1>
 
-              <p style={{ fontSize: "0.85rem", color: "#94a3b8", margin: 0, lineHeight: 1.4 }}>
-                Identifiez-vous pour accéder aux modules de supervision (Monétique, Amplitude, FLEXCUBE).
+              <p style={{ fontSize: "0.82rem", color: "#94a3b8", margin: 0, lineHeight: 1.4 }}>
+                Supervision Monétique, Amplitude, FLEXCUBE &amp; Référentiel de Production.
               </p>
             </div>
 

@@ -94,8 +94,8 @@ export function MetricsOverview({ incidents }: { incidents: IncidentRecord[] }) 
         <strong>{componentsSet.size}</strong>
         <small>
           {subsidiary === "AFG"
-            ? "Réseau Atlantic (Switch, GAB, TPE, Host)"
-            : "PowerCard & Payway, CBS, Switch, HSM, GAB…"}
+            ? "Réseau Atlantic (Payway,Switch, GAB, TPE, Host)"
+            : "PowerCard(HPS) , CBS, Switch, HSM, GAB…"}
         </small>
       </article>
     </section>

@@ -51,7 +51,7 @@ function PostMortemContent() {
       if (!res.ok || !data.incident) {
         setSearchFeedback({
           type: "error",
-          message: `Aucun incident trouvé avec la référence '${targetRef}'. Vérifiez la syntaxe (ex: INC-001 à INC-250).`,
+          message: `Aucun incident trouvé avec la référence '${targetRef}'. Vérifiez la syntaxe (ex: INC-001 à INC-080 ou INC-AFG-001).`,
         });
         setIsSearching(false);
         return;
@@ -267,7 +267,7 @@ ${params.prev}
           {/* Raccourcis d'exemples d'incidents */}
           <div style={{ display: "flex", gap: "0.5rem", marginTop: "1rem", flexWrap: "wrap", alignItems: "center" }}>
             <span style={{ fontSize: "0.75rem", color: "#94a3b8", fontWeight: 600 }}>Exemples rapides :</span>
-            {["INC-001", "INC-004", "INC-120", "INC-100", "INC-150", "INC-200", "INC-250"].map((r) => (
+            {["INC-001", "INC-004", "INC-011", "INC-021", "INC-033", "INC-041", "INC-075", "INC-AFG-001"].map((r) => (
               <button
                 key={r}
                 type="button"
