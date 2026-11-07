@@ -113,9 +113,9 @@ export function DEDirectory({ initialSearch = "" }: { initialSearch?: string }) 
               key={cat.key}
               onClick={() => setSelectedCategory(cat.key)}
               style={{
-                background: selectedCategory === cat.key ? "#e60028" : "#1f2937",
+                background: selectedCategory === cat.key ? "var(--burgundy)" : "#1f2937",
                 color: selectedCategory === cat.key ? "#ffffff" : "#cbd5e1",
-                border: "1px solid #374151",
+                border: selectedCategory === cat.key ? "1px solid var(--burgundy-dark)" : "1px solid #374151",
                 padding: "0.4rem 0.8rem",
                 borderRadius: "6px",
                 fontSize: "0.82rem",
@@ -660,7 +660,7 @@ export function DEDirectory({ initialSearch = "" }: { initialSearch?: string }) 
                         {item.de === 39 && (
                           <Link
                             href="/hub/de39"
-                            style={{ fontSize: "0.78rem", color: "#e60028", textDecoration: "none", fontWeight: 700 }}
+                            style={{ fontSize: "0.78rem", color: "var(--burgundy)", textDecoration: "none", fontWeight: 700 }}
                           >
                             Catalogue DE39 ➜
                           </Link>

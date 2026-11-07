@@ -272,6 +272,7 @@ export const KNOWLEDGE_BASE_DISPLAY_LIMIT = 250;
 
 export function sanitizeIncidentPayway(inc: IncidentRecord): IncidentRecord {
   if (!inc) return inc;
+  if (inc.subsidiary === "AFG") return inc; // Préserve l'intégrité de la documentation Payway pour AFG
   const jsonStr = JSON.stringify(inc)
     .replace(/Payway Frontal/g, "PowerCard Frontal")
     .replace(/Frontal Payway/g, "Frontal PowerCard")
@@ -280,6 +281,167 @@ export function sanitizeIncidentPayway(inc: IncidentRecord): IncidentRecord {
     .replace(/payway/g, "PowerCard");
   return JSON.parse(jsonStr);
 }
+
+// 🏛️ CATALOGUE DES INCIDENTS CAPITALISÉS POUR AFG BANK (Atlantic Group)
+export const AFG_INCIDENTS: IncidentRecord[] = [
+  {
+    id: "INC-AFG-001",
+    reference: "INC-AFG-001",
+    title: "IHM Payway - Indisponibilité interface web après changement de mot de passe (Divergence Key/Salt sur ama-gabon-core)",
+    description: "L'IHM Payway est devenue totalement indisponible (ne s'affichait pas) immédiatement après le renouvellement des mots de passe sur l'ensemble des serveurs applicatifs Payway. La cause racine provient d'un mot de passe incorrect sur ama-gabon-core (Wallet Manager) dont les propriétés cryptographiques key et salt n'étaient pas identiques aux autres services.",
+    status: "RESOLVED",
+    severity: "CRITICAL",
+    knowledgeStatus: "VALIDATED",
+    subsidiary: "AFG",
+    domain: "Frontal Web & Applications",
+    channel: "IHM Payway / Web & Mobile (PayGate)",
+    operation: "Accès & Administration Monétique",
+    network: "Réseau Interne AFG Gabon / PayLogic",
+    environment: "PRODUCTION",
+    component: "ama-gabon-core (Wallet Manager)",
+    host: "SRV-PAYWAY-GABON-01",
+    errorCode: "HTTP 500 / Decryption Mismatch",
+    occurredAt: "2026-11-06T10:00:00.000Z",
+    resolvedAt: "2026-11-06T14:30:00.000Z",
+    authorId: "usr-achraf-paylogic",
+    authorName: "Achraf (Référent PayLogic) / Seydou (Ingénieur Systèmes Core)",
+    createdAt: "2026-11-06T10:15:00.000Z",
+    updatedAt: "2026-11-06T14:45:00.000Z",
+    observations: [
+      {
+        symptom: "L'interface web IHM Payway ne s'affiche pas (écran inaccessible / page blanche) pour les équipes d'exploitation.",
+        facts: "L'incident est survenu immédiatement après une opération de changement des mots de passe sur toutes les applications de la grappe Payway. Les transactions du serveur ONLINE n'ont pas été impactées car ce serveur ne requiert pas le couple key/salt.",
+        scope: "Périmètre applicatif : IHM Payway, PayGate (qui gère les applications mobiles), Pay3DS (authentification 3-D Secure), Interface Payway, et services ama-gabon-core. Le serveur ONLINE est resté opérationnel.",
+        context: "Maintenance de rotation périodique des mots de passe de sécurité sur la plateforme monétique Payway Gabon.",
+      },
+    ],
+    flowSteps: [
+      {
+        position: 1,
+        source: "Navigateur Exploitant",
+        destination: "Serveur Web Payway IHM",
+        event: "Requête HTTP GET d'accès au portail d'administration IHM Payway",
+        status: "OK",
+      },
+      {
+        position: 2,
+        source: "Payway IHM",
+        destination: "ama-gabon-core (Wallet Manager)",
+        event: "Tentative d'initialisation de session et lecture des propriétés de configuration chiffrées",
+        status: "OK",
+      },
+      {
+        position: 3,
+        source: "ama-gabon-core (Wallet Manager)",
+        destination: "Fichier .properties",
+        event: "Échec du déchiffrement du mot de passe stocké : discordance du couple cryptographique key / salt",
+        status: "DECRYPTION_FAILED",
+      },
+      {
+        position: 4,
+        source: "ama-gabon-core (Wallet Manager)",
+        destination: "Base de Données Oracle DBA",
+        event: "Échec de connexion JDBC (ORA-01017: invalid username/password) dû au mot de passe mal déchiffré",
+        status: "ERROR",
+      },
+      {
+        position: 5,
+        source: "Payway IHM",
+        destination: "Navigateur Exploitant",
+        event: "Blocage de l'interface web : page indisponible, service non rendu aux administrateurs",
+        status: "BLOCKED",
+      },
+    ],
+    isoMessages: [
+      {
+        mti: "SYSTEM",
+        stan: "N/A",
+        responseCode: "HTTP 500",
+        terminalId: "IHM-WEB-01",
+        maskedRawMessage: "[ERROR] [Payway IHM] Failed to initialize backend context: ama-gabon-core Wallet Manager credentials decryption failed. Properties key/salt mismatch.",
+      },
+    ],
+    hypotheses: [
+      {
+        description: "Hypothèse 1 : Erreur de frappe lors de la saisie manuelle du nouveau mot de passe en clair.",
+        status: "REJECTED",
+        evidence: "Les mots de passe ne sont jamais saisis en clair dans les fichiers de configuration Payway ; ils sont obligatoirement chiffrés via l'utilitaire encrypter.jar.",
+      },
+      {
+        description: "Hypothèse 2 : Coupure réseau ou indisponibilité du serveur de base de données Oracle DBA.",
+        status: "REJECTED",
+        evidence: "La base de données était parfaitement accessible pour les autres composants et le serveur ONLINE fonctionnait nominalement.",
+      },
+      {
+        description: "Hypothèse 3 : Incohérence du couple cryptographique (key, salt) sur le service ama-gabon-core (Wallet Manager).",
+        status: "CONFIRMED",
+        evidence: "Audit comparatif des fichiers .properties confirmant que les valeurs key et salt de ama-gabon-core ne correspondaient pas à celles des autres services Payway.",
+      },
+    ],
+    evidence: [
+      {
+        type: "Fichier de Configuration .properties",
+        content: "Comparaison des fichiers de configuration : ama-gabon-core (Wallet Manager) possédait un couple [key/salt] différent des 5 autres serveurs applicatifs (Payway IHM, Pay3DS, Interface Payway, PayGate, ama-gabon-core Notification Manager).",
+        source: "Serveurs Applicatifs Payway Gabon / Dossier payway/",
+      },
+      {
+        type: "Logs Applicatifs Temps Réel",
+        content: "Trace tail -f sur le dossier payway : [DecryptionException] Invalid AES/CBC key padding. Connection pool initialization aborted for Wallet Manager.",
+        source: "Syslog Payway / tail -f nom_fichier",
+      },
+      {
+        type: "Audit des 6 Serveurs Applicatifs",
+        content: "Inventaire complet des serveurs : 1. Payway IHM (Interface web) | 2. Pay3DS (3-D Secure) | 3. Interface Payway (Interfaçage) | 4. PayGate (Mobile) | 5. ama-gabon-core (Wallet Manager - EN CAUSE) | 6. ama-gabon-core (Notification Manager). Règle générale : key et salt doivent être rigoureusement identiques sur toutes les applications.",
+        source: "Inventaire d'investigation Référent PayLogic (Achraf)",
+      },
+    ],
+    rootCause: {
+      category: "Sécurité Cryptographique & Cohérence Fichiers Properties",
+      description: "Lors du changement global des mots de passe, le service ama-gabon-core (Wallet Manager) a été configuré avec un couple de propriétés (key, salt) différent de celui partagé par les autres briques applicatives Payway. Le chiffrement/déchiffrement des mots de passe dans les fichiers .properties dépendant strictement de ce couple, le mot de passe n'a pas pu être déchiffré correctement, empêchant la connexion et provoquant le blocage de l'IHM Payway.",
+      justification: "Démontré par l'incompatibilité des empreintes key/salt constatée par Achraf et validée par la réussite immédiate du rétablissement après ré-encryption avec le bon couple.",
+      validatedBy: "Achraf (Référent PayLogic)",
+      validatedAt: "2026-11-06T14:30:00.000Z",
+    },
+    resolution: {
+      actions: "1. Arrêt des services applicatifs concernés.\n2. Réalisation d'une sauvegarde (backup à froid) des fichiers .properties avant toute intervention.\n3. Demande au DBA d'encrypter le bon mot de passe via le JAR d'encryption (encrypter.jar, qui encrypte avec key et salt).\n4. Dépôt du mot de passe réencrypté dans le fichier properties du service ama-gabon-core (Wallet Manager).\n5. Réencryption du password pour les 2 properties (key, salt) pour assurer l'égalité stricte avec les autres services.\n6. Redémarrage séquentiel des serveurs core assuré par Seydou.\n7. Vérification de l'affichage de l'IHM et surveillance dynamique des logs en direct via tail -f.",
+      result: "Rétablissement complet et immédiat de l'affichage de l'IHM Payway. Toutes les connexions applicatives et les flux mobiles PayGate sont redevenus nominaux.",
+      executor: "Seydou (Ingénieur Systèmes Core) & Équipe DBA",
+      approver: "Achraf (Référent PayLogic)",
+    },
+    prevention: [
+      {
+        action: "Avant tout changement de mot de passe : lister les 6 services applicatifs de l'inventaire et effectuer un backup obligatoire de chaque fichier .properties à l'arrêt.",
+        owner: "Exploitation Monétique AFG",
+        priority: "CRITICAL",
+        status: "DONE",
+      },
+      {
+        action: "Après changement de mot de passe : réencrypter avec le même couple key/salt sur tous les services et vérifier formellement l'égalité par contrôle d'empreinte SHA.",
+        owner: "DBA & Référent PayLogic",
+        priority: "CRITICAL",
+        status: "DONE",
+      },
+      {
+        action: "Redémarrage ordonnancé selon la procédure documentée et contrôle des logs (tail -f) avant clôture de l'intervention.",
+        owner: "Seydou (Core Systems)",
+        priority: "HIGH",
+        status: "DONE",
+      },
+      {
+        action: "Règle de sécurité stricte : Interdiction absolue de copier mots de passe, key ou salt en clair dans les tickets, mails ou carnets.",
+        owner: "Sécurité & RSSI AFG Bank",
+        priority: "CRITICAL",
+        status: "DONE",
+      },
+      {
+        action: "Ajouter cette fiche aux procédures de référence avec point de contrôle bloquant 'key/salt identiques' dans la checklist de changement de mot de passe.",
+        owner: "Achraf (Référent PayLogic)",
+        priority: "HIGH",
+        status: "DONE",
+      },
+    ],
+  },
+];
 
 export async function getAllIncidents(options?: { all?: boolean }): Promise<IncidentRecord[]> {
   try {
@@ -591,8 +753,8 @@ export async function getAllIncidents(options?: { all?: boolean }): Promise<Inci
         };
       });
 
-      // Mettre TOUS les incidents réels de la BD au DÉBUT de la liste (1ère position)
-      const allDbList = applyStoreToIncidents([...mappedDb, ...refMapped]).map(sanitizeIncidentPayway);
+      // Mettre TOUS les incidents réels de la BD et AFG au DÉBUT de la liste (1ère position)
+      const allDbList = applyStoreToIncidents([...AFG_INCIDENTS, ...mappedDb, ...refMapped]).map(sanitizeIncidentPayway);
       if (options?.all) {
         return allDbList;
       }
@@ -783,7 +945,7 @@ export async function getAllIncidents(options?: { all?: boolean }): Promise<Inci
     };
   });
 
-  const allFallbackList = applyStoreToIncidents(fallbackList).map(sanitizeIncidentPayway);
+  const allFallbackList = applyStoreToIncidents([...AFG_INCIDENTS, ...fallbackList]).map(sanitizeIncidentPayway);
   if (options?.all) {
     return allFallbackList;
   }
