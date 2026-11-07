@@ -307,9 +307,11 @@ function loadPptxTemplateFiles(): ZipFileEntry[] {
   return walk();
 }
 
-function cleanAndEscapeXml(str: string): string {
+function cleanAndEscapeXml(str: string | null | undefined): string {
   if (!str) return "";
-  const unescaped = str
+  // En DrawingML OpenXML (<a:t>), les retours à la ligne (\r, \n) et tabulations sont interdits
+  const singleLine = String(str).replace(/[\r\n\t]+/g, " ").trim();
+  const unescaped = singleLine
     .replace(/&amp;/g, "&")
     .replace(/&apos;/g, "'")
     .replace(/&quot;/g, '"')
@@ -324,20 +326,50 @@ function cleanAndEscapeXml(str: string): string {
 }
 
 function safeXmlReplace(xml: string, target: string, replacement: string): string {
-  if (xml.includes(target)) {
-    return xml.replace(target, replacement);
+  if (!target || replacement === undefined || replacement === null) return xml;
+
+  // Cas 1 : La cible contient des balises XML (ex: "<a:t>6</a:t>")
+  if (target.includes("<") && target.includes(">")) {
+    let safeRep = replacement;
+    safeRep = safeRep.replace(/&(?!(amp|lt|gt|quot|apos);)/g, "&amp;");
+    return xml.replaceAll(target, safeRep);
   }
-  // Try alternative with &apos;
-  const withApos = target.replace(/'/g, "&apos;");
-  if (xml.includes(withApos)) {
-    return xml.replace(withApos, replacement);
+
+  // Cas 2 : La cible est du texte métier
+  const escapedRep = cleanAndEscapeXml(replacement);
+
+  const targetVariations = [
+    target,
+    target.replace(/'/g, "&apos;"),
+    target.replace(/&apos;/g, "'"),
+    cleanAndEscapeXml(target),
+  ];
+
+  // Priorité 1 : Remplacer exactement la valeur textuelle dans <a:t>...</a:t>
+  for (const t of targetVariations) {
+    const atTag = `<a:t>${t}</a:t>`;
+    if (xml.includes(atTag)) {
+      return xml.replaceAll(atTag, `<a:t>${escapedRep}</a:t>`);
+    }
   }
-  // Try alternative with literal '
-  const withSingleQuote = target.replace(/&apos;/g, "'");
-  if (xml.includes(withSingleQuote)) {
-    return xml.replace(withSingleQuote, replacement);
+
+  // Priorité 2 : Si la cible est dans un attribut ou sous-chaîne
+  for (const t of targetVariations) {
+    if (xml.includes(t)) {
+      return xml.replaceAll(t, escapedRep);
+    }
   }
+
   return xml;
+}
+
+function truncateText(text: string | null | undefined, maxLen: number): string {
+  if (!text) return "";
+  const clean = String(text).replace(/[\r\n\t]+/g, " ").trim();
+  if (clean.length <= maxLen) return clean;
+  const sub = clean.slice(0, maxLen);
+  const lastSpace = sub.lastIndexOf(" ");
+  return (lastSpace > maxLen * 0.7 ? sub.slice(0, lastSpace) : sub).trim() + "...";
 }
 
 export function generateNativePptx(
@@ -350,8 +382,8 @@ export function generateNativePptx(
   const inc = incidents[0] || ({
     reference: `INC-${subsidiary}-001`,
     title: "Incident Monétique",
-    domain: "SWITCH & PRODUCTION",
-    component: "Payway",
+    domain: isAFG ? "FRONTAL WEB & APPLICATIONS" : "SWITCH & ROUTAGE",
+    component: isAFG ? "ama-gabon-core (Wallet Manager)" : "Switch PowerCard",
     knowledgeStatus: "VALIDATED",
   } as any);
 
@@ -359,7 +391,7 @@ export function generateNativePptx(
   const incNum = numMatch ? parseInt(numMatch[0], 10) : 1;
 
   const domain = (inc.domain || (isAFG ? "FRONTAL WEB & APPLICATIONS" : "SWITCH & ROUTAGE")).toUpperCase();
-  const component = inc.component || (isAFG ? "ama-gabon-core (Wallet Manager)" : "Switch PowerCard");
+  const component = inc.component || (isAFG ? "ama-gabon-core (Wallet Manager)" : (domain.includes("GAB") ? "GAB / ATM" : "Switch PowerCard"));
   const channel = inc.channel || (domain.includes("GAB") ? "GAB / ATM NCR & Diebold" : domain.includes("TPE") ? "TPE / POS Ingenico & Verifone" : "Frontal Web & Applications");
   const network = inc.network || (isAFG ? "Réseau Interne AFG Bank / GIMAC" : "GIMAC / VISA / Interbancaire SGABS");
   const host = inc.host || (isAFG ? "srv-afg-payway-01" : "SRV-SGABS-POWERCARD-01");
@@ -396,19 +428,19 @@ export function generateNativePptx(
       slide1Title = slide1Title.slice(0, 75).replace(/\s+\S*$/, "") + "...";
     }
 
-    const symptom = inc.observations?.[0]?.symptom || inc.description || "Indisponibilité constatée sur le service transactionnel avec rejets opérationnels.";
-    const cause = inc.rootCause
+    const symptom = truncateText(inc.observations?.[0]?.symptom || inc.description || "Indisponibilité constatée sur le service transactionnel avec rejets opérationnels.", 180);
+    const cause = truncateText(inc.rootCause
       ? `${inc.rootCause.category} : ${inc.rootCause.description}`
-      : (inc.description || "Incohérence de configuration ou divergence d'authentification sur le composant.");
-    const solution = inc.resolution?.actions
-      || "Application du correctif validé, synchronisation des paramètres techniques et reprise nominale des flux.";
+      : (inc.description || "Incohérence de configuration ou divergence d'authentification sur le composant."), 200);
+    const solution = truncateText(inc.resolution?.actions
+      || "Application du correctif validé, synchronisation des paramètres techniques et reprise nominale des flux.", 220);
 
-    const trigger = inc.observations?.[0]?.context || "Alerte de supervision monétique ou signalement d'anomalie utilisateur";
-    const impact = inc.observations?.[0]?.facts || inc.description || "Rejets transactionnels anormaux et perturbation temporaire de service";
-    const generalRule = (inc as any).generalRule || (errorCode
+    const trigger = truncateText(inc.observations?.[0]?.context || "Alerte de supervision monétique ou signalement d'anomalie utilisateur", 95);
+    const impact = truncateText(inc.observations?.[0]?.facts || inc.description || "Rejets transactionnels anormaux et perturbation temporaire de service", 105);
+    const generalRule = truncateText((inc as any).generalRule || (errorCode
       ? `Code anomalie ${errorCode} : contrôler la stricte synchronisation des tables et certificats de bout en bout.`
-      : "Contrôler la cohérence des tables de routage, certificats HSM et liaisons inter-serveurs.");
-    const perimeter = inc.observations?.[0]?.scope || `Filiale ${subsidiary} • Domaine : ${domain} • Composant : ${component}`;
+      : "Contrôler la cohérence des tables de routage, certificats HSM et liaisons inter-serveurs."), 125);
+    const perimeter = truncateText(inc.observations?.[0]?.scope || `Filiale ${subsidiary} • Domaine : ${domain} • Composant : ${component}`, 125);
 
     // SLIDE 1 : TITRE & MÉTADONNÉES
     updateSlideXml(1, (xml) => {
@@ -471,37 +503,53 @@ export function generateNativePptx(
       res = safeXmlReplace(res, "Inventaire des services", "Architecture des composants impactés");
 
       // Service 1 (Canal)
-      res = safeXmlReplace(res, "Payway IHM", cleanAndEscapeXml(`Canal : ${channel.split("/")[0].trim().slice(0, 20)}`));
-      res = safeXmlReplace(res, "Interface web : celle qui ne s'affichait pas", cleanAndEscapeXml(`Point d'initiation et capture du flux client (${channel.slice(0, 38)})`));
+      const chanShort = channel.split("/")[0].trim().slice(0, 18);
+      res = safeXmlReplace(res, "Payway IHM", cleanAndEscapeXml(`Canal : ${chanShort}`));
+      res = safeXmlReplace(res, "Interface web : celle qui ne s'affichait pas", cleanAndEscapeXml(`Point d'initiation (${truncateText(channel, 30)})`));
 
       // Service 2 (Réseau)
-      res = safeXmlReplace(res, "Pay3DS", cleanAndEscapeXml(`Réseau : ${network.split("/")[0].trim().slice(0, 20)}`));
-      res = safeXmlReplace(res, "Authentification 3-D Secure", cleanAndEscapeXml(`Passerelle d'autorisation sécurisée (${network.slice(0, 38)})`));
+      const netShort = network.replace(/^Réseau\s+/i, "").split("/")[0].trim().slice(0, 18);
+      res = safeXmlReplace(res, "Pay3DS", cleanAndEscapeXml(`Réseau : ${netShort}`));
+      res = safeXmlReplace(res, "Authentification 3-D Secure", cleanAndEscapeXml(`Passerelle (${truncateText(network, 30)})`));
 
       // Service 3 (Serveur)
-      res = safeXmlReplace(res, "Interface Payway", cleanAndEscapeXml(`Serveur : ${host.slice(0, 20)}`));
-      res = safeXmlReplace(res, "Service d'interfaçage", cleanAndEscapeXml(`Environnement d'exécution ${inc.environment || "PRODUCTION"}`));
+      res = safeXmlReplace(res, "Interface Payway", cleanAndEscapeXml(`Serveur : ${host.slice(0, 18)}`));
+      res = safeXmlReplace(res, "Service d'interfaçage", cleanAndEscapeXml(`Environnement ${inc.environment || "PRODUCTION"}`));
 
       // Service 4 (Sécurité)
       res = safeXmlReplace(res, "PayGate", "Module Sécurité HSM");
       res = safeXmlReplace(res, "Gère les applications mobiles", "Validation PIN, calcul ARQC/ARPC et clés de chiffrement");
 
       // Service 5 (Composant défaillant)
-      const compShort = component.split("(")[0].trim().slice(0, 22);
-      const compSub = component.includes("(") ? component.match(/\((.*?)\)/)?.[0] || `(${errorCode})` : `(${errorCode})`;
+      let compTitle = (component || (isAFG ? "ama-gabon-core" : (domain.includes("GAB") ? "GAB / ATM" : "Switch PowerCard"))).split("(")[0].trim().slice(0, 20);
+      if (compTitle.includes("/")) {
+        compTitle = compTitle.split("/").map((s) => s.trim()).join(" / ");
+      }
+      const compSub = component.includes("(")
+        ? (component.match(/\((.*?)\)/)?.[0] || `(${errorCode.slice(0, 12)})`)
+        : (errorCode ? `(${errorCode.slice(0, 12)})` : "");
+
+      res = safeXmlReplace(res, "COMPOSANT_DEFAILLANT_TITRE", cleanAndEscapeXml(compTitle));
+      res = safeXmlReplace(res, "(SOUS_COMPOSANT_DEFAILLANT)", cleanAndEscapeXml(compSub));
+      // Fallback regex
       res = res.replace(
-        /<a:schemeClr val="bg1"\/><\/a:rPr><a:t>ama-gabon-core<\/a:t>/,
-        `<a:schemeClr val="bg1"/></a:rPr><a:t>${cleanAndEscapeXml(compShort)}</a:t>`
+        /(<a:schemeClr val="bg1"\/>\s*(?:<\/a:solidFill>)?\s*<\/a:rPr>\s*<a:t>)ama-gabon-core(<\/a:t>)/g,
+        `$1${cleanAndEscapeXml(compTitle)}$2`
       );
       res = safeXmlReplace(res, "(Wallet Manager)", cleanAndEscapeXml(compSub));
-      res = safeXmlReplace(res, "Service en cause : key/salt différents", cleanAndEscapeXml(`Composant défaillant : anomalie ${errorCode} constatée`));
+      res = safeXmlReplace(res, "Service en cause : key/salt différents", cleanAndEscapeXml(`Composant défaillant : anomalie ${truncateText(errorCode, 20)}`));
 
       // Service 6 (Core Banking)
+      const cbsTitle = "Core Banking CBS";
+      const cbsSub = isAFG ? "(AFG Amplitude)" : "(Sopra Amplitude)";
+      res = safeXmlReplace(res, "CORE_BANKING_CBS_TITRE", cleanAndEscapeXml(cbsTitle));
+      res = safeXmlReplace(res, "(CBS_MOTEUR_SOUS_TITRE)", cleanAndEscapeXml(cbsSub));
+      // Fallback regex
       res = res.replace(
-        /<a:schemeClr val="tx2"\/><\/a:rPr><a:t>ama-gabon-core<\/a:t>/,
-        `<a:schemeClr val="tx2"/></a:rPr><a:t>Core Banking CBS</a:t>`
+        /(<a:schemeClr val="tx2"\/>\s*(?:<\/a:solidFill>)?\s*<\/a:rPr>\s*<a:t>)ama-gabon-core(<\/a:t>)/g,
+        `$1${cleanAndEscapeXml(cbsTitle)}$2`
       );
-      res = safeXmlReplace(res, "(Notification Manager)", isAFG ? "(AFG Amplitude)" : "(Sopra Amplitude)");
+      res = safeXmlReplace(res, "(Notification Manager)", cbsSub);
       res = safeXmlReplace(res, "Service de notifications", "Tenue de compte, réservation solde et balance comptable");
 
       // Bas de page
@@ -519,10 +567,10 @@ export function generateNativePptx(
       res = safeXmlReplace(res, "Analyse de la cause", "Analyse de la cause racine");
       res = safeXmlReplace(res, "Confirmé", "Cause racine validée");
 
-      const rootCat = inc.rootCause?.category ? `Catégorie : ${inc.rootCause.category}` : "Anomalie technique confirmée";
-      const rootDesc = inc.rootCause?.description || inc.description || "Divergence de configuration entraînant le rejet des requêtes.";
-      const hyp1 = inc.hypotheses?.[0]?.description || "Hypothèse initiale : divergence de paramétrage ou rupture de liaison réseau.";
-      const hyp2 = inc.rootCause?.justification || inc.hypotheses?.[1]?.description || "Corrélation confirmée entre les traces transactionnelles et les rejets observés.";
+      const rootCat = truncateText(inc.rootCause?.category ? `Catégorie : ${inc.rootCause.category}` : "Anomalie technique confirmée", 70);
+      const rootDesc = truncateText(inc.rootCause?.description || inc.description || "Divergence de configuration entraînant le rejet des requêtes.", 200);
+      const hyp1 = truncateText(inc.hypotheses?.[0]?.description || "Hypothèse initiale : divergence de paramétrage ou rupture de liaison réseau.", 120);
+      const hyp2 = truncateText(inc.rootCause?.justification || inc.hypotheses?.[1]?.description || "Corrélation confirmée entre les traces transactionnelles et les rejets observés.", 180);
 
       res = safeXmlReplace(res, "Le mot de passe n'était pas correct.", cleanAndEscapeXml(rootCat));
       res = safeXmlReplace(res, "Les propriétés key et salt n'avaient pas les mêmes valeurs que sur les autres services.", cleanAndEscapeXml(rootDesc));
@@ -551,12 +599,12 @@ export function generateNativePptx(
 
       res = safeXmlReplace(res, "Récupérer les logs", "Collecte des traces transactionnelles");
       const logMsg = inc.evidence?.[0]?.content
-        ? `Traces collectées : ${inc.evidence[0].content.slice(0, 75)}`
-        : `Extraire les logs du serveur ${host} (${errorCode}) dans le répertoire de production.`;
+        ? `Traces collectées : ${truncateText(inc.evidence[0].content, 70)}`
+        : `Extraire les logs du serveur ${host.slice(0, 18)} (${truncateText(errorCode, 15)}) dans le répertoire de production.`;
       res = safeXmlReplace(res, "Les logs se trouvent dans le dossier payway.", cleanAndEscapeXml(logMsg));
 
       res = safeXmlReplace(res, "Suivre en direct", "Surveillance & Métriques temps réel");
-      const tailCmd = `Suivre les logs en temps réel : tail -f /var/log/${component.toLowerCase().replace(/[^a-z0-9]/g, "_").slice(0, 20)}.log`;
+      const tailCmd = `Suivre les logs en temps réel : tail -f /var/log/${component.toLowerCase().replace(/[^a-z0-9]/g, "_").slice(0, 18)}.log`;
       res = safeXmlReplace(res, "Suivre les logs en temps réel avec la commande : tail -f nom_fichier", cleanAndEscapeXml(tailCmd));
       return res;
     });
@@ -566,13 +614,15 @@ export function generateNativePptx(
       let res = xml;
       res = safeXmlReplace(res, "Procédure de résolution", "Procédure de résolution étape par étape");
 
-      res = safeXmlReplace(res, "Arrêter les services concernés", cleanAndEscapeXml(`Isoler et analyser le composant : ${component.split("(")[0].trim().slice(0, 38)}`));
-      res = safeXmlReplace(res, "Sauvegarder les fichiers properties avant toute modification", "Sauvegarder les fichiers de configuration et les tables actives");
-      res = safeXmlReplace(res, "Demander au DBA d'encrypter le bon mot de passe (encrypter.jar)", cleanAndEscapeXml(`Identifier la divergence (${errorCode}) et préparer les correctifs`));
-      res = safeXmlReplace(res, "Déposer le mot de passe réencrypté dans le fichier properties", cleanAndEscapeXml(`Déployer et valider la configuration cible sur ${host.slice(0, 25)}`));
-      res = safeXmlReplace(res, "Réencrypter le password pour key et salt : solution finale", "Contrôler la stricte synchronisation des clés et certificats associés");
-      res = safeXmlReplace(res, "Redémarrer : Seydou démarre les serveurs core", "Redémarrage ordonné des processus et validation des initialisations");
-      res = safeXmlReplace(res, "Vérifier l'IHM et suivre les logs (tail -f)", "Exécuter des transactions tests et valider le code retour nominal (DE39=00)");
+      const compShort = component.split("(")[0].trim().slice(0, 22);
+      res = safeXmlReplace(res, "Arrêter les services concernés", cleanAndEscapeXml(`Isoler composant : ${compShort}`));
+      res = safeXmlReplace(res, "Sauvegarder les fichiers properties avant toute modification", "Sauvegarder configurations & tables");
+      const errBadge = (errorCode.match(/\b\d{2,4}\b/) || [errorCode.slice(0, 8)])[0];
+      res = safeXmlReplace(res, "Demander au DBA d'encrypter le bon mot de passe (encrypter.jar)", cleanAndEscapeXml(`Identifier divergence (${errBadge}) et préparer correctifs`));
+      res = safeXmlReplace(res, "Déposer le mot de passe réencrypté dans le fichier properties", cleanAndEscapeXml(`Déployer configuration cible (${host.slice(0, 16)})`));
+      res = safeXmlReplace(res, "Réencrypter le password pour key et salt : solution finale", "Contrôler parité des clés et certificats");
+      res = safeXmlReplace(res, "Redémarrer : Seydou démarre les serveurs core", "Redémarrage ordonné des composants");
+      res = safeXmlReplace(res, "Vérifier l'IHM et suivre les logs (tail -f)", "Valider code retour nominal (DE39=00)");
 
       res = safeXmlReplace(res, "DBA : encryption", "Support N2 : Diagnostic & correctif");
       res = safeXmlReplace(res, "Seydou : serveurs core", "Exploitation : Déploiement & relance");
@@ -652,13 +702,14 @@ export function generateNativePptx(
     updateSlideXml(10, (xml) => {
       let res = xml;
       const stat1 = inc.flowSteps?.length || (incNum % 5 + 3);
-      const stat2 = errorCode.replace(/^DE39=/, "").trim() || "00";
+      const numMatchInCode = errorCode.match(/\b\d{2,4}\b/) || errorCode.match(/^[A-Z0-9_-]{2,6}/i);
+      const stat2 = numMatchInCode ? numMatchInCode[0] : (errorCode.slice(0, 5) || "00");
 
       res = safeXmlReplace(res, "<a:t>6</a:t>", `<a:t>${stat1}</a:t>`);
       res = safeXmlReplace(res, "services Payway à contrôler", "composants de la chaîne monétique mobilisés");
 
       res = safeXmlReplace(res, "<a:t>2</a:t>", `<a:t>${cleanAndEscapeXml(stat2)}</a:t>`);
-      res = safeXmlReplace(res, "propriétés à réencrypter : key et salt", cleanAndEscapeXml(`code retour analysé lors de l'investigation (${errorCode})`));
+      res = safeXmlReplace(res, "propriétés à réencrypter : key et salt", cleanAndEscapeXml(`code anomalie (${truncateText(errorCode, 24)})`));
 
       res = safeXmlReplace(res, "<a:t>1</a:t>", "<a:t>100%</a:t>");
       res = safeXmlReplace(res, "règle : key et salt identiques partout", "conformité de la procédure capitalisée au référentiel");
@@ -757,18 +808,24 @@ export function generateNativePptx(
       res = safeXmlReplace(res, "PayGate", "Sécurité & HSM");
       res = safeXmlReplace(res, "Gère les applications mobiles", "Chiffrement PIN, validation ARQC/ARPC et gestion des clés de zone");
 
+      res = safeXmlReplace(res, "COMPOSANT_DEFAILLANT_TITRE", "Frontaux &amp; Apps");
+      res = safeXmlReplace(res, "(SOUS_COMPOSANT_DEFAILLANT)", "(Web &amp; Mobile)");
       res = res.replace(
-        /<a:schemeClr val="bg1"\/><\/a:rPr><a:t>ama-gabon-core<\/a:t>/,
-        `<a:schemeClr val="bg1"/></a:rPr><a:t>Frontaux & Apps</a:t>`
+        /(<a:schemeClr val="bg1"\/>\s*(?:<\/a:solidFill>)?\s*<\/a:rPr>\s*<a:t>)ama-gabon-core(<\/a:t>)/g,
+        "$1Frontaux &amp; Apps$2"
       );
-      res = safeXmlReplace(res, "(Wallet Manager)", "(Web & Mobile)");
+      res = safeXmlReplace(res, "(Wallet Manager)", "(Web &amp; Mobile)");
       res = safeXmlReplace(res, "Service en cause : key/salt différents", "Portails web banking, applications mobiles et services wallet");
 
+      const bulkCbsTitle = "Core Banking CBS";
+      const bulkCbsSub = isAFG ? "(AFG Amplitude)" : "(Sopra Amplitude)";
+      res = safeXmlReplace(res, "CORE_BANKING_CBS_TITRE", cleanAndEscapeXml(bulkCbsTitle));
+      res = safeXmlReplace(res, "(CBS_MOTEUR_SOUS_TITRE)", cleanAndEscapeXml(bulkCbsSub));
       res = res.replace(
-        /<a:schemeClr val="tx2"\/><\/a:rPr><a:t>ama-gabon-core<\/a:t>/,
-        `<a:schemeClr val="tx2"/></a:rPr><a:t>Core Banking CBS</a:t>`
+        /(<a:schemeClr val="tx2"\/>\s*(?:<\/a:solidFill>)?\s*<\/a:rPr>\s*<a:t>)ama-gabon-core(<\/a:t>)/g,
+        `$1${cleanAndEscapeXml(bulkCbsTitle)}$2`
       );
-      res = safeXmlReplace(res, "(Notification Manager)", isAFG ? "(AFG Amplitude)" : "(Sopra Amplitude)");
+      res = safeXmlReplace(res, "(Notification Manager)", bulkCbsSub);
       res = safeXmlReplace(res, "Service de notifications", "Tenue de comptes, réservation de solde et compensation comptable");
 
       res = safeXmlReplace(
