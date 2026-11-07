@@ -50,87 +50,236 @@ export default function LoginPage() {
   }
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        background:
-          "radial-gradient(circle at 20% 20%, rgba(16, 185, 129, 0.14) 0%, transparent 45%), radial-gradient(circle at 85% 80%, rgba(125, 21, 56, 0.28) 0%, transparent 50%), #070d19",
-        padding: "1.5rem",
-        fontFamily:
-          "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-        color: "#f8fafc",
-      }}
-    >
+    <div className="login-root">
       <style>{`
-        .login-split-shell {
-          width: 100%;
-          max-width: 1220px;
-          min-height: 680px;
-          display: grid;
-          grid-template-columns: 1.25fr 0.95fr;
-          background: rgba(15, 23, 42, 0.82);
-          backdrop-filter: blur(20px);
-          border-radius: 28px;
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          box-shadow: 0 30px 70px -15px rgba(0, 0, 0, 0.65);
+        html, body {
+          margin: 0;
+          padding: 0;
+          height: 100vh;
           overflow: hidden;
         }
-        .login-input:focus {
-          border-color: #10b981 !important;
-          box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.18) !important;
+
+        .login-root {
+          height: 100vh;
+          max-height: 100vh;
+          width: 100vw;
+          margin: 0;
+          padding: 0;
+          display: flex;
+          background: #060b13;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+          color: #f8fafc;
+          overflow: hidden;
         }
-        @media (max-width: 960px) {
-          .login-split-shell {
-            grid-template-columns: 1fr;
-            max-width: 540px;
+
+        .login-container {
+          display: flex;
+          width: 100%;
+          height: 100vh;
+          max-height: 100vh;
+          overflow: hidden;
+        }
+
+        /* COLONNE GAUCHE : IMAGE PLEIN ÉCRAN SANS AUCUN DÉBORDEMENT */
+        .login-visual-pane {
+          position: relative;
+          flex: 1 1 56%;
+          height: 100vh;
+          max-height: 100vh;
+          background: #020617;
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          justifyContent: space-between;
+        }
+
+        .login-hero-img {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          object-position: center;
+          display: block;
+        }
+
+        .login-visual-overlay {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(
+            180deg,
+            rgba(6, 11, 19, 0.85) 0%,
+            rgba(6, 11, 19, 0.25) 35%,
+            rgba(6, 11, 19, 0.55) 65%,
+            rgba(6, 11, 19, 0.95) 100%
+          );
+          z-index: 1;
+        }
+
+        .visual-content-top {
+          position: relative;
+          z-index: 2;
+          padding: 1.75rem 2.25rem;
+          display: flex;
+          justifyContent: space-between;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 0.75rem;
+        }
+
+        .visual-content-bottom {
+          position: relative;
+          z-index: 2;
+          padding: 1.75rem 2.25rem;
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+        }
+
+        /* COLONNE DROITE : FORMULAIRE PARFAITEMENT CENTRÉ VERTICALEMENT */
+        .login-form-pane {
+          flex: 0 0 44%;
+          height: 100vh;
+          max-height: 100vh;
+          background: #080e1a;
+          border-left: 1px solid rgba(255, 255, 255, 0.08);
+          display: flex;
+          flex-direction: column;
+          justifyContent: center;
+          align-items: center;
+          padding: 2rem 3rem;
+          box-sizing: border-box;
+          overflow: hidden;
+          position: relative;
+        }
+
+        .login-card-inner {
+          width: 100%;
+          max-width: 420px;
+          margin: auto 0;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .login-input {
+          width: 100%;
+          padding: 0.72rem 1rem;
+          border-radius: 10px;
+          background: rgba(15, 23, 42, 0.85);
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          color: #ffffff;
+          font-size: 0.9rem;
+          outline: none;
+          box-sizing: border-box;
+          transition: all 0.2s ease;
+        }
+
+        .login-input:focus {
+          border-color: #00a800 !important;
+          box-shadow: 0 0 0 3px rgba(0, 168, 0, 0.2) !important;
+          background: rgba(15, 23, 42, 1);
+        }
+
+        .login-submit-btn {
+          width: 100%;
+          background: linear-gradient(135deg, #00a800 0%, #15803d 100%);
+          color: #ffffff;
+          padding: 0.8rem 1.25rem;
+          border-radius: 10px;
+          font-weight: 800;
+          font-size: 0.95rem;
+          border: none;
+          cursor: pointer;
+          box-shadow: 0 6px 20px rgba(0, 168, 0, 0.35);
+          transition: all 0.2s ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+        }
+
+        .login-submit-btn:hover:not(:disabled) {
+          filter: brightness(1.1);
+          transform: translateY(-1px);
+          box-shadow: 0 8px 24px rgba(0, 168, 0, 0.45);
+        }
+
+        .login-submit-btn:disabled {
+          opacity: 0.7;
+          cursor: wait;
+        }
+
+        /* RESPONSIVE DESIGN POUR TRÈS PETITS ÉCRANS */
+        @media (max-height: 580px) {
+          .login-form-pane {
+            overflow-y: auto;
+            padding-top: 1.5rem;
+            padding-bottom: 1.5rem;
+          }
+          .visual-content-top {
+            padding: 1rem 1.5rem;
+          }
+          .visual-content-bottom {
+            padding: 1rem 1.5rem;
+          }
+        }
+
+        @media (max-width: 1024px) {
+          html, body, .login-root, .login-container {
+            height: auto;
+            overflow-y: auto;
+          }
+          .login-container {
+            flex-direction: column;
+          }
+          .login-visual-pane {
+            min-height: 240px;
+            height: 240px;
+            flex: none;
+          }
+          .login-form-pane {
+            flex: 1;
+            height: auto;
+            max-height: none;
+            overflow: visible;
+            border-left: none;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 2rem 1.5rem;
           }
         }
       `}</style>
 
-      <div className="login-split-shell">
-        {/* ================================================================ */}
-        {/* COLONNE GAUCHE : VISUEL REPRÉSENTATIF DE LA PLATEFORME           */}
-        {/* ================================================================ */}
-        <div
-          style={{
-            position: "relative",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-            padding: "2.25rem",
-            background:
-              "linear-gradient(160deg, #0b1324 0%, #0f172a 60%, #17152b 100%)",
-            borderRight: "1px solid rgba(255, 255, 255, 0.08)",
-            overflow: "hidden",
-          }}
-        >
-          {/* En-tête de la colonne gauche */}
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              gap: "0.75rem",
-              flexWrap: "wrap",
-              zIndex: 2,
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+      <div className="login-container">
+        {/* =================================================================== */}
+        {/* 1. COLONNE GAUCHE : L'IMAGE PREND TOUT L'ESPACE                     */}
+        {/* =================================================================== */}
+        <section className="login-visual-pane" aria-label="Visualisation Architecture IT Banking">
+          {/* L'image de fond qui couvre toute la surface */}
+          <img
+            src="/login-hero.jpg"
+            alt="Architecture Monétique & Core Banking — Mohamed Oury Diallo"
+            className="login-hero-img"
+          />
+
+          {/* Voile sombre dégradé pour sublimer les informations */}
+          <div className="login-visual-overlay" />
+
+          {/* En-tête supérieur gauche : Identité de la plateforme */}
+          <div className="visual-content-top">
+            <div style={{ display: "flex", alignItems: "center", gap: "0.85rem" }}>
               <div
                 style={{
-                  width: "42px",
-                  height: "42px",
+                  width: "44px",
+                  height: "44px",
                   borderRadius: "12px",
-                  background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+                  background: "linear-gradient(135deg, #00a800 0%, #15803d 100%)",
                   display: "grid",
                   placeItems: "center",
                   fontWeight: 900,
-                  fontSize: "1.1rem",
+                  fontSize: "1.15rem",
                   color: "#ffffff",
-                  boxShadow: "0 4px 14px rgba(16, 185, 129, 0.35)",
+                  boxShadow: "0 4px 16px rgba(0, 168, 0, 0.45)",
                 }}
               >
                 ⚡
@@ -140,8 +289,8 @@ export default function LoginPage() {
                   style={{
                     fontSize: "0.72rem",
                     fontWeight: 800,
-                    letterSpacing: "0.1em",
-                    color: "#34d399",
+                    letterSpacing: "0.12em",
+                    color: "#4ade80",
                     textTransform: "uppercase",
                   }}
                 >
@@ -149,7 +298,7 @@ export default function LoginPage() {
                 </div>
                 <div
                   style={{
-                    fontSize: "1.05rem",
+                    fontSize: "1.15rem",
                     fontWeight: 900,
                     color: "#ffffff",
                     letterSpacing: "-0.01em",
@@ -164,14 +313,15 @@ export default function LoginPage() {
               style={{
                 display: "inline-flex",
                 alignItems: "center",
-                gap: "0.45rem",
-                padding: "0.35rem 0.8rem",
+                gap: "0.5rem",
+                padding: "0.4rem 0.9rem",
                 borderRadius: "999px",
-                background: "rgba(16, 185, 129, 0.14)",
-                border: "1px solid rgba(16, 185, 129, 0.35)",
-                color: "#6ee7b7",
-                fontSize: "0.74rem",
+                background: "rgba(0, 168, 0, 0.16)",
+                border: "1px solid rgba(74, 222, 128, 0.35)",
+                color: "#86efac",
+                fontSize: "0.75rem",
                 fontWeight: 700,
+                backdropFilter: "blur(8px)",
               }}
             >
               <span
@@ -179,223 +329,150 @@ export default function LoginPage() {
                   width: "7px",
                   height: "7px",
                   borderRadius: "50%",
-                  background: "#10b981",
-                  boxShadow: "0 0 8px #10b981",
+                  background: "#4ade80",
+                  boxShadow: "0 0 8px #4ade80",
                 }}
               />
-              PCI-DSS • ISO 8583 • CBS
+              PCI-DSS • ISO 8583 • CORE BANKING
             </span>
           </div>
 
-          {/* Cadre central : Image générée de l'architecture Monétique & CBS avec signature */}
-          <div
-            style={{
-              margin: "1.25rem 0",
-              borderRadius: "18px",
-              overflow: "hidden",
-              border: "1px solid rgba(255, 255, 255, 0.16)",
-              boxShadow: "0 20px 45px -10px rgba(0, 0, 0, 0.65)",
-              position: "relative",
-              background: "#131c27",
-              zIndex: 2,
-            }}
-          >
-            <img
-              src="/login-hero.jpg?v=signed"
-              alt="Architecture Monétique & Core Banking — by Mohamed Oury Diallo, Expert IT Banking"
-              style={{
-                width: "100%",
-                height: "auto",
-                maxHeight: "410px",
-                objectFit: "contain",
-                display: "block",
-              }}
-            />
+          {/* En-tête inférieur gauche : Signature experte en Glassmorphism */}
+          <div className="visual-content-bottom">
             <div
               style={{
-                padding: "0.85rem 1.2rem",
-                background: "rgba(7, 13, 25, 0.92)",
-                borderTop: "1px solid rgba(255, 255, 255, 0.08)",
+                padding: "1rem 1.35rem",
+                borderRadius: "16px",
+                background: "rgba(8, 14, 26, 0.85)",
+                backdropFilter: "blur(16px)",
+                border: "1px solid rgba(255, 255, 255, 0.12)",
+                boxShadow: "0 16px 36px -8px rgba(0, 0, 0, 0.65)",
                 display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                flexWrap: "wrap",
-                gap: "0.75rem",
+                flexDirection: "column",
+                gap: "0.5rem",
               }}
             >
-              <div style={{ fontSize: "0.78rem", color: "#cbd5e1", lineHeight: 1.4 }}>
-                <strong style={{ color: "#ffffff" }}>
-                  Supervision de bout en bout :
-                </strong>{" "}
-                GAB/TPE • Switch ISO 8583 • HSM • Amplitude &amp; FLEXCUBE
-              </div>
-
-              <div
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "0.5rem",
-                  padding: "0.3rem 0.75rem",
-                  borderRadius: "8px",
-                  background: "linear-gradient(135deg, rgba(16, 185, 129, 0.16) 0%, rgba(217, 119, 6, 0.16) 100%)",
-                  border: "1px solid rgba(251, 191, 36, 0.4)",
-                }}
-              >
-                <span style={{ fontSize: "0.74rem", color: "#fde68a", fontWeight: 800 }}>
-                  Mohamed Oury Diallo
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "0.5rem" }}>
+                <span
+                  style={{
+                    fontSize: "0.7rem",
+                    fontWeight: 800,
+                    color: "#4ade80",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.08em",
+                  }}
+                >
+                  Supervision &amp; Ingénierie de Production
                 </span>
-                <span style={{ color: "rgba(255,255,255,0.3)" }}>•</span>
-                <span style={{ fontSize: "0.72rem", color: "#6ee7b7", fontWeight: 700 }}>
-                  Expert IT Banking (Monetique &amp; CBS)
+                <span
+                  style={{
+                    fontSize: "0.72rem",
+                    color: "#fde68a",
+                    fontWeight: 800,
+                    background: "rgba(251, 191, 36, 0.14)",
+                    padding: "0.15rem 0.5rem",
+                    borderRadius: "6px",
+                    border: "1px solid rgba(251, 191, 36, 0.3)",
+                  }}
+                >
+                  Expert IT Banking
                 </span>
               </div>
-            </div>
-          </div>
 
-          {/* Pied de la colonne gauche : Les 3 univers couverts */}
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(3, 1fr)",
-              gap: "0.75rem",
-              zIndex: 2,
-            }}
-          >
-            <div
-              style={{
-                padding: "0.85rem",
-                borderRadius: "14px",
-                background: "rgba(30, 41, 59, 0.55)",
-                border: "1px solid rgba(255, 255, 255, 0.08)",
-              }}
-            >
-              <div style={{ fontSize: "0.78rem", fontWeight: 800, color: "#fda4af" }}>
-                💳 Monétique Hub
+              <div style={{ fontSize: "0.9rem", fontWeight: 800, color: "#ffffff", lineHeight: 1.35 }}>
+                Architecture Monétique &amp; Systèmes Bancaires Core
               </div>
-              <div style={{ fontSize: "0.72rem", color: "#94a3b8", marginTop: "0.2rem", lineHeight: 1.35 }}>
-                Trames ISO 8583, EMV TLV, Journaux GAB EJ, Clés HSM &amp; RCA
-              </div>
-            </div>
 
-            <div
-              style={{
-                padding: "0.85rem",
-                borderRadius: "14px",
-                background: "rgba(30, 41, 59, 0.55)",
-                border: "1px solid rgba(255, 255, 255, 0.08)",
-              }}
-            >
-              <div style={{ fontSize: "0.78rem", fontWeight: 800, color: "#fcd34d" }}>
-                🏛️ CBS Amplitude
-              </div>
-              <div style={{ fontSize: "0.72rem", color: "#94a3b8", marginTop: "0.2rem", lineHeight: 1.35 }}>
-                Informix 4GL, Studio .per Genero, Batch EOD/BOD &amp; Tables BK*
-              </div>
-            </div>
+              <p style={{ fontSize: "0.8rem", color: "#cbd5e1", margin: 0, lineHeight: 1.45 }}>
+                GAB / TPE • Switch ISO 8583 • HSM PayShield • CBS Sopra Amplitude &amp; Oracle FLEXCUBE.
+              </p>
 
-            <div
-              style={{
-                padding: "0.85rem",
-                borderRadius: "14px",
-                background: "rgba(30, 41, 59, 0.55)",
-                border: "1px solid rgba(255, 255, 255, 0.08)",
-              }}
-            >
-              <div style={{ fontSize: "0.78rem", fontWeight: 800, color: "#6ee7b7" }}>
-                🏦 Oracle FLEXCUBE
-              </div>
-              <div style={{ fontSize: "0.72rem", color: "#94a3b8", marginTop: "0.2rem", lineHeight: 1.35 }}>
-                Architecture 12.x/14.x, PL/SQL, AEOD, Tables STTM/ACVW &amp; Copilot
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* ================================================================ */}
-        {/* COLONNE DROITE : FORMULAIRE DE CONNEXION SÉCURISÉ                */}
-        {/* ================================================================ */}
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            padding: "2.75rem 2.5rem",
-            background: "rgba(15, 23, 42, 0.92)",
-          }}
-        >
-          <div style={{ maxWidth: "400px", width: "100%", margin: "0 auto" }}>
-            {/* Badge identité */}
-            <div style={{ marginBottom: "2rem" }}>
-              <div
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "0.65rem",
-                  marginBottom: "1rem",
-                }}
-              >
+              <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", marginTop: "0.2rem", paddingTop: "0.5rem", borderTop: "1px solid rgba(255, 255, 255, 0.08)" }}>
                 <div
                   style={{
-                    width: "48px",
-                    height: "48px",
-                    borderRadius: "14px",
-                    background: "linear-gradient(135deg, #7d1538 0%, #a01e4a 100%)",
-                    color: "#ffffff",
+                    width: "26px",
+                    height: "26px",
+                    borderRadius: "50%",
+                    background: "linear-gradient(135deg, #00a800 0%, #15803d 100%)",
                     display: "grid",
                     placeItems: "center",
                     fontWeight: 900,
-                    fontSize: "1.15rem",
-                    boxShadow: "0 8px 22px rgba(125, 21, 56, 0.45)",
+                    fontSize: "0.7rem",
+                    color: "#ffffff",
                   }}
                 >
                   MO
                 </div>
-                <div>
-                  <span
-                    style={{
-                      fontSize: "0.7rem",
-                      fontWeight: 800,
-                      color: "#f472b6",
-                      textTransform: "uppercase",
-                      letterSpacing: "0.08em",
-                      display: "block",
-                    }}
-                  >
-                    AUTHENTIFICATION RBAC
-                  </span>
-                  <span style={{ fontSize: "0.85rem", color: "#cbd5e1", fontWeight: 700 }}>
-                    Portail d&apos;Exploitation Bancaire
-                  </span>
+                <div style={{ fontSize: "0.78rem", color: "#f8fafc", fontWeight: 700 }}>
+                  Conception &amp; Référentiel par <strong style={{ color: "#ffffff" }}>Mohamed Oury Diallo</strong>
                 </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* =================================================================== */}
+        {/* 2. COLONNE DROITE : FORMULAIRE DE CONNEXION (SANS SCROLL)           */}
+        {/* =================================================================== */}
+        <section className="login-form-pane" aria-label="Formulaire d'authentification">
+          <div className="login-card-inner">
+            {/* Header Formulaire */}
+            <div style={{ marginBottom: "1.25rem" }}>
+              <div
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.4rem",
+                  padding: "0.25rem 0.65rem",
+                  borderRadius: "8px",
+                  background: "rgba(0, 168, 0, 0.12)",
+                  border: "1px solid rgba(74, 222, 128, 0.3)",
+                  marginBottom: "0.65rem",
+                }}
+              >
+                <span style={{ fontSize: "0.72rem" }}>🔒</span>
+                <span
+                  style={{
+                    fontSize: "0.7rem",
+                    fontWeight: 800,
+                    color: "#4ade80",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.08em",
+                  }}
+                >
+                  AUTHENTIFICATION RBAC SÉCURISÉE
+                </span>
               </div>
 
               <h1
                 style={{
-                  fontSize: "1.65rem",
+                  fontSize: "1.6rem",
                   fontWeight: 900,
                   color: "#ffffff",
                   letterSpacing: "-0.02em",
-                  margin: "0 0 0.4rem 0",
+                  margin: "0 0 0.35rem 0",
+                  lineHeight: 1.2,
                 }}
               >
                 Connexion à votre espace
               </h1>
-              <p style={{ fontSize: "0.86rem", color: "#94a3b8", margin: 0, lineHeight: 1.5 }}>
-                Saisissez vos identifiants pour accéder aux modules autorisés par votre profil (Monétique, Amplitude, FLEXCUBE).
+
+              <p style={{ fontSize: "0.85rem", color: "#94a3b8", margin: 0, lineHeight: 1.4 }}>
+                Identifiez-vous pour accéder aux modules de supervision (Monétique, Amplitude, FLEXCUBE).
               </p>
             </div>
 
-            {/* Message d'erreur éventuel */}
+            {/* Alerte Erreur */}
             {error && (
               <div
                 style={{
-                  padding: "0.85rem 1rem",
-                  background: "rgba(239, 68, 68, 0.16)",
+                  padding: "0.7rem 1rem",
+                  background: "rgba(239, 68, 68, 0.14)",
                   color: "#fca5a5",
-                  borderRadius: "12px",
+                  borderRadius: "10px",
                   fontSize: "0.84rem",
                   fontWeight: 600,
-                  marginBottom: "1.35rem",
+                  marginBottom: "1rem",
                   border: "1px solid rgba(239, 68, 68, 0.35)",
                   display: "flex",
                   alignItems: "center",
@@ -407,13 +484,13 @@ export default function LoginPage() {
               </div>
             )}
 
-            {/* Formulaire */}
+            {/* Formulaire de connexion */}
             <form
               onSubmit={(e) => {
                 e.preventDefault();
                 handleLogin();
               }}
-              style={{ display: "flex", flexDirection: "column", gap: "1.2rem" }}
+              style={{ display: "flex", flexDirection: "column", gap: "0.9rem" }}
             >
               <div>
                 <label
@@ -421,34 +498,20 @@ export default function LoginPage() {
                     display: "block",
                     fontSize: "0.8rem",
                     fontWeight: 700,
-                    marginBottom: "0.45rem",
-                    color: "#e2e8f0",
+                    marginBottom: "0.35rem",
+                    color: "#cbd5e1",
                   }}
                 >
                   Adresse email professionnelle
                 </label>
-                <div style={{ position: "relative" }}>
-                  <input
-                    className="login-input"
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="nom.prenom@banque.com"
-                    style={{
-                      width: "100%",
-                      padding: "0.85rem 1rem",
-                      borderRadius: "12px",
-                      background: "rgba(2, 6, 23, 0.65)",
-                      border: "1px solid rgba(255, 255, 255, 0.14)",
-                      color: "#ffffff",
-                      fontSize: "0.92rem",
-                      outline: "none",
-                      transition: "all 0.15s ease",
-                      boxSizing: "border-box",
-                    }}
-                  />
-                </div>
+                <input
+                  className="login-input"
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="nom.prenom@banque.com"
+                />
               </div>
 
               <div>
@@ -457,14 +520,14 @@ export default function LoginPage() {
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
-                    marginBottom: "0.45rem",
+                    marginBottom: "0.35rem",
                   }}
                 >
                   <label
                     style={{
                       fontSize: "0.8rem",
                       fontWeight: 700,
-                      color: "#e2e8f0",
+                      color: "#cbd5e1",
                     }}
                   >
                     Mot de passe
@@ -476,7 +539,7 @@ export default function LoginPage() {
                       background: "transparent",
                       border: "none",
                       color: "#94a3b8",
-                      fontSize: "0.75rem",
+                      fontSize: "0.74rem",
                       fontWeight: 600,
                       cursor: "pointer",
                       padding: 0,
@@ -493,83 +556,93 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  style={{
-                    width: "100%",
-                    padding: "0.85rem 1rem",
-                    borderRadius: "12px",
-                    background: "rgba(2, 6, 23, 0.65)",
-                    border: "1px solid rgba(255, 255, 255, 0.14)",
-                    color: "#ffffff",
-                    fontSize: "0.92rem",
-                    outline: "none",
-                    transition: "all 0.15s ease",
-                    boxSizing: "border-box",
-                  }}
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={loading}
-                style={{
-                  width: "100%",
-                  background: "linear-gradient(135deg, #7d1538 0%, #a01e4a 100%)",
-                  color: "#ffffff",
-                  padding: "0.95rem 1.25rem",
-                  borderRadius: "12px",
-                  fontWeight: 800,
-                  fontSize: "0.95rem",
-                  border: "none",
-                  cursor: loading ? "wait" : "pointer",
-                  boxShadow: "0 8px 22px rgba(125, 21, 56, 0.45)",
-                  marginTop: "0.4rem",
-                  transition: "transform 0.15s ease, box-shadow 0.15s ease",
-                }}
+                className="login-submit-btn"
+                style={{ marginTop: "0.25rem" }}
               >
                 {loading ? "Authentification en cours..." : "Se connecter au Hub →"}
               </button>
             </form>
 
+            {/* Raccourci de test SuperAdmin */}
+            <div
+              style={{
+                marginTop: "1rem",
+                padding: "0.75rem 1rem",
+                borderRadius: "10px",
+                background: "rgba(15, 23, 42, 0.6)",
+                border: "1px solid rgba(255, 255, 255, 0.08)",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <div style={{ fontSize: "0.76rem", color: "#94a3b8" }}>
+                Accès rapide : <strong style={{ color: "#ffffff" }}>SuperAdmin</strong>
+              </div>
+              <button
+                type="button"
+                onClick={() => handleLogin("mohaourydiallo@gmail.com")}
+                disabled={loading}
+                style={{
+                  background: "rgba(0, 168, 0, 0.15)",
+                  color: "#4ade80",
+                  border: "1px solid rgba(74, 222, 128, 0.35)",
+                  padding: "0.3rem 0.7rem",
+                  borderRadius: "8px",
+                  fontSize: "0.74rem",
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  transition: "all 0.15s ease",
+                }}
+              >
+                Accès Express ⚡
+              </button>
+            </div>
+
             {/* Encart Gouvernance & Sécurité */}
             <div
               style={{
-                marginTop: "2rem",
-                paddingTop: "1.35rem",
+                marginTop: "1.25rem",
+                paddingTop: "0.85rem",
                 borderTop: "1px solid rgba(255, 255, 255, 0.08)",
                 display: "flex",
                 flexDirection: "column",
-                gap: "0.55rem",
+                gap: "0.3rem",
               }}
             >
               <div
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  gap: "0.5rem",
-                  fontSize: "0.76rem",
+                  gap: "0.45rem",
+                  fontSize: "0.74rem",
                   color: "#94a3b8",
                 }}
               >
-                <span>🔒</span>
+                <span>🛡️</span>
                 <span>
-                  Contrôle d&apos;accès granulaire par rôle :{" "}
-                  <strong style={{ color: "#e2e8f0" }}>
-                    SuperAdmin, Admin &amp; Rôles Modules
-                  </strong>
+                  Environnement bancaire protégé &amp; conforme :{" "}
+                  <strong style={{ color: "#e2e8f0" }}>PCI-DSS &amp; ISO 8583</strong>
                 </span>
               </div>
               <div
                 style={{
-                  fontSize: "0.73rem",
+                  fontSize: "0.7rem",
                   color: "#64748b",
-                  lineHeight: 1.4,
+                  lineHeight: 1.35,
                 }}
               >
-                Les sessions sont protégées par jeton signé et journalisées conformément aux exigences de sécurité monétique.
+                Toutes les tentatives d&apos;authentification et sessions sont journalisées dans la piste d&apos;audit.
               </div>
             </div>
           </div>
-        </div>
+        </section>
       </div>
     </div>
   );

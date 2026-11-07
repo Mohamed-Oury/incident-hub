@@ -470,7 +470,13 @@ export async function getAllIncidents(options?: { all?: boolean }): Promise<Inci
         status: "RESOLVED" as any,
         severity: inc.severity as any,
         knowledgeStatus: "VALIDATED" as any,
-        subsidiary: ((inc as any).subsidiary || "SGABS") as "SGABS" | "AFG",
+        subsidiary: (
+          (inc as any).subsidiary ||
+          (inc.reference && inc.reference.toUpperCase().includes("AFG") ? "AFG" : undefined) ||
+          (inc.network && inc.network.toUpperCase().includes("AFG") ? "AFG" : undefined) ||
+          (inc.channel && inc.channel.toUpperCase().includes("PAYGATE") ? "AFG" : undefined) ||
+          "SGABS"
+        ) as "SGABS" | "AFG",
         domain: inc.domain || "",
         channel: inc.channel || "",
         operation: inc.operation || "",
