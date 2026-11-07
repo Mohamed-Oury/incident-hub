@@ -80,22 +80,35 @@ export default function LoginPage() {
           overflow: hidden;
         }
 
-        /* COLONNE GAUCHE : L'IMAGE D'ARCHITECTURE S'AFFICHE ENTIÈREMENT SANS ROGNAGE */
+        /* COLONNE GAUCHE : L'IMAGE D'ARCHITECTURE OCCUPE TOUT L'ESPACE SANS ROGNAGE */
         .login-visual-pane {
           position: relative;
           flex: 1 1 auto;
           height: 100vh;
           max-height: 100vh;
-          background: #030712;
+          background: #060b13;
           overflow: hidden;
           display: flex;
           align-items: center;
           justify-content: center;
-          padding: 1.5rem;
+          padding: 0;
           box-sizing: border-box;
         }
 
+        .login-hero-bg-blur {
+          position: absolute;
+          inset: -20px;
+          background-image: url("/login-hero.jpg");
+          background-size: cover;
+          background-position: center;
+          filter: blur(28px) brightness(0.35);
+          transform: scale(1.08);
+          pointer-events: none;
+        }
+
         .login-hero-img {
+          position: relative;
+          z-index: 1;
           width: 100%;
           height: 100%;
           max-width: 100%;
@@ -103,7 +116,7 @@ export default function LoginPage() {
           object-fit: contain;
           object-position: center;
           display: block;
-          filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.85));
+          filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.75));
         }
 
         .login-visual-pane::after {
@@ -111,7 +124,9 @@ export default function LoginPage() {
           position: absolute;
           inset: 0;
           pointer-events: none;
-          box-shadow: inset 0 0 60px 20px #030712;
+          z-index: 2;
+          background: linear-gradient(to right, transparent 80%, #080e1a 100%),
+                      radial-gradient(circle at center, transparent 65%, rgba(6, 11, 19, 0.4) 100%);
         }
 
         /* COLONNE DROITE : FORMULAIRE PARFAITEMENT CENTRÉ VERTICALEMENT */
@@ -155,14 +170,14 @@ export default function LoginPage() {
         }
 
         .login-input:focus {
-          border-color: #00a800 !important;
-          box-shadow: 0 0 0 3px rgba(0, 168, 0, 0.2) !important;
+          border-color: #e60028 !important;
+          box-shadow: 0 0 0 3px rgba(230, 0, 40, 0.25) !important;
           background: rgba(15, 23, 42, 1);
         }
 
         .login-submit-btn {
           width: 100%;
-          background: linear-gradient(135deg, #00a800 0%, #15803d 100%);
+          background: linear-gradient(135deg, #e60028 0%, #b91c1c 100%);
           color: #ffffff;
           padding: 0.8rem 1.25rem;
           border-radius: 10px;
@@ -170,7 +185,7 @@ export default function LoginPage() {
           font-size: 0.95rem;
           border: none;
           cursor: pointer;
-          box-shadow: 0 6px 20px rgba(0, 168, 0, 0.35);
+          box-shadow: 0 6px 20px rgba(230, 0, 40, 0.38);
           transition: all 0.2s ease;
           display: flex;
           align-items: center;
@@ -181,7 +196,7 @@ export default function LoginPage() {
         .login-submit-btn:hover:not(:disabled) {
           filter: brightness(1.1);
           transform: translateY(-1px);
-          box-shadow: 0 8px 24px rgba(0, 168, 0, 0.45);
+          box-shadow: 0 8px 26px rgba(230, 0, 40, 0.5);
         }
 
         .login-submit-btn:disabled {
@@ -234,6 +249,7 @@ export default function LoginPage() {
         {/* 1. COLONNE GAUCHE : L'IMAGE D'ARCHITECTURE EN PLEINE RÉSOLUTION    */}
         {/* =================================================================== */}
         <section className="login-visual-pane" aria-label="Visualisation Architecture IT Banking">
+          <div className="login-hero-bg-blur" />
           <img
             src="/login-hero.jpg"
             alt="Architecture Monétique & Core Banking — Mohamed Oury Diallo"
@@ -246,24 +262,28 @@ export default function LoginPage() {
         {/* =================================================================== */}
         <section className="login-form-pane" aria-label="Formulaire d'authentification">
           <div className="login-card-inner">
-            {/* Header Identité Plateforme */}
+            {/* Header Identité Plateforme SGABS */}
             <div style={{ display: "flex", alignItems: "center", gap: "0.85rem", marginBottom: "1.25rem" }}>
               <div
+                title="Société Générale (SGABS)"
                 style={{
                   width: "44px",
                   height: "44px",
-                  borderRadius: "12px",
-                  background: "linear-gradient(135deg, #00a800 0%, #15803d 100%)",
+                  borderRadius: "10px",
+                  background: "linear-gradient(to bottom, #e60028 0%, #e60028 48%, #ffffff 48%, #ffffff 52%, #111827 52%, #111827 100%)",
+                  border: "1.5px solid rgba(255, 255, 255, 0.25)",
+                  boxShadow: "0 4px 18px rgba(230, 0, 40, 0.45)",
                   display: "grid",
                   placeItems: "center",
                   fontWeight: 900,
-                  fontSize: "1.15rem",
+                  fontSize: "0.88rem",
                   color: "#ffffff",
-                  boxShadow: "0 4px 16px rgba(0, 168, 0, 0.45)",
+                  letterSpacing: "0.05em",
                   flexShrink: 0,
+                  textShadow: "0 1px 3px rgba(0, 0, 0, 0.8)",
                 }}
               >
-                ⚡
+                SG
               </div>
               <div>
                 <div
@@ -271,11 +291,11 @@ export default function LoginPage() {
                     fontSize: "0.7rem",
                     fontWeight: 800,
                     letterSpacing: "0.12em",
-                    color: "#4ade80",
+                    color: "#ff4d6d",
                     textTransform: "uppercase",
                   }}
                 >
-                  BANKING COMMAND CENTER
+                  SOCIÉTÉ GÉNÉRALE • SGABS
                 </div>
                 <div
                   style={{
@@ -299,8 +319,8 @@ export default function LoginPage() {
                   gap: "0.4rem",
                   padding: "0.25rem 0.65rem",
                   borderRadius: "8px",
-                  background: "rgba(0, 168, 0, 0.12)",
-                  border: "1px solid rgba(74, 222, 128, 0.3)",
+                  background: "rgba(230, 0, 40, 0.12)",
+                  border: "1px solid rgba(230, 0, 40, 0.35)",
                   marginBottom: "0.6rem",
                 }}
               >
@@ -309,12 +329,12 @@ export default function LoginPage() {
                   style={{
                     fontSize: "0.68rem",
                     fontWeight: 800,
-                    color: "#4ade80",
+                    color: "#ff6b81",
                     textTransform: "uppercase",
                     letterSpacing: "0.08em",
                   }}
                 >
-                  AUTHENTIFICATION RBAC • PCI-DSS • ISO 8583
+                  AUTHENTIFICATION RBAC • SGABS IT BANKING
                 </span>
               </div>
 
@@ -332,7 +352,7 @@ export default function LoginPage() {
               </h1>
 
               <p style={{ fontSize: "0.82rem", color: "#94a3b8", margin: 0, lineHeight: 1.4 }}>
-                Supervision Monétique, Amplitude, FLEXCUBE &amp; Référentiel de Production.
+                Supervision Monétique, Amplitude, FLEXCUBE &amp; Référentiel SGABS.
               </p>
             </div>
 
@@ -443,42 +463,6 @@ export default function LoginPage() {
               </button>
             </form>
 
-            {/* Raccourci de test SuperAdmin */}
-            <div
-              style={{
-                marginTop: "1rem",
-                padding: "0.75rem 1rem",
-                borderRadius: "10px",
-                background: "rgba(15, 23, 42, 0.6)",
-                border: "1px solid rgba(255, 255, 255, 0.08)",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <div style={{ fontSize: "0.76rem", color: "#94a3b8" }}>
-                Accès rapide : <strong style={{ color: "#ffffff" }}>SuperAdmin</strong>
-              </div>
-              <button
-                type="button"
-                onClick={() => handleLogin("mohaourydiallo@gmail.com")}
-                disabled={loading}
-                style={{
-                  background: "rgba(0, 168, 0, 0.15)",
-                  color: "#4ade80",
-                  border: "1px solid rgba(74, 222, 128, 0.35)",
-                  padding: "0.3rem 0.7rem",
-                  borderRadius: "8px",
-                  fontSize: "0.74rem",
-                  fontWeight: 700,
-                  cursor: "pointer",
-                  transition: "all 0.15s ease",
-                }}
-              >
-                Accès Express ⚡
-              </button>
-            </div>
-
             {/* Encart Gouvernance & Sécurité */}
             <div
               style={{
@@ -502,7 +486,7 @@ export default function LoginPage() {
                 <span>🛡️</span>
                 <span>
                   Environnement bancaire protégé &amp; conforme :{" "}
-                  <strong style={{ color: "#e2e8f0" }}>PCI-DSS &amp; ISO 8583</strong>
+                  <strong style={{ color: "#e2e8f0" }}>PCI-DSS &amp; ISO 8583 (SGABS)</strong>
                 </span>
               </div>
               <div

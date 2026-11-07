@@ -9,6 +9,10 @@ import {
   canDeleteIncident,
 } from "@/modules/auth/types";
 import { useSubsidiary } from "@/modules/layout/SubsidiaryContext";
+import {
+  exportIncidentsToExcel,
+  exportIncidentsToPowerPoint,
+} from "../services/export-service";
 
 interface KnowledgeCatalogProps {
   initialIncidents: IncidentRecord[];
@@ -398,37 +402,122 @@ export function KnowledgeCatalog({
         </div>
       </div>
 
-      {/* Résumé des résultats */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "0.88rem", color: "#64748b" }}>
-        <span>
-          Affichage de <strong>{paginatedIncidents.length > 0 ? (safePage - 1) * pageSize + 1 : 0}</strong> à{" "}
-          <strong>{Math.min(safePage * pageSize, filteredIncidents.length)}</strong> sur{" "}
-          <strong>{filteredIncidents.length}</strong> incidents
-        </span>
-
-        {/* Contrôles de pagination en haut */}
-        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-          <button
-            type="button"
-            disabled={safePage <= 1}
-            onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-            className="btn-secondary"
-            style={{ padding: "0.3rem 0.7rem", fontSize: "0.8rem", opacity: safePage <= 1 ? 0.5 : 1 }}
-          >
-            ← Précédent
-          </button>
-          <span style={{ fontSize: "0.85rem", fontWeight: 600, color: "#0f172a" }}>
-            Page {safePage} / {totalPages}
+      {/* Barre d'Export Élaborée (Excel & PowerPoint) & Contrôles */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexWrap: "wrap",
+          gap: "1rem",
+          background: "#ffffff",
+          padding: "0.85rem 1.25rem",
+          borderRadius: "14px",
+          border: "1px solid #e2e8f0",
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap" }}>
+          <span style={{ fontSize: "0.86rem", color: "#64748b" }}>
+            Affichage de <strong>{paginatedIncidents.length > 0 ? (safePage - 1) * pageSize + 1 : 0}</strong> à{" "}
+            <strong>{Math.min(safePage * pageSize, filteredIncidents.length)}</strong> sur{" "}
+            <strong style={{ color: selectedSubsidiary === "AFG" ? "#15803d" : "#e60028" }}>{filteredIncidents.length}</strong> incidents (
+            <strong>{selectedSubsidiary === "AFG" ? "AFG Bank" : "SGABS"}</strong>)
           </span>
+        </div>
+
+        {/* Boutons d'export élaboré Excel & PowerPoint distincts par filiale */}
+        <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", flexWrap: "wrap" }}>
+          {/* Export Excel élaboré */}
           <button
             type="button"
-            disabled={safePage >= totalPages}
-            onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
-            className="btn-secondary"
-            style={{ padding: "0.3rem 0.7rem", fontSize: "0.8rem", opacity: safePage >= totalPages ? 0.5 : 1 }}
+            disabled={filteredIncidents.length === 0}
+            onClick={() => exportIncidentsToExcel(filteredIncidents, selectedSubsidiary)}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              background: "#f0fdf4",
+              color: "#15803d",
+              border: "1.5px solid #86efac",
+              padding: "0.45rem 0.95rem",
+              borderRadius: "10px",
+              fontWeight: 800,
+              fontSize: "0.82rem",
+              cursor: filteredIncidents.length === 0 ? "not-allowed" : "pointer",
+              opacity: filteredIncidents.length === 0 ? 0.6 : 1,
+              boxShadow: "0 1px 3px rgba(22, 163, 74, 0.15)",
+              transition: "all 0.15s ease",
+            }}
+            title={`Exporter l'ensemble des ${filteredIncidents.length} incidents de ${selectedSubsidiary} au format Excel élaboré (.xls)`}
           >
-            Suivant →
+            <span>📊</span>
+            <span>Exporter Excel ({selectedSubsidiary})</span>
+            <span
+              style={{
+                background: "#dcfce7",
+                color: "#166534",
+                padding: "0.1rem 0.45rem",
+                borderRadius: "999px",
+                fontSize: "0.72rem",
+                fontWeight: 800,
+              }}
+            >
+              {filteredIncidents.length}
+            </span>
           </button>
+
+          {/* Export PowerPoint exécutif */}
+          <button
+            type="button"
+            disabled={filteredIncidents.length === 0}
+            onClick={() => exportIncidentsToPowerPoint(filteredIncidents, selectedSubsidiary)}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              background: "#fff7ed",
+              color: "#c2410c",
+              border: "1.5px solid #fdba74",
+              padding: "0.45rem 0.95rem",
+              borderRadius: "10px",
+              fontWeight: 800,
+              fontSize: "0.82rem",
+              cursor: filteredIncidents.length === 0 ? "not-allowed" : "pointer",
+              opacity: filteredIncidents.length === 0 ? 0.6 : 1,
+              boxShadow: "0 1px 3px rgba(194, 65, 12, 0.15)",
+              transition: "all 0.15s ease",
+            }}
+            title={`Générer le rapport exécutif PowerPoint (.ppt) des incidents pour ${selectedSubsidiary}`}
+          >
+            <span>📙</span>
+            <span>Exporter PowerPoint ({selectedSubsidiary})</span>
+          </button>
+
+          {/* Contrôles de pagination en haut */}
+          <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", marginLeft: "0.5rem" }}>
+            <button
+              type="button"
+              disabled={safePage <= 1}
+              onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+              className="btn-secondary"
+              style={{ padding: "0.35rem 0.65rem", fontSize: "0.78rem", opacity: safePage <= 1 ? 0.5 : 1 }}
+            >
+              ← Précédent
+            </button>
+            <span style={{ fontSize: "0.82rem", fontWeight: 700, color: "#0f172a" }}>
+              {safePage}/{totalPages}
+            </span>
+            <button
+              type="button"
+              disabled={safePage >= totalPages}
+              onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+              className="btn-secondary"
+              style={{ padding: "0.35rem 0.65rem", fontSize: "0.78rem", opacity: safePage >= totalPages ? 0.5 : 1 }}
+            >
+              Suivant →
+            </button>
+          </div>
         </div>
       </div>
 
@@ -562,6 +651,26 @@ export function KnowledgeCatalog({
                     </td>
                     <td style={{ textAlign: "right" }}>
                       <div style={{ display: "inline-flex", gap: "0.4rem", alignItems: "center", justifyContent: "flex-end" }}>
+                        <Link
+                          href={`/hub/incidents/${inc.reference}/fiche`}
+                          target="_blank"
+                          style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "0.25rem",
+                            padding: "0.35rem 0.65rem",
+                            fontSize: "0.78rem",
+                            fontWeight: 800,
+                            borderRadius: "8px",
+                            background: "#eff6ff",
+                            border: "1px solid #bfdbfe",
+                            color: "#1d4ed8",
+                            textDecoration: "none",
+                          }}
+                          title="Générer et imprimer la Fiche Incident PDF officielle (format 2 pages A4)"
+                        >
+                          📄 Fiche PDF
+                        </Link>
                         <Link
                           href={`/hub/incidents/${inc.reference}`}
                           className="btn-secondary"

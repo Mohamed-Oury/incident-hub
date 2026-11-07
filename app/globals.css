@@ -548,14 +548,15 @@ textarea {
   background: #fee2e2;
 }
 
-/* Container de vue */
+/* Container de vue principal — Marges gauche/droite parfaitement équilibrées (2.5rem) */
 .view-container {
-  padding: 2.5rem;
+  padding: 2rem 2.5rem 3rem 2.5rem;
   display: flex;
   flex-direction: column;
   gap: 2rem;
-  max-width: 1400px;
   width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* Cartes & métriques */
