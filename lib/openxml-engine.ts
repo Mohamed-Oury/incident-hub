@@ -392,8 +392,8 @@ export function generateNativePptx(
     if (!slide1Title.startsWith(inc.reference)) {
       slide1Title = `${inc.reference} - ${slide1Title}`;
     }
-    if (slide1Title.length > 85) {
-      slide1Title = slide1Title.slice(0, 85).replace(/\s+\S*$/, "") + "...";
+    if (slide1Title.length > 75) {
+      slide1Title = slide1Title.slice(0, 75).replace(/\s+\S*$/, "") + "...";
     }
 
     const symptom = inc.observations?.[0]?.symptom || inc.description || "Indisponibilité constatée sur le service transactionnel avec rejets opérationnels.";

@@ -60,14 +60,14 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
   const isAmplitudeUniverse = isCbsUniverse && !isFlexcubeUniverse;
 
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({
-    administration: true,
+    administration: false,
     exploitation: true,
-    decoders: true,
-    referentials: true,
-    advanced: true,
-    cbs_core: true,
-    cbs_ops: true,
-    cbs_academy: true,
+    decoders: false,
+    referentials: false,
+    advanced: false,
+    cbs_core: false,
+    cbs_ops: false,
+    cbs_academy: false,
   });
 
   const toggleGroup = (groupKey: string) => {
@@ -84,6 +84,9 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
       items: [
         { href: "/hub", label: "Vue d'ensemble", icon: "⊞" },
         { href: "/hub/knowledge", label: "Base de connaissance", icon: "📚" },
+        ...(isAFG
+          ? [{ href: "/hub/processing-files", label: "Traitement Fichiers (Clearing)", icon: "🔄" }]
+          : []),
         { href: "/hub/diagnostic", label: "Diagnostic Assistant", icon: "⚡" },
         { href: "/hub/mti", label: "Référentiel MTI", icon: "📬" },
         { href: "/hub/de", label: "Référentiel Champs DE", icon: "🗂️" },
@@ -418,7 +421,7 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
         <nav className="nav-menu" aria-label="Navigation principale">
           {authorizedSections.map((section) => {
             const hasActiveChild = section.items.some((item) => pathname === item.href);
-            const isOpen = openGroups[section.key] ?? true;
+            const isOpen = openGroups[section.key] ?? (section.key === "exploitation");
 
             return (
               <div key={section.key} className="nav-group">
