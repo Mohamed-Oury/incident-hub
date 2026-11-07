@@ -64,6 +64,142 @@
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.04);
 }
 
+/* ==========================================================================
+   BRANDING DYNAMIQUE : ATLANTIC FINANCIAL GROUP (AFG) & SOCIÉTÉ GÉNÉRALE (SGABS)
+   ========================================================================== */
+
+/* 🏛️ Thème AFG Bank (Atlantic Group) : Vert Émeraude (#00a800) & Rouge Intense (#e50000) */
+[data-subsidiary="AFG"],
+.subsidiary-afg {
+  --burgundy: #00a800;
+  --burgundy-light: #22c55e;
+  --burgundy-dark: #15803d;
+  --afg-green: #00a800;
+  --afg-green-dark: #15803d;
+  --afg-green-light: #22c55e;
+  --afg-red: #e50000;
+  --sg-red-50: #f0fdf4;
+  --sg-red-100: #dcfce7;
+  --sg-red-200: #bbf7d0;
+  --sg-red-400: #4ade80;
+  --sg-red-500: #22c55e;
+  --sg-red-600: #00a800;
+  --sg-red-700: #15803d;
+  --sg-red-800: #166534;
+  --sg-red-900: #14532d;
+  --emerald-50: #f0fdf4;
+  --emerald-100: #dcfce7;
+  --emerald-200: #bbf7d0;
+  --emerald-400: #4ade80;
+  --emerald-500: #00a800;
+  --emerald-600: #00a800;
+  --emerald-700: #15803d;
+  --slate-darkest: #0a1910;
+  --slate-surface: #12281b;
+  --slate-card: #153021;
+  --slate-border: #1e452e;
+}
+
+[data-subsidiary="AFG"] .sidebar,
+.subsidiary-afg .sidebar {
+  background: #0a1910;
+  border-right: 1px solid #1e452e;
+}
+
+[data-subsidiary="AFG"] .hero-search,
+.subsidiary-afg .hero-search {
+  background: linear-gradient(135deg, #0a1910 0%, #12281b 100%) !important;
+  border-left: 5px solid #00a800 !important;
+  border-color: #1e452e !important;
+}
+
+[data-subsidiary="AFG"] .nav-item.active,
+.subsidiary-afg .nav-item.active {
+  background: linear-gradient(135deg, #00a800 0%, #15803d 100%) !important;
+  box-shadow: 0 3px 12px rgba(0, 168, 0, 0.45) !important;
+}
+
+[data-subsidiary="AFG"] .btn-emerald,
+.subsidiary-afg .btn-emerald {
+  background: #00a800 !important;
+}
+
+[data-subsidiary="AFG"] .btn-emerald:hover,
+.subsidiary-afg .btn-emerald:hover {
+  background: #15803d !important;
+}
+
+[data-subsidiary="AFG"] .badge-emerald,
+.subsidiary-afg .badge-emerald {
+  background: #f0fdf4 !important;
+  color: #14532d !important;
+  border: 1px solid #bbf7d0 !important;
+}
+
+/* 🔴 Thème SGABS (Société Générale) : Rouge & Noir Officiel */
+[data-subsidiary="SGABS"],
+.subsidiary-sgabs {
+  --burgundy: #e60028;
+  --burgundy-light: #f43f5e;
+  --burgundy-dark: #99001b;
+  --sg-red-50: #fef2f2;
+  --sg-red-100: #fee2e2;
+  --sg-red-200: #fecaca;
+  --sg-red-400: #f87171;
+  --sg-red-500: #ef4444;
+  --sg-red-600: #e60028;
+  --sg-red-700: #99001b;
+  --sg-red-800: #7f1d1d;
+  --sg-red-900: #450a0a;
+  --emerald-50: #fef2f2;
+  --emerald-100: #fee2e2;
+  --emerald-200: #fecaca;
+  --emerald-400: #f87171;
+  --emerald-500: #e60028;
+  --emerald-600: #e60028;
+  --emerald-700: #99001b;
+  --slate-darkest: #0f172a;
+  --slate-surface: #1e293b;
+  --slate-card: #1f2937;
+  --slate-border: #334155;
+}
+
+[data-subsidiary="SGABS"] .sidebar,
+.subsidiary-sgabs .sidebar {
+  background: #0f172a;
+  border-right: 1px solid #334155;
+}
+
+[data-subsidiary="SGABS"] .hero-search,
+.subsidiary-sgabs .hero-search {
+  background: linear-gradient(135deg, #111827 0%, #1a1a1a 100%) !important;
+  border-left: 5px solid #e60028 !important;
+  border-color: #374151 !important;
+}
+
+[data-subsidiary="SGABS"] .nav-item.active,
+.subsidiary-sgabs .nav-item.active {
+  background: linear-gradient(135deg, #e60028 0%, #99001b 100%) !important;
+  box-shadow: 0 3px 12px rgba(230, 0, 40, 0.4) !important;
+}
+
+[data-subsidiary="SGABS"] .btn-emerald,
+.subsidiary-sgabs .btn-emerald {
+  background: #e60028 !important;
+}
+
+[data-subsidiary="SGABS"] .btn-emerald:hover,
+.subsidiary-sgabs .btn-emerald:hover {
+  background: #99001b !important;
+}
+
+[data-subsidiary="SGABS"] .badge-emerald,
+.subsidiary-sgabs .badge-emerald {
+  background: #fef2f2 !important;
+  color: #99001b !important;
+  border: 1px solid #fecaca !important;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -746,6 +882,38 @@ tr:hover td {
   font-size: 1.6rem;
   font-weight: 800;
   margin: 0.25rem 0;
+}
+
+/* Bannière Diagnostic CTA dynamique selon la filiale */
+.banner-diagnostic-cta {
+  background: linear-gradient(135deg, var(--burgundy) 0%, #1e293b 100%) !important;
+  color: white;
+  padding: 2rem;
+  border-radius: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.35);
+  border: 1px solid #334155;
+  border-left: 6px solid var(--burgundy-light) !important;
+}
+
+.banner-diagnostic-btn {
+  background: linear-gradient(135deg, var(--burgundy) 0%, var(--burgundy-light) 100%) !important;
+  color: #ffffff;
+  font-weight: 700;
+  padding: 0.85rem 1.6rem;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border: none;
+  transition: all 0.15s ease;
+}
+
+.banner-diagnostic-btn:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
 }
 
 /* ========================================================

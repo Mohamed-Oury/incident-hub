@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { SubsidiaryProvider } from "@/modules/layout/SubsidiaryContext";
 
 export const metadata: Metadata = {
   title: "BANKING CBS & MONETIQUE Hub",
@@ -17,7 +18,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="fr" suppressHydrationWarning>
-      <body suppressHydrationWarning>{children}</body>
+      <body suppressHydrationWarning>
+        <SubsidiaryProvider>{children}</SubsidiaryProvider>
+      </body>
     </html>
   );
 }

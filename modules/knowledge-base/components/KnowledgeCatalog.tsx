@@ -8,6 +8,7 @@ import {
   canEditIncident,
   canDeleteIncident,
 } from "@/modules/auth/types";
+import { useSubsidiary } from "@/modules/layout/SubsidiaryContext";
 
 interface KnowledgeCatalogProps {
   initialIncidents: IncidentRecord[];
@@ -21,6 +22,7 @@ export function KnowledgeCatalog({
   currentUser,
 }: KnowledgeCatalogProps) {
   const [incidents, setIncidents] = useState<IncidentRecord[]>(initialIncidents);
+  const { subsidiary: selectedSubsidiary, setSubsidiary } = useSubsidiary();
   const [search, setSearch] = useState(initialSearch);
   const [selectedDomain, setSelectedDomain] = useState<string>("ALL");
   const [selectedStatus, setSelectedStatus] = useState<string>("ALL");
@@ -28,6 +30,34 @@ export function KnowledgeCatalog({
   const [deletingRef, setDeletingRef] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null);
   const pageSize = 10;
+
+  // Détermination de la filiale d'un incident (par défaut, tous les incidents actuels sont rattachés à SGABS)
+  const getIncidentSubsidiary = (inc: IncidentRecord): "AFG" | "SGABS" => {
+    if (inc.subsidiary === "AFG") return "AFG";
+    return "SGABS";
+  };
+
+  // Compteurs d'incidents par filiale
+  const counts = useMemo(() => {
+    let afg = 0;
+    let sgabs = 0;
+    for (const inc of incidents) {
+      if (getIncidentSubsidiary(inc) === "AFG") afg++;
+      else sgabs++;
+    }
+    return { afg, sgabs };
+  }, [incidents]);
+
+  // Incidents restreints à la filiale sélectionnée
+  const subsidiaryIncidents = useMemo(() => {
+    return incidents.filter((inc) => getIncidentSubsidiary(inc) === selectedSubsidiary);
+  }, [incidents, selectedSubsidiary]);
+
+  const handleToggleSubsidiary = (subsidiary: "AFG" | "SGABS") => {
+    setSubsidiary(subsidiary);
+    setCurrentPage(1);
+    setSelectedDomain("ALL");
+  };
 
   // Seul le SuperAdmin peut supprimer ou modifier; l'Admin ne peut que modifier; les autres rôles n'ont pas accès
   const allowEdit = canEditIncident(currentUser);
@@ -71,12 +101,12 @@ export function KnowledgeCatalog({
   };
 
   const domains = useMemo(() => {
-    const list = Array.from(new Set(incidents.map((i) => i.domain).filter(Boolean)));
+    const list = Array.from(new Set(subsidiaryIncidents.map((i) => i.domain).filter(Boolean)));
     return ["ALL", ...list];
-  }, [incidents]);
+  }, [subsidiaryIncidents]);
 
   const filteredIncidents = useMemo(() => {
-    return incidents.filter((inc) => {
+    return subsidiaryIncidents.filter((inc) => {
       const q = search.toLowerCase();
       const matchQuery =
         !search ||
@@ -94,7 +124,7 @@ export function KnowledgeCatalog({
 
       return matchQuery && matchDomain && matchStatus;
     });
-  }, [incidents, search, selectedDomain, selectedStatus]);
+  }, [subsidiaryIncidents, search, selectedDomain, selectedStatus]);
 
   const totalPages = Math.ceil(filteredIncidents.length / pageSize) || 1;
   const safePage = Math.min(currentPage, totalPages);
@@ -106,6 +136,152 @@ export function KnowledgeCatalog({
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+      {/* 🏦 TOGGLE FILIALES BANCAIRES TRAITÉES (AFG & SGABS) */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          flexWrap: "wrap",
+          gap: "1rem",
+          background: "#ffffff",
+          padding: "1rem 1.35rem",
+          borderRadius: "16px",
+          border: "1px solid #e2e8f0",
+          boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: "0.85rem" }}>
+          <div
+            style={{
+              width: "42px",
+              height: "42px",
+              borderRadius: "12px",
+              background: selectedSubsidiary === "AFG" ? "#ffffff" : "#e60028",
+              color: "#ffffff",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontWeight: 800,
+              fontSize: "1.1rem",
+              padding: selectedSubsidiary === "AFG" ? "4px" : "0",
+              border: selectedSubsidiary === "AFG" ? "1.5px solid #00a800" : "none",
+              boxShadow: selectedSubsidiary === "AFG" ? "0 4px 12px rgba(0,168,0,0.3)" : "0 4px 10px rgba(230,0,40,0.25)",
+              transition: "all 0.2s ease",
+            }}
+          >
+            {selectedSubsidiary === "AFG" ? (
+              <img src="/afg-logo.png" alt="AFG Bank" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+            ) : (
+              "🔴"
+            )}
+          </div>
+          <div>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              <span style={{ fontSize: "0.72rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "#64748b", fontWeight: 800 }}>
+                FILIALE TRAITÉE
+              </span>
+              <span
+                style={{
+                  fontSize: "0.7rem",
+                  fontWeight: 700,
+                  padding: "0.1rem 0.5rem",
+                  borderRadius: "999px",
+                  background: selectedSubsidiary === "AFG" ? "#f0fdf4" : "#fef2f2",
+                  color: selectedSubsidiary === "AFG" ? "#15803d" : "#e60028",
+                  border: `1px solid ${selectedSubsidiary === "AFG" ? "#bbf7d0" : "#fecaca"}`,
+                }}
+              >
+                {selectedSubsidiary === "AFG" ? "AFG Bank (Atlantic Group)" : "Société Générale de Banques"}
+              </span>
+            </div>
+            <div style={{ fontSize: "1rem", fontWeight: 800, color: "#0f172a", marginTop: "0.15rem" }}>
+              {selectedSubsidiary === "AFG" ? "AFG Bank (Atlantic Group)" : "SGABS (Société Générale Sénégal)"}
+            </div>
+          </div>
+        </div>
+
+        {/* Boutons Toggle Switcher AFG / SGABS */}
+        <div
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            background: "#f1f5f9",
+            padding: "0.3rem",
+            borderRadius: "12px",
+            border: "1px solid #e2e8f0",
+            gap: "0.3rem",
+          }}
+        >
+          {/* Bouton AFG (Sélectionné par défaut) */}
+          <button
+            type="button"
+            onClick={() => handleToggleSubsidiary("AFG")}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.6rem",
+              padding: "0.55rem 1.1rem",
+              borderRadius: "10px",
+              border: selectedSubsidiary === "AFG" ? "1px solid #008800" : "1px solid transparent",
+              background: selectedSubsidiary === "AFG" ? "#00a800" : "transparent",
+              color: selectedSubsidiary === "AFG" ? "#ffffff" : "#475569",
+              fontWeight: 800,
+              fontSize: "0.86rem",
+              cursor: "pointer",
+              transition: "all 0.15s ease",
+            }}
+          >
+            <span>🏛️ AFG Bank</span>
+            <span
+              style={{
+                padding: "0.15rem 0.55rem",
+                borderRadius: "999px",
+                fontSize: "0.72rem",
+                fontWeight: 800,
+                background: selectedSubsidiary === "AFG" ? "rgba(255,255,255,0.25)" : "#e2e8f0",
+                color: selectedSubsidiary === "AFG" ? "#ffffff" : "#64748b",
+              }}
+            >
+              {counts.afg}
+            </span>
+          </button>
+
+          {/* Bouton SGABS */}
+          <button
+            type="button"
+            onClick={() => handleToggleSubsidiary("SGABS")}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.6rem",
+              padding: "0.55rem 1.1rem",
+              borderRadius: "10px",
+              border: selectedSubsidiary === "SGABS" ? "1px solid #e60028" : "1px solid transparent",
+              background: selectedSubsidiary === "SGABS" ? "#e60028" : "transparent",
+              color: selectedSubsidiary === "SGABS" ? "#ffffff" : "#475569",
+              fontWeight: 800,
+              fontSize: "0.86rem",
+              cursor: "pointer",
+              transition: "all 0.15s ease",
+            }}
+          >
+            <span>🔴 SGABS</span>
+            <span
+              style={{
+                padding: "0.15rem 0.55rem",
+                borderRadius: "999px",
+                fontSize: "0.72rem",
+                fontWeight: 800,
+                background: selectedSubsidiary === "SGABS" ? "rgba(255,255,255,0.28)" : "#e2e8f0",
+                color: selectedSubsidiary === "SGABS" ? "#ffffff" : "#64748b",
+              }}
+            >
+              {counts.sgabs}
+            </span>
+          </button>
+        </div>
+      </div>
       {feedback && (
         <div
           style={{
@@ -137,7 +313,12 @@ export function KnowledgeCatalog({
       {/* Barre de recherche et filtres */}
       <div className="hero-search">
         <div>
-          <p className="eyebrow accent" style={{ color: "#e60028" }}>BASE DE CONNAISSANCES EXPERTE</p>
+          <p
+            className="eyebrow accent"
+            style={{ color: selectedSubsidiary === "AFG" ? "#4ade80" : "#e60028" }}
+          >
+            BASE DE CONNAISSANCES EXPERTE — {selectedSubsidiary === "AFG" ? "AFG BANK (ATLANTIC GROUP)" : "SOCIÉTÉ GÉNÉRALE (SGABS)"}
+          </p>
           <h2 style={{ fontSize: "1.35rem", fontWeight: 800 }}>Catalogue des Incidents Monétiques Capitalisés</h2>
           <p style={{ fontSize: "0.9rem", color: "#94a3b8", marginTop: "0.25rem" }}>
             Recherche par MTI, code réponse DE39, STAN, canal (GAB, TPE, EMV, HSM, Switch) ou composant technique.
@@ -179,14 +360,15 @@ export function KnowledgeCatalog({
                 setCurrentPage(1);
               }}
               style={{
-                background: selectedDomain === d ? "#e60028" : "#1f2937",
+                background: selectedDomain === d ? (selectedSubsidiary === "AFG" ? "#00a800" : "#e60028") : "#1f2937",
                 color: selectedDomain === d ? "#ffffff" : "#d1d5db",
-                border: "1px solid #374151",
+                border: `1px solid ${selectedDomain === d ? (selectedSubsidiary === "AFG" ? "#166534" : "#99001b") : "#374151"}`,
                 padding: "0.35rem 0.75rem",
                 borderRadius: "6px",
                 fontSize: "0.8rem",
                 cursor: "pointer",
                 fontWeight: 600,
+                transition: "all 0.15s ease",
               }}
             >
               {d === "ALL" ? "Tous" : d}
@@ -256,6 +438,7 @@ export function KnowledgeCatalog({
           <thead>
             <tr>
               <th style={{ width: "110px" }}>Référence</th>
+              <th style={{ width: "95px" }}>Filiale</th>
               <th>Titre de l&apos;incident</th>
               <th>Domaine</th>
               <th>Composant</th>
@@ -267,17 +450,91 @@ export function KnowledgeCatalog({
           <tbody>
             {paginatedIncidents.length === 0 ? (
               <tr>
-                <td colSpan={7} style={{ textAlign: "center", padding: "3rem", color: "#64748b" }}>
-                  Aucun incident ne correspond à votre recherche.
+                <td colSpan={8} style={{ textAlign: "center", padding: "3.5rem 1.5rem", color: "#64748b" }}>
+                  {selectedSubsidiary === "AFG" && counts.afg === 0 ? (
+                    <div style={{ maxWidth: "560px", margin: "0 auto", display: "flex", flexDirection: "column", alignItems: "center", gap: "1rem" }}>
+                      <div
+                        style={{
+                          width: "72px",
+                          height: "72px",
+                          borderRadius: "16px",
+                          background: "#ffffff",
+                          border: "1.5px solid #00a800",
+                          boxShadow: "0 4px 14px rgba(0, 168, 0, 0.25)",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          padding: "8px",
+                        }}
+                      >
+                        <img src="/afg-logo.png" alt="AFG Bank Logo" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+                      </div>
+                      <div>
+                        <h3 style={{ fontSize: "1.15rem", fontWeight: 800, color: "#0f172a" }}>
+                          Aucun incident répertorié pour AFG Bank
+                        </h3>
+                        <p style={{ fontSize: "0.88rem", color: "#64748b", marginTop: "0.35rem", lineHeight: 1.5 }}>
+                          La base de connaissances pour <strong>AFG Bank (Atlantic Group)</strong> est actuellement vide. Tous les incidents existants ({counts.sgabs}) sont affectés à la filiale <strong>SGABS (Société Générale)</strong>.
+                        </p>
+                      </div>
+                      <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", justifyContent: "center" }}>
+                        <button
+                          type="button"
+                          onClick={() => handleToggleSubsidiary("SGABS")}
+                          style={{
+                            background: "#e60028",
+                            color: "#ffffff",
+                            border: "none",
+                            padding: "0.55rem 1.15rem",
+                            borderRadius: "8px",
+                            fontWeight: 800,
+                            fontSize: "0.85rem",
+                            cursor: "pointer",
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "0.5rem",
+                          }}
+                        >
+                          <span>🔴 Voir les {counts.sgabs} incidents SGABS</span>
+                        </button>
+                        <Link
+                          href="/hub/incidents/new"
+                          className="btn-secondary"
+                          style={{ fontSize: "0.85rem", padding: "0.55rem 1rem", fontWeight: 700 }}
+                        >
+                          ➕ Déclarer un incident AFG
+                        </Link>
+                      </div>
+                    </div>
+                  ) : (
+                    <div>Aucun incident ne correspond à vos filtres pour la filiale {selectedSubsidiary}.</div>
+                  )}
                 </td>
               </tr>
             ) : (
               paginatedIncidents.map((inc) => {
                 const isValidated = inc.knowledgeStatus === "VALIDATED";
+                const incSubsidiary = getIncidentSubsidiary(inc);
                 return (
                   <tr key={inc.reference}>
                     <td>
                       <b style={{ color: "#0f172a" }}>{inc.reference}</b>
+                    </td>
+                    <td>
+                      <span
+                        style={{
+                          display: "inline-block",
+                          padding: "0.2rem 0.55rem",
+                          borderRadius: "6px",
+                          fontSize: "0.74rem",
+                          fontWeight: 800,
+                          background: incSubsidiary === "AFG" ? "#f0fdf4" : "#fef2f2",
+                          color: incSubsidiary === "AFG" ? "#15803d" : "#e60028",
+                          border: `1px solid ${incSubsidiary === "AFG" ? "#bbf7d0" : "#fecaca"}`,
+                        }}
+                      >
+                        {incSubsidiary === "AFG" ? "AFG Bank" : "SGABS"}
+                      </span>
                     </td>
                     <td>
                       <div style={{ fontWeight: 600, color: "#0f172a" }}>{inc.title}</div>
@@ -387,8 +644,8 @@ export function KnowledgeCatalog({
                     height: "36px",
                     padding: "0 0.5rem",
                     borderRadius: "8px",
-                    border: safePage === pageNumber ? "1.5px solid #e60028" : "1px solid #cbd5e1",
-                    background: safePage === pageNumber ? "#e60028" : "#ffffff",
+                    border: safePage === pageNumber ? `1.5px solid ${selectedSubsidiary === "AFG" ? "#00a800" : "#e60028"}` : "1px solid #cbd5e1",
+                    background: safePage === pageNumber ? (selectedSubsidiary === "AFG" ? "#00a800" : "#e60028") : "#ffffff",
                     color: safePage === pageNumber ? "#ffffff" : "#0f172a",
                     fontWeight: 700,
                     fontSize: "0.85rem",

@@ -76,6 +76,7 @@ export interface IncidentRecord {
   status: IncidentStatus;
   severity: Severity;
   knowledgeStatus: KnowledgeStatus;
+  subsidiary?: "SGABS" | "AFG" | string;
   domain?: string;
   channel?: string;
   operation?: string;

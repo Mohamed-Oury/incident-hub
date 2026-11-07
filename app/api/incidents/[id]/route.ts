@@ -119,6 +119,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
       severity: (severity || currentIncident.severity) as any,
       status: (status || currentIncident.status || "RESOLVED") as any,
       knowledgeStatus: (knowledgeStatus || currentIncident.knowledgeStatus || "VALIDATED") as any,
+      subsidiary: (body.subsidiary || currentIncident.subsidiary || "SGABS") as any,
       updatedAt: new Date().toISOString(),
       observations: updatedObservations,
       hypotheses: Array.isArray(hypotheses) ? hypotheses : currentIncident.hypotheses,

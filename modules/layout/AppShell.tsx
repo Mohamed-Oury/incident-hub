@@ -11,6 +11,7 @@ import {
   getUserRoles,
   isSuperAdminUser,
 } from "@/modules/auth/types";
+import { useSubsidiary } from "./SubsidiaryContext";
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -22,6 +23,7 @@ interface AppShellProps {
 export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensemble", eyebrow = "EXPLOITATION MONÉTIQUE" }: AppShellProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const { subsidiary, setSubsidiary, isAFG, isSGABS } = useSubsidiary();
   const [collapsed, setCollapsed] = useState(false);
   const [currentUser, setCurrentUser] = useState<SessionUser | null>(initialUser || null);
 
@@ -244,28 +246,87 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
     : filteredUniverseSections;
 
   return (
-    <div className="shell">
+    <div className="shell" data-subsidiary={!isCbsUniverse ? subsidiary : undefined}>
       {/* Sidebar FIXÉE & RÉDUCTIBLE */}
       <aside className={`sidebar ${collapsed ? "collapsed" : ""}`}>
         <div className="brand">
-          <img
-            src="/logo.png"
-            alt="BANKING CBS & MONÉTIQUE HUB Logo"
-            className="brand-logo-img"
-            style={{
-              width: "42px",
-              height: "42px",
-              borderRadius: "10px",
-              objectFit: "cover",
-              border: "1px solid #10b981",
-              boxShadow: "0 0 12px rgba(16, 185, 129, 0.35)",
-              background: "#0f172a",
-              flexShrink: 0,
-            }}
-          />
+          {/* Logo dynamique selon univers et filiale monétique */}
+          {!isCbsUniverse ? (
+            isAFG ? (
+              <div
+                title="AFG Bank (Atlantic Group)"
+                style={{
+                  width: "42px",
+                  height: "42px",
+                  borderRadius: "10px",
+                  background: "#ffffff",
+                  border: "1.5px solid #00a800",
+                  boxShadow: "0 0 14px rgba(0, 168, 0, 0.45)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: "4px",
+                  flexShrink: 0,
+                }}
+              >
+                <img
+                  src="/afg-logo.png"
+                  alt="AFG Bank Logo"
+                  style={{ width: "100%", height: "100%", objectFit: "contain" }}
+                />
+              </div>
+            ) : (
+              <div
+                title="Société Générale (SGABS)"
+                style={{
+                  width: "42px",
+                  height: "42px",
+                  borderRadius: "10px",
+                  background: "linear-gradient(to bottom, #e60028 0%, #e60028 48%, #ffffff 48%, #ffffff 52%, #111827 52%, #111827 100%)",
+                  border: "1.5px solid rgba(255, 255, 255, 0.3)",
+                  boxShadow: "0 0 14px rgba(230, 0, 40, 0.45)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontWeight: 900,
+                  fontSize: "0.82rem",
+                  color: "#ffffff",
+                  flexShrink: 0,
+                  textShadow: "0 1px 2px rgba(0,0,0,0.8)",
+                }}
+              >
+                SG
+              </div>
+            )
+          ) : (
+            <img
+              src="/logo.png"
+              alt="BANKING CBS Logo"
+              className="brand-logo-img"
+              style={{
+                width: "42px",
+                height: "42px",
+                borderRadius: "10px",
+                objectFit: "cover",
+                border: "1px solid #10b981",
+                boxShadow: "0 0 12px rgba(16, 185, 129, 0.35)",
+                background: "#0f172a",
+                flexShrink: 0,
+              }}
+            />
+          )}
+
           <div className="brand-text">
             BANKING
-            <b>{isFlexcubeUniverse ? "ORACLE FLEXCUBE" : isCbsUniverse ? "CBS AMPLITUDE" : "MONÉTIQUE HUB"}</b>
+            <b>
+              {isFlexcubeUniverse
+                ? "ORACLE FLEXCUBE"
+                : isCbsUniverse
+                ? "CBS AMPLITUDE"
+                : isAFG
+                ? "AFG BANK • MONÉTIQUE"
+                : "SGABS • MONÉTIQUE"}
+            </b>
           </div>
           <button
             type="button"
@@ -277,7 +338,7 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
           </button>
         </div>
 
-        {/* Badge Univers Actif dans la Sidebar */}
+        {/* Badge Univers & Filiale Active dans la Sidebar */}
         {!collapsed && (
           <div style={{ padding: "0.5rem 0.85rem 0.75rem", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
             <div
@@ -285,18 +346,50 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
-                background: isFlexcubeUniverse ? "rgba(234, 88, 12, 0.12)" : isAmplitudeUniverse ? "rgba(2, 132, 199, 0.12)" : "rgba(225, 29, 72, 0.12)",
-                border: `1px solid ${isFlexcubeUniverse ? "rgba(234, 88, 12, 0.3)" : isAmplitudeUniverse ? "rgba(2, 132, 199, 0.3)" : "rgba(225, 29, 72, 0.3)"}`,
+                background: isFlexcubeUniverse
+                  ? "rgba(234, 88, 12, 0.12)"
+                  : isAmplitudeUniverse
+                  ? "rgba(2, 132, 199, 0.12)"
+                  : isAFG
+                  ? "rgba(0, 168, 0, 0.15)"
+                  : "rgba(230, 0, 40, 0.14)",
+                border: `1px solid ${
+                  isFlexcubeUniverse
+                    ? "rgba(234, 88, 12, 0.3)"
+                    : isAmplitudeUniverse
+                    ? "rgba(2, 132, 199, 0.3)"
+                    : isAFG
+                    ? "rgba(34, 197, 94, 0.35)"
+                    : "rgba(230, 0, 40, 0.35)"
+                }`,
                 borderRadius: "8px",
                 padding: "6px 10px",
               }}
             >
               <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                 <span style={{ fontSize: "0.9rem" }}>
-                  {isFlexcubeUniverse ? "🏛️" : isAmplitudeUniverse ? "🏦" : "💳"}
+                  {isFlexcubeUniverse ? "🏛️" : isAmplitudeUniverse ? "🏦" : isAFG ? "🏛️" : "🔴"}
                 </span>
-                <span style={{ fontSize: "0.74rem", fontWeight: 700, color: isFlexcubeUniverse ? "#fb923c" : isAmplitudeUniverse ? "#38bdf8" : "#fda4af" }}>
-                  {isFlexcubeUniverse ? "Oracle FLEXCUBE" : isAmplitudeUniverse ? "Sopra Amplitude" : "Monétique Hub"}
+                <span
+                  style={{
+                    fontSize: "0.74rem",
+                    fontWeight: 700,
+                    color: isFlexcubeUniverse
+                      ? "#fb923c"
+                      : isAmplitudeUniverse
+                      ? "#38bdf8"
+                      : isAFG
+                      ? "#4ade80"
+                      : "#fca5a5",
+                  }}
+                >
+                  {isFlexcubeUniverse
+                    ? "Oracle FLEXCUBE"
+                    : isAmplitudeUniverse
+                    ? "Sopra Amplitude"
+                    : isAFG
+                    ? "AFG Bank (Atlantic)"
+                    : "SGABS (SocGen)"}
                 </span>
               </div>
               <span
@@ -306,7 +399,13 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
                   textTransform: "uppercase",
                   padding: "1px 5px",
                   borderRadius: "4px",
-                  background: isFlexcubeUniverse ? "#ea580c" : isAmplitudeUniverse ? "#0284c7" : "var(--sg-red-600)",
+                  background: isFlexcubeUniverse
+                    ? "#ea580c"
+                    : isAmplitudeUniverse
+                    ? "#0284c7"
+                    : isAFG
+                    ? "#00a800"
+                    : "#e60028",
                   color: "#ffffff",
                 }}
               >
@@ -383,6 +482,66 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: "0.65rem", flexShrink: 0 }}>
+            {/* Toggle de filiale Monétique (AFG / SGABS) disponible sur toutes les pages de monétique */}
+            {!isCbsUniverse && (
+              <div
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  background: isAFG ? "rgba(0, 168, 0, 0.08)" : "rgba(230, 0, 40, 0.08)",
+                  border: `1.5px solid ${isAFG ? "#4ade80" : "#fca5a5"}`,
+                  borderRadius: "10px",
+                  padding: "3px",
+                  gap: "3px",
+                  boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
+                }}
+                title="Filiale monétique active : change instantanément les données et la charte de toutes les pages"
+              >
+                <button
+                  type="button"
+                  onClick={() => setSubsidiary("AFG")}
+                  style={{
+                    fontSize: "0.74rem",
+                    fontWeight: isAFG ? 800 : 600,
+                    color: isAFG ? "#ffffff" : "#475569",
+                    background: isAFG ? "#00a800" : "transparent",
+                    padding: "4px 10px",
+                    borderRadius: "7px",
+                    border: isAFG ? "1px solid #15803d" : "1px solid transparent",
+                    cursor: "pointer",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "5px",
+                    transition: "all 0.15s ease",
+                    boxShadow: isAFG ? "0 2px 6px rgba(0,168,0,0.35)" : "none",
+                  }}
+                >
+                  <span>🏛️ AFG Bank</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSubsidiary("SGABS")}
+                  style={{
+                    fontSize: "0.74rem",
+                    fontWeight: isSGABS ? 800 : 600,
+                    color: isSGABS ? "#ffffff" : "#475569",
+                    background: isSGABS ? "#e60028" : "transparent",
+                    padding: "4px 10px",
+                    borderRadius: "7px",
+                    border: isSGABS ? "1px solid #99001b" : "1px solid transparent",
+                    cursor: "pointer",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "5px",
+                    transition: "all 0.15s ease",
+                    boxShadow: isSGABS ? "0 2px 6px rgba(230,0,40,0.3)" : "none",
+                  }}
+                >
+                  <span>🔴 SGABS</span>
+                </button>
+              </div>
+            )}
+
             {/* Switcher 3 Univers filtré selon les rôles modules cochés */}
             <div
               style={{

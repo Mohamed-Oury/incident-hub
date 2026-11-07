@@ -51,6 +51,19 @@ export default async function IncidentDetailPage({ params }: IncidentDetailPageP
               {isValidated ? "✓ Connaissance Validée" : "Scénario de Référence"}
             </span>
 
+            <span
+              className="badge"
+              style={{
+                background: (incident.subsidiary === "AFG" ? "#f0fdf4" : "#fef2f2"),
+                color: (incident.subsidiary === "AFG" ? "#15803d" : "#991b1b"),
+                border: `1px solid ${incident.subsidiary === "AFG" ? "#bbf7d0" : "#fecaca"}`,
+                padding: "0.35rem 0.85rem",
+                fontWeight: 800,
+              }}
+            >
+              Filiale: {incident.subsidiary === "AFG" ? "AFG Bank" : "SGABS"}
+            </span>
+
             <span className="badge badge-black" style={{ padding: "0.35rem 0.85rem" }}>
               Canal: {incident.domain}
             </span>

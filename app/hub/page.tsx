@@ -15,22 +15,9 @@ export default async function MonetiqueHubPage() {
       <MetricsOverview incidents={incidents} />
 
       {/* 2. Appel à l'action Diagnostic et méthodologie */}
-      <div
-        style={{
-          background: "linear-gradient(135deg, #7d1538 0%, #1e293b 100%)",
-          color: "white",
-          padding: "2rem",
-          borderRadius: "16px",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          boxShadow: "0 10px 25px -5px rgba(125, 21, 56, 0.35)",
-          border: "1px solid #334155",
-          borderLeft: "6px solid #a01e4a",
-        }}
-      >
+      <div className="banner-diagnostic-cta">
         <div>
-          <span style={{ fontSize: "0.75rem", letterSpacing: "0.1em", fontWeight: 700, textTransform: "uppercase", color: "#f8d0db" }}>
+          <span style={{ fontSize: "0.75rem", letterSpacing: "0.1em", fontWeight: 700, textTransform: "uppercase", color: "var(--sg-red-200)" }}>
             ASSISTANT DE DIAGNOSTIC GUIDÉ
           </span>
           <h2 style={{ fontSize: "1.4rem", fontWeight: 800, marginTop: "0.3rem" }}>
@@ -43,17 +30,7 @@ export default async function MonetiqueHubPage() {
 
         <Link
           href="/hub/diagnostic"
-          style={{
-            background: "linear-gradient(135deg, #7d1538 0%, #a01e4a 100%)",
-            color: "#ffffff",
-            fontWeight: 700,
-            padding: "0.85rem 1.6rem",
-            borderRadius: "10px",
-            fontSize: "0.95rem",
-            whiteSpace: "nowrap",
-            boxShadow: "0 4px 12px rgba(125, 21, 56, 0.4)",
-            border: "none",
-          }}
+          className="banner-diagnostic-btn"
         >
           Lancer le diagnostic →
         </Link>
