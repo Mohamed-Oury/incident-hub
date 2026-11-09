@@ -87,6 +87,7 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
         ...(isAFG
           ? [{ href: "/hub/processing-files", label: "Traitement Fichiers (Clearing)", icon: "🔄" }]
           : []),
+        { href: "/hub/commands", label: "Commandes Utiles & Runbook", icon: "💻" },
         { href: "/hub/diagnostic", label: "Diagnostic Assistant", icon: "⚡" },
         { href: "/hub/mti", label: "Référentiel MTI", icon: "📬" },
         { href: "/hub/de", label: "Référentiel Champs DE", icon: "🗂️" },

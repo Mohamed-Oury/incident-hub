@@ -5,6 +5,7 @@ import { AppShell } from "@/modules/layout/AppShell";
 import { useSubsidiary } from "@/modules/layout/SubsidiaryContext";
 import { MINDMAP_INCOMING_FLOWS } from "@/modules/processing-files/data";
 import { NetworkId } from "@/modules/processing-files/types";
+import { OutgoingClearingWorkflow } from "@/modules/processing-files/OutgoingClearingWorkflow";
 
 export default function ProcessingFilesPage() {
   const { isAFG, setSubsidiary } = useSubsidiary();
@@ -83,7 +84,7 @@ export default function ProcessingFilesPage() {
 
   return (
     <AppShell>
-      <div style={{ padding: "1.75rem", maxWidth: "1720px", margin: "0 auto" }}>
+      <div style={{ maxWidth: "1600px", width: "100%", margin: "0 auto", minWidth: 0, boxSizing: "border-box" }}>
         {/* ========================================================================= */}
         {/* 1. HEADER PRINCIPAL AFG BANK                                              */}
         {/* ========================================================================= */}
@@ -93,11 +94,13 @@ export default function ProcessingFilesPage() {
             overflow: "hidden",
             background: "linear-gradient(135deg, #0b1120 0%, #172136 100%)",
             color: "#ffffff",
-            borderRadius: "20px",
-            padding: "2rem 2.25rem",
-            marginBottom: "1.5rem",
+            borderRadius: "16px",
+            padding: "1.25rem 1.6rem",
+            marginBottom: "1.25rem",
             border: "1px solid #334155",
             boxShadow: "0 10px 25px -5px rgba(11, 17, 32, 0.4)",
+            width: "100%",
+            boxSizing: "border-box",
           }}
         >
           <div
@@ -157,7 +160,7 @@ export default function ProcessingFilesPage() {
 
               <h1
                 style={{
-                  fontSize: "1.85rem",
+                  fontSize: "1.45rem",
                   fontWeight: 900,
                   margin: 0,
                   letterSpacing: "-0.02em",
@@ -168,11 +171,11 @@ export default function ProcessingFilesPage() {
               </h1>
               <p
                 style={{
-                  fontSize: "0.92rem",
+                  fontSize: "0.85rem",
                   color: "#cbd5e1",
-                  margin: "0.45rem 0 0",
-                  maxWidth: "920px",
-                  lineHeight: 1.5,
+                  margin: "0.35rem 0 0",
+                  maxWidth: "880px",
+                  lineHeight: 1.45,
                 }}
               >
                 Supervision exacte des parcours de compensation : <strong>GIMAC (CEMAC)</strong>, <strong>GIM (UEMOA)</strong> et <strong>VISA (International)</strong>.
@@ -180,7 +183,7 @@ export default function ProcessingFilesPage() {
             </div>
 
             {/* COMMANDES D'ACTION & SWITCHERS */}
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "0.75rem" }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "0.5rem" }}>
               {/* SÉLECTEUR DIRECTION INCOMING / OUTGOING */}
               <div
                 style={{
@@ -250,7 +253,7 @@ export default function ProcessingFilesPage() {
                   <span>Processing_Files_Outgoing</span>
                   <span
                     style={{
-                      background: "#f59e0b",
+                      background: "#10b981",
                       color: "#ffffff",
                       fontSize: "0.65rem",
                       padding: "0.15rem 0.45rem",
@@ -258,7 +261,7 @@ export default function ProcessingFilesPage() {
                       fontWeight: 900,
                     }}
                   >
-                    En attente
+                    Actif (4/4)
                   </span>
                 </button>
               </div>
@@ -271,14 +274,15 @@ export default function ProcessingFilesPage() {
                   display: "inline-flex",
                   alignItems: "center",
                   gap: "0.45rem",
-                  padding: "0.45rem 0.9rem",
+                  padding: "0.4rem 0.85rem",
                   borderRadius: "8px",
                   border: "1px solid #475569",
                   background: showOriginalCaptures ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.05)",
                   color: "#f8fafc",
-                  fontSize: "0.78rem",
+                  fontSize: "0.76rem",
                   fontWeight: 700,
                   cursor: "pointer",
+                  transition: "all 0.15s ease",
                 }}
               >
                 <span>🔍</span>
@@ -341,50 +345,10 @@ export default function ProcessingFilesPage() {
         )}
 
         {/* ========================================================================= */}
-        {/* PARCOURS OUTGOING : EN ATTENTE DU SCHÉMA SORTANT                          */}
+        {/* PARCOURS OUTGOING : RÉFÉRENTIEL DE TERRAIN                                */}
         {/* ========================================================================= */}
         {direction === "OUTGOING" ? (
-          <div
-            style={{
-              background: "#ffffff",
-              borderRadius: "20px",
-              border: "2px dashed #cbd5e1",
-              padding: "4.5rem 2rem",
-              textAlign: "center",
-              boxShadow: "0 1px 3px rgba(0,0,0,0.02)",
-            }}
-          >
-            <div
-              style={{
-                width: "72px",
-                height: "72px",
-                borderRadius: "18px",
-                background: "#fef3c7",
-                color: "#d97706",
-                display: "inline-flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "2.25rem",
-                marginBottom: "1.25rem",
-              }}
-            >
-              📤
-            </div>
-            <h3 style={{ fontSize: "1.45rem", fontWeight: 900, color: "#0f172a", margin: "0 0 0.6rem" }}>
-              Processing_Files_Outgoing : En attente de votre capture Outgoing
-            </h3>
-            <p
-              style={{
-                fontSize: "0.95rem",
-                color: "#64748b",
-                maxWidth: "680px",
-                margin: "0 auto 1.75rem",
-                lineHeight: 1.6,
-              }}
-            >
-              Les 3 parcours entrants (Incoming) sont désormais tous validés. Dès que vous transmettrez la capture du traitement sortant (Outgoing), elle sera intégrée avec la même rigueur.
-            </p>
-          </div>
+          <OutgoingClearingWorkflow />
         ) : (
           /* ========================================================================= */
           /* PARCOURS INCOMING ACTIF (3 RÉSEAUX)                                       */
@@ -394,9 +358,11 @@ export default function ProcessingFilesPage() {
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-                gap: "1.25rem",
-                marginBottom: "1.75rem",
+                gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+                gap: "1rem",
+                marginBottom: "1.25rem",
+                width: "100%",
+                boxSizing: "border-box",
               }}
             >
               {MINDMAP_INCOMING_FLOWS.map((flow) => {
@@ -410,33 +376,34 @@ export default function ProcessingFilesPage() {
                       display: "flex",
                       alignItems: "flex-start",
                       justifyContent: "space-between",
-                      gap: "1rem",
-                      padding: "1.25rem 1.4rem",
-                      borderRadius: "16px",
+                      gap: "0.85rem",
+                      padding: "1rem 1.15rem",
+                      borderRadius: "14px",
                       background: isSelected ? flow.themeColor.bg : "#ffffff",
                       border: `2px solid ${isSelected ? flow.themeColor.accent : "#e2e8f0"}`,
                       cursor: "pointer",
                       textAlign: "left",
                       boxShadow: isSelected
-                        ? `0 10px 25px -5px ${flow.themeColor.glow}`
+                        ? `0 8px 20px -4px ${flow.themeColor.glow}`
                         : "0 1px 3px rgba(0,0,0,0.03)",
                       transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
+                      boxSizing: "border-box",
                     }}
                   >
                     <div>
-                      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.4rem" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.35rem" }}>
                         <span
                           style={{
-                            width: "10px",
-                            height: "10px",
+                            width: "9px",
+                            height: "9px",
                             borderRadius: "50%",
                             background: flow.themeColor.accent,
-                            boxShadow: `0 0 8px ${flow.themeColor.accent}`,
+                            boxShadow: `0 0 6px ${flow.themeColor.accent}`,
                           }}
                         />
                         <span
                           style={{
-                            fontSize: "0.72rem",
+                            fontSize: "0.7rem",
                             fontWeight: 900,
                             letterSpacing: "0.06em",
                             color: isSelected ? flow.themeColor.text : "#64748b",
@@ -449,10 +416,10 @@ export default function ProcessingFilesPage() {
 
                       <h3
                         style={{
-                          fontSize: "1.25rem",
+                          fontSize: "1.1rem",
                           fontWeight: 900,
                           color: isSelected ? "#ffffff" : "#0f172a",
-                          margin: "0 0 0.35rem",
+                          margin: "0 0 0.25rem",
                         }}
                       >
                         {flow.networkName}
@@ -460,21 +427,21 @@ export default function ProcessingFilesPage() {
 
                       <p
                         style={{
-                          fontSize: "0.82rem",
+                          fontSize: "0.78rem",
                           color: isSelected ? "#cbd5e1" : "#64748b",
-                          margin: "0 0 0.75rem",
-                          lineHeight: 1.4,
+                          margin: "0 0 0.65rem",
+                          lineHeight: 1.35,
                         }}
                       >
                         {flow.zone}
                       </p>
 
-                      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.45rem", flexWrap: "wrap" }}>
                         <span
                           style={{
-                            fontSize: "0.72rem",
+                            fontSize: "0.68rem",
                             fontWeight: 800,
-                            padding: "0.2rem 0.55rem",
+                            padding: "0.15rem 0.5rem",
                             borderRadius: "6px",
                             background: "#10b981",
                             color: "#ffffff",
@@ -484,9 +451,9 @@ export default function ProcessingFilesPage() {
                         </span>
                         <span
                           style={{
-                            fontSize: "0.72rem",
+                            fontSize: "0.68rem",
                             fontWeight: 800,
-                            padding: "0.2rem 0.55rem",
+                            padding: "0.15rem 0.5rem",
                             borderRadius: "6px",
                             background: isSelected ? flow.themeColor.badgeBg : "#f1f5f9",
                             color: isSelected ? flow.themeColor.text : "#475569",
@@ -522,16 +489,18 @@ export default function ProcessingFilesPage() {
             {/* 1. AFFICHAGE DU RÉSEAU VISA                                           */}
             {/* ===================================================================== */}
             {selectedNetwork === "VISA" && currentFlow.visaWorkflow && (
-              <div>
+              <div style={{ width: "100%", maxWidth: "100%", minWidth: 0, boxSizing: "border-box" }}>
                 <div
                   style={{
                     background: "#04140e",
-                    borderRadius: "20px",
-                    padding: "2.25rem",
+                    borderRadius: "18px",
+                    padding: "1.5rem 1.75rem",
                     border: "2px solid #059669",
-                    boxShadow: "0 20px 40px rgba(0,0,0,0.5)",
-                    marginBottom: "2rem",
-                    overflowX: "auto",
+                    boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
+                    marginBottom: "1.5rem",
+                    width: "100%",
+                    maxWidth: "100%",
+                    boxSizing: "border-box",
                   }}
                 >
                   {/* EN-TÊTE VISA */}
@@ -542,19 +511,19 @@ export default function ProcessingFilesPage() {
                       alignItems: "center",
                       flexWrap: "wrap",
                       gap: "1rem",
-                      marginBottom: "2rem",
-                      paddingBottom: "1.25rem",
+                      marginBottom: "1.5rem",
+                      paddingBottom: "1rem",
                       borderBottom: "1px solid #0f3928",
                     }}
                   >
                     <div>
                       <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                         <span style={{ fontSize: "1.2rem" }}>🗺️</span>
-                        <h3 style={{ color: "#ecfdf5", fontSize: "1.25rem", fontWeight: 900, margin: 0 }}>
+                        <h3 style={{ color: "#ecfdf5", fontSize: "1.2rem", fontWeight: 900, margin: 0 }}>
                           Schéma Mind Map : VISA (International)
                         </h3>
                       </div>
-                      <p style={{ color: "#34d399", fontSize: "0.85rem", margin: "0.35rem 0 0", fontWeight: 600 }}>
+                      <p style={{ color: "#34d399", fontSize: "0.82rem", margin: "0.35rem 0 0", fontWeight: 600 }}>
                         Transcription mot à mot des captures VISA • Mail ➔ WinSCP ➔ Payway ➔ Génération CRE ➔ Dashboard / Ulrich / Cameroun ➔ Mail
                       </p>
                     </div>
@@ -564,9 +533,9 @@ export default function ProcessingFilesPage() {
                         background: "rgba(16, 185, 129, 0.2)",
                         border: "1px solid #10b981",
                         color: "#a7f3d0",
-                        fontSize: "0.78rem",
+                        fontSize: "0.75rem",
                         fontWeight: 800,
-                        padding: "0.35rem 0.85rem",
+                        padding: "0.3rem 0.75rem",
                         borderRadius: "8px",
                       }}
                     >
@@ -575,54 +544,56 @@ export default function ProcessingFilesPage() {
                   </div>
 
                   {/* 1. TRONC INITIAL (MAIL ➔ WINSCP ➔ DROITS ➔ COPIE NOM ➔ PAYWAY) */}
-                  <div style={{ marginBottom: "2.5rem" }}>
-                    <div style={{ fontSize: "0.75rem", fontWeight: 800, color: "#34d399", textTransform: "uppercase", marginBottom: "0.85rem", letterSpacing: "0.08em" }}>
+                  <div style={{ marginBottom: "2rem" }}>
+                    <div style={{ fontSize: "0.75rem", fontWeight: 800, color: "#34d399", textTransform: "uppercase", marginBottom: "0.75rem", letterSpacing: "0.08em" }}>
                       1. Tronc Commun d'Initialisation & Dépôt Fichiers
                     </div>
 
-                    <div style={{ display: "flex", alignItems: "center", minWidth: "1200px" }}>
-                      <div
-                        style={{
-                          background: "#065f46",
-                          border: "2px solid #10b981",
-                          borderRadius: "14px",
-                          padding: "1rem 1.4rem",
-                          color: "#ffffff",
-                          fontWeight: 900,
-                          fontSize: "0.95rem",
-                          textAlign: "center",
-                          minWidth: "160px",
-                          boxShadow: "0 0 20px rgba(16, 185, 129, 0.35)",
-                          flexShrink: 0,
-                        }}
-                      >
-                        {currentFlow.rootNodeTitle}
-                      </div>
-
-                      {currentFlow.visaWorkflow.prePaywaySteps.map((st, idx) => (
-                        <div key={idx} style={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
-                          <div style={{ width: "35px", height: "2px", background: "#10b981", position: "relative" }}>
-                            <div style={{ position: "absolute", right: "-2px", top: "-4px", width: 0, height: 0, borderTop: "5px solid transparent", borderBottom: "5px solid transparent", borderLeft: "6px solid #10b981" }} />
-                          </div>
-
-                          <div
-                            style={{
-                              background: "#08291c",
-                              border: "1.5px solid #059669",
-                              borderRadius: "12px",
-                              padding: "0.85rem 1.15rem",
-                              color: "#e2e8f0",
-                              fontWeight: 800,
-                              fontSize: "0.82rem",
-                              textAlign: "center",
-                              maxWidth: "240px",
-                              lineHeight: 1.35,
-                            }}
-                          >
-                            {st}
-                          </div>
+                    <div style={{ overflowX: "auto", width: "100%", maxWidth: "100%", paddingBottom: "0.5rem" }}>
+                      <div style={{ display: "flex", alignItems: "center", width: "max-content", minWidth: "max-content" }}>
+                        <div
+                          style={{
+                            background: "#065f46",
+                            border: "2px solid #10b981",
+                            borderRadius: "14px",
+                            padding: "0.85rem 1.25rem",
+                            color: "#ffffff",
+                            fontWeight: 900,
+                            fontSize: "0.9rem",
+                            textAlign: "center",
+                            minWidth: "150px",
+                            boxShadow: "0 0 15px rgba(16, 185, 129, 0.35)",
+                            flexShrink: 0,
+                          }}
+                        >
+                          {currentFlow.rootNodeTitle}
                         </div>
-                      ))}
+
+                        {currentFlow.visaWorkflow.prePaywaySteps.map((st, idx) => (
+                          <div key={idx} style={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
+                            <div style={{ width: "30px", height: "2px", background: "#10b981", position: "relative" }}>
+                              <div style={{ position: "absolute", right: "-2px", top: "-4px", width: 0, height: 0, borderTop: "5px solid transparent", borderBottom: "5px solid transparent", borderLeft: "6px solid #10b981" }} />
+                            </div>
+
+                            <div
+                              style={{
+                                background: "#08291c",
+                                border: "1.5px solid #059669",
+                                borderRadius: "12px",
+                                padding: "0.75rem 1rem",
+                                color: "#e2e8f0",
+                                fontWeight: 800,
+                                fontSize: "0.8rem",
+                                textAlign: "center",
+                                maxWidth: "220px",
+                                lineHeight: 1.35,
+                              }}
+                            >
+                              {st}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
 
@@ -845,16 +816,18 @@ export default function ProcessingFilesPage() {
             {/* 2. AFFICHAGE DU RÉSEAU GIM (UEMOA)                                    */}
             {/* ===================================================================== */}
             {selectedNetwork === "GIM" && (
-              <div>
+              <div style={{ width: "100%", maxWidth: "100%", minWidth: 0, boxSizing: "border-box" }}>
                 <div
                   style={{
                     background: "#050b14",
-                    borderRadius: "20px",
-                    padding: "2.25rem",
+                    borderRadius: "18px",
+                    padding: "1.5rem 1.75rem",
                     border: "2px solid #1e3a8a",
-                    boxShadow: "0 20px 40px rgba(0,0,0,0.5)",
-                    marginBottom: "2rem",
-                    overflowX: "auto",
+                    boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
+                    marginBottom: "1.5rem",
+                    width: "100%",
+                    maxWidth: "100%",
+                    boxSizing: "border-box",
                   }}
                 >
                   <div
@@ -864,19 +837,19 @@ export default function ProcessingFilesPage() {
                       alignItems: "center",
                       flexWrap: "wrap",
                       gap: "1rem",
-                      marginBottom: "2rem",
-                      paddingBottom: "1.25rem",
+                      marginBottom: "1.5rem",
+                      paddingBottom: "1rem",
                       borderBottom: "1px solid #1e293b",
                     }}
                   >
                     <div>
                       <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                         <span style={{ fontSize: "1.2rem" }}>🗺️</span>
-                        <h3 style={{ color: "#f8fafc", fontSize: "1.25rem", fontWeight: 900, margin: 0 }}>
+                        <h3 style={{ color: "#f8fafc", fontSize: "1.2rem", fontWeight: 900, margin: 0 }}>
                           Schéma Mind Map : GIM (UEMOA)
                         </h3>
                       </div>
-                      <p style={{ color: "#60a5fa", fontSize: "0.85rem", margin: "0.35rem 0 0", fontWeight: 600 }}>
+                      <p style={{ color: "#60a5fa", fontSize: "0.82rem", margin: "0.35rem 0 0", fontWeight: 600 }}>
                         Transcription mot à mot des captures GIM • Fichiers LIS & PDF ➔ Génération CRE ➔ Dashboard ➔ Obtention DE
                       </p>
                     </div>
@@ -886,9 +859,9 @@ export default function ProcessingFilesPage() {
                         background: "rgba(59, 130, 246, 0.2)",
                         border: "1px solid #3b82f6",
                         color: "#93c5fd",
-                        fontSize: "0.78rem",
+                        fontSize: "0.75rem",
                         fontWeight: 800,
-                        padding: "0.35rem 0.85rem",
+                        padding: "0.3rem 0.75rem",
                         borderRadius: "8px",
                       }}
                     >
@@ -897,54 +870,56 @@ export default function ProcessingFilesPage() {
                   </div>
 
                   {/* Tronc initial GIM */}
-                  <div style={{ marginBottom: "2.5rem" }}>
-                    <div style={{ fontSize: "0.75rem", fontWeight: 800, color: "#60a5fa", textTransform: "uppercase", marginBottom: "0.85rem", letterSpacing: "0.08em" }}>
+                  <div style={{ marginBottom: "2rem" }}>
+                    <div style={{ fontSize: "0.75rem", fontWeight: 800, color: "#60a5fa", textTransform: "uppercase", marginBottom: "0.75rem", letterSpacing: "0.08em" }}>
                       1. Tronc Initial de Récupération & Préparation
                     </div>
 
-                    <div style={{ display: "flex", alignItems: "center", minWidth: "1200px" }}>
-                      <div
-                        style={{
-                          background: "#1e3a8a",
-                          border: "2px solid #3b82f6",
-                          borderRadius: "14px",
-                          padding: "1rem 1.4rem",
-                          color: "#ffffff",
-                          fontWeight: 900,
-                          fontSize: "0.95rem",
-                          textAlign: "center",
-                          minWidth: "170px",
-                          boxShadow: "0 0 20px rgba(59, 130, 246, 0.35)",
-                          flexShrink: 0,
-                        }}
-                      >
-                        {currentFlow.rootNodeTitle}
-                      </div>
-
-                      {currentFlow.commonPreSteps?.map((stepTitle, idx) => (
-                        <div key={idx} style={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
-                          <div style={{ width: "35px", height: "2px", background: "#3b82f6", position: "relative" }}>
-                            <div style={{ position: "absolute", right: "-2px", top: "-4px", width: 0, height: 0, borderTop: "5px solid transparent", borderBottom: "5px solid transparent", borderLeft: "6px solid #3b82f6" }} />
-                          </div>
-
-                          <div
-                            style={{
-                              background: "#0f1f38",
-                              border: "1.5px solid #2563eb",
-                              borderRadius: "12px",
-                              padding: "0.85rem 1.15rem",
-                              color: "#e2e8f0",
-                              fontWeight: 800,
-                              fontSize: "0.82rem",
-                              textAlign: "center",
-                              maxWidth: "230px",
-                              lineHeight: 1.35,
-                            }}
-                          >
-                            {stepTitle}
-                          </div>
+                    <div style={{ overflowX: "auto", width: "100%", maxWidth: "100%", paddingBottom: "0.5rem" }}>
+                      <div style={{ display: "flex", alignItems: "center", width: "max-content", minWidth: "max-content" }}>
+                        <div
+                          style={{
+                            background: "#1e3a8a",
+                            border: "2px solid #3b82f6",
+                            borderRadius: "14px",
+                            padding: "0.85rem 1.25rem",
+                            color: "#ffffff",
+                            fontWeight: 900,
+                            fontSize: "0.9rem",
+                            textAlign: "center",
+                            minWidth: "160px",
+                            boxShadow: "0 0 15px rgba(59, 130, 246, 0.35)",
+                            flexShrink: 0,
+                          }}
+                        >
+                          {currentFlow.rootNodeTitle}
                         </div>
-                      ))}
+
+                        {currentFlow.commonPreSteps?.map((stepTitle, idx) => (
+                          <div key={idx} style={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
+                            <div style={{ width: "30px", height: "2px", background: "#3b82f6", position: "relative" }}>
+                              <div style={{ position: "absolute", right: "-2px", top: "-4px", width: 0, height: 0, borderTop: "5px solid transparent", borderBottom: "5px solid transparent", borderLeft: "6px solid #3b82f6" }} />
+                            </div>
+
+                            <div
+                              style={{
+                                background: "#0f1f38",
+                                border: "1.5px solid #2563eb",
+                                borderRadius: "12px",
+                                padding: "0.75rem 1rem",
+                                color: "#e2e8f0",
+                                fontWeight: 800,
+                                fontSize: "0.8rem",
+                                textAlign: "center",
+                                maxWidth: "220px",
+                                lineHeight: 1.35,
+                              }}
+                            >
+                              {stepTitle}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
 
@@ -1135,16 +1110,18 @@ export default function ProcessingFilesPage() {
             {/* 3. AFFICHAGE DU RÉSEAU GIMAC (CEMAC)                                  */}
             {/* ===================================================================== */}
             {selectedNetwork === "GIMAC" && (
-              <div>
+              <div style={{ width: "100%", maxWidth: "100%", minWidth: 0, boxSizing: "border-box" }}>
                 <div
                   style={{
                     background: "#080703",
-                    borderRadius: "20px",
-                    padding: "2.25rem",
+                    borderRadius: "18px",
+                    padding: "1.5rem 1.75rem",
                     border: "2px solid #5a4013",
-                    boxShadow: "0 20px 40px rgba(0,0,0,0.5)",
-                    marginBottom: "2rem",
-                    overflowX: "auto",
+                    boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
+                    marginBottom: "1.5rem",
+                    width: "100%",
+                    maxWidth: "100%",
+                    boxSizing: "border-box",
                   }}
                 >
                   <div
@@ -1154,19 +1131,19 @@ export default function ProcessingFilesPage() {
                       alignItems: "center",
                       flexWrap: "wrap",
                       gap: "1rem",
-                      marginBottom: "2rem",
-                      paddingBottom: "1.25rem",
+                      marginBottom: "1.5rem",
+                      paddingBottom: "1rem",
                       borderBottom: "1px solid #2e210b",
                     }}
                   >
                     <div>
                       <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                         <span style={{ fontSize: "1.2rem" }}>🗺️</span>
-                        <h3 style={{ color: "#fef3c7", fontSize: "1.25rem", fontWeight: 900, margin: 0 }}>
+                        <h3 style={{ color: "#fef3c7", fontSize: "1.2rem", fontWeight: 900, margin: 0 }}>
                           Schéma Mind Map : GIMAC (CEMAC)
                         </h3>
                       </div>
-                      <p style={{ color: "#d97706", fontSize: "0.85rem", margin: "0.35rem 0 0", fontWeight: 600 }}>
+                      <p style={{ color: "#d97706", fontSize: "0.82rem", margin: "0.35rem 0 0", fontWeight: 600 }}>
                         Structure mot pour mot issue des captures GIMAC • Tronc commun ➔ 2 branches finales
                       </p>
                     </div>
@@ -1176,12 +1153,12 @@ export default function ProcessingFilesPage() {
                         type="button"
                         onClick={() => setActiveBranchId("ALL")}
                         style={{
-                          padding: "0.4rem 0.85rem",
+                          padding: "0.35rem 0.75rem",
                           borderRadius: "8px",
                           border: `1px solid ${activeBranchId === "ALL" ? "#f59e0b" : "#45310e"}`,
                           background: activeBranchId === "ALL" ? "#78350f" : "transparent",
                           color: "#fde68a",
-                          fontSize: "0.78rem",
+                          fontSize: "0.75rem",
                           fontWeight: 700,
                           cursor: "pointer",
                         }}
@@ -1192,12 +1169,12 @@ export default function ProcessingFilesPage() {
                         type="button"
                         onClick={() => setActiveBranchId("compta")}
                         style={{
-                          padding: "0.4rem 0.85rem",
+                          padding: "0.35rem 0.75rem",
                           borderRadius: "8px",
                           border: `1px solid ${activeBranchId === "compta" ? "#3b82f6" : "#45310e"}`,
                           background: activeBranchId === "compta" ? "#1e3a8a" : "transparent",
                           color: "#bfdbfe",
-                          fontSize: "0.78rem",
+                          fontSize: "0.75rem",
                           fontWeight: 700,
                           cursor: "pointer",
                         }}
@@ -1208,12 +1185,12 @@ export default function ProcessingFilesPage() {
                         type="button"
                         onClick={() => setActiveBranchId("onus")}
                         style={{
-                          padding: "0.4rem 0.85rem",
+                          padding: "0.35rem 0.75rem",
                           borderRadius: "8px",
                           border: `1px solid ${activeBranchId === "onus" ? "#10b981" : "#45310e"}`,
                           background: activeBranchId === "onus" ? "#064e3b" : "transparent",
                           color: "#a7f3d0",
-                          fontSize: "0.78rem",
+                          fontSize: "0.75rem",
                           fontWeight: 700,
                           cursor: "pointer",
                         }}
@@ -1225,52 +1202,55 @@ export default function ProcessingFilesPage() {
 
                   {/* Tronc commun GIMAC */}
                   <div style={{ marginBottom: "2rem" }}>
-                    <div style={{ fontSize: "0.75rem", fontWeight: 800, color: "#d97706", textTransform: "uppercase", marginBottom: "0.85rem", letterSpacing: "0.08em" }}>
+                    <div style={{ fontSize: "0.75rem", fontWeight: 800, color: "#d97706", textTransform: "uppercase", marginBottom: "0.75rem", letterSpacing: "0.08em" }}>
                       1. Tronc Commun d'Initialisation (Gabon & Cameroun)
                     </div>
 
-                    <div style={{ display: "flex", alignItems: "center", gap: "0", minWidth: "900px" }}>
-                      <div
-                        style={{
-                          background: "#45310e",
-                          border: "2px solid #b45309",
-                          borderRadius: "14px",
-                          padding: "1rem 1.4rem",
-                          color: "#fef3c7",
-                          fontWeight: 900,
-                          fontSize: "0.95rem",
-                          textAlign: "center",
-                          minWidth: "170px",
-                          boxShadow: "0 0 20px rgba(245, 158, 11, 0.25)",
-                        }}
-                      >
-                        {currentFlow.rootNodeTitle}
-                      </div>
-
-                      {currentFlow.commonPreSteps?.map((stepTitle, idx) => (
-                        <div key={idx} style={{ display: "flex", alignItems: "center" }}>
-                          <div style={{ width: "40px", height: "2px", background: "#b45309", position: "relative" }}>
-                            <div style={{ position: "absolute", right: "-2px", top: "-4px", width: 0, height: 0, borderTop: "5px solid transparent", borderBottom: "5px solid transparent", borderLeft: "6px solid #b45309" }} />
-                          </div>
-
-                          <div
-                            style={{
-                              background: "#261a06",
-                              border: "1.5px solid #854d0e",
-                              borderRadius: "12px",
-                              padding: "0.85rem 1.15rem",
-                              color: "#fde68a",
-                              fontWeight: 800,
-                              fontSize: "0.82rem",
-                              textAlign: "center",
-                              maxWidth: "220px",
-                              lineHeight: 1.35,
-                            }}
-                          >
-                            {stepTitle}
-                          </div>
+                    <div style={{ overflowX: "auto", width: "100%", maxWidth: "100%", paddingBottom: "0.5rem" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "0", width: "max-content", minWidth: "max-content" }}>
+                        <div
+                          style={{
+                            background: "#45310e",
+                            border: "2px solid #b45309",
+                            borderRadius: "14px",
+                            padding: "0.85rem 1.25rem",
+                            color: "#fef3c7",
+                            fontWeight: 900,
+                            fontSize: "0.9rem",
+                            textAlign: "center",
+                            minWidth: "160px",
+                            boxShadow: "0 0 15px rgba(245, 158, 11, 0.25)",
+                            flexShrink: 0,
+                          }}
+                        >
+                          {currentFlow.rootNodeTitle}
                         </div>
-                      ))}
+
+                        {currentFlow.commonPreSteps?.map((stepTitle, idx) => (
+                          <div key={idx} style={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
+                            <div style={{ width: "35px", height: "2px", background: "#b45309", position: "relative" }}>
+                              <div style={{ position: "absolute", right: "-2px", top: "-4px", width: 0, height: 0, borderTop: "5px solid transparent", borderBottom: "5px solid transparent", borderLeft: "6px solid #b45309" }} />
+                            </div>
+
+                            <div
+                              style={{
+                                background: "#261a06",
+                                border: "1.5px solid #854d0e",
+                                borderRadius: "12px",
+                                padding: "0.75rem 1rem",
+                                color: "#fde68a",
+                                fontWeight: 800,
+                                fontSize: "0.8rem",
+                                textAlign: "center",
+                                maxWidth: "210px",
+                                lineHeight: 1.35,
+                              }}
+                            >
+                              {stepTitle}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
 

@@ -28,12 +28,32 @@ export default async function MonetiqueHubPage() {
           </p>
         </div>
 
-        <Link
-          href="/hub/diagnostic"
-          className="banner-diagnostic-btn"
-        >
-          Lancer le diagnostic →
-        </Link>
+        <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", alignItems: "center" }}>
+          <Link
+            href="/hub/commands"
+            style={{
+              padding: "0.6rem 1rem",
+              borderRadius: "8px",
+              background: "rgba(255, 255, 255, 0.12)",
+              color: "#ffffff",
+              fontSize: "0.86rem",
+              fontWeight: 700,
+              textDecoration: "none",
+              border: "1px solid rgba(255, 255, 255, 0.25)",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "6px",
+            }}
+          >
+            💻 Commandes &amp; Runbook Monétique
+          </Link>
+          <Link
+            href="/hub/diagnostic"
+            className="banner-diagnostic-btn"
+          >
+            Lancer le diagnostic →
+          </Link>
+        </div>
       </div>
 
       {/* 3. Knowledge Base & Catalogue des incidents de référence */}

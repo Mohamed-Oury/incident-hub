@@ -300,7 +300,10 @@ export function MonetiqueCheatSheet() {
                 />
               </Note>
             </div>
-            <ToolLink href="/hub/diagnostic">Ouvrir le module Diagnostic</ToolLink>
+            <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+              <ToolLink href="/hub/diagnostic">Ouvrir le module Diagnostic</ToolLink>
+              <ToolLink href="/hub/commands">Commandes Utiles Linux &amp; Logs</ToolLink>
+            </div>
           </div>
         );
 
