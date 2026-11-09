@@ -353,15 +353,17 @@ export default function ProcessingFilesPage() {
           /* ========================================================================= */
           /* PARCOURS INCOMING ACTIF (3 RÉSEAUX)                                       */
           /* ========================================================================= */
-          <div>
+          <div style={{ width: "100%", maxWidth: "100%", minWidth: 0, boxSizing: "border-box" }}>
             {/* SÉLECTEUR DES 3 RÉSEAUX INTERBANCAIRES */}
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+                gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
                 gap: "1rem",
                 marginBottom: "1.25rem",
                 width: "100%",
+                maxWidth: "100%",
+                minWidth: 0,
                 boxSizing: "border-box",
               }}
             >
@@ -549,7 +551,7 @@ export default function ProcessingFilesPage() {
                       1. Tronc Commun d'Initialisation & Dépôt Fichiers
                     </div>
 
-                    <div style={{ overflowX: "auto", width: "100%", maxWidth: "100%", paddingBottom: "0.5rem" }}>
+                    <div className="custom-stepper-scroll" style={{ overflowX: "auto", width: "100%", maxWidth: "100%", minWidth: 0, paddingBottom: "0.5rem", boxSizing: "border-box" }}>
                       <div style={{ display: "flex", alignItems: "center", width: "max-content", minWidth: "max-content" }}>
                         <div
                           style={{
@@ -875,7 +877,7 @@ export default function ProcessingFilesPage() {
                       1. Tronc Initial de Récupération & Préparation
                     </div>
 
-                    <div style={{ overflowX: "auto", width: "100%", maxWidth: "100%", paddingBottom: "0.5rem" }}>
+                    <div className="custom-stepper-scroll" style={{ overflowX: "auto", width: "100%", maxWidth: "100%", minWidth: 0, paddingBottom: "0.5rem", boxSizing: "border-box" }}>
                       <div style={{ display: "flex", alignItems: "center", width: "max-content", minWidth: "max-content" }}>
                         <div
                           style={{
@@ -957,7 +959,7 @@ export default function ProcessingFilesPage() {
                           </strong>
                         </div>
 
-                        <div style={{ display: "flex", alignItems: "center", overflowX: "auto", paddingBottom: "1rem" }}>
+                        <div className="custom-stepper-scroll" style={{ display: "flex", alignItems: "center", overflowX: "auto", width: "100%", maxWidth: "100%", minWidth: 0, paddingBottom: "1rem", boxSizing: "border-box" }}>
                           <div
                             style={{
                               background: "#1e3a8a",
@@ -1206,7 +1208,7 @@ export default function ProcessingFilesPage() {
                       1. Tronc Commun d'Initialisation (Gabon & Cameroun)
                     </div>
 
-                    <div style={{ overflowX: "auto", width: "100%", maxWidth: "100%", paddingBottom: "0.5rem" }}>
+                    <div className="custom-stepper-scroll" style={{ overflowX: "auto", width: "100%", maxWidth: "100%", minWidth: 0, paddingBottom: "0.5rem", boxSizing: "border-box" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: "0", width: "max-content", minWidth: "max-content" }}>
                         <div
                           style={{
@@ -1292,7 +1294,7 @@ export default function ProcessingFilesPage() {
                               </strong>
                             </div>
 
-                            <div style={{ display: "flex", alignItems: "center", overflowX: "auto", paddingBottom: "0.75rem" }}>
+                            <div className="custom-stepper-scroll" style={{ display: "flex", alignItems: "center", overflowX: "auto", width: "100%", maxWidth: "100%", minWidth: 0, paddingBottom: "0.75rem", boxSizing: "border-box" }}>
                               {branch.steps.map((st, sIdx) => {
                                 const isFinal = sIdx === branch.steps.length - 1;
                                 return (

@@ -3,7 +3,7 @@ import path from "path";
 import { prisma } from "../../lib/prisma";
 import { referenceIncidents } from "../../app/reference-incidents";
 import { IncidentRecord } from "./types";
-import { getEnrichedSgabsIncident, SGABS_DISPLAY_LIMIT } from "./sgabs-enrichment";
+import { getEnrichedSgabsIncident, SGABS_DISPLAY_LIMIT, getFormalValidatorForSgabs } from "./sgabs-enrichment";
 
 const DATA_DIR = path.join(process.cwd(), ".data");
 const INCIDENTS_STORE_FILE = path.join(DATA_DIR, "incidents_store.json");
@@ -189,12 +189,12 @@ const DETAILED_CASES: Record<string, Partial<IncidentRecord>> = {
       description: "Lancement non coordonné d'un script SQL de maintenance d'intérêts périodiques qui posait un verrou de table exclusif durant 4 minutes.",
       justification: "Corrélé directement avec les timestamps d'apparition et de disparition des DE39=91.",
       validatedAt: "2026-09-15T14:30:00Z",
-      validatedBy: "Marc Laurent (Responsable Validation)",
+      validatedBy: "Potey Dohai (Responsable Monetique)",
     },
     resolution: {
       actions: "Arrêt immédiat de la session bloquante PID 4812, recalibrage des fenêtres de batch hors heures ouvrées (02h00 du matin).",
       executor: "Thomas Dubois (Exploitant)",
-      approver: "Amina Diallo (Expert)",
+      approver: "Potey Dohai (Responsable Monetique)",
       result: "Reprise nominale immédiate des autorisations GAB avec temps de réponse < 450ms.",
     },
     prevention: [
@@ -255,12 +255,12 @@ const DETAILED_CASES: Record<string, Partial<IncidentRecord>> = {
       description: "Indisponibilité du frontal d'autorisation de l'émetteur distant.",
       justification: "Tous les flux émis vers ce BIN terminent en timeout côté switch émetteur.",
       validatedAt: "2026-09-16T10:15:00Z",
-      validatedBy: "Amina Diallo (Expert Monétique)",
+      validatedBy: "Gbide Andrienne (Responsable Adjoint Gestion Specifique)",
     },
     resolution: {
       actions: "Activation du fallback de filtrage amont pour avertir les porteurs de la banque sur écran GAB.",
       executor: "Exploitation Monétique",
-      approver: "Marc Laurent",
+      approver: "Gbide Andrienne (Responsable Adjoint Gestion Specifique)",
       result: "Rétablissement après redémarrage du frontal de la banque partenaire.",
     },
     prevention: [
@@ -541,12 +541,12 @@ export async function getAllIncidents(options?: { all?: boolean }): Promise<Inci
           description: inc.rootCause.description,
           justification: inc.rootCause.justification,
           validatedAt: inc.rootCause.validatedAt?.toISOString(),
-          validatedBy: inc.rootCause.validatedBy || "Oury Kohkoun (Expert Monétique)",
+          validatedBy: inc.rootCause.validatedBy || ((inc as any).subsidiary === "SGABS" ? getFormalValidatorForSgabs(idx) : "Oury Kohkoun (Expert Monétique)"),
         } : {
           category: `${inc.domain || "Monétique"} & ${inc.component || "Switch"}`,
           description: `Cause racine démontrée sur ${inc.component || "le composant"} : anomalie de configuration ou saturation identifiée lors du traitement de ${inc.title}.`,
           justification: `Les logs applicatifs horodatés et la corrélation des trames ISO 8583 démontrent formellement le point de blocage sur ${inc.component || "le système"}.`,
-          validatedBy: "Oury Kohkoun (Expert Monétique)",
+          validatedBy: (inc as any).subsidiary === "SGABS" ? getFormalValidatorForSgabs(idx) : "Oury Kohkoun (Expert Monétique)",
           validatedAt: new Date().toISOString(),
         },
         resolution: inc.resolution ? {
@@ -581,10 +581,11 @@ export async function getAllIncidents(options?: { all?: boolean }): Promise<Inci
         ],
       }));
 
-      // Générer les 80 incidents capitalisés pour SGABS avec enrichissement monétique réaliste
+      // Générer les 130 incidents capitalisés pour SGABS avec enrichissement monétique réaliste
       const refMapped = referenceIncidents.slice(0, SGABS_DISPLAY_LIMIT).map((ref, idx) => {
         const detailed = DETAILED_CASES[ref.reference];
         const enriched = getEnrichedSgabsIncident(ref, idx);
+        const validator = getFormalValidatorForSgabs(idx);
         if (detailed) {
           return {
             ...enriched,
@@ -594,8 +595,14 @@ export async function getAllIncidents(options?: { all?: boolean }): Promise<Inci
             isoMessages: detailed.isoMessages || enriched.isoMessages,
             hypotheses: detailed.hypotheses || enriched.hypotheses,
             evidence: detailed.evidence || enriched.evidence,
-            rootCause: detailed.rootCause || enriched.rootCause,
-            resolution: detailed.resolution || enriched.resolution,
+            rootCause: {
+              ...(detailed.rootCause || enriched.rootCause),
+              validatedBy: validator,
+            },
+            resolution: {
+              ...(detailed.resolution || enriched.resolution),
+              approver: validator,
+            },
             prevention: detailed.prevention || enriched.prevention,
           };
         }
@@ -611,10 +618,11 @@ export async function getAllIncidents(options?: { all?: boolean }): Promise<Inci
     console.warn("Prisma/MySQL fallback vers dataset en mémoire:", err instanceof Error ? err.message : String(err));
   }
 
-  // Source de données résiliente et catalogue de référence avec méthodologie experte (80 incidents SGABS)
+  // Source de données résiliente et catalogue de référence avec méthodologie experte (130 incidents SGABS)
   const fallbackList = referenceIncidents.slice(0, SGABS_DISPLAY_LIMIT).map((ref, idx) => {
     const detailed = DETAILED_CASES[ref.reference];
     const enriched = getEnrichedSgabsIncident(ref, idx);
+    const validator = getFormalValidatorForSgabs(idx);
     if (detailed) {
       return {
         ...enriched,
@@ -624,8 +632,14 @@ export async function getAllIncidents(options?: { all?: boolean }): Promise<Inci
         isoMessages: detailed.isoMessages || enriched.isoMessages,
         hypotheses: detailed.hypotheses || enriched.hypotheses,
         evidence: detailed.evidence || enriched.evidence,
-        rootCause: detailed.rootCause || enriched.rootCause,
-        resolution: detailed.resolution || enriched.resolution,
+        rootCause: {
+          ...(detailed.rootCause || enriched.rootCause),
+          validatedBy: validator,
+        },
+        resolution: {
+          ...(detailed.resolution || enriched.resolution),
+          approver: validator,
+        },
         prevention: detailed.prevention || enriched.prevention,
       };
     }

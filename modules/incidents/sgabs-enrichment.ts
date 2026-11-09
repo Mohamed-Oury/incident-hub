@@ -1,45 +1,72 @@
 import { IncidentRecord, HypothesisItem, FlowStepItem, IsoMessageItem, EvidenceItem, RootCauseItem, ResolutionItem, PreventionItem } from "./types";
 import { ReferenceIncident } from "../../app/reference-incidents";
 
-export const SGABS_DISPLAY_LIMIT = 80;
+export const SGABS_DISPLAY_LIMIT = 130;
 
 /**
- * Générateur de données hautement réalistes pour les incidents monétiques SGABS.
- * S'inspire des cas réels de production bancaire :
- * Frontal PowerCard, Switch ISO 8583, GAB (NCR/Diebold), TPE (Ingenico/Verifone),
- * HSM Thales PayShield 9000, Core Banking Sopra Amplitude & Oracle FLEXCUBE,
- * Réseaux interbancaires GIMAC, VISA et Mastercard.
+ * Validateurs formels officiels SGABS mandatés pour la certification et la validation des incidents :
+ * 1. Potey Dohai (Responsable Monetique)
+ * 2. Gbide Andrienne (Responsable Adjoint Gestion Specifique)
+ * 3. Mohamed Diallo (Lead Equipe Support & Exploitation Monetique (SGCI;SGSN;SGCAM;SGT; SGB et SGC))
+ */
+export const SGABS_FORMAL_VALIDATORS = [
+  "Potey Dohai (Responsable Monetique)",
+  "Gbide Andrienne (Responsable Adjoint Gestion Specifique)",
+  "Mohamed Diallo (Lead Equipe Support & Exploitation Monetique (SGCI;SGSN;SGCAM;SGT; SGB et SGC))",
+] as const;
+
+export function getFormalValidatorForSgabs(indexOrNum: number): string {
+  const idx = Math.abs(indexOrNum) % SGABS_FORMAL_VALIDATORS.length;
+  return SGABS_FORMAL_VALIDATORS[idx];
+}
+
+/**
+ * Générateur de données hautement réalistes pour les 130 incidents monétiques SGABS.
+ * S'inspire des cas réels de production bancaire couvrant l'ensemble de la chaîne monétique :
+ * - Frontal PowerCard & Payway
+ * - Switch ISO 8583 (GIMAC, VISA Base I/VAP, Mastercard MIP, GIM-UEMOA)
+ * - GAB / ATM (NCR SelfServ, Diebold Opteva, Wincor, EPP DUKPT, CDM, Recycleurs)
+ * - TPE & POS (Ingenico Telium/Tetra, PAX Android, Contactless NFC, TMS, DCC)
+ * - HSM Cryptographique (Thales PayShield 9000/10K, ZPK, LMK, ARQC, PKI Root CA)
+ * - Core Banking System (Sopra Amplitude 4GL & Oracle FLEXCUBE PL/SQL)
+ * - E-Commerce & 3D-Secure (Cybersource, PayGate, Pay3DS, ACS, Règles anti-fraude)
+ * - Clearing & Règlement (Base II, GIM LIS, Fichiers Outgoing WinSCP, Chargeback TC40)
  */
 export function getEnrichedSgabsIncident(ref: ReferenceIncident, index: number): IncidentRecord {
   const num = parseInt(ref.reference.replace("INC-", ""), 10) || index + 1;
   const domain = ref.domain;
-  const component = ref.component;
   const keys = ref.analysisKeys;
+  const titleLower = ref.title.toLowerCase();
+
+  // Attribution formelle tournante et équilibrée entre les 3 validateurs officiels SGABS
+  const validator = getFormalValidatorForSgabs(num - 1);
 
   const stanStr = String(100000 + num).slice(-6);
   const rrnStr = `50291${String(10000000 + num).slice(-7)}`;
   const tidStr = domain === "GAB" ? `GAB-SGABS-${String(num).padStart(3, "0")}` : domain === "TPE" ? `TPE-SGABS-${String(num).padStart(3, "0")}` : `SW-SGABS-${String(num).padStart(3, "0")}`;
   const midStr = `SGABS-MID-00${String(num % 10).padStart(2, "0")}`;
 
-  // Détermination du code retour DE39 selon les clés d'analyse
+  // Détermination experte du code retour DE39 selon les clés et le titre
   let respCode = "05";
-  if (keys.includes("91") || ref.title.includes("91") || ref.title.includes("timeout")) respCode = "91";
-  else if (keys.includes("55") || ref.title.includes("PIN") || ref.title.includes("ARQC")) respCode = "55";
-  else if (keys.includes("96") || ref.title.includes("système") || ref.title.includes("Erreur")) respCode = "96";
-  else if (keys.includes("12") || ref.title.includes("invalide")) respCode = "12";
-  else if (keys.includes("14") || ref.title.includes("inconnu")) respCode = "14";
-  else if (keys.includes("51") || ref.title.includes("provision") || ref.title.includes("Solde")) respCode = "51";
-  else if (keys.includes("68") || ref.title.includes("tardive") || ref.title.includes("Latence")) respCode = "68";
-  else if (ref.title.includes("Plafond")) respCode = "61";
-  else if (ref.title.includes("CVV")) respCode = "82";
-  else if (ref.title.includes("Reversal") || ref.title.includes("extourne")) respCode = "00";
+  if (keys.includes("91") || titleLower.includes("91") || titleLower.includes("timeout") || titleLower.includes("inaccessible") || titleLower.includes("cash out")) respCode = "91";
+  else if (keys.includes("55") || titleLower.includes("pin") || titleLower.includes("arqc") || titleLower.includes("zpk") || titleLower.includes("kcv")) respCode = "55";
+  else if (keys.includes("96") || titleLower.includes("système") || titleLower.includes("erreur") || titleLower.includes("tamper") || titleLower.includes("lock") || titleLower.includes("ora-")) respCode = "96";
+  else if (keys.includes("12") || titleLower.includes("invalide") || titleLower.includes("ntp") || titleLower.includes("clock")) respCode = "12";
+  else if (keys.includes("14") || titleLower.includes("inconnu") || titleLower.includes("not found")) respCode = "14";
+  else if (keys.includes("51") || titleLower.includes("provision") || titleLower.includes("solde")) respCode = "51";
+  else if (keys.includes("68") || titleLower.includes("tardive") || titleLower.includes("latence")) respCode = "68";
+  else if (keys.includes("30") || titleLower.includes("format") || titleLower.includes("de48")) respCode = "30";
+  else if (titleLower.includes("plafond") || titleLower.includes("floor limit") || titleLower.includes("61")) respCode = "61";
+  else if (titleLower.includes("cvv") || titleLower.includes("cavv") || titleLower.includes("82")) respCode = "82";
+  else if (titleLower.includes("reversal") || titleLower.includes("extourne") || titleLower.includes("clearing") || titleLower.includes("eod")) respCode = "00";
 
   // Profilage technique précis selon le type d'incident monétique
-  const profile = buildIncidentTechnicalProfile(ref, num, respCode, stanStr, rrnStr, tidStr, midStr);
+  const profile = buildIncidentTechnicalProfile(ref, num, respCode, stanStr, rrnStr, tidStr, midStr, validator);
 
-  // Répartition chronologique réaliste des 80 incidents SGABS sur la période Juin 2025 à Octobre 2026
-  const startMs = new Date("2025-06-01T08:00:00.000Z").getTime();
-  const endMs = new Date("2026-10-31T18:00:00.000Z").getTime();
+  // Répartition chronologique réaliste des 130 incidents SGABS étalée sur toute l'année 2025 jusqu'à fin Septembre 2026
+  // Les mois d'Octobre 2026 et Novembre 2026 ne sont strictement pas touchés
+  const startMs = new Date("2025-01-10T08:00:00.000Z").getTime();
+  const endMs = new Date("2026-09-28T16:00:00.000Z").getTime();
   const totalSpanMs = endMs - startMs;
   const progress = (num - 1) / (SGABS_DISPLAY_LIMIT - 1);
   const hourOffset = ((num * 13) % 14) * 3600000;
@@ -76,8 +103,15 @@ export function getEnrichedSgabsIncident(ref: ReferenceIncident, index: number):
     isoMessages: profile.isoMessages,
     hypotheses: profile.hypotheses,
     evidence: profile.evidence,
-    rootCause: profile.rootCause,
-    resolution: profile.resolution,
+    rootCause: {
+      ...profile.rootCause,
+      validatedBy: validator,
+      validatedAt: resolvedDate.toISOString(),
+    },
+    resolution: {
+      ...profile.resolution,
+      approver: validator,
+    },
     prevention: profile.prevention,
   };
 }
@@ -105,32 +139,151 @@ function buildIncidentTechnicalProfile(
   stanStr: string,
   rrnStr: string,
   tidStr: string,
-  midStr: string
+  midStr: string,
+  validator: string
 ): TechnicalProfile {
   const titleLower = ref.title.toLowerCase();
   const domain = ref.domain;
   const comp = ref.component;
 
-  // 1. CAS GAB - RETRAIT / DISPENSE / CASH
-  if (titleLower.includes("cash") || titleLower.includes("retrait") || titleLower.includes("dispense") || titleLower.includes("cassette")) {
+  // =========================================================================
+  // 1. CAS E-COMMERCE / 3D-SECURE / CYBERSOURCE / IWO / WEBHOOKS (INC-121 à INC-125)
+  // =========================================================================
+  if (
+    domain === "E-Commerce" ||
+    titleLower.includes("cybersource") ||
+    titleLower.includes("3ds") ||
+    titleLower.includes("paygate") ||
+    titleLower.includes("webhook") ||
+    titleLower.includes("iwo") ||
+    titleLower.includes("cavv") ||
+    titleLower.includes("vélocité")
+  ) {
     return {
-      description: `Incident de distribution d'espèces sur le réseau GAB SGABS : ${ref.title}. Les porteurs subissent des anomalies de délivrance physique avec désynchronisation entre le débit du compte et le statut matériel du distributeur CDM.`,
-      channel: "GAB / ATM NCR & Diebold",
-      operation: "Retrait d'espèces (Cash Withdrawal - DE3=010000)",
-      network: "GIMAC / VISA / Réseau Interne SGABS",
-      host: "SRV-ATM-POWERCARD-01",
+      description: `Incident sur la passerelle de paiement en ligne sécurisée et l'intégration e-commerce : ${ref.title}. Défaillance du handshake 3DSv2, de notification Webhook ou non-conformité commerçant Cybersource.`,
+      channel: "Passerelle Web E-Commerce (PayGate / 3D-Secure v2 Directory Server & Cybersource Engine)",
+      operation: "Paiement en ligne sécurisé 3D-Secure / Intégration Cybersource Outgoing (DE3=000000)",
+      network: "Cybersource Direct / VISA Secure / Mastercard Identity Check",
+      host: "SRV-CYBERSOURCE-GW-01",
       observation: {
-        symptom: "Le porteur insère sa carte, valide son code PIN, le débit apparaît sur le compte mais l'obturateur (shutter) ne délivre aucun billet ou présente une liasse incomplète.",
-        facts: `Plus de 48 réclamations clients enregistrées sur le cluster GAB Agence Principale & Plateaux. Taux de rejet brutal de 92% entre 10h15 et 11h30 sur les transactions > 50 000 XOF.`,
-        scope: `GAB motorisés NCR Personas et Diebold Opteva rattachés au concentrateur frontal PowerCard SGABS.`,
-        context: "Pic d'affluence de fin de mois (virement salaires fonctionnaires) combiné à un rechargement physique récent des cassettes billets.",
+        symptom: titleLower.includes("iwo")
+          ? "Blocage complet du cycle de clearing outgoing suite à l'absence du commerçant identifié « IWO » dans le fichier journalier camerounais."
+          : titleLower.includes("webhook")
+          ? "Le compte porteur est débité mais la plateforme e-commerce affiche 'Échec du paiement / Panier abandonné' sans confirmation de commande."
+          : "Échec de validation de la signature cryptographique 3DSecure CAVV/AAV avec rejet systématique DE39=82 sur les cartes bancaires enrôlées.",
+        facts: `Plus de 210 transactions e-commerce impactées sur 18 sites marchands partenaires. Taux de rebond panier à 85% entre 14h00 et 16h30.`,
+        scope: "Paiements marchands par carte bancaire sur internet (Canal Web & Mobile e-Commerce).",
+        context: "Pic d'achats promotionnels e-commerce combiné à une mise à niveau du protocole 3DSecure vers la version 2.2.0.",
       },
       flowSteps: [
-        { position: 1, source: "GAB / ATM", destination: "Frontal PowerCard", event: "ISO 0200 Demande d'autorisation de retrait (DE3=010000, DE4=5000000)", status: "OK" },
-        { position: 2, source: "Frontal PowerCard", destination: "CBS Sopra Amplitude", event: "Vérification solde et réservation des fonds (DE102 / DE103)", status: "OK" },
-        { position: 3, source: "Frontal PowerCard", destination: "GAB / ATM", event: "ISO 0210 Autorisation accordée (DE39=00), ordre de distribution CDM", status: "OK" },
-        { position: 4, source: "Distributeur CDM", destination: "Contrôleur ATM", event: "Incident mécanique : blocage dans le transporteur liasse ou cellule optique obstruée", status: "HARDWARE_JAM" },
-        { position: 5, source: "GAB / ATM", destination: "Frontal PowerCard", event: "Émission manquante ou tardive du message d'annulation ISO 0420 (Reversal)", status: "REVERSAL_TIMEOUT" },
+        { position: 1, source: "Navigateur Client", destination: "Serveur Marchand", event: "Validation du panier d'achat et initialisation du paiement e-commerce", status: "OK" },
+        { position: 2, source: "Serveur Marchand", destination: "Passerelle PayGate / 3DS", event: "Requête d'authentification 3DSv2 AReq (Authentication Request)", status: "OK" },
+        { position: 3, source: "Passerelle PayGate", destination: "Directory Server Visa/MC", event: "Contrôle du jeton de session et vérification d'empreinte navigateur", status: titleLower.includes("iwo") ? "IWO_NOT_FOUND" : "OK" },
+        { position: 4, source: "ACS Émetteur SGABS", destination: "Passerelle PayGate", event: titleLower.includes("webhook") ? "Timeout HTTP 504 sur le webhook de notification retour" : "ISO 0110 Rejet de l'autorisation cryptographique (DE39=" + respCode + ")", status: "ERROR" },
+        { position: 5, source: "Passerelle PayGate", destination: "Serveur Marchand", event: "Transmission de l'abandon de paiement et alerte d'exploitation", status: "ABORT_PROCESSED" },
+      ],
+      isoMessages: [
+        {
+          mti: "0100",
+          bitmap: "7238000008C08000",
+          stan: stanStr,
+          rrn: rrnStr,
+          responseCode: "00",
+          terminalId: "WEB-SGABS-01",
+          maskedRawMessage: `01007238000008C08000164284********711000000003500009171400${stanStr}...DE48=CAVV3DS...`,
+          fields: { DE3: "000000", DE4: "35000", DE11: stanStr, DE37: rrnStr, DE41: "WEB-SGABS-01", DE42: midStr, DE48: "CAVV=AAABBIIIIFkAAAAAEgAAAA==" },
+        },
+        {
+          mti: "0110",
+          bitmap: "7238000008C08000",
+          stan: stanStr,
+          rrn: rrnStr,
+          responseCode: respCode,
+          terminalId: "WEB-SGABS-01",
+          maskedRawMessage: `01107238000008C08000164284********711000000003500009171400${stanStr}${respCode}...`,
+          fields: { DE3: "000000", DE4: "35000", DE11: stanStr, DE37: rrnStr, DE39: respCode, DE41: "WEB-SGABS-01" },
+        },
+      ],
+      hypotheses: [
+        {
+          description: "Hypothèse 1 : Indisponibilité du serveur ACS (Access Control Server) de l'émetteur pour la réception du code OTP SMS",
+          status: "REJECTED",
+          evidence: "Le journal ACS démontre que le client a correctement saisi son mot de passe à usage unique (OTP) sous 18 secondes.",
+        },
+        {
+          description: "Hypothèse 2 : Dépassement du timeout de socket (Timeout 15s) sur la passerelle de callback Webhook vers le marchand",
+          status: "PROBABLE",
+          evidence: "Les requêtes sortantes vers l'URL marchande dépassent les 15 000ms en raison d'une surcharge du serveur applicatif du site marchand.",
+        },
+        {
+          description: "Hypothèse 3 : Incompatibilité de la règle d'intégration Cybersource : " + (titleLower.includes("iwo") ? "commerçant IWO non présent dans le cycle quotidien, bloquant le settlement" : "algorithme de hachage de la signature CAVV désynchronisé entre PayGate et le serveur 3DS"),
+          status: "CONFIRMED",
+          evidence: "Preuve fournie par les logs d'ingestion Cybersource : anomalie de rejet formelle bloquant l'injection de l'ordre d'autorisation.",
+        },
+      ],
+      evidence: [
+        { type: "Log Passerelle Cybersource", content: `[CYBERSOURCE-ALERT] TxID=${rrnStr} : Merchant identification failed. Verification rule [IWO_RULE] triggered error.`, source: "Cybersource Ingestion Daemon" },
+        { type: "Journal 3D-Secure ACS", content: `ACS_ERROR: CAVV verification mismatch on DE48. Expected key version 02, received 01. DE39 set to ${respCode}.`, source: "Pay3DS Audit Server" },
+      ],
+      rootCause: {
+        category: "Sécurité E-Commerce & Intégration Cybersource",
+        description: titleLower.includes("iwo")
+          ? "Non-respect de la règle d'intégrité Cybersource : tentative d'intégration d'un lot outgoing sans la présence obligatoire du commerçant de référence IWO, nécessitant l'intervention de l'équipe monétique."
+          : "Désynchronisation de la clé publique de signature 3DSecure lors du déploiement de la version v2.2.0, entraînant le rejet systématique du cryptogramme CAVV.",
+        justification: "Démontré par l'audit formel des trames HTTP 3DSecure et la conformité au référentiel opérationnel de traitement Outgoing.",
+        validatedAt: new Date().toISOString(),
+        validatedBy: validator,
+      },
+      resolution: {
+        actions: titleLower.includes("iwo")
+          ? "Contact immédiat du référent monétique, isolement de la ligne marchande manquante et forçage de l'intégration avec recalcul du trailer de compensation."
+          : "Rollback immédiat de la clé de validation ACS vers la version certifiée, recyclage des conteneurs Pay3DS et notification aux partenaires e-commerce.",
+        executor: "Équipe Monétique E-Commerce & Cybersource SGABS",
+        approver: "Responsable Monétique SGABS",
+        result: "Reprise instantanée des autorisations e-commerce et taux de conversion rétabli à 99.2%.",
+      },
+      prevention: [
+        { action: "Automatisation du contrôle préventif de présence du commerçant IWO avant le lancement du process Dual et Couverture", owner: "Exploitation Clearing", priority: "CRITICAL", status: "DONE" },
+        { action: "Surveillance Prometheus en temps réel du ratio de succès des callbacks 3DSv2 avec seuil d'alerte à 95%", owner: "Supervision E-Commerce", priority: "HIGH", status: "DONE" },
+      ],
+    };
+  }
+
+  // =========================================================================
+  // 2. CAS CORE BANKING / CBS AMPLITUDE & FLEXCUBE / ROW LOCK (INC-115 à INC-120)
+  // =========================================================================
+  if (
+    domain === "CBS" ||
+    comp.includes("CBS") ||
+    titleLower.includes("amplitude") ||
+    titleLower.includes("flexcube") ||
+    titleLower.includes("row lock") ||
+    titleLower.includes("agios") ||
+    titleLower.includes("hold") ||
+    titleLower.includes("privilège") ||
+    titleLower.includes("pool ora") ||
+    titleLower.includes("connexion pool")
+  ) {
+    return {
+      description: `Incident d'interfaçage et de synchronisation Core Banking : ${ref.title}. Conflit de verrouillage base de données Oracle, saturation de pool de connexions ou échec d'imputation comptable.`,
+      channel: "Core Banking System (Sopra Amplitude 4GL & Oracle FLEXCUBE PL/SQL)",
+      operation: "Réservation de solde / Imputation comptable / Compensation EOD (DE3=010000 / DE3=900000)",
+      network: "Réseau Privé d'Administration Bancaire (VLAN 100 CBS)",
+      host: "SRV-CBS-AMPLITUDE-RAC01",
+      observation: {
+        symptom: titleLower.includes("pool")
+          ? "Toutes les demandes d'autorisation monétique échouent avec DE39=91 : le frontal PowerCard ne parvient plus à dialoguer avec le CBS."
+          : "Le compte client est bloqué en mise en réserve (Hold Amount), ou les écritures de compensation restent coincées en attente d'un verrou table.",
+        facts: `Plus de 1 200 transactions bloquées en attente d'acquittement CBS. Le temps de réponse moyen de l'API bancaire est passé de 140ms à 32 000ms.`,
+        scope: "Serveurs d'application Core Banking Sopra Amplitude / Oracle FLEXCUBE et pool de connexions HikariCP.",
+        context: "Exécution simultanée d'un lot lourd de calcul d'agios / prélèvements d'échéances et de pics d'autorisation retraits.",
+      },
+      flowSteps: [
+        { position: 1, source: "Frontal PowerCard", destination: "Passerelle Middleware CBS", event: "ISO 0200 Demande de réservation de solde (DE102 Compte Débit)", status: "OK" },
+        { position: 2, source: "Passerelle Middleware CBS", destination: "Pool Connexions Oracle", event: "Tentative d'obtention d'une connexion SQL active (Connection Pool Request)", status: titleLower.includes("pool") ? "POOL_EXHAUSTED" : "OK" },
+        { position: 3, source: "Session Oracle CBS", destination: "Table COMPTES_CLIENTS", event: "Requête SELECT FOR UPDATE : attente sur verrou exclusif (Row-Level Lock Contention)", status: "LOCK_CONTENTION" },
+        { position: 4, source: "Moteur de Données Oracle", destination: "Passerelle Middleware CBS", event: "Expiration du timeout de verrou (ORA-00054 / ORA-01013)", status: "ERROR" },
+        { position: 5, source: "Passerelle Middleware CBS", destination: "Frontal PowerCard", event: "Génération de la réponse négative ISO 0210 (DE39=" + respCode + ")", status: "TIMEOUT_91" },
       ],
       isoMessages: [
         {
@@ -141,7 +294,7 @@ function buildIncidentTechnicalProfile(
           responseCode: "00",
           terminalId: tidStr,
           maskedRawMessage: `02007238000008C08000164500********12890100000005000009171120${stanStr}...`,
-          fields: { DE3: "010000", DE4: "50000", DE11: stanStr, DE37: rrnStr, DE41: tidStr, DE49: "952" },
+          fields: { DE3: "010000", DE4: "50000", DE11: stanStr, DE37: rrnStr, DE41: tidStr, DE102: "00120938471" },
         },
         {
           mti: "0210",
@@ -151,154 +304,188 @@ function buildIncidentTechnicalProfile(
           responseCode: respCode,
           terminalId: tidStr,
           maskedRawMessage: `02107238000008C08000164500********12890100000005000009171120${stanStr}${respCode}...`,
-          fields: { DE3: "010000", DE4: "50000", DE11: stanStr, DE37: rrnStr, DE39: respCode, DE41: tidStr },
+          fields: { DE3: "010000", DE11: stanStr, DE37: rrnStr, DE39: respCode, DE41: tidStr },
         },
       ],
       hypotheses: [
         {
-          description: "Hypothèse 1 : Coupure totale de la liaison réseau télécom fibre optique reliant le GAB au frontal bancaire",
+          description: "Hypothèse 1 : Crash physique du cluster de bases de données Oracle Real Application Clusters (RAC)",
           status: "REJECTED",
-          evidence: "Les pings ICMP et trames Echo Test 0800 sont stables à 14ms sans aucune perte de paquet constatée sur la passerelle CISCO.",
+          evidence: "Les 2 nœuds du cluster Oracle RAC affichent un statut CRS 'ONLINE' sans bascule d'instance.",
         },
         {
-          description: "Hypothèse 2 : Bourrage physique ou défaillance du capteur d'épaisseur (Double Detect Sensor) sur la cassette de distribution CDM",
+          description: "Hypothèse 2 : Épuisement des descripteurs de processus sur le pool HikariCP (Maximum Pool Size=120 atteint)",
           status: "PROBABLE",
-          evidence: "Le journal électronique (EJ) signale un code d'erreur matériel M-Status 14 (CDM Jam in Transport) sur le module de présentation.",
+          evidence: "Le monitoring JMX de la passerelle montre 120/120 connexions allouées et 450 threads en file d'attente d'acquisition.",
         },
         {
-          description: "Hypothèse 3 : Désynchronisation du timer d'annulation (Take-Cash Timeout) : le GAB a rapatrié les billets au bac de purge sans émettre le message ISO 0420 au CBS",
+          description: "Hypothèse 3 : Conflit de verrouillage transactionnel exclusif (Row Lock Contention) provoqué par une session batch longue non commitée",
           status: "CONFIRMED",
-          evidence: "Corrélation formelle des logs : le message 0420 a expiré après 30s de rétention au bac de rejet, laissant le compte client débité sur Amplitude sans contrepassation.",
+          evidence: "La requête 'v$session_blockers' identifie la session SID 418 (Job BATCH_AGIOS) bloquant 74 sessions d'autorisation monétique depuis 28 minutes.",
         },
       ],
       evidence: [
-        { type: "Journal Électronique ATM", content: "M-STATUS: 14 [CDM TRANSPORT ERROR] - BILLETS DEVIÉS VERS PURGE BIN #3. AUCUN REVERSAL ÉMIS.", source: `Journal Électronique ${tidStr}` },
-        { type: "Trace ISO 8583", content: "0200 accordé avec DE39=00 à 10:22:14. Aucun 0420 reçu avant le Cut-off de 10:23:00.", source: "Frontal PowerCard Log" },
+        { type: "Oracle Alert Log", content: "ORA-00054: resource busy and acquire with NOWAIT specified. Blocking session SID: 418, Serial: 14920.", source: "Oracle Database Alert Log" },
+        { type: "Log Middleware CBS", content: "[HIKARICP-TIMEOUT] Connection is not available, request timed out after 30000ms. Active: 120, Idle: 0, Waiting: 450.", source: "HikariCP Connection Manager" },
       ],
       rootCause: {
-        category: "Matériel ATM & Temporisation Reversal",
-        description: "Anomalie combinée : encrassement du capteur optique de l'obturateur entraînant un faux positif de non-prise billets, suivi du crash du démon d'extourne locale suite au timeout 30s.",
-        justification: "Démontré formellement par l'audit du journal électronique ATM et l'absence de trace de trame 0420 dans les logs de communication PowerCard.",
+        category: "Base de Données Core Banking & Conflit Transactionnel",
+        description: "Contention sévère sur la table des comptes monétiques consécutive à l'exécution intempestive d'un script d'arrêté périodique sans clause NOWAIT ni découpage par lots (chunk commit).",
+        justification: "Confirmé par la corrélation immédiate entre l'arrêt de la session bloquante SID 418 et le retour nominal de la latence CBS sous 80ms.",
         validatedAt: new Date().toISOString(),
-        validatedBy: "Oury Kohkoun (Expert Monétique)",
+        validatedBy: validator,
       },
       resolution: {
-        actions: "Intervention du mainteneur NCR pour nettoyage des cellules optiques CDM, recalibrage du timer de présentation à 45s, et injection manuelle du fichier d'extourne comptable sur Sopra Amplitude.",
-        executor: "Équipe Exploitation & Support GAB SGABS",
-        approver: "Responsable Monétique SGABS",
-        result: "Rétablissement de la disponibilité des GAB à 99.8% et régularisation sans perte de 48 comptes clients.",
+        actions: "Terminaison de la session Oracle bloquante par commande ALTER SYSTEM KILL SESSION, augmentation du pool HikariCP à 200 connexions et recalibrage de la fenêtre d'exécution des batchs lourds en dehors des heures ouvrées.",
+        executor: "DBA Senior & Exploitation Core Banking SGABS",
+        approver: "Direction des Opérations Bancaires",
+        result: "Rétablissement instantané du service d'autorisation CBS avec un temps de réponse de 65ms et apurement des files.",
       },
       prevention: [
-        { action: "Mise en place d'une alerte Prometheus détectant tout écart entre 0210 débité et absence de 0420 sous 60s", owner: "Équipe Supervision", priority: "CRITICAL", status: "DONE" },
-        { action: "Maintenance préventive bi-mensuelle obligatoire des capteurs optiques CDM sur les 80 GAB à fort trafic", owner: "Maintenance Matériel", priority: "HIGH", status: "DONE" },
+        { action: "Application obligatoire de la clause SKIP LOCKED sur tous les traitements batch d'imputation comptable", owner: "Équipe Développement CBS", priority: "CRITICAL", status: "DONE" },
+        { action: "Alerte automatique SMS/Mail transmise aux DBA dès qu'un verrou exclusif excède 60 secondes", owner: "Supervision DBA", priority: "HIGH", status: "DONE" },
       ],
     };
   }
 
-  // 2. CAS REVERSAL / EXTOURNE / DOUBLON (INC-005, INC-006, INC-007, INC-077...)
-  if (titleLower.includes("reversal") || titleLower.includes("extourne") || titleLower.includes("doublon") || titleLower.includes("débit")) {
+  // =========================================================================
+  // 3. CAS CLEARING / BASE II / GIM LIS / CHARGEBACK TC40 / WINSCP (INC-126 à INC-130)
+  // =========================================================================
+  if (
+    domain === "Clearing" ||
+    comp.includes("Clearing") ||
+    titleLower.includes("base ii") ||
+    titleLower.includes("lis") ||
+    titleLower.includes("chargeback") ||
+    titleLower.includes("tc40") ||
+    titleLower.includes("winscp") ||
+    titleLower.includes("orpheline") ||
+    titleLower.includes("cut-off") ||
+    titleLower.includes("compensation")
+  ) {
     return {
-      description: `Incident de non-réconciliation ou rejet d'annulation automatique : ${ref.title}. Les messages d'annulation 0400/0420 ne sont pas traités correctement par le Host émetteur.`,
-      channel: "Switch ISO 8583 / Frontal PowerCard",
-      operation: "Annulation de transaction (Reversal Advice - MTI 0420)",
-      network: "GIMAC / Réseau Bancaire Interne SGABS",
-      host: "HOST-POWERCARD-REVERSAL",
+      description: `Incident de compensation interbancaire et de réconciliation financière : ${ref.title}. Rejet de fichier de clearing, non-concordance de balance financière ou contestation client hors délai.`,
+      channel: "Moteur de Compensation Interbancaire & Dépôt Sécurisé SFTP (WinSCP)",
+      operation: "Compensation & Règlement Interbancaire (Clearing Settlement - Fichiers Base II / LIS)",
+      network: "Liaisons SFTP Chiffrées VISA Interregional / GIM-UEMOA / GIMAC",
+      host: "SRV-CLEARING-SETTLE-01",
       observation: {
-        symptom: "Rejets systématiques des messages d'annulation ISO 0420 avec code retour DE39=96 ou absence totale de prise en compte dans le Core Banking.",
-        facts: "Plus de 65 annulations de retraits non acquittées sur le système central, générant des écarts comptables en suspense interbancaire.",
-        scope: "Toutes les annulations initiées suite à des abandons porteurs ou des timeouts réseau sur le réseau GAB et TPE.",
-        context: "Incident apparu suite à la modification du format du champ DE90 (Original Data Elements) lors d'un patch de sécurité du Switch.",
+        symptom: titleLower.includes("winscp")
+          ? "Le serveur distant WinSCP rejette le fichier outgoing en raison d'un mauvais préfixe « P » ou de permissions Linux insuffisantes (droits 777 non accordés)."
+          : titleLower.includes("base ii")
+          ? "Le centre de traitement Visa rejette l'intégralité du fichier de compensation Base II avec code erreur 'Trailer Checksum Mismatch'."
+          : "Écart de balance financière constaté entre le rapport officiel de compensation et les écritures comptables réelles déversées sur Amplitude.",
+        facts: `Plus de 4 500 transactions de compensation pour un montant global de 380 000 000 XOF bloquées en attente de validation comptable.`,
+        scope: "Cycles de compensation quotidiens GIMAC, VISA International et GIM-UEMOA.",
+        context: "Arrêté comptable de fin de journée (Cut-off 18h00) avec obligation réglementaire de transmission avant minuit.",
       },
       flowSteps: [
-        { position: 1, source: "Frontal PowerCard", destination: "Switch National", event: "ISO 0420 Émission de l'annulation (DE90 original data elements)", status: "OK" },
-        { position: 2, source: "Switch National", destination: "Core Banking Host", event: "Transmission de la demande de contre-passation", status: "OK" },
-        { position: 3, source: "Core Banking Host", destination: "Base de Données", event: "Contrôle du champ DE90 : non-concordance de la date locale originale (DE12/DE13)", status: "DE90_MISMATCH" },
-        { position: 4, source: "Core Banking Host", destination: "Switch National", event: "ISO 0430 Rejet de l'annulation avec DE39=96 (Erreur de syntaxe / Format)", status: "ERROR" },
-        { position: 5, source: "Switch National", destination: "Frontal PowerCard", event: "Inscription de la transaction en suspens comptable non réconcilié", status: "SUSPENSE_BLOCKED" },
+        { position: 1, source: "Frontal PowerCard", destination: "Moteur de Clearing", event: "Extraction des transactions du cycle et génération du fichier brut de compensation", status: "OK" },
+        { position: 2, source: "Moteur de Clearing", destination: "Module de Renommage", event: "Application des règles de nommage strictes par filiale (Préfixe P, devises)", status: titleLower.includes("winscp") ? "NAMING_ERROR" : "OK" },
+        { position: 3, source: "Moteur de Clearing", destination: "Serveur SFTP WinSCP", event: "Dépôt sur le répertoire distant et attribution des droits chmod 777", status: "OK" },
+        { position: 4, source: "Centre de Compensation Visa/GIM", destination: "Moteur de Clearing", event: titleLower.includes("base ii") ? "Notification de rejet Trailer Checksum erroné" : "Acquittement avec signalement d'écarts de balance", status: "REJECTED_TRAILER" },
+        { position: 5, source: "Moteur de Clearing", destination: "Équipe Exploitation", event: "Alerte de rejet critique et suspension des écritures de règlement", status: "ALERT_GENERATED" },
       ],
       isoMessages: [
         {
-          mti: "0420",
+          mti: "0500",
           bitmap: "7238000008C08000",
           stan: stanStr,
           rrn: rrnStr,
           responseCode: "00",
-          terminalId: tidStr,
-          maskedRawMessage: `04207238000008C08000164500********128901000000020000...DE90=0200${stanStr}...`,
-          fields: { DE3: "010000", DE4: "20000", DE11: stanStr, DE37: rrnStr, DE39: "00", DE41: tidStr, DE90: `0200${stanStr}1120000000` },
+          terminalId: "BATCH-CLR-01",
+          maskedRawMessage: `05007238000008C08000...RECORDS_COUNT=004500...NET_AMOUNT=038000000000...`,
+          fields: { DE3: "920000", DE4: "380000000", DE11: stanStr, DE37: rrnStr, DE41: "BATCH-CLR-01", DE97: "38000000000" },
         },
         {
-          mti: "0430",
+          mti: "0510",
           bitmap: "7238000008C08000",
           stan: stanStr,
           rrn: rrnStr,
-          responseCode: "96",
-          terminalId: tidStr,
-          maskedRawMessage: `04307238000008C08000164500********128901000000020000...DE39=96`,
-          fields: { DE3: "010000", DE11: stanStr, DE39: "96", DE41: tidStr },
+          responseCode: "00",
+          terminalId: "BATCH-CLR-01",
+          maskedRawMessage: `05107238000008C08000...RECONCILIATION_BALANCED...`,
+          fields: { DE3: "920000", DE11: stanStr, DE39: "00", DE41: "BATCH-CLR-01" },
         },
       ],
       hypotheses: [
         {
-          description: "Hypothèse 1 : Le compte client est gelé ou sous saisie attribution bloquant l'injection de l'écriture au crédit",
+          description: "Hypothèse 1 : Corruption physique du fichier lors du transfert réseau SFTP",
           status: "REJECTED",
-          evidence: "Vérification sur le CBS Sopra Amplitude confirmant que 100% des comptes clients concernés sont à l'état actif et ouvert.",
+          evidence: "Le hachage SHA-256 du fichier déposé sur WinSCP correspond exactement à l'empreinte locale générée par le serveur de clearing.",
         },
         {
-          description: "Hypothèse 2 : Dépassement de la fenêtre temporelle de compensation (Time-to-Live 60s) configurée sur la passerelle d'annulation",
+          description: "Hypothèse 2 : Dépassement de l'heure de coupure Cut-off réglementaire entraînant le report au cycle suivant",
           status: "PROBABLE",
-          evidence: "Le timestamp montre un délai d'émission du 0420 oscillant entre 55s et 75s sous forte charge réseau.",
+          evidence: "Le timestamp du transfert indique 18h04 alors que le Cut-off strict était fixé à 18h00 pour la filiale.",
         },
         {
-          description: "Hypothèse 3 : Incompatibilité du format de cadrage du champ DE90 (Original Data Elements) : omission du code acquéreur sur 11 caractères",
+          description: "Hypothèse 3 : Erreur de calcul de la somme de contrôle sur l'enregistrement de fin de lot (Trailer Record 99) ou non-respect de la règle de renommage",
           status: "CONFIRMED",
-          evidence: "Dump hexadécimal de la trame 0420 prouvant que le sous-champ DE90.3 (Acquiring Institution ID) était tronqué à 6 caractères au lieu de 11.",
+          evidence: "Preuve établie par l'outil de diagnostic Visa : le nombre de transactions déclaré dans le trailer (4 502) différait de 2 unités suite à une suppression manuelle.",
         },
       ],
       evidence: [
-        { type: "Log Switch ISO", content: "PARSER ERROR: Field DE90 length mismatch. Expected 42 bytes, received 37 bytes. Rejecting with DE39=96.", source: "Syslog Frontal PowerCard" },
-        { type: "Trace Wireshark", content: "Frame 14920: ISO 0420 rejected by Host with 0430 (DE39=96 System Malfunction).", source: "Capture Réseau Port 8000" },
+        { type: "Rapport de Rejet Visa", content: "BASE II FILE REJECTED: Reason Code RC-99 [INVALID TRAILER HASH]. Total records mismatch in batch block 04.", source: "Visa Settlement Notification" },
+        { type: "Log Transfert WinSCP", content: "PERMISSION DENIED: File uploaded without execution bits. Error code 3: Access denied on /interfaces/VISA/out.", source: "WinSCP SFTP Daemon" },
       ],
       rootCause: {
-        category: "Interface ISO 8583 & Spécification DE90",
-        description: "Mauvais formattage du champ DE90 dans le module d'assemblage des trames 0420 suite à la migration du micro-code du Switch, provoquant le rejet systématique par le Core Banking.",
-        justification: "Démontré par l'alignement strict du paquet Wireshark avec la spécification technique ISO 8583 SGABS version 4.2.",
+        category: "Format de Compensation & Règles de Dépôt",
+        description: "Altération manuelle du fichier de règlement sans recalcul automatique de la somme de contrôle de l'enregistrement Trailer, provoquant l'invalidation globale du lot de compensation.",
+        justification: "Confirmé par la comparaison binaire entre le fichier brut généré et le fichier injecté dans la passerelle.",
         validatedAt: new Date().toISOString(),
-        validatedBy: "Oury Kohkoun (Expert Monétique)",
+        validatedBy: validator,
       },
       resolution: {
-        actions: "Application d'un patch de cadrage ASCII sur le driver ISO PowerCard pour forcer le padding à gauche sur 11 positions pour DE90.3, puis recyclage à chaud du process.",
-        executor: "Ingénierie Monétique SGABS",
-        approver: "Direction des Systèmes d'Information SGABS",
-        result: "Toutes les annulations en suspens sont passées avec succès avec DE39=00 et apurement complet des comptes d'attente.",
+        actions: "Régénération automatique du fichier de règlement avec calcul certifié du Trailer Checksum, réapplication des permissions strictes chmod 777 via WinSCP et retransmission avec acquittement sans réserve.",
+        executor: "Équipe Clearing & Rapprochement Monétique SGABS",
+        approver: "Responsable des Opérations Bancaires",
+        result: "Validation sans pénalité du lot de 380 millions XOF par le centre de règlement international.",
       },
       prevention: [
-        { action: "Intégration d'un test de non-régression automatique sur la syntaxe DE90 dans le pipeline CI/CD", owner: "Qualité & Recette", priority: "HIGH", status: "DONE" },
-        { action: "Automatisation du script de conciliation journalière des 0420 non acquittés à H+1", owner: "Exploitation Monétique", priority: "HIGH", status: "DONE" },
+        { action: "Intégration d'un utilitaire de validation syntaxique automatique pré-dépôt (Dry-Run Linter) dans le pipeline Outgoing", owner: "Équipe IT Monétique", priority: "CRITICAL", status: "DONE" },
+        { action: "Vérification automatisée des droits chmod 777 sur tout fichier déposé sur l'arborescence WinSCP", owner: "Exploitation Systèmes", priority: "HIGH", status: "DONE" },
       ],
     };
   }
 
-  // 3. CAS TPE / MARCHAND / POS (INC-011 à INC-020, INC-056 à INC-060)
-  if (domain === "TPE" || titleLower.includes("tpe") || titleLower.includes("pos") || titleLower.includes("marchand") || titleLower.includes("merchant")) {
+  // =========================================================================
+  // 4. CAS GAB MATÉRIEL AVANCÉ (EPP DUKPT, SHUTTER, BILL VALIDATOR, RETRACT, NTP)
+  // =========================================================================
+  if (
+    titleLower.includes("epp") ||
+    titleLower.includes("shutter") ||
+    titleLower.includes("recycleur") ||
+    titleLower.includes("retract") ||
+    titleLower.includes("ntp") ||
+    titleLower.includes("skimming") ||
+    titleLower.includes("jittering") ||
+    titleLower.includes("out of service") ||
+    titleLower.includes("ndc") ||
+    titleLower.includes("replenishment")
+  ) {
     return {
-      description: `Incident sur le réseau d'acquisition TPE Commerçants SGABS : ${ref.title}. Rejets des autorisations marchands ou anomalies de télécollecte en fin de journée.`,
-      channel: "Terminaux de Paiement Électronique (TPE Ingenico & Verifone)",
-      operation: "Paiement CB / Vente Marchand (Purchase - DE3=000000)",
-      network: "Passerelle GPRS / IP Sécurisée SGABS",
-      host: "FRONTAL-TPE-ACQUIRER-01",
+      description: `Incident matériel et capteurs sur le parc distributeurs automatiques GAB : ${ref.title}. Défaillance du clavier chiffrant EPP, bourrage obturateur ou désynchronisation protocolaire NDC.`,
+      channel: "GAB Motorisé NCR SelfServ 84 / Diebold Opteva / Hyosung MoniMax",
+      operation: "Retrait d'espèces / Dépôt automatisé & Saisie PIN sécurisée (DE3=010000 / DE3=210000)",
+      network: "Réseau Privé Sécurisé GAB (VPN IPSec Dédié SGABS)",
+      host: "SRV-ATM-POWERCARD-NDC",
       observation: {
-        symptom: "Les terminaux TPE des commerçants partenaires de la zone affichent 'Transaction Refusée' (DE39=05 ou DE39=91) lors des paiements par carte.",
-        facts: "Plus de 350 transactions de paiement rejetées sur 42 terminaux marchands majeurs (grandes surfaces, hôtels, pharmacies) en l'espace de 40 minutes.",
-        scope: "Réseau TPE raccordé à la passerelle IP du frontal acquéreur SGABS.",
-        context: "Mise à jour périodique des tables de routage marchands et des clés de sécurité acquéreur.",
+        symptom: titleLower.includes("epp")
+          ? "Le GAB passe brutalement en 'Hors Service' (Out Of Service) avec alarme clavier chiffrant EPP en mode sécurité (Key Parity Tamper)."
+          : titleLower.includes("ntp")
+          ? "Toutes les transactions du GAB sont rejetées avec DE39=12 : dérive de l'horloge locale de plus de 15 minutes."
+          : "Le client entend le comptage des billets mais l'obturateur reste scellé (Shutter Jam), sans délivrance de cash.",
+        facts: `Indisponibilité totale du distributeur sur une zone à forte affluence. Plus de 35 tentatives d'opérations avortées en 1 heure.`,
+        scope: "Distributeurs automatiques de billets rattachés au frontal monétique NDC SGABS.",
+        context: "Maintenance matérielle récente, coupure de courant onduleur ou forte variation thermique.",
       },
       flowSteps: [
-        { position: 1, source: "TPE Ingenico", destination: "Passerelle Monétique IP", event: "ISO 0200 Requête d'autorisation achat (DE3=000000, DE41=TID, DE42=MID)", status: "OK" },
-        { position: 2, source: "Passerelle Monétique IP", destination: "Frontal PowerCard", event: "Routage selon Merchant ID et Terminal ID", status: "OK" },
-        { position: 3, source: "Frontal PowerCard", destination: "Table Paramétrage Marchands", event: "Contrôle d'éligibilité du contrat commerçant : profil Merchant désynchronisé", status: "CONFIG_ERROR" },
-        { position: 4, source: "Frontal PowerCard", destination: "Passerelle Monétique IP", event: "ISO 0210 Réponse négative générée localement (DE39=05 Do Not Honor)", status: "ERROR" },
-        { position: 5, source: "Passerelle Monétique IP", destination: "TPE Ingenico", event: "Affichage 'Transaction Refusée' et impression ticket abandon", status: "ABANDON_PRINTED" },
+        { position: 1, source: "Porteur Carte", destination: "Clavier EPP / Lecteur GAB", event: "Insertion carte et composition du code confidentiel sur PIN Pad chiffrant", status: "OK" },
+        { position: 2, source: "Clavier EPP", destination: "Contrôleur ATM", event: "Chiffrement du PIN Block sous clé DUKPT avec génération du KSN", status: titleLower.includes("epp") ? "DUKPT_PARITY_ERROR" : "OK" },
+        { position: 3, source: "Contrôleur ATM", destination: "Frontal PowerCard", event: "Transmission de la trame NDC (ISO 0200, DE52=PIN, DE11=STAN)", status: "OK" },
+        { position: 4, source: "Frontal PowerCard", destination: "Contrôleur ATM", event: "Accord d'autorisation DE39=00 et commande de présentation de liasse CDM", status: "OK" },
+        { position: 5, source: "Module CDM", destination: "Contrôleur ATM", event: "Échec mécanique obturateur : code M-Status 14 (Shutter Blocked) / Billet avalé", status: "HARDWARE_JAM" },
       ],
       isoMessages: [
         {
@@ -308,81 +495,97 @@ function buildIncidentTechnicalProfile(
           rrn: rrnStr,
           responseCode: "00",
           terminalId: tidStr,
-          maskedRawMessage: `02007238000008C08000164970********441200000001500009171200${stanStr}...`,
-          fields: { DE3: "000000", DE4: "15000", DE11: stanStr, DE37: rrnStr, DE41: tidStr, DE42: midStr, DE49: "952" },
+          maskedRawMessage: `02007238000008C08000164500********341201000000040000...DE52=8A4FBC...`,
+          fields: { DE3: "010000", DE4: "40000", DE11: stanStr, DE37: rrnStr, DE41: tidStr, DE52: "8A4FBCE9128034AA" },
         },
         {
           mti: "0210",
           bitmap: "7238000008C08000",
           stan: stanStr,
           rrn: rrnStr,
-          responseCode: respCode === "91" ? "91" : "05",
+          responseCode: respCode,
           terminalId: tidStr,
-          maskedRawMessage: `02107238000008C08000164970********441200000001500009171200${stanStr}${respCode}...`,
-          fields: { DE3: "000000", DE4: "15000", DE11: stanStr, DE37: rrnStr, DE39: respCode === "91" ? "91" : "05", DE41: tidStr, DE42: midStr },
+          maskedRawMessage: `02107238000008C08000164500********341201000000040000...DE39=${respCode}`,
+          fields: { DE3: "010000", DE11: stanStr, DE37: rrnStr, DE39: respCode, DE41: tidStr },
         },
       ],
       hypotheses: [
         {
-          description: "Hypothèse 1 : Problème de réseau télécom opérateur GSM/3G/4G bloquant l'acheminement des paquets des terminaux",
+          description: "Hypothèse 1 : Tentative d'agression physique ou d'installation d'un dispositif de skimming sur le lecteur",
           status: "REJECTED",
-          evidence: "La passerelle SSL/TLS confirme la réception intégrale des trames TCP port 8443 avec un temps de socket sain à 180ms.",
+          evidence: "L'inspection visuelle et les capteurs de présence de collerette frauduleuse confirment l'absence d'équipement pirate.",
         },
         {
-          description: "Hypothèse 2 : Dépassement des plafonds d'autorisation journaliers par carte bancaire sur le terminal commerçant",
+          description: "Hypothèse 2 : Dérive de l'horloge système suite à la défaillance de la pile CMOS de la carte mère du GAB",
           status: "PROBABLE",
-          evidence: "Une partie des rejets correspondait effectivement à des cartes atteignant leur plafond mensuel de paiement.",
+          evidence: "La comparaison entre la date serveur NTP et l'heure locale BIOS révélait un décalage de 912 secondes.",
         },
         {
-          description: "Hypothèse 3 : Désactivation ou mauvaise association du code Merchant ID (DE42) avec le Terminal ID (DE41) dans la table POS_MERCHANT_ROUTING de PowerCard",
+          description: "Hypothèse 3 : Blocage mécanique du moteur d'entraînement de l'obturateur ou perte de clé de session DUKPT sur l'EPP",
           status: "CONFIRMED",
-          evidence: "Audit de la table de configuration démontrant que suite au batch de nuit, le flag 'ACTIVE' est passé à 0 pour toute la série de MID concernés.",
+          evidence: "Le journal électronique (EJ) enregistre l'erreur matérielle M-Status 12/14 bloquant le cycle mécanique de présentation des billets.",
         },
       ],
       evidence: [
-        { type: "Log Applicatif Frontal", content: `[AUTH-REJECT] MID=${midStr} TID=${tidStr} : Merchant profile status is INACTIVE in local cache. Generating DE39=05.`, source: "Frontal PowerCard Routing Engine" },
-        { type: "Trace ISO 8583", content: "TPE Transaction failed. ISO 0210 returned with DE39=05 to terminal IP 10.144.12.88.", source: "Passerelle TPE Log" },
+        { type: "Journal Électronique ATM", content: `EJ_LOG: [M-STATUS: 12] EPP SECURITY TAMPER - DUKPT KEY TABLE ZEROIZED. TERMINAL HALTED.`, source: `Journal Électronique ${tidStr}` },
+        { type: "Diagnostic Constructeur", content: "CDM ERROR: Shutter motor voltage fault. Obstruction detected at position 3.", source: "NCR/Diebold Maintenance Tool" },
       ],
       rootCause: {
-        category: "Paramétrage Marchand & Moteur d'Acquisition",
-        description: "Script de purge nocturne des contrats commerçants inactifs ayant erronément désactivé les profils des terminaux actifs de la filiale SGABS en raison d'un critère de date invalide.",
-        justification: "Vérification directe dans la base de données SQL et confirmation par la réactivation immédiate du profil.",
+        category: "Matériel Monétique GAB & Sécurité Physique",
+        description: "Défaillance matérielle sur le sous-ensemble incriminé (EPP ou transporteur CDM), forçant le contrôleur local à placer le distributeur en sécurité pour protéger les fonds et la cryptographie.",
+        justification: "Validé par le relevé des codes d'erreurs internes dans les registres non volatils du contrôleur ATM.",
         validatedAt: new Date().toISOString(),
-        validatedBy: "Oury Kohkoun (Expert Monétique)",
+        validatedBy: validator,
       },
       resolution: {
-        actions: "Exécution immédiate d'un script correctif SQL de réactivation des Merchant IDs affectés, rechargement à chaud du cache mémoire du frontal PowerCard et émission d'un ordre de rafraîchissement TMS vers les TPE.",
-        executor: "Équipe Monétique & Exploitation POS SGABS",
-        approver: "Responsable Monétique SGABS",
-        result: "Rétablissement total des paiements marchands en moins de 15 minutes, taux de succès revenu à 99.4%.",
+        actions: "Dépêchement du mainteneur matériel sur site pour remplacement du sous-ensemble défectueux, réinjection sécurisée des clés d'initialisation EPP sous double contrôle et remise en service.",
+        executor: "Mainteneur Matériel GAB & Support Monétique SGABS",
+        approver: "Responsable Exploitation GAB",
+        result: "Rétablissement du GAB en service nominal sous 45 minutes et réconciliation des montants.",
       },
       prevention: [
-        { action: "Ajout d'un contrôle de cohérence préalable (Dry-Run) obligatoire sur tout script SQL modifiant la table des contrats marchands", owner: "Équipe DBA & Prod", priority: "CRITICAL", status: "DONE" },
-        { action: "Notification automatique par webhook Teams/Slack en cas de pic de DE39=05 dépassant 5% du volume global", owner: "Supervision Monétique", priority: "HIGH", status: "DONE" },
+        { action: "Synchronisation périodique forcée des GAB sur le serveur NTP bancaire interne toutes les 4 heures", owner: "Support Systèmes GAB", priority: "HIGH", status: "DONE" },
+        { action: "Remplacement préventif annuel des mécanismes de courroies et cellules optiques d'obturateurs", owner: "Maintenance Constructeur", priority: "HIGH", status: "DONE" },
       ],
     };
   }
 
-  // 4. CAS EMV / CARTE / PIN / HSM (INC-021 à INC-030, INC-061 à INC-068)
-  if (domain === "Carte" || domain === "Infrastructure" || titleLower.includes("emv") || titleLower.includes("hsm") || titleLower.includes("pin") || titleLower.includes("crypto") || titleLower.includes("arqc") || titleLower.includes("clé")) {
+  // =========================================================================
+  // 5. CAS TPE AVANCÉ (CONTACTLESS NFC CVM, TMS, DCC, VOID, FLOOR LIMIT)
+  // =========================================================================
+  if (
+    titleLower.includes("nfc") ||
+    titleLower.includes("contactless") ||
+    titleLower.includes("tms") ||
+    titleLower.includes("dcc") ||
+    titleLower.includes("void") ||
+    titleLower.includes("floor limit") ||
+    titleLower.includes("offline") ||
+    titleLower.includes("pos") ||
+    titleLower.includes("marchand")
+  ) {
     return {
-      description: `Incident de sécurité cryptographique et validation de puce EMV : ${ref.title}. Échec de validation des cryptogrammes de transaction ou de déchiffrement des blocs PIN sur le HSM Thales.`,
-      channel: "Module de Sécurité Matériel (HSM Thales PayShield 9000)",
-      operation: "Vérification cryptographique ARQC & PIN Block (DE52 / DE55)",
-      network: "Bus Cryptographique Local Sécurisé SGABS",
-      host: "HSM-PAYSHIELD-01-PRIMARY",
+      description: `Incident d'acquisition sur les terminaux de paiement marchands TPE : ${ref.title}. Rejets des transactions sans contact NFC, échec de profil TMS ou dépassement du seuil de risque floor limit.`,
+      channel: "Terminaux TPE Sans Contact (Ingenico Move 5000 / Tetra & PAX Android)",
+      operation: "Vente CB Sans Contact NFC / Pré-autorisation / Annulation Void (DE3=000000 / DE3=020000)",
+      network: "Réseau Monétique Commerçants GPRS/4G & TLS 1.3",
+      host: "FRONTAL-POS-ACQUIRER-02",
       observation: {
-        symptom: "Rejets systématiques des transactions EMV avec DE39=55 (Code PIN erroné / Échec cryptogramme) ou DE39=96 (Erreur cryptographique interne).",
-        facts: "Plus de 180 tentatives de paiement et retrait rejetées sur toutes les cartes à puce EMV émises par SGABS, alors que les cartes à piste ou sans contact en mode fallback passent.",
-        scope: "Toutes les cartes bancaires SGABS EMV (BINs 4500xx, 5200xx, 6000xx) présentées sur le réseau d'acquisition.",
-        context: "Incident survenu immédiatement après une rotation programmée des clés de session de zone de PIN (ZPK) et des clés maîtresses LMK.",
+        symptom: titleLower.includes("contactless")
+          ? "Le paiement sans contact bipe mais la transaction est immédiatement refusée au-delà du seuil CVM sans demander l'insertion de la carte."
+          : titleLower.includes("tms")
+          ? "Le TPE télécharge une mise à jour de profil et perd tous ses paramètres commerçant (MID/TID inconnus sur le serveur)."
+          : "Les paiements marchands affichent 'Transaction Refusée' avec code DE39=05 ou DE39=12.",
+        facts: `Plus de 280 transactions rejetées chez 35 commerçants majeurs de la capitale en heure de pointe.`,
+        scope: "Terminaux de paiement électroniques commerçants raccordés à la passerelle d'acquisition SGABS.",
+        context: "Mise à niveau programmée des tables de configuration TMS et mise en conformité des règles CVM.",
       },
       flowSteps: [
-        { position: 1, source: "Terminal GAB / TPE", destination: "Frontal PowerCard", event: "ISO 0200 avec cryptogramme ARQC (DE55 tag 9F26) et bloc PIN chiffré (DE52)", status: "OK" },
-        { position: 2, source: "Frontal PowerCard", destination: "HSM Thales PayShield 9000", event: "Commande Host 'M0' (Translate PIN from ZPK to LMK) et 'KQ' (Verify ARQC)", status: "OK" },
-        { position: 3, source: "HSM Thales PayShield", destination: "Module Cryptographique", event: "Désynchronisation de clé ZPK : parité de clé incorrecte (Error Code 01)", status: "KEY_PARITY_ERROR" },
-        { position: 4, source: "HSM Thales PayShield", destination: "Frontal PowerCard", event: "Réponse HSM d'erreur 'M1' / 'KR' : échec vérification cryptographique", status: "ERROR" },
-        { position: 5, source: "Frontal PowerCard", destination: "Terminal GAB / TPE", event: "Génération de la réponse ISO 0210 avec DE39=55 (PIN Erroné / Crypto Failed)", status: "REJECTED_55" },
+        { position: 1, source: "Carte Porteur", destination: "Antenne NFC TPE", event: "Présentation de la carte sans contact et lecture des tags EMV (Tag 9F6E)", status: "OK" },
+        { position: 2, source: "Noyau EMV TPE", destination: "Contrôleur POS", event: "Évaluation du montant face au plafond CVM : discordance de configuration", status: "CVM_EVAL_ERROR" },
+        { position: 3, source: "Contrôleur POS", destination: "Passerelle Monétique IP", event: "ISO 0200 Émission de la requête d'autorisation vers le frontal", status: "OK" },
+        { position: 4, source: "Frontal PowerCard", destination: "Table Marchands", event: "Contrôle contrat marchand : rejet pour paramètre terminal désynchronisé", status: "REJECTED" },
+        { position: 5, source: "Passerelle Monétique IP", destination: "TPE Commerçant", event: "Génération de l'ISO 0210 (DE39=" + respCode + ") et affichage refus", status: "REFUSED" },
       ],
       isoMessages: [
         {
@@ -392,7 +595,109 @@ function buildIncidentTechnicalProfile(
           rrn: rrnStr,
           responseCode: "00",
           terminalId: tidStr,
-          maskedRawMessage: `02007238000008C08000164500********9901000000020000...DE52=A4F8E2...DE55=9F26084B2...`,
+          maskedRawMessage: `02007238000008C08000164970********881200000002500009171200${stanStr}...`,
+          fields: { DE3: "000000", DE4: "25000", DE11: stanStr, DE37: rrnStr, DE41: tidStr, DE42: midStr, DE55: "9F6E0420000000" },
+        },
+        {
+          mti: "0210",
+          bitmap: "7238000008C08000",
+          stan: stanStr,
+          rrn: rrnStr,
+          responseCode: respCode,
+          terminalId: tidStr,
+          maskedRawMessage: `02107238000008C08000164970********881200000002500009171200${stanStr}${respCode}...`,
+          fields: { DE3: "000000", DE4: "25000", DE11: stanStr, DE37: rrnStr, DE39: respCode, DE41: tidStr, DE42: midStr },
+        },
+      ],
+      hypotheses: [
+        {
+          description: "Hypothèse 1 : Carte bancaire client défectueuse ou antenne NFC endommagée",
+          status: "REJECTED",
+          evidence: "Le problème survient indistinctement sur des centaines de cartes d'émetteurs différents.",
+        },
+        {
+          description: "Hypothèse 2 : Coupure de liaison télécom GPRS entre les TPE et la passerelle centrale",
+          status: "REJECTED",
+          evidence: "Les sessions TCP port 8443 sont actives et les échanges SSL s'établissent sans perte.",
+        },
+        {
+          description: "Hypothèse 3 : Erreur dans le paramétrage du fichier TMS déployé : seuil CVM configuré en mode 'Strict Reject' sans bascule vers l'insertion contact",
+          status: "CONFIRMED",
+          evidence: "L'analyse du profil TMS confirme que le drapeau 'Fallback to Contact on CVM Limit' était désactivé dans le template XML.",
+        },
+      ],
+      evidence: [
+        { type: "Log Passerelle TPE", content: `[POS-REJECT] TID=${tidStr} MID=${midStr} : Tag 9F6E CVM Limit Exceeded. Cardholder authentication required. DE39=05.`, source: "Frontal TPE Server" },
+        { type: "Audit TMS", content: "TMS Profile Update 202611-V4: Flag 'ALLOW_CONTACT_FALLBACK' set to FALSE in global policy.", source: "Ingenico TMS Audit Server" },
+      ],
+      rootCause: {
+        category: "Paramétrage TPE & Profil Terminal Management System",
+        description: "Régression introduite dans le fichier de paramétrage global TMS interdisant à tort la demande d'insertion carte lors du dépassement du plafond de sécurité sans contact.",
+        justification: "Démontré par la reprise immédiate des transactions dès le rétablissement du profil certifié sur le serveur TMS.",
+        validatedAt: new Date().toISOString(),
+        validatedBy: validator,
+      },
+      resolution: {
+        actions: "Correction immédiate du template de configuration sur le serveur TMS, activation du fallback contact et déploiement d'une télé-mise à jour forcée sur tous les terminaux actifs.",
+        executor: "Équipe Support Marchands & POS SGABS",
+        approver: "Responsable Monétique SGABS",
+        result: "Rétablissement complet du taux de succès des paiements commerçants à 99.6%.",
+      },
+      prevention: [
+        { action: "Validation obligatoire sur banc de test pilote (Lab TPE) avant tout déploiement massif de profil TMS", owner: "Recette Monétique", priority: "CRITICAL", status: "DONE" },
+        { action: "Mise en place d'un monitoring spécifique sur les rejets sans contact pour alerter en cas de pic > 3%", owner: "Supervision POS", priority: "HIGH", status: "DONE" },
+      ],
+    };
+  }
+
+  // =========================================================================
+  // 6. CAS HSM AVANCÉ (TAMPER ALARM, LMK, ROOT CA PKI, KEY TABLE, ZPK)
+  // =========================================================================
+  if (
+    domain === "Infrastructure" ||
+    domain === "Carte" ||
+    titleLower.includes("hsm") ||
+    titleLower.includes("tamper") ||
+    titleLower.includes("lmk") ||
+    titleLower.includes("pki") ||
+    titleLower.includes("root ca") ||
+    titleLower.includes("key table") ||
+    titleLower.includes("arqc") ||
+    titleLower.includes("cvv") ||
+    titleLower.includes("zpk")
+  ) {
+    return {
+      description: `Incident de sécurité cryptographique matériel HSM : ${ref.title}. Alarme physique de boîtier, désynchronisation de clé ZPK/LMK ou expiration de certificat racine PKI.`,
+      channel: "Appliance Cryptographique Matérielle Thales PayShield 10K / 9000",
+      operation: "Translation de clés, calcul CVV/iCVV, vérification ARQC EMV et gestion LMK",
+      network: "Bus Sécurisé Inter-Data Center SGABS (Liaisons Fibre Chiffrées)",
+      host: "HSM-PAYSHIELD-01-PRIMARY",
+      observation: {
+        symptom: titleLower.includes("tamper")
+          ? "L'appareil HSM principal passe en état 'Tamper Active' et efface instantanément ses clés de travail LMK par sécurité matérielle."
+          : titleLower.includes("pki")
+          ? "Rejets systématiques de toutes les cartes bancaires neuves avec DE39=55 : certificat racine CA échu non renouvelé."
+          : "Rejets massifs avec code retour DE39=55 ou DE39=82 sur les validations de PIN et cryptogrammes ARQC.",
+        facts: `Plus de 450 tentatives de retraits et paiements rejetées en l'espace de 25 minutes sur l'ensemble de la clientèle SGABS.`,
+        scope: "Module HSM de production principal et frontal transactionnel PowerCard.",
+        context: "Opération de rotation trimestrielle des clés de sécurité ou variation de l'environnement physique en salle des machines.",
+      },
+      flowSteps: [
+        { position: 1, source: "Terminal GAB / TPE", destination: "Frontal PowerCard", event: "ISO 0200 contenant cryptogramme ARQC et bloc PIN chiffré", status: "OK" },
+        { position: 2, source: "Frontal PowerCard", destination: "HSM Thales PayShield", event: "Commande 'M0' (Translate PIN from ZPK to LMK) et 'KQ' (Verify ARQC)", status: "OK" },
+        { position: 3, source: "HSM Thales PayShield", destination: "Coprocesseur Crypto", event: titleLower.includes("tamper") ? "Capteur physique actif : clés LMK effacées" : "Désynchronisation KCV ou table de clés interne (RC=01/10)", status: "CRYPTO_FAULT" },
+        { position: 4, source: "HSM Thales PayShield", destination: "Frontal PowerCard", event: "Réponse d'erreur cryptographique (M1 / Error Code " + respCode + ")", status: "ERROR" },
+        { position: 5, source: "Frontal PowerCard", destination: "Terminal Acquéreur", event: "Génération de l'ISO 0210 avec code de rejet (DE39=" + respCode + ")", status: "REJECTED_55" },
+      ],
+      isoMessages: [
+        {
+          mti: "0200",
+          bitmap: "7238000008C08000",
+          stan: stanStr,
+          rrn: rrnStr,
+          responseCode: "00",
+          terminalId: tidStr,
+          maskedRawMessage: `02007238000008C08000164500********9901000000020000...DE52=A4F8E2...`,
           fields: { DE3: "010000", DE4: "20000", DE11: stanStr, DE37: rrnStr, DE41: tidStr, DE52: "A4F8E2109842BC01", DE55: "9F26084B2019448201A984" },
         },
         {
@@ -400,73 +705,91 @@ function buildIncidentTechnicalProfile(
           bitmap: "7238000008C08000",
           stan: stanStr,
           rrn: rrnStr,
-          responseCode: "55",
+          responseCode: respCode,
           terminalId: tidStr,
-          maskedRawMessage: `02107238000008C08000164500********9901000000020000...DE39=55`,
-          fields: { DE3: "010000", DE11: stanStr, DE37: rrnStr, DE39: "55", DE41: tidStr },
+          maskedRawMessage: `02107238000008C08000164500********9901000000020000...DE39=${respCode}`,
+          fields: { DE3: "010000", DE11: stanStr, DE37: rrnStr, DE39: respCode, DE41: tidStr },
         },
       ],
       hypotheses: [
         {
-          description: "Hypothèse 1 : Les porteurs de cartes ont saisi un code secret PIN erroné 3 fois consécutives",
+          description: "Hypothèse 1 : Tentative d'attaque brute-force sur le boîtier cryptographique ou intrusion physique",
           status: "REJECTED",
-          evidence: "Le phénomène est généralisé et touche simultanément des centaines de clients différents sur plusieurs terminaux distincts.",
+          evidence: "La vidéosurveillance de la salle blanche et les journaux d'accès biométriques confirment qu'aucune personne n'était présente.",
         },
         {
-          description: "Hypothèse 2 : Corruption physique du boîtier HSM Thales PayShield ou déclenchement du capteur anti-intrusion (Tamper Active)",
-          status: "REJECTED",
-          evidence: "La console console du HSM indique un état 'ONLINE NORMAL' avec un compteur d'alarmes physiques à 0.",
+          description: "Hypothèse 2 : Discordance de la valeur de contrôle de clé (KCV) suite à une saisie erronée d'une composante de clé ZPK",
+          status: "PROBABLE",
+          evidence: "Le KCV enregistré dans la configuration PowerCard (0x4E89B2) ne correspondait pas à la valeur renvoyée par le HSM (0x1128FA).",
         },
         {
-          description: "Hypothèse 3 : Dérive de clé ou mauvaise synchronisation de la clé de zone ZPK entre le frontal PowerCard et le HSM suite à un rechargement partiel",
+          description: "Hypothèse 3 : Déclenchement de la sonde thermique du HSM ou expiration de la clé publique CA racine EMV dans la mémoire interne",
           status: "CONFIRMED",
-          evidence: "Les traces de commandes HSM révèlent un retour 'Code 01: Key parity error' lors de la translation du PIN block entre la ZPK acquéreur et la clé LMK.",
+          evidence: "Le journal d'audit interne du HSM trace l'erreur matérielle formelle ayant provoqué l'arrêt immédiat des opérations de translation de clés.",
         },
       ],
       evidence: [
-        { type: "Log Console HSM", content: "[CMD: M0] [RC: 01] KEY PARITY ERROR ON KEY IDENTIFIER ZPK_SGABS_01. VERIFICATION ABORTED.", source: "Thales PayShield Audit Log" },
-        { type: "Syslog Frontal", content: "HSM translation failed for STAN 489214. Converting HSM Error 01 to ISO Response Code DE39=55.", source: "PowerCard Crypto Manager" },
+        { type: "Log Console HSM", content: `HSM_AUDIT: [ALERT-TAMPER] Physical enclosure temperature sensor tripped. Error Code: 0x8021. Keys zeroized.`, source: "Thales PayShield Console Audit" },
+        { type: "Syslog Frontal Crypto", content: `CRYPTO_FAIL: Translation command M0 returned RC=01 (Key Parity Error). Mapping to DE39=${respCode}.`, source: "PowerCard Crypto Subsystem" },
       ],
       rootCause: {
-        category: "Cryptographie Monétique & Gestion des Clés ZPK",
-        description: "Désynchronisation de la valeur de vérification de clé (KCV - Key Check Value) sur la clé ZPK_SGABS_01 après un chargement incomplet des 3 composantes de clé par les officiers de sécurité.",
-        justification: "Démontré par la discordance entre le KCV attendu (0x4E89B2) et le KCV réel calculé par le HSM (0x1128FA).",
+        category: "Sécurité Matérielle HSM & Gestion des Clés Cryptographiques",
+        description: "Dérive de synchronisation cryptographique ou déclenchement de capteur de sécurité matérielle ayant inhibé les opérations de déchiffrement sécurisé du frontal monétique.",
+        justification: "Confirmé par le journal d'audit scellé du HSM et le rétablissement immédiat après rechargement des composantes de clé.",
         validatedAt: new Date().toISOString(),
-        validatedBy: "Oury Kohkoun (Expert Monétique)",
+        validatedBy: validator,
       },
       resolution: {
-        actions: "Convocation en urgence des 2 officiers de sécurité pour recomposition et saisie manuelle sécurisée sous double contrôle des 3 composantes de clé ZPK sur la console du HSM, suivie de la bascule du trafic.",
-        executor: "Officiers de Sécurité Monétique SGABS",
-        approver: "RSSI & Direction de la Sécurité Bancaire",
-        result: "Validation du KCV 0x4E89B2, reprise nominale instantanée des validations de PIN et cryptogrammes ARQC sans aucun rejet.",
+        actions: "Bascule immédiate vers le HSM secondaire de secours, convocation sous astreinte des officiers de sécurité pour cérémonie de chargement des composantes de clé sous double contrôle et remise en service.",
+        executor: "Officiers de Sécurité Monétique & Administrateur HSM SGABS",
+        approver: "RSSI & Direction de la Sécurité des Systèmes d'Information",
+        result: "Rétablissement total des vérifications cryptographiques et apurement des rejets.",
       },
       prevention: [
-        { action: "Mise en place d'une procédure de double signature et test unitaire automatisé du KCV avant mise en service de toute nouvelle clé", owner: "Sécurité & Cryptographie", priority: "CRITICAL", status: "DONE" },
-        { action: "Basculement automatique sur le HSM secondaire configuré avec les anciennes clés en cas d'erreur de parité", owner: "Architecture Monétique", priority: "HIGH", status: "DONE" },
+        { action: "Surveillance thermique et environnementale continue de la baie HSM avec seuils d'alerte stricts", owner: "Équipe Infrastructure Data Center", priority: "CRITICAL", status: "DONE" },
+        { action: "Test de validation unitaire automatique du KCV dans le frontal avant toute bascule en production de nouvelles clés", owner: "Sécurité Monétique", priority: "HIGH", status: "DONE" },
       ],
     };
   }
 
-  // 5. CAS SWITCH / RÉSEAUX INTERBANCAIRES / GIMAC / VISA / MASTERCARD (INC-031 à INC-040, INC-073 à INC-076)
-  if (domain === "Switch" || domain === "PowerCard" || titleLower.includes("switch") || titleLower.includes("visa") || titleLower.includes("mastercard") || titleLower.includes("gimac") || titleLower.includes("routage") || titleLower.includes("queue") || titleLower.includes("pool")) {
+  // =========================================================================
+  // 7. CAS SWITCH & RÉSEAUX AVANCÉS (VISA VAP, MASTERCARD MIP, BOUCLE, LATENCE > 8s)
+  // =========================================================================
+  if (
+    domain === "Switch" ||
+    domain === "PowerCard" ||
+    titleLower.includes("switch") ||
+    titleLower.includes("vap") ||
+    titleLower.includes("mip") ||
+    titleLower.includes("boucle") ||
+    titleLower.includes("hop count") ||
+    titleLower.includes("latence") ||
+    titleLower.includes("gimac") ||
+    titleLower.includes("visa") ||
+    titleLower.includes("mastercard")
+  ) {
     return {
-      description: `Incident de routage et flux transactionnel interbancaire : ${ref.title}. Blocage ou saturation des passerelles de communication inter-réseaux.`,
-      channel: "Switch Interbancaire & Passerelles GIMAC / VISA Base I",
-      operation: "Routage transactionnel ISO 8583 (0100 / 0200)",
-      network: "Réseau Interbancaire GIMAC / Liaisons Dédiées VISA VAP",
-      host: "SWITCH-GW-INTERBANK-01",
+      description: `Incident de routage interbancaire et liaisons internationales : ${ref.title}. Coupure de lien VAP/MIP, saturation des files d'attente FIFO ou latence transfrontalière excessive.`,
+      channel: "Switch Monétique Multi-Réseaux & Passerelles Internationales (VISA VAP / Mastercard MIP / GIMAC)",
+      operation: "Acheminement et bascule transactionnelle haute disponibilité ISO 8583 (0100/0200)",
+      network: "Liaisons Télécom Internationales SD-WAN & BGP Multihoming",
+      host: "SWITCH-ROUTER-CORE-01",
       observation: {
-        symptom: "Rejets massifs avec DE39=91 (Émetteur inaccessible) ou DE39=96 sur les transactions confrères (cartes SGABS sur GAB confrères ou cartes confrères sur GAB SGABS).",
-        facts: "Plus de 400 transactions interbancaires en timeout consécutif en 25 minutes. La queue de messages du Switch s'accumule à plus de 1 200 requêtes en attente.",
-        scope: "Ensemble du trafic interbancaire national et sous-régional transitant par le Switch GIMAC.",
-        context: "Pic d'activité transactionnelle coïncidant avec une coupure de la liaison télécom principale de secours.",
+        symptom: titleLower.includes("latence")
+          ? "Rejets massifs avec DE39=68 (Response received too late) : les transactions internationales expirent après 8 000ms sans réponse émetteur."
+          : titleLower.includes("vap")
+          ? "Coupure brutale des flux de cartes étrangères : la session BGP du lien principal Visa VAP tombe sans bascule automatique."
+          : "Accumulation de messages dans la queue FIFO du Switch et rejets DE39=91 en cascade.",
+        facts: `Plus de 520 transactions interbancaires en échec en 30 minutes, affectant les flux nationaux et internationaux.`,
+        scope: "Passerelles de routage interbancaires GIMAC, VISA Base I et Mastercard Banknet.",
+        context: "Incident survenu lors d'un pic de trafic transactionnel international combiné à une dégradation de la fibre sous-marine.",
       },
       flowSteps: [
-        { position: 1, source: "Frontal PowerCard", destination: "Switch Interbancaire GIMAC", event: "ISO 0200 Demande d'autorisation interbancaire (MTI 0200, DE100 Dest)", status: "OK" },
-        { position: 2, source: "Switch Interbancaire GIMAC", destination: "Socket TCP Réseau", event: "Tentative d'acheminement vers le concentrateur de l'émetteur distant", status: "SOCKET_TIMEOUT" },
-        { position: 3, source: "Switch Interbancaire GIMAC", destination: "File de messages (Queue)", event: "Saturation de la file d'attente FIFO : dépassement de la limite de 1 000 messages", status: "QUEUE_OVERFLOW" },
-        { position: 4, source: "Switch Interbancaire GIMAC", destination: "Frontal PowerCard", event: "Génération de la réponse ISO 0210 avec DE39=91 (Issuer Inaccessible)", status: "TIMEOUT_91" },
-        { position: 5, source: "Frontal PowerCard", destination: "GAB / TPE Acquéreur", event: "Notification d'abandon client et restitution immédiate de la carte", status: "ABORT_COMPLETED" },
+        { position: 1, source: "Frontal PowerCard", destination: "Switch National/Régional", event: "ISO 0200 Demande d'autorisation internationale (DE100 Destination)", status: "OK" },
+        { position: 2, source: "Switch National", destination: "Routeur BGP / VAP Visa", event: "Acheminement du paquet vers la passerelle internationale", status: titleLower.includes("vap") ? "BGP_DOWN" : "OK" },
+        { position: 3, source: "Passerelle VAP/MIP", destination: "Réseau Émetteur International", event: "Transmission sur le circuit international : latence anormale > 8000ms", status: "HIGH_LATENCY" },
+        { position: 4, source: "Switch National", destination: "Frontal PowerCard", event: "Expiration du timer transactionnel : génération de l'ISO 0210 avec DE39=" + respCode, status: "TIMEOUT_GENERATED" },
+        { position: 5, source: "Frontal PowerCard", destination: "Terminal Acquéreur", event: "Notification d'abandon client et restitution immédiate de la carte", status: "ABORT_PROCESSED" },
       ],
       isoMessages: [
         {
@@ -476,141 +799,142 @@ function buildIncidentTechnicalProfile(
           rrn: rrnStr,
           responseCode: "00",
           terminalId: tidStr,
-          maskedRawMessage: `02007238000008C08000164284********901201000000030000...DE100=GIMAC...`,
-          fields: { DE3: "010000", DE4: "30000", DE11: stanStr, DE37: rrnStr, DE41: tidStr, DE49: "952", DE100: "GIMAC" },
+          maskedRawMessage: `02007238000008C08000164284********901201000000030000...DE100=VISA...`,
+          fields: { DE3: "010000", DE4: "30000", DE11: stanStr, DE37: rrnStr, DE41: tidStr, DE49: "952", DE100: "VISA" },
         },
         {
           mti: "0210",
           bitmap: "7238000008C08000",
           stan: stanStr,
           rrn: rrnStr,
-          responseCode: "91",
+          responseCode: respCode,
           terminalId: tidStr,
-          maskedRawMessage: `02107238000008C08000164284********901201000000030000...DE39=91`,
-          fields: { DE3: "010000", DE11: stanStr, DE37: rrnStr, DE39: "91", DE41: tidStr },
+          maskedRawMessage: `02107238000008C08000164284********901201000000030000...DE39=${respCode}`,
+          fields: { DE3: "010000", DE11: stanStr, DE37: rrnStr, DE39: respCode, DE41: tidStr },
         },
       ],
       hypotheses: [
         {
-          description: "Hypothèse 1 : Panne générale électrique sur le Data Center principal du Switch régional",
+          description: "Hypothèse 1 : Panne générale électrique sur le centre de calcul du réseau international",
           status: "REJECTED",
-          evidence: "Confirmation par le NOC du Switch régional que les générateurs et onduleurs fonctionnent normalement.",
+          evidence: "Le bulletin de statut Visa/Mastercard confirme que les systèmes centraux sont à l'état nominal.",
         },
         {
-          description: "Hypothèse 2 : Fuite de mémoire ou épuisement des descripteurs de sockets sur le serveur de communication PowerCard",
+          description: "Hypothèse 2 : Saturation de la mémoire tampon du routeur frontière provoquant le rejet des paquets TCP",
           status: "PROBABLE",
-          evidence: "La commande 'netstat -an | grep 8000' montre plus de 800 connexions à l'état CLOSE_WAIT non libérées.",
+          evidence: "Le monitoring SNMP montre une utilisation CPU du routeur de bordure à 98% avec goulot d'étranglement sur l'interface eth1.",
         },
         {
-          description: "Hypothèse 3 : Blocage de la socket TCP principale suite à un gel du timer Keep-Alive sans bascule automatique sur le lien BGP secondaire",
+          description: "Hypothèse 3 : Blocage de la bascule automatique BGP (Keep-Alive Freeze) ou latence réseau sous-marine transfrontalière excédant le timer de 8 secondes",
           status: "CONFIRMED",
-          evidence: "Les traces réseau montrent que la socket principale était silencieuse depuis 120s alors que la route de backup était opérationnelle mais non sollicitée.",
+          evidence: "Les traces Wireshark prouvent un RTT moyen de 8 450ms sur le circuit international, déclenchant l'expiration du timer local DE39=68.",
         },
       ],
       evidence: [
-        { type: "Syslog Switch", content: "SOCKET ALERT: Remote endpoint 192.168.100.12:8000 unreachable. Keep-Alive timer expired after 30s. Queue depth: 1240 msgs.", source: "Syslog Passerelle GIMAC" },
-        { type: "Monitoring Réseau", content: "TCP Reconnection loop on interface eth2. Packet drop rate: 100% on primary VLAN 240.", source: "Sonde Réseau SGABS" },
+        { type: "Syslog Routeur BGP", content: "BGP-5-ADJCHANGE: neighbor 196.200.14.1 Down (KeepAlive timer expired). Failover policy not triggered.", source: "Border Router Syslog" },
+        { type: "Capture Réseau Wireshark", content: "TCP Retransmission count: 18. Round Trip Time: 8450ms. Transaction timed out before 0210 arrival.", source: "Network Tap Switch" },
       ],
       rootCause: {
-        category: "Réseau Interbancaire & Mécanisme de Failover",
-        description: "Défaillance de la règle de bascule dynamique (Keep-Alive failover) sur le routeur de bordure, empêchant la migration automatique du trafic sur le lien de secours lors de la micro-coupure de la liaison principale.",
-        justification: "Démontré par la corrélation entre les alertes d'état du routeur BGP et l'accumulation des messages dans la file d'attente.",
+        category: "Réseaux Télécom & Routage Interbancaire",
+        description: "Défaillance de la règle de bascule BGP automatique combinée à une dégradation de la latence transfrontalière, provoquant des expirations en chaîne du timer de réponse.",
+        justification: "Démontré par la corrélation stricte entre les alarmes du routeur et les pointes de rejets DE39=68/91 enregistrées dans les logs du Switch.",
         validatedAt: new Date().toISOString(),
-        validatedBy: "Oury Kohkoun (Expert Monétique)",
+        validatedBy: validator,
       },
       resolution: {
-        actions: "Bascule manuelle forcée de la route BGP vers le lien télécom secondaire, réinitialisation du processus d'interface de communication PowerCard et vidage de la file d'attente bloquée.",
-        executor: "Équipe Réseau & Exploitation Monétique SGABS",
-        approver: "Responsable Infrastructure & Réseaux SGABS",
-        result: "Rétablissement du flux interbancaire en moins de 8 minutes avec un taux de succès rétabli à 99.7%.",
+        actions: "Bascule manuelle forcée de la route internationale vers le lien satellite de secours, réinitialisation de la session BGP et augmentation temporaire du timer de timeout à 12s.",
+        executor: "Équipe Réseaux Télécom & Ingénierie Monétique SGABS",
+        approver: "Responsable Infrastructure Monétique",
+        result: "Rétablissement complet du trafic international avec un temps de réponse ramené sous les 1 200ms.",
       },
       prevention: [
-        { action: "Reconfiguration du timer BFD (Bidirectional Forwarding Detection) à 300ms pour assurer une bascule automatique sans perte de session", owner: "Équipe Réseau", priority: "CRITICAL", status: "DONE" },
-        { action: "Exercice mensuel de simulation de coupure de lien principal pour valider le basculement à chaud", owner: "PCA / Plan Continuité", priority: "HIGH", status: "DONE" },
+        { action: "Configuration de la détection BFD (Bidirectional Forwarding Detection) à 300ms pour garantir un basculement instantané", owner: "Équipe Réseaux", priority: "CRITICAL", status: "DONE" },
+        { action: "Alerte temps réel sur la latence médiane transfrontalière dès qu'elle dépasse 4 000ms", owner: "Supervision Infrastructure", priority: "HIGH", status: "DONE" },
       ],
     };
   }
 
-  // 6. CAS CORE BANKING / CLEARING / COMPENSATION / EOD (INC-041 à INC-050, INC-077 à INC-080)
+  // =========================================================================
+  // 8. CAS PAR DÉFAUT / REVERSAL / DISPENSE (INCIDENTS HISTORIQUES)
+  // =========================================================================
   return {
-    description: `Incident d'intégration Core Banking et de clôture de compensation : ${ref.title}. Blocage lors de l'intégration des fichiers de compensation ou des écritures comptables d'arrêté journalier.`,
-    channel: "Core Banking Sopra Amplitude & Moteur de Clearing",
-    operation: "Compensation & Imputation Comptable (Clearing Batch & EOD)",
-    network: "Réseau Interne Sécurisé SGABS / Banques Partenaires",
-    host: "SRV-CBS-AMPLITUDE-PROD-01",
+    description: `Incident de distribution d'espèces et de synchronisation monétique : ${ref.title}. Défaillance mécanique CDM, rejet transactionnel ou divergence de comptabilisation.`,
+    channel: "GAB / ATM NCR & Diebold",
+    operation: "Retrait d'espèces (Cash Withdrawal - DE3=010000)",
+    network: "GIMAC / VISA / Réseau Interne SGABS",
+    host: "SRV-ATM-POWERCARD-01",
     observation: {
-      symptom: "Le batch de fin de journée (EOD) ou le job d'intégration des fichiers de clearing reste bloqué indéfiniment ou se termine en code erreur ORA-00054 / ORA-01013.",
-      facts: "Plus de 12 000 écritures de compensation interbancaire VISA et GIMAC non imputées sur les comptes d'attente, risquant de différer l'ouverture du service monétique du lendemain.",
-      scope: "Système comptable central Sopra Amplitude et chaîne de réconciliation monétique SGABS.",
-      context: "Exécution simultanée d'un traitement batch d'arrêté trimestriel et de l'intégration du fichier de compensation Base II.",
+      symptom: "Le porteur insère sa carte, valide son code PIN, le débit apparaît sur le compte mais l'automate ne délivre pas les fonds ou génère un ticket d'anomalie.",
+      facts: `Plus de 48 réclamations clients enregistrées sur le cluster GAB. Taux de rejet brutal constaté sur les transactions.`,
+      scope: `GAB motorisés NCR Personas et Diebold rattachés au concentrateur frontal PowerCard SGABS.`,
+      context: "Pic d'affluence transactionnelle combiné à une dérive de synchronisation des serveurs monétiques.",
     },
     flowSteps: [
-      { position: 1, source: "Moteur de Clearing", destination: "Serveur de Fichiers", event: "Lecture du fichier d'échanges interbancaire (Base II / TTF)", status: "OK" },
-      { position: 2, source: "Moteur de Clearing", destination: "Base de Données Oracle CBS", event: "Lancement de la transaction d'imputation comptable par lot (Batch INSERT)", status: "OK" },
-      { position: 3, source: "Base de Données Oracle CBS", destination: "Table COMPTES_MONETIQUE", event: "Tentative d'acquisition d'un verrou exclusif (LOCK TABLE) bloqué par une session concurrente", status: "ROW_LOCK_CONTENTION" },
-      { position: 4, source: "Base de Données Oracle CBS", destination: "Moteur de Clearing", event: "Expiration du timer de transaction : erreur ORA-00054 Resource Busy", status: "ERROR_ORA_00054" },
-      { position: 5, source: "Moteur de Clearing", destination: "Superviseur Ordonnancement", event: "Arrêt d'urgence du job et mise en suspense du fichier de compensation", status: "BATCH_SUSPENDED" },
+      { position: 1, source: "GAB / ATM", destination: "Frontal PowerCard", event: "ISO 0200 Demande d'autorisation de retrait (DE3=010000, DE4=5000000)", status: "OK" },
+      { position: 2, source: "Frontal PowerCard", destination: "CBS Sopra Amplitude", event: "Vérification solde et réservation des fonds (DE102 / DE103)", status: "OK" },
+      { position: 3, source: "Frontal PowerCard", destination: "GAB / ATM", event: "ISO 0210 Autorisation accordée (DE39=00), ordre de distribution CDM", status: "OK" },
+      { position: 4, source: "Distributeur CDM", destination: "Contrôleur ATM", event: "Incident matériel : blocage ou anomalie de transporteur billets", status: "HARDWARE_JAM" },
+      { position: 5, source: "GAB / ATM", destination: "Frontal PowerCard", event: "Émission manquante ou tardive du message d'annulation ISO 0420 (Reversal)", status: "REVERSAL_TIMEOUT" },
     ],
     isoMessages: [
       {
-        mti: "0500",
+        mti: "0200",
         bitmap: "7238000008C08000",
         stan: stanStr,
         rrn: rrnStr,
         responseCode: "00",
         terminalId: tidStr,
-        maskedRawMessage: `05007238000008C08000...BATCH_ID=20261106_CLEARING...TOTAL_COUNT=12500...`,
-        fields: { DE3: "900000", DE4: "125000000", DE11: stanStr, DE37: rrnStr, DE41: "BATCH-CLR", DE49: "952" },
+        maskedRawMessage: `02007238000008C08000164500********12890100000005000009171120${stanStr}...`,
+        fields: { DE3: "010000", DE4: "50000", DE11: stanStr, DE37: rrnStr, DE41: tidStr, DE49: "952" },
       },
       {
-        mti: "0510",
+        mti: "0210",
         bitmap: "7238000008C08000",
         stan: stanStr,
         rrn: rrnStr,
-        responseCode: "96",
+        responseCode: respCode,
         terminalId: tidStr,
-        maskedRawMessage: `05107238000008C08000...DE39=96...SYSTEM_LOCK_ERROR`,
-        fields: { DE3: "900000", DE11: stanStr, DE39: "96", DE41: "BATCH-CLR" },
+        maskedRawMessage: `02107238000008C08000164500********12890100000005000009171120${stanStr}${respCode}...`,
+        fields: { DE3: "010000", DE4: "50000", DE11: stanStr, DE37: rrnStr, DE39: respCode, DE41: tidStr },
       },
     ],
     hypotheses: [
       {
-        description: "Hypothèse 1 : Corruption physique ou syntaxique du fichier de compensation transmis par le réseau international",
+        description: "Hypothèse 1 : Coupure totale de la liaison réseau télécom reliant le point d'accès au frontal bancaire",
         status: "REJECTED",
-        evidence: "Contrôle de hash SHA-256 et validation de structure effectuée avec succès via l'utilitaire officiel de conformité Base II.",
+        evidence: "Les trames de supervision ICMP et Echo Test 0800 sont stables à 14ms sans perte de paquets.",
       },
       {
-        description: "Hypothèse 2 : Espace disque insuffisant (Tablespace Full) sur le volume Oracle DATA du Core Banking",
-        status: "REJECTED",
-        evidence: "La commande 'df -h' et la vue dba_free_space indiquent plus de 180 Go d'espace libre sur les tablespaces concernés.",
+        description: "Hypothèse 2 : Bourrage physique ou défaillance de capteur optique sur le module matériel",
+        status: "PROBABLE",
+        evidence: "Le journal d'exploitation signale un code d'erreur matériel persistant nécessitant un recyclage.",
       },
       {
-        description: "Hypothèse 3 : Verrouillage exclusif en cascade (Row-Level Lock) sur la table des comptes monétiques provoqué par l'exécution concurrente d'un job de calcul d'agios",
+        description: "Hypothèse 3 : Désynchronisation du timer d'annulation : rapatriement sans émission du message de contre-passation au Core Banking",
         status: "CONFIRMED",
-        evidence: "La requête 'v$locked_object' montre que la session SID 512 (Job BATCH_AGIOS_CALC) détenait un verrou exclusif bloquant 8 sessions d'imputation depuis 42 minutes.",
+        evidence: "Corrélation formelle des logs : le message d'annulation n'a pas atteint le système central avant l'heure d'arrêté comptable.",
       },
     ],
     evidence: [
-      { type: "Oracle Alert Log", content: "ORA-00054: resource busy and acquire with NOWAIT specified or timeout expired. Blocking SID: 512, Blocked SID: 784.", source: "Oracle Database CBS Log" },
-      { type: "Log Ordonnanceur", content: "Job J_CLEARING_INGEST_01 failed at step 4: Unable to acquire table lock on COMPTES_MONETIQUE.", source: "Control-M / Ordonnanceur IT" },
+      { type: "Journal Électronique ATM", content: "M-STATUS: 14 [TRANSPORT ERROR] - BILLETS DEVIÉS VERS PURGE BIN. AUCUN REVERSAL ÉMIS.", source: `Journal Électronique ${tidStr}` },
+      { type: "Trace ISO 8583", content: "0200 accordé avec DE39=00. Aucun 0420 reçu avant le Cut-off.", source: "Frontal PowerCard Log" },
     ],
     rootCause: {
-      category: "Base de Données CBS & Conflit d'Ordonnancement",
-      description: "Chevauchement imprévu des fenêtres d'exécution entre le batch périodique de calcul des intérêts et l'intégration du fichier de compensation monétique, posant un verrou exclusif sur la table des comptes.",
-      justification: "Démontré par la corrélation parfaite des logs de verrouillage Oracle v$session_blockers et des heures de démarrage Control-M.",
+      category: "Matériel ATM & Temporisation Reversal",
+      description: "Anomalie combinée d'encrassement de capteur et d'expiration de timer transactionnel empêchant la contrepassation automatique de l'écriture bancaire.",
+      justification: "Démontré par l'audit formel des traces ISO et du journal électronique local.",
       validatedAt: new Date().toISOString(),
-      validatedBy: "Oury Kohkoun (Expert Monétique)",
+      validatedBy: validator,
     },
     resolution: {
-      actions: "Terminaison contrôlée de la session bloquante SID 512 après sauvegarde du point de reprise, relance immédiate du job d'intégration de compensation et recalibrage de la matrice d'exclusion Control-M.",
-      executor: "DBA Senior & Exploitation Core Banking SGABS",
-      approver: "Responsable des Opérations Bancaires SGABS",
-      result: "Intégration complète des 12 000 écritures de compensation en 14 minutes sans aucun rejet comptable.",
+      actions: "Intervention de maintenance, nettoyage des capteurs, recalibrage des timers et injection manuelle du fichier d'extourne comptable sur le Core Banking.",
+      executor: "Équipe Exploitation & Support Monétique SGABS",
+      approver: "Responsable Monétique SGABS",
+      result: "Rétablissement de la disponibilité à 99.8% et régularisation sans perte de l'ensemble des comptes clients.",
     },
     prevention: [
-      { action: "Ajout d'une règle d'exclusion mutuelle stricte dans l'ordonnanceur Control-M entre les jobs de batch comptables et le clearing monétique", owner: "Ordonnancement IT", priority: "CRITICAL", status: "DONE" },
-      { action: "Mise en place d'un script de détection et alerte automatique sur les sessions Oracle en attente de verrou > 3 minutes", owner: "Équipe DBA", priority: "HIGH", status: "DONE" },
+      { action: "Mise en place d'une alerte Prometheus détectant tout écart entre transaction débitée et absence de reversal sous 60s", owner: "Équipe Supervision", priority: "CRITICAL", status: "DONE" },
+      { action: "Maintenance préventive bi-mensuelle obligatoire des capteurs optiques sur les automates à fort trafic", owner: "Maintenance Matériel", priority: "HIGH", status: "DONE" },
     ],
   };
 }
-
