@@ -1014,9 +1014,27 @@ tr:hover td {
     border: none !important;
   }
 
-  /* Masquer tous les éléments frères qui précèdent les onglets */
-  .view-container > div > div:not(:has(.certificate-print-wrapper)) {
+  /* Masquer tous les éléments frères qui précèdent les onglets sauf certificats, fiches et CRA */
+  .view-container > div > div:not(:has(.certificate-print-wrapper)):not(:has(#cra-printable-document)):not(:has(.fiche-root)) {
     display: none !important;
+  }
+
+  /* Style du conteneur d'impression du Compte Rendu d'Activités Hebdomadaire (CRA) */
+  #cra-printable-document {
+    display: block !important;
+    visibility: visible !important;
+    position: static !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 10mm 12mm !important;
+    box-shadow: none !important;
+    border: none !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    page-break-inside: auto !important;
   }
 
   /* Style du conteneur d'onglet certificat */

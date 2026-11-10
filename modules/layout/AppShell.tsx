@@ -84,6 +84,7 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
       items: [
         { href: "/hub", label: "Vue d'ensemble", icon: "⊞" },
         { href: "/hub/knowledge", label: "Base de connaissance", icon: "📚" },
+        { href: "/hub/activity-report", label: "Compte Rendu Hebdo (CRA)", icon: "📋" },
         ...(isAFG
           ? [{ href: "/hub/processing-files", label: "Traitement Fichiers (Clearing)", icon: "🔄" }]
           : []),
