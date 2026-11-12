@@ -23,29 +23,46 @@ export interface ZipFileEntry {
   content: string | Buffer;
 }
 
+const DOS_DATE = 0x5D6A; // Valid MS-DOS Date (2026-11-10)
+const DOS_TIME = 0x6000; // Valid MS-DOS Time (12:00:00)
+
 export function createZipArchive(files: ZipFileEntry[]): Buffer {
+  // Conforme à la norme ISO/IEC 29500-2 (Open Packaging Conventions - OPC) :
+  // [Content_Types].xml DOIT être la toute première entrée dans l'archive zip,
+  // suivie des relations racines _rels/.rels
+  const sortedFiles = [...files].sort((a, b) => {
+    const na = a.name.replace(/\\/g, "/");
+    const nb = b.name.replace(/\\/g, "/");
+    if (na === "[Content_Types].xml") return -1;
+    if (nb === "[Content_Types].xml") return 1;
+    if (na === "_rels/.rels") return -1;
+    if (nb === "_rels/.rels") return 1;
+    return na.localeCompare(nb);
+  });
+
   const localHeaders: Buffer[] = [];
   const centralDirs: Buffer[] = [];
   let offset = 0;
 
-  for (const file of files) {
+  for (const file of sortedFiles) {
     const data = Buffer.isBuffer(file.content)
       ? file.content
       : Buffer.from(file.content, "utf8");
 
     const compressed = zlib.deflateRawSync(data);
     const crc = crc32(data);
-    const nameBuf = Buffer.from(file.name.replace(/\\/g, "/"), "utf8");
+    const normalizedName = file.name.replace(/\\/g, "/");
+    const nameBuf = Buffer.from(normalizedName, "utf8");
 
-    // Local Header
+    // Local Header (30 octets + longueur du nom)
     const lh = Buffer.alloc(30 + nameBuf.length);
-    lh.writeUInt32LE(0x04034b50, 0);
-    lh.writeUInt16LE(20, 4);
-    lh.writeUInt16LE(0, 6);
-    lh.writeUInt16LE(8, 8);
-    lh.writeUInt16LE(0, 10);
-    lh.writeUInt16LE(0, 12);
-    lh.writeUInt32LE(crc, 14);
+    lh.writeUInt32LE(0x04034b50, 0); // signature PK\x03\x04
+    lh.writeUInt16LE(20, 4);          // version requise (2.0)
+    lh.writeUInt16LE(0, 6);           // general purpose bit flag
+    lh.writeUInt16LE(8, 8);           // compression deflate
+    lh.writeUInt16LE(DOS_TIME, 10);   // horodatage DOS
+    lh.writeUInt16LE(DOS_DATE, 12);   // date DOS
+    lh.writeUInt32LE(crc, 14);        // CRC32
     lh.writeUInt32LE(compressed.length, 18);
     lh.writeUInt32LE(data.length, 22);
     lh.writeUInt16LE(nameBuf.length, 26);
@@ -54,16 +71,16 @@ export function createZipArchive(files: ZipFileEntry[]): Buffer {
 
     localHeaders.push(lh, compressed);
 
-    // Central Directory
+    // Central Directory (46 octets + longueur du nom)
     const cd = Buffer.alloc(46 + nameBuf.length);
-    cd.writeUInt32LE(0x02014b50, 0);
-    cd.writeUInt16LE(20, 4);
-    cd.writeUInt16LE(20, 6);
-    cd.writeUInt16LE(0, 8);
-    cd.writeUInt16LE(8, 10);
-    cd.writeUInt16LE(0, 12);
-    cd.writeUInt16LE(0, 14);
-    cd.writeUInt32LE(crc, 16);
+    cd.writeUInt32LE(0x02014b50, 0); // signature PK\x01\x02
+    cd.writeUInt16LE(20, 4);          // version made by (DOS 2.0)
+    cd.writeUInt16LE(20, 6);          // version requise
+    cd.writeUInt16LE(0, 8);           // flag
+    cd.writeUInt16LE(8, 10);          // compression deflate
+    cd.writeUInt16LE(DOS_TIME, 12);   // horodatage DOS
+    cd.writeUInt16LE(DOS_DATE, 14);   // date DOS
+    cd.writeUInt32LE(crc, 16);        // CRC32
     cd.writeUInt32LE(compressed.length, 20);
     cd.writeUInt32LE(data.length, 24);
     cd.writeUInt16LE(nameBuf.length, 28);
@@ -71,7 +88,7 @@ export function createZipArchive(files: ZipFileEntry[]): Buffer {
     cd.writeUInt16LE(0, 32);
     cd.writeUInt16LE(0, 34);
     cd.writeUInt16LE(0, 36);
-    cd.writeUInt32LE(0, 38);
+    cd.writeUInt32LE(0x00000020, 38); // attribut archive standard Windows
     cd.writeUInt32LE(offset, 42);
     nameBuf.copy(cd, 46);
 
@@ -87,8 +104,8 @@ export function createZipArchive(files: ZipFileEntry[]): Buffer {
   eocd.writeUInt32LE(0x06054b50, 0);
   eocd.writeUInt16LE(0, 4);
   eocd.writeUInt16LE(0, 6);
-  eocd.writeUInt16LE(files.length, 8);
-  eocd.writeUInt16LE(files.length, 10);
+  eocd.writeUInt16LE(sortedFiles.length, 8);
+  eocd.writeUInt16LE(sortedFiles.length, 10);
   eocd.writeUInt32LE(centralDirSize, 12);
   eocd.writeUInt32LE(centralDirOffset, 16);
   eocd.writeUInt16LE(0, 20);

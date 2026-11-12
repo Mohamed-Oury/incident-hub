@@ -140,37 +140,35 @@ class PdfDocBuilder {
     }
 
     const numPages = this.streams.length;
-    // Les 5 premiers objets sont :
+    // Structure standard certifiée PDF 1.4 :
     // 1: Catalog
     // 2: Pages
-    // 3: Metadata
-    // 4: Font F1
-    // 5: Font F2
+    // 3: Font F1
+    // 4: Font F2
     // Pour chaque page i (0 à numPages - 1) :
-    //   stream Obj = 6 + i * 2
-    //   page Obj   = 7 + i * 2
-    const totalObjects = 5 + numPages * 2;
+    //   stream Obj = 5 + i * 2
+    //   page Obj   = 6 + i * 2
+    const totalObjects = 4 + numPages * 2;
     const finalObjects: string[] = new Array(totalObjects + 1);
 
     const pageObjIds: number[] = [];
     for (let i = 0; i < numPages; i++) {
-      const streamId = 6 + i * 2;
-      const pageId = 7 + i * 2;
+      const streamId = 5 + i * 2;
+      const pageId = 6 + i * 2;
       pageObjIds.push(pageId);
 
       const streamContent = this.streams[i];
       const streamLen = Buffer.byteLength(streamContent, "utf-8");
       finalObjects[streamId] = `<< /Length ${streamLen} >>\nstream\n${streamContent}\nendstream`;
-      finalObjects[pageId] = `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${this.width} ${this.height}] /Resources << /Font << /F1 4 0 R /F2 5 0 R >> >> /Contents ${streamId} 0 R >>`;
+      finalObjects[pageId] = `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${this.width} ${this.height}] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ${streamId} 0 R >>`;
     }
 
     const pagesKidList = pageObjIds.map((id) => `${id} 0 R`).join(" ");
 
     finalObjects[1] = "<< /Type /Catalog /Pages 2 0 R >>";
     finalObjects[2] = `<< /Type /Pages /Kids [ ${pagesKidList} ] /Count ${numPages} >>`;
-    finalObjects[3] = "<< /Type /Metadata /Subtype /XML >>";
-    finalObjects[4] = "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>";
-    finalObjects[5] = "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>";
+    finalObjects[3] = "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>";
+    finalObjects[4] = "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>";
 
     const out: string[] = [];
     out.push("%PDF-1.4\n%\xE2\xE3\xCF\xD3\n");
