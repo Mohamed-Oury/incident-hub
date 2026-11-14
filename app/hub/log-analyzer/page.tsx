@@ -386,7 +386,7 @@ export default function LogAnalyzerPage() {
 
   return (
     <AppShell pageTitle="Monétique Log Analyzer" eyebrow="INVESTIGATION FORENSICS DES LOGS SWITCH">
-      <div style={{ display: "flex", flexDirection: "column", gap: "24px", maxWidth: "1400px", margin: "0 auto", paddingBottom: "48px" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem", width: "100%" }}>
         
         {/* ========================================================================= */}
         {/* 1. HERO COMMAND CENTER : Titre, Charte Graphique & Action d'Importation   */}
