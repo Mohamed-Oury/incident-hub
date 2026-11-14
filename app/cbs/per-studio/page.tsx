@@ -1071,8 +1071,8 @@ export default function PerStudioPage() {
           pendingDeleteScreen
             ? {
                 icon: "🖥️",
-                label: pendingDeleteScreen.title || pendingDeleteScreen.formName,
-                details: `Fichier : ${pendingDeleteScreen.formName}.per · Domaine : ${pendingDeleteScreen.domain}`,
+                label: pendingDeleteScreen.title || pendingDeleteScreen.name,
+                details: `Fichier : ${pendingDeleteScreen.name}.per · Domaine : ${pendingDeleteScreen.domain}`,
               }
             : undefined
         }
