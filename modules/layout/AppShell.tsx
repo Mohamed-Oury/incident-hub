@@ -90,6 +90,7 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
           : []),
         { href: "/hub/commands", label: "Commandes Utiles & Runbook", icon: "💻" },
         { href: "/hub/diagnostic", label: "Diagnostic Assistant", icon: "⚡" },
+        { href: "/hub/decision-tree", label: "Arbre de Diagnostic Panne", icon: "🌳" },
         { href: "/hub/mti", label: "Référentiel MTI", icon: "📬" },
         { href: "/hub/de", label: "Référentiel Champs DE", icon: "🗂️" },
         { href: "/hub/de39", label: "Référentiel DE39", icon: "🏷️" },
