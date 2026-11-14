@@ -1070,10 +1070,10 @@ export default function PerStudioPage() {
         itemBadge={
           pendingDeleteScreen
             ? {
-                icon: "🖥️",
-                label: pendingDeleteScreen.title || pendingDeleteScreen.name,
-                details: `Fichier : ${pendingDeleteScreen.name}.per · Domaine : ${pendingDeleteScreen.domain}`,
-              }
+              icon: "🖥️",
+              label: pendingDeleteScreen.title || pendingDeleteScreen.name,
+              details: `Fichier : ${pendingDeleteScreen.name}.per · Domaine : ${pendingDeleteScreen.domain}`,
+            }
             : undefined
         }
         confirmButtonLabel="Supprimer définitivement"
