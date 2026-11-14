@@ -14,6 +14,7 @@ import {
   exportIncidentsToPowerPoint,
   exportSingleIncidentToPowerPoint,
 } from "../services/export-service";
+import { ConfirmDeleteModal } from "@/modules/ui/ConfirmDeleteModal";
 
 interface KnowledgeCatalogProps {
   initialIncidents: IncidentRecord[];
@@ -160,17 +161,16 @@ export function KnowledgeCatalog({
   // Seul le SuperAdmin peut supprimer ou modifier; l'Admin ne peut que modifier; les autres rôles n'ont pas accès
   const allowEdit = canEditIncident(currentUser);
   const allowDelete = canDeleteIncident(currentUser);
+  const [pendingDeleteInc, setPendingDeleteInc] = useState<IncidentRecord | null>(null);
 
-  const handleDeleteIncident = async (inc: IncidentRecord) => {
+  const promptDeleteIncident = (inc: IncidentRecord) => {
     if (!allowDelete) return;
-    if (
-      !window.confirm(
-        `Confirmez-vous la suppression définitive de l'incident ${inc.reference} ("${inc.title}") de la base de connaissances ?`
-      )
-    ) {
-      return;
-    }
+    setPendingDeleteInc(inc);
+  };
 
+  const confirmDeleteIncident = async () => {
+    if (!pendingDeleteInc) return;
+    const inc = pendingDeleteInc;
     setDeletingRef(inc.reference);
     setFeedback(null);
 
@@ -195,6 +195,7 @@ export function KnowledgeCatalog({
       });
     } finally {
       setDeletingRef(null);
+      setPendingDeleteInc(null);
     }
   };
 
@@ -1084,7 +1085,7 @@ export function KnowledgeCatalog({
                           <button
                             type="button"
                             disabled={deletingRef === inc.reference}
-                            onClick={() => handleDeleteIncident(inc)}
+                            onClick={() => promptDeleteIncident(inc)}
                             style={{
                               padding: "0.35rem 0.65rem",
                               fontSize: "0.78rem",
@@ -1172,6 +1173,26 @@ export function KnowledgeCatalog({
           </button>
         </div>
       )}
+
+      <ConfirmDeleteModal
+        isOpen={!!pendingDeleteInc}
+        title="Supprimer cet incident de référence ?"
+        description="Cette action est irréversible. L'incident sera définitivement retiré du catalogue de la base de connaissances."
+        itemBadge={
+          pendingDeleteInc
+            ? {
+                icon: "🚨",
+                label: pendingDeleteInc.reference,
+                details: pendingDeleteInc.title,
+              }
+            : undefined
+        }
+        confirmButtonLabel="Supprimer définitivement"
+        cancelButtonLabel="Annuler"
+        isDeleting={!!deletingRef}
+        onConfirm={confirmDeleteIncident}
+        onCancel={() => setPendingDeleteInc(null)}
+      />
     </div>
   );
 }

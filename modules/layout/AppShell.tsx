@@ -103,6 +103,7 @@ export function AppShell({ children, user: initialUser, pageTitle = "Vue d'ensem
       roleRequired: "ROLE_DECODEURS",
       items: [
         { href: "/hub/parser", label: "Parseur Trame ISO", icon: "🔍" },
+        { href: "/hub/log-analyzer", label: "Monétique Log Analyzer", icon: "🔬" },
         { href: "/hub/ndc", label: "Décodeur Trames NDC", icon: "🏧" },
         { href: "/hub/bitmap", label: "Décodeur Bitmap", icon: "🧮" },
         { href: "/hub/emv", label: "Décodeur EMV / DE55", icon: "💳" },

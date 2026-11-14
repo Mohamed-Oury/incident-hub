@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { ConfirmDeleteModal } from "@/modules/ui/ConfirmDeleteModal";
 import {
   UserRole,
   ROLE_LABELS,
@@ -254,10 +255,17 @@ export function UsersManagementClient({ initialUsers }: { initialUsers: ManagedU
     }
   };
 
-  const handleDeleteUser = async (u: ManagedUserItem) => {
-    if (!window.confirm(`Confirmez-vous la suppression définitive de l'utilisateur "${u.name}" (${u.email}) ?`)) {
-      return;
-    }
+  const [pendingDeleteUser, setPendingDeleteUser] = useState<ManagedUserItem | null>(null);
+  const [isDeletingUser, setIsDeletingUser] = useState(false);
+
+  const promptDeleteUser = (u: ManagedUserItem) => {
+    setPendingDeleteUser(u);
+  };
+
+  const confirmDeleteUser = async () => {
+    if (!pendingDeleteUser) return;
+    const u = pendingDeleteUser;
+    setIsDeletingUser(true);
     try {
       const res = await fetch(`/api/users/${u.id}`, {
         method: "DELETE",
@@ -271,6 +279,9 @@ export function UsersManagementClient({ initialUsers }: { initialUsers: ManagedU
       });
     } catch (err: any) {
       setFeedback({ type: "error", message: err.message });
+    } finally {
+      setIsDeletingUser(false);
+      setPendingDeleteUser(null);
     }
   };
 
@@ -808,7 +819,7 @@ export function UsersManagementClient({ initialUsers }: { initialUsers: ManagedU
                             </button>
                             <button
                               type="button"
-                              onClick={() => handleDeleteUser(u)}
+                              onClick={() => promptDeleteUser(u)}
                               style={{
                                 padding: "0.35rem 0.65rem",
                                 fontSize: "0.78rem",
@@ -833,6 +844,26 @@ export function UsersManagementClient({ initialUsers }: { initialUsers: ManagedU
           </table>
         </div>
       </div>
+
+      <ConfirmDeleteModal
+        isOpen={!!pendingDeleteUser}
+        title="Supprimer définitivement cet utilisateur ?"
+        description="Cette action est irréversible. Le compte utilisateur, ses droits et ses accès seront définitivement supprimés."
+        itemBadge={
+          pendingDeleteUser
+            ? {
+                icon: "👤",
+                label: `${pendingDeleteUser.name} (${pendingDeleteUser.email})`,
+                details: `Rôle principal : ${pendingDeleteUser.role}`,
+              }
+            : undefined
+        }
+        confirmButtonLabel="Supprimer le compte"
+        cancelButtonLabel="Annuler"
+        isDeleting={isDeletingUser}
+        onConfirm={confirmDeleteUser}
+        onCancel={() => setPendingDeleteUser(null)}
+      />
     </div>
   );
 }

@@ -7,3 +7,7 @@ coverage
 *.tsbuildinfo
 *.apk
 .data/
+*.trc
+*.TRC
+transaction_ANONYMISE.txt
+

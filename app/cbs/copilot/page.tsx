@@ -11,6 +11,7 @@ import { generateCopilotPlan } from "@/modules/cbs/copilot/engine";
 import { CBS_SCHEMA_TABLES } from "@/modules/cbs/cbs-advanced-data";
 import { GeneroGuiWindow } from "@/modules/cbs/GeneroGuiWindow";
 import { parsePerToGuiMockupData } from "@/modules/cbs/cbs-screen-builder";
+import { ConfirmDeleteModal } from "@/modules/ui/ConfirmDeleteModal";
 
 // Préréglages de besoins bancaires courants
 const PRESET_NEEDS: { label: string; icon: string; input: DevelopmentNeedInput }[] = [
@@ -632,9 +633,19 @@ export default function CbsCopilotPage() {
     setActiveTab("TASKS");
   };
 
-  // Supprimer un projet
-  const handleDeleteProject = async (id: string, e: React.MouseEvent) => {
+  const [projectToDelete, setProjectToDelete] = useState<CopilotProject | null>(null);
+  const [isDeletingProject, setIsDeletingProject] = useState(false);
+
+  // Supprimer un projet avec confirmation
+  const promptDeleteProject = (p: CopilotProject, e: React.MouseEvent) => {
     e.stopPropagation();
+    setProjectToDelete(p);
+  };
+
+  const confirmDeleteProject = async () => {
+    if (!projectToDelete) return;
+    const id = projectToDelete.id;
+    setIsDeletingProject(true);
     try {
       await fetch(`/api/cbs/copilot?id=${id}`, { method: "DELETE" });
     } catch (err) {
@@ -645,6 +656,8 @@ export default function CbsCopilotPage() {
     try {
       localStorage.setItem("cbs_copilot_projects", JSON.stringify(updated));
     } catch (err) {}
+    setIsDeletingProject(false);
+    setProjectToDelete(null);
   };
 
   // Téléchargement d'un fichier texte
@@ -2864,7 +2877,7 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
                     <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
                       <span style={{ fontSize: "0.8rem", color: "#0284c7", fontWeight: 600 }}>Ouvrir →</span>
                       <button
-                        onClick={(e) => handleDeleteProject(p.id, e)}
+                        onClick={(e) => promptDeleteProject(p, e)}
                         style={{
                           background: "none",
                           border: "none",
@@ -2999,6 +3012,26 @@ ${p.deliveryPackage.rollbackPlan.map((r) => `  ${r}`).join("\n")}
           </div>
         </div>
       )}
+
+      <ConfirmDeleteModal
+        isOpen={!!projectToDelete}
+        title="Supprimer ce projet Copilot ?"
+        description="Cette action est irréversible. Le projet et ses spécifications associées seront définitivement supprimés."
+        itemBadge={
+          projectToDelete
+            ? {
+                icon: "⚡",
+                label: projectToDelete.name,
+                details: `Domaine : ${projectToDelete.domain} · Mis à jour : ${new Date(projectToDelete.updatedAt).toLocaleDateString("fr-FR")}`,
+              }
+            : undefined
+        }
+        confirmButtonLabel="Supprimer le projet"
+        cancelButtonLabel="Annuler"
+        isDeleting={isDeletingProject}
+        onConfirm={confirmDeleteProject}
+        onCancel={() => setProjectToDelete(null)}
+      />
     </div>
   );
 }

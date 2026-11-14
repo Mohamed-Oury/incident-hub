@@ -10,6 +10,7 @@ import {
   generateCustomPerScreen
 } from "@/modules/cbs/cbs-screen-builder";
 import { GeneroGuiWindow } from "@/modules/cbs/GeneroGuiWindow";
+import { ConfirmDeleteModal } from "@/modules/ui/ConfirmDeleteModal";
 
 export default function PerStudioPage() {
   const [studioPrompt, setStudioPrompt] = useState<string>("");
@@ -136,9 +137,18 @@ export default function PerStudioPage() {
     }
   };
 
+  const [pendingDeleteScreen, setPendingDeleteScreen] = useState<CustomPerScreen | null>(null);
+  const [isDeletingScreen, setIsDeletingScreen] = useState<boolean>(false);
+
   // Suppression d'un écran de l'historique
-  const handleDeleteScreen = async (id: string) => {
-    if (!confirm("Confirmer la suppression de cet écran .per de la base de données ?")) return;
+  const promptDeleteScreen = (screen: CustomPerScreen) => {
+    setPendingDeleteScreen(screen);
+  };
+
+  const confirmDeleteScreen = async () => {
+    if (!pendingDeleteScreen) return;
+    const id = pendingDeleteScreen.id;
+    setIsDeletingScreen(true);
     try {
       const res = await fetch(`/api/cbs/screens?id=${id}`, { method: "DELETE" });
       if (res.ok) {
@@ -148,7 +158,10 @@ export default function PerStudioPage() {
         }
         setStudioStatusMessage("✓ Écran supprimé de la base.");
       }
-    } catch (_) { }
+    } catch (_) { } finally {
+      setIsDeletingScreen(false);
+      setPendingDeleteScreen(null);
+    }
   };
 
   return (
@@ -1026,7 +1039,7 @@ export default function PerStudioPage() {
                         ✏️ Charger & Éditer
                       </button>
                       <button
-                        onClick={() => handleDeleteScreen(screen.id)}
+                        onClick={() => promptDeleteScreen(screen)}
                         style={{
                           background: "rgba(239, 68, 68, 0.1)",
                           border: "1px solid #ef4444",
@@ -1049,6 +1062,26 @@ export default function PerStudioPage() {
         )}
 
       </div>
+
+      <ConfirmDeleteModal
+        isOpen={!!pendingDeleteScreen}
+        title="Supprimer cet écran .per ?"
+        description="Cette action est irréversible. L'écran et sa structure Genero seront définitivement supprimés de la base de données locale."
+        itemBadge={
+          pendingDeleteScreen
+            ? {
+                icon: "🖥️",
+                label: pendingDeleteScreen.title || pendingDeleteScreen.formName,
+                details: `Fichier : ${pendingDeleteScreen.formName}.per · Domaine : ${pendingDeleteScreen.domain}`,
+              }
+            : undefined
+        }
+        confirmButtonLabel="Supprimer définitivement"
+        cancelButtonLabel="Annuler"
+        isDeleting={isDeletingScreen}
+        onConfirm={confirmDeleteScreen}
+        onCancel={() => setPendingDeleteScreen(null)}
+      />
     </AppShell>
   );
 }

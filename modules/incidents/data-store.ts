@@ -463,7 +463,7 @@ export async function getAllIncidents(options?: { all?: boolean }): Promise<Inci
     });
 
     if (dbIncidents.length > 0) {
-      const mappedDb = dbIncidents.map((inc) => ({
+      const mappedDb = dbIncidents.map((inc, idx) => ({
         id: inc.id,
         reference: inc.reference,
         title: inc.title,
