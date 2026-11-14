@@ -34,6 +34,13 @@ export interface HexDumpDecoded {
 
 export type ParseStatus = "success" | "partial" | "error";
 
+export type IsoStandardVersion =
+  | "ISO 8583:1987"
+  | "ISO 8583:1993"
+  | "ISO 8583:2003"
+  | "BI_NORME"
+  | "UNKNOWN";
+
 export interface LogEvent {
   eventId: string;
   fileId: string;
@@ -44,6 +51,7 @@ export interface LogEvent {
   eventType: string;
   direction?: "incoming" | "outgoing" | "unknown";
   mti?: string;
+  isoVersion?: IsoStandardVersion;
   isoFields: Record<string, string>;
   nestedIsoFields?: Record<string, Record<string, string>>;
   responseCodeConversion?: ResponseCodeConversion;
@@ -87,6 +95,7 @@ export interface FieldComparison {
   requestValue?: string;
   responseValue?: string;
   status: "IDENTICAL" | "MODIFIED" | "MISSING_IN_RESPONSE" | "NEW_IN_RESPONSE";
+  isoVersionNotice?: string;
 }
 
 export interface RequestResponseComparison {
@@ -107,6 +116,9 @@ export interface TransactionCandidate {
   terminalId?: string;
   mtiInitial?: string;
   mtiFinal?: string;
+  isoVersion?: IsoStandardVersion;
+  isoVersionDetails?: string;
+  normativeObservations?: string[];
   amount?: string;
   currency?: string;
   cardAcceptor?: string;

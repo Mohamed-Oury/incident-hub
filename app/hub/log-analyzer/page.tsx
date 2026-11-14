@@ -10,6 +10,10 @@ import {
   AiDiagnosticReport,
   LogEvent,
 } from "@/modules/log-analyzer/types";
+import {
+  getFieldDescriptor,
+  detectIsoVersionFromMti,
+} from "@/modules/log-analyzer/iso-standards";
 
 interface FileTransactionSummary {
   rrn: string;
@@ -40,6 +44,7 @@ export default function LogAnalyzerPage() {
   const [copyFeedback, setCopyFeedback] = useState<string | null>(null);
   const [isoCategoryFilter, setIsoCategoryFilter] = useState<string>("ALL");
   const [isoSearchTerm, setIsoSearchTerm] = useState<string>("");
+  const [isoNormDisplay, setIsoNormDisplay] = useState<"AUTO" | "ISO 8583:1987" | "ISO 8583:1993">("AUTO");
 
   // Modale personnalisée de suppression
   const [deleteModal, setDeleteModal] = useState<{
@@ -358,9 +363,16 @@ export default function LogAnalyzerPage() {
       else if ([39, 44, 48].includes(deNum)) category = "REPONSE";
       else if ([52, 53, 55, 64, 128].includes(deNum)) category = "SECURITE_EMV";
 
+      const descriptor = getFieldDescriptor(de, isoNormDisplay, selectedTx.mtiInitial);
+
       return {
         de,
         deNum: isNaN(deNum) ? 999 : deNum,
+        name: descriptor.name,
+        format: descriptor.format,
+        isSpecificToNorm: descriptor.isSpecificToNorm,
+        versionNotice: descriptor.versionNotice,
+        descriptionFr: descriptor.descriptionFr,
         value: info.value,
         sources: info.sources,
         category,
@@ -369,7 +381,7 @@ export default function LogAnalyzerPage() {
 
     entries.sort((a, b) => a.deNum - b.deNum);
     return entries;
-  }, [selectedTx]);
+  }, [selectedTx, isoNormDisplay]);
 
   const filteredIsoFields = useMemo(() => {
     return consolidatedIsoFields.filter((item) => {
@@ -999,7 +1011,7 @@ export default function LogAnalyzerPage() {
                     </span>
                   </div>
 
-                  <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
                     <h2 style={{ fontSize: "22px", fontWeight: 800, color: "#0f172a", margin: 0, fontFamily: "monospace" }}>
                       RRN : {selectedTx.rrn}
                     </h2>
@@ -1018,6 +1030,42 @@ export default function LogAnalyzerPage() {
                     >
                       {copyFeedback === "RRN copié" ? "✓ Copié !" : "📋 Copier"}
                     </button>
+
+                    {selectedTx.isoVersion && (
+                      <span
+                        style={{
+                          padding: "3px 10px",
+                          borderRadius: "6px",
+                          fontSize: "12px",
+                          fontWeight: 800,
+                          background:
+                            selectedTx.isoVersion === "BI_NORME"
+                              ? "#fef3c7"
+                              : selectedTx.isoVersion === "ISO 8583:1993"
+                              ? "#ede9fe"
+                              : "#ecfdf5",
+                          color:
+                            selectedTx.isoVersion === "BI_NORME"
+                              ? "#92400e"
+                              : selectedTx.isoVersion === "ISO 8583:1993"
+                              ? "#5b21b6"
+                              : "#065f46",
+                          border: `1px solid ${
+                            selectedTx.isoVersion === "BI_NORME"
+                              ? "#fcd34d"
+                              : selectedTx.isoVersion === "ISO 8583:1993"
+                              ? "#c4b5fd"
+                              : "#a7f3d0"
+                          }`,
+                        }}
+                      >
+                        {selectedTx.isoVersion === "BI_NORME"
+                          ? "⚡ Passerelle Bi-Norme (1987 ↔ 1993)"
+                          : selectedTx.isoVersion === "ISO 8583:1993"
+                          ? "📘 Norme ISO 8583:1993"
+                          : "📗 Norme ISO 8583:1987"}
+                      </span>
+                    )}
                   </div>
                 </div>
 
@@ -1099,11 +1147,13 @@ export default function LogAnalyzerPage() {
                 </div>
 
                 <div style={{ background: "#f8fafc", padding: "12px 14px", borderRadius: "8px", border: "1px solid #e2e8f0" }}>
-                  <span style={{ fontSize: "11px", fontWeight: 700, color: "#64748b", textTransform: "uppercase" }}>Flux MTI</span>
+                  <span style={{ fontSize: "11px", fontWeight: 700, color: "#64748b", textTransform: "uppercase" }}>Flux MTI &amp; Norme</span>
                   <div style={{ fontSize: "15px", fontWeight: 800, color: "#0f172a", fontFamily: "monospace", marginTop: "2px" }}>
                     {selectedTx.mtiInitial || "?"} ➔ {selectedTx.mtiFinal || "?"}
                   </div>
-                  <span style={{ fontSize: "11px", color: "#059669", fontWeight: 600 }}>Requête ➔ Réponse</span>
+                  <span style={{ fontSize: "11px", color: selectedTx.isoVersion === "BI_NORME" ? "#b45309" : "#059669", fontWeight: 600 }}>
+                    {selectedTx.isoVersionDetails || "Requête ➔ Réponse"}
+                  </span>
                 </div>
 
                 <div style={{ background: "#f8fafc", padding: "12px 14px", borderRadius: "8px", border: "1px solid #e2e8f0" }}>
@@ -1131,6 +1181,36 @@ export default function LogAnalyzerPage() {
                   <span style={{ fontSize: "11px", color: "#059669", fontWeight: 600 }}>Déterministe ISO 8583</span>
                 </div>
               </div>
+
+              {/* Encadré d'expertise normative ISO 8583:1987 / 1993 */}
+              {selectedTx.normativeObservations && selectedTx.normativeObservations.length > 0 && (
+                <div
+                  style={{
+                    marginTop: "14px",
+                    padding: "10px 14px",
+                    borderRadius: "8px",
+                    background: selectedTx.isoVersion === "BI_NORME" ? "#fffbeb" : "#f0fdf4",
+                    border: `1px solid ${selectedTx.isoVersion === "BI_NORME" ? "#fde68a" : "#bbf7d0"}`,
+                    fontSize: "12.5px",
+                    color: selectedTx.isoVersion === "BI_NORME" ? "#92400e" : "#166534",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "4px",
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: "6px", fontWeight: 800 }}>
+                    <span>📜</span>
+                    <span>Profil Normatif Détecté : {selectedTx.isoVersion || "ISO 8583"}</span>
+                  </div>
+                  <ul style={{ margin: "4px 0 0 18px", padding: 0 }}>
+                    {selectedTx.normativeObservations.map((obs, oIdx) => (
+                      <li key={oIdx} style={{ fontSize: "12px", lineHeight: "1.4" }}>
+                        {obs}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
               {/* Bandeau d'anomalies détectées */}
               {selectedTx.anomalies.length > 0 && (
@@ -1360,8 +1440,44 @@ export default function LogAnalyzerPage() {
 
                         {/* Contenu de l'événement */}
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontSize: "13.5px", fontWeight: 800, color: "#0f172a" }}>
-                            {assoc.event.eventType} {assoc.event.mti ? `(MTI: ${assoc.event.mti})` : ""}
+                          <div style={{ fontSize: "13.5px", fontWeight: 800, color: "#0f172a", display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+                            <span>{assoc.event.eventType}</span>
+                            {assoc.event.mti && (
+                              <span style={{ fontFamily: "monospace", color: brandPrimary }}>
+                                MTI {assoc.event.mti}
+                              </span>
+                            )}
+                            {assoc.event.isoVersion && (
+                              <span
+                                style={{
+                                  fontSize: "10.5px",
+                                  fontWeight: 800,
+                                  padding: "1px 6px",
+                                  borderRadius: "4px",
+                                  background:
+                                    assoc.event.isoVersion === "ISO 8583:1993"
+                                      ? "#ede9fe"
+                                      : assoc.event.isoVersion === "ISO 8583:1987"
+                                      ? "#ecfdf5"
+                                      : "#f1f5f9",
+                                  color:
+                                    assoc.event.isoVersion === "ISO 8583:1993"
+                                      ? "#5b21b6"
+                                      : assoc.event.isoVersion === "ISO 8583:1987"
+                                      ? "#065f46"
+                                      : "#475569",
+                                  border: `1px solid ${
+                                    assoc.event.isoVersion === "ISO 8583:1993"
+                                      ? "#c4b5fd"
+                                      : assoc.event.isoVersion === "ISO 8583:1987"
+                                      ? "#a7f3d0"
+                                      : "#cbd5e1"
+                                  }`,
+                                }}
+                              >
+                                {assoc.event.isoVersion}
+                              </span>
+                            )}
                           </div>
                           <div style={{ fontSize: "12px", color: "#475569", marginTop: "3px" }}>
                             {assoc.reason}
@@ -1438,11 +1554,35 @@ export default function LogAnalyzerPage() {
                       Champs ISO 8583 Normalisés ({filteredIsoFields.length} champ(s))
                     </h3>
                     <p style={{ fontSize: "13px", color: "#64748b", margin: 0 }}>
-                      Données extraites, normalisées et conformes aux règles de masquage strict PCI-DSS.
+                      Données extraites, normalisées et interprétées selon le référentiel bancaire ISO 8583:1987 &amp; 1993.
                     </p>
                   </div>
 
-                  <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                  <div style={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" }}>
+                    {/* Sélecteur de Norme ISO 8583 */}
+                    <div style={{ display: "flex", alignItems: "center", gap: "4px", background: "#f8fafc", padding: "3px 4px", borderRadius: "6px", border: "1px solid #cbd5e1" }}>
+                      <span style={{ fontSize: "11px", fontWeight: 700, color: "#64748b", paddingLeft: "6px" }}>Norme :</span>
+                      {(["AUTO", "ISO 8583:1987", "ISO 8583:1993"] as const).map((norm) => (
+                        <button
+                          key={norm}
+                          onClick={() => setIsoNormDisplay(norm)}
+                          style={{
+                            padding: "4px 8px",
+                            fontSize: "11px",
+                            fontWeight: 700,
+                            borderRadius: "4px",
+                            border: "none",
+                            cursor: "pointer",
+                            background: isoNormDisplay === norm ? brandPrimary : "transparent",
+                            color: isoNormDisplay === norm ? "#ffffff" : "#475569",
+                            transition: "all 0.15s ease",
+                          }}
+                        >
+                          {norm === "AUTO" ? "Auto (selon MTI)" : norm.replace("ISO 8583:", "")}
+                        </button>
+                      ))}
+                    </div>
+
                     {/* Filtre catégorie */}
                     <select
                       value={isoCategoryFilter}
@@ -1486,7 +1626,7 @@ export default function LogAnalyzerPage() {
                 <div
                   style={{
                     display: "grid",
-                    gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+                    gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
                     gap: "12px",
                   }}
                 >
@@ -1523,6 +1663,12 @@ export default function LogAnalyzerPage() {
                         </span>
                       </div>
 
+                      {/* Désignation du champ selon la norme */}
+                      <div style={{ fontSize: "12px", color: "#334155", fontWeight: 700, display: "flex", justifyContent: "space-between" }}>
+                        <span>{item.name}</span>
+                        <span style={{ fontSize: "10.5px", color: "#64748b", fontFamily: "monospace" }}>({item.format})</span>
+                      </div>
+
                       <div
                         style={{
                           fontSize: "13.5px",
@@ -1538,6 +1684,23 @@ export default function LogAnalyzerPage() {
                       >
                         {item.value}
                       </div>
+
+                      {/* Alerte spécifique 1987 / 1993 */}
+                      {item.versionNotice && (
+                        <div
+                          style={{
+                            fontSize: "10.5px",
+                            color: "#4338ca",
+                            background: "#eef2ff",
+                            padding: "4px 8px",
+                            borderRadius: "4px",
+                            border: "1px solid #c7d2fe",
+                            lineHeight: "1.3",
+                          }}
+                        >
+                          💡 <strong>Norme 1987/1993 :</strong> {item.versionNotice}
+                        </div>
+                      )}
 
                       {item.de === "2" && (
                         <span style={{ fontSize: "10.5px", color: "#059669", fontWeight: 700 }}>
@@ -1577,6 +1740,32 @@ export default function LogAnalyzerPage() {
                   </p>
                 </div>
 
+                {/* Notes normatives et alertes d'incohérences */}
+                {selectedTx.comparison?.notes && selectedTx.comparison.notes.length > 0 && (
+                  <div style={{ marginBottom: "16px", display: "flex", flexDirection: "column", gap: "6px" }}>
+                    {selectedTx.comparison.notes.map((note, nIdx) => (
+                      <div
+                        key={nIdx}
+                        style={{
+                          padding: "8px 12px",
+                          borderRadius: "6px",
+                          background: note.includes("Passerelle bi-norme") ? "#eef2ff" : "#fffbeb",
+                          border: `1px solid ${note.includes("Passerelle bi-norme") ? "#c7d2fe" : "#fde68a"}`,
+                          fontSize: "12px",
+                          color: note.includes("Passerelle bi-norme") ? "#3730a3" : "#92400e",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
+                          fontWeight: 600,
+                        }}
+                      >
+                        <span>{note.includes("Passerelle bi-norme") ? "🔄" : "⚠️"}</span>
+                        <span>{note}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
                 {selectedTx.comparison ? (
                   <div style={{ overflowX: "auto", borderRadius: "8px", border: "1px solid #e2e8f0" }}>
                     <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px" }}>
@@ -1606,7 +1795,12 @@ export default function LogAnalyzerPage() {
                                 DE {f.fieldId}
                               </td>
                               <td style={{ padding: "10px 14px", color: "#334155", fontWeight: 600 }}>
-                                {f.name}
+                                <div>{f.name}</div>
+                                {f.isoVersionNotice && (
+                                  <div style={{ fontSize: "11px", color: "#4f46e5", marginTop: "2px" }}>
+                                    ℹ️ {f.isoVersionNotice}
+                                  </div>
+                                )}
                               </td>
                               <td style={{ padding: "10px 14px", fontFamily: "monospace", color: "#0f172a" }}>
                                 {f.requestValue || "—"}

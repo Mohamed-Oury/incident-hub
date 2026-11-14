@@ -151,6 +151,53 @@ export function detectTransactionAnomalies(
     }
   }
 
+  // 6. Profiling Normatif ISO 8583 (ISO 8583:1987 vs ISO 8583:1993)
+  if (tx.isoVersion === "BI_NORME") {
+    anomalies.push({
+      id: `ANOM_BINORM_${tx.id}`,
+      ruleId: "RULE_ISO_05_BINORM_GATEWAY",
+      category: "ISO8583",
+      severity: "LOW",
+      title: "Interfaçage Bi-Norme Détecté (ISO 8583:1987 ↔ ISO 8583:1993)",
+      description:
+        tx.isoVersionDetails ||
+        "La transaction transite entre des interfaces utilisant des révisions différentes de la norme ISO 8583 (ex: Frontal GAB en 1987 et Switch Émetteur en 1993).",
+      evidenceEventIds: events.filter((e) => e.mti).map((e) => e.eventId),
+      recommendation:
+        "Contrôler la table de transcodage de la passerelle jPOS (QBridge) pour vérifier la bonne transposition des MTI et des champs sensibles (DE12, DE56/DE90).",
+    });
+  }
+
+  // Vérification des annulations (Reversals 0420 / 1420)
+  const isReversal = events.some(
+    (e) =>
+      e.mti === "0400" ||
+      e.mti === "0420" ||
+      e.mti === "1420" ||
+      e.eventType.includes("Reversal")
+  );
+  if (isReversal) {
+    const hasOriginalData = events.some(
+      (e) => e.isoFields["56"] || e.isoFields["90"]
+    );
+    if (!hasOriginalData) {
+      anomalies.push({
+        id: `ANOM_REV_NO_ORIG_${tx.id}`,
+        ruleId: "RULE_ISO_06_REVERSAL_MISSING_ORIGINAL",
+        category: "ISO8583",
+        severity: "HIGH",
+        title: "Avis d'extourne (Reversal) sans identifiants d'origine",
+        description:
+          "La trame d'annulation ne porte ni le champ DE56 (norme ISO 8583:1993) ni le champ DE90 (norme ISO 8583:1987). Le système émetteur risque de ne pas retrouver l'autorisation initiale à extourner.",
+        evidenceEventIds: events
+          .filter((e) => e.mti?.includes("4"))
+          .map((e) => e.eventId),
+        recommendation:
+          "Configurer le module d'annulation automatique pour renseigner DE56 (si cible 1993) ou DE90 (si cible 1987) avec le STAN et l'horodatage d'origine.",
+      });
+    }
+  }
+
   return anomalies;
 }
 

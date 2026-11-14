@@ -4,6 +4,7 @@ import {
   ResponseCodeConversion,
   ParseStatus,
 } from "./types";
+import { detectIsoVersionFromMti } from "./iso-standards";
 
 /**
  * Nettoyage et masquage PCI-DSS sur les données sensibles.
@@ -294,6 +295,7 @@ export function parseLogBlock(
   if (!fields["37"] && hexDump?.detectedRrn) {
     fields["37"] = hexDump.detectedRrn;
   }
+  const isoVersion = detectIsoVersionFromMti(finalMti);
 
   return {
     eventId,
@@ -305,6 +307,7 @@ export function parseLogBlock(
     eventType,
     direction,
     mti: finalMti,
+    isoVersion,
     isoFields: fields,
     nestedIsoFields: Object.keys(nested).length > 0 ? nested : undefined,
     responseCodeConversion,
@@ -364,9 +367,12 @@ export function parseFlatOrTrcBlock(
   // 4. Extraction des champs ISO 8583
   const fields: Record<string, string> = {};
 
-  // Détection MTI
-  const mtiMatch = blockRaw.match(/\b(?:MTI|MsgType|Msg Type)\s*[:=]?\s*([0-2]\d{3})\b/i) ||
-                   blockRaw.match(/\b(0100|0110|0200|0210|0400|0410|0420|0430|0800|0810|1100|1110)\b/);
+  // Détection MTI (Support complet ISO 8583:1987 et ISO 8583:1993)
+  const mtiMatch =
+    blockRaw.match(/\b(?:MTI|MsgType|Msg Type)\s*[:=]?\s*([0-2]\d{3})\b/i) ||
+    blockRaw.match(
+      /\b(0100|0110|0120|0130|0200|0210|0220|0230|0400|0410|0420|0430|0500|0510|0800|0810|0820|0830|1100|1110|1120|1130|1200|1210|1220|1230|1420|1430|1520|1530|1800|1804|1810|1814)\b/
+    );
   if (mtiMatch) {
     fields["0"] = mtiMatch[1];
   }
@@ -422,6 +428,16 @@ export function parseFlatOrTrcBlock(
     fields["2"] = maskSensitiveData(rawPanMatch[1]);
   }
 
+  // Données d'origine Reversal selon la norme : DE56 (1993) ou DE90 (1987)
+  if (!fields["56"]) {
+    const orig56 = blockRaw.match(/\b(?:DE56|OriginalData|OrigData|OriginalElements)\s*[:=]?\s*([^\r\n,;]+)/i);
+    if (orig56) fields["56"] = orig56[1].trim();
+  }
+  if (!fields["90"]) {
+    const orig90 = blockRaw.match(/\b(?:DE90|OrigDE90)\s*[:=]?\s*([^\r\n,;]+)/i);
+    if (orig90) fields["90"] = orig90[1].trim();
+  }
+
   // Dumps hexadécimaux
   const hexDump = parseHexDump(blockRaw);
   if (!fields["37"] && hexDump?.detectedRrn) {
@@ -430,6 +446,8 @@ export function parseFlatOrTrcBlock(
 
   // Conversion de code réponse
   const responseCodeConversion = extractResponseCodeConversion(blockRaw);
+  const finalMti = fields["0"] || hexDump?.detectedMti;
+  const isoVersion = detectIsoVersionFromMti(finalMti);
 
   return {
     eventId,
@@ -440,7 +458,8 @@ export function parseFlatOrTrcBlock(
     realm,
     eventType,
     direction,
-    mti: fields["0"] || hexDump?.detectedMti,
+    mti: finalMti,
+    isoVersion,
     isoFields: fields,
     responseCodeConversion,
     hexDump,

@@ -7,6 +7,11 @@ import {
   CorrelationLevel,
 } from "./types";
 import { DE_CATALOG } from "../knowledge-base/data/iso-de-reference";
+import {
+  detectIsoVersionFromMti,
+  getFieldDescriptor,
+  analyzeTransactionIsoProfile,
+} from "./iso-standards";
 
 /**
  * Compare une paire requête / réponse ISO 8583.
@@ -27,11 +32,20 @@ export function compareRequestResponse(
   const notes: string[] = [];
   let hasDiscrepancy = false;
 
+  const reqMti = requestEvent?.mti;
+  const respMti = responseEvent?.mti;
+  const targetNorm =
+    reqMti?.startsWith("1") || respMti?.startsWith("1")
+      ? "ISO 8583:1993"
+      : "ISO 8583:1987";
+
   for (const fieldId of allFieldKeys) {
     const reqVal = reqFields[fieldId];
     const respVal = respFields[fieldId];
+    const descriptor = getFieldDescriptor(fieldId, targetNorm, reqMti || respMti);
     const deDef = DE_CATALOG.find((d) => d.de === parseInt(fieldId, 10));
-    const name = deDef ? deDef.name : `Data Element ${fieldId}`;
+    const name = descriptor.name || (deDef ? deDef.name : `Data Element ${fieldId}`);
+    const isoVersionNotice = descriptor.versionNotice;
 
     if (reqVal !== undefined && respVal !== undefined) {
       if (reqVal === respVal) {
@@ -41,6 +55,7 @@ export function compareRequestResponse(
           requestValue: reqVal,
           responseValue: respVal,
           status: "IDENTICAL",
+          isoVersionNotice,
         });
       } else {
         hasDiscrepancy = true;
@@ -50,6 +65,7 @@ export function compareRequestResponse(
           requestValue: reqVal,
           responseValue: respVal,
           status: "MODIFIED",
+          isoVersionNotice,
         });
         if (fieldId === "4" || fieldId === "49" || fieldId === "11") {
           notes.push(`Divergence critique sur DE${fieldId} (${name}): ${reqVal} -> ${respVal}`);
@@ -61,6 +77,7 @@ export function compareRequestResponse(
         name,
         requestValue: reqVal,
         status: "MISSING_IN_RESPONSE",
+        isoVersionNotice,
       });
     } else if (reqVal === undefined && respVal !== undefined) {
       comparisons.push({
@@ -68,18 +85,31 @@ export function compareRequestResponse(
         name,
         responseValue: respVal,
         status: "NEW_IN_RESPONSE",
+        isoVersionNotice,
       });
     }
   }
 
-  // Vérification de compatibilité MTI (ex: 0200 -> 0210, 1100 -> 1110, 0400 -> 0410)
-  const reqMti = requestEvent?.mti;
-  const respMti = responseEvent?.mti;
+  // Vérification de compatibilité MTI (Support ISO 1987, 1993 et passerelle bi-normes)
   if (reqMti && respMti) {
-    const expectedRespMti = reqMti.slice(0, 2) + "1" + reqMti.slice(3);
-    if (respMti !== expectedRespMti && !respMti.endsWith("10")) {
-      notes.push(`MTI réponse ${respMti} atypique pour la requête ${reqMti}`);
-      hasDiscrepancy = true;
+    const reqVer = detectIsoVersionFromMti(reqMti);
+    const respVer = detectIsoVersionFromMti(respMti);
+
+    if (reqVer !== respVer && reqVer !== "UNKNOWN" && respVer !== "UNKNOWN") {
+      notes.push(
+        `Passerelle bi-norme détectée : Requête en ${reqVer} (${reqMti}) avec réponse en ${respVer} (${respMti}).`
+      );
+    } else {
+      const expectedRespMti = reqMti.slice(0, 2) + "1" + reqMti.slice(3);
+      if (
+        respMti !== expectedRespMti &&
+        !respMti.endsWith("10") &&
+        !respMti.endsWith("14") &&
+        !respMti.endsWith("30")
+      ) {
+        notes.push(`MTI réponse ${respMti} atypique pour la requête ${reqMti}`);
+        hasDiscrepancy = true;
+      }
     }
   }
 
@@ -257,6 +287,8 @@ export function correlateTransactionsByRrn(
     const finalMti =
       [...associatedEvents].reverse().find((e) => e.event.mti)?.event.mti;
 
+    const isoProfile = analyzeTransactionIsoProfile(associatedEvents.map((a) => a.event));
+
     candidates.push({
       id: `TX_${fileId}_${cleanTargetRrn}_${cIdx + 1}`,
       fileId,
@@ -265,6 +297,9 @@ export function correlateTransactionsByRrn(
       terminalId: primaryTid,
       mtiInitial: initialMti,
       mtiFinal: finalMti,
+      isoVersion: isoProfile.dominantVersion,
+      isoVersionDetails: isoProfile.bridgeDetails || isoProfile.dominantVersion,
+      normativeObservations: isoProfile.normativeObservations,
       amount: primaryAmount,
       currency: primaryCurrency,
       cardAcceptor: primaryAcceptor,
