@@ -1,5 +1,5 @@
 import { ISO_DE_DEFINITIONS, DataElementSpec } from "./iso-bitmap-decoder";
-import { MTI_CATALOG, MTIDefinition } from "./iso-mti-reference";
+import { MTI_CATALOG, MTIDefinition, resolveDynamicMti } from "./iso-mti-reference";
 import { DE39_CATALOG } from "./iso-de39-reference";
 import { parseEmvTlv, EmvDecodeResult, DecodedEmvTag } from "./emv-tlv-decoder";
 import { maskPAN, maskPinBlock } from "../../security/masking";
@@ -192,6 +192,137 @@ export function resolvePosEntryMode(pem: string): string {
   return `${pem} - ${panDesc}${pinDesc ? ` (${pinDesc})` : ""}`;
 }
 
+function decodeHexDumpBytes(
+  rawBytes: number[],
+  sanitizationNotes: string[]
+): {
+  clean: string;
+  detectedFormat: "WIRESHARK_HEX_DUMP";
+  tcpLengthHeader?: string;
+  tpduHeader?: string;
+  sanitizationNotes: string[];
+} {
+  let bytes = [...rawBytes];
+  let tcpLengthHeader: string | undefined = undefined;
+  let tpduHeader: string | undefined = undefined;
+
+  // 1. Détection TCP Length (2 octets big endian si la longueur correspond au reste de la trame)
+  if (bytes.length >= 6 && (bytes[0] * 256 + bytes[1] === bytes.length - 2)) {
+    tcpLengthHeader = bytes.slice(0, 2).map((b) => b.toString(16).padStart(2, "0")).join("").toUpperCase();
+    bytes = bytes.slice(2);
+    sanitizationNotes.push(`En-tête TCP Length détecté : 0x${tcpLengthHeader} (${bytes.length} octets de charge utile).`);
+  }
+
+  // 2. Détection TPDU (5 octets hex, ex: 60 00 01 00 00)
+  if (
+    bytes.length >= 15 &&
+    (bytes[0] === 0x60 || bytes[0] === 0x16) &&
+    /^[0-2][0-8][0-3][0-9]$/.test(String.fromCharCode(...bytes.slice(5, 9)))
+  ) {
+    tpduHeader = bytes.slice(0, 5).map((b) => b.toString(16).padStart(2, "0")).join("").toUpperCase();
+    bytes = bytes.slice(5);
+    sanitizationNotes.push(`En-tête TPDU détecté : ${tpduHeader}.`);
+  }
+
+  // 3. Décodage du MTI ASCII (4 octets '0'..'9')
+  const first4Ascii = String.fromCharCode(...bytes.slice(0, 4));
+  const isAsciiMti = /^[0-2][0-8][0-3][0-9]$/.test(first4Ascii);
+
+  if (isAsciiMti && bytes.length >= 12) {
+    const mti = first4Ascii;
+    // Vérifier si le Bitmap (à partir de bytes[4]) est binaire ou ASCII
+    // Dans les trames réseau (jPOS ASCIIChannel, TCP dumps), le Bitmap est 8 octets (primaire) ou 16 octets (avec secondaire)
+    const hasBinaryBitmap =
+      (bytes[4] !== undefined && bytes[4] >= 0x80) ||
+      bytes.slice(4, Math.min(bytes.length, 12)).some((b) => b < 32 || b > 126);
+
+    if (hasBinaryBitmap) {
+      // Bit 1 du premier octet de bitmap indique la présence du bitmap secondaire (16 octets = 32 hex nibbles)
+      const hasSecondary = (bytes[4] & 0x80) !== 0;
+      const bmByteLen = hasSecondary ? 16 : 8;
+
+      if (bytes.length >= 4 + bmByteLen) {
+        const bitmapHex = bytes
+          .slice(4, 4 + bmByteLen)
+          .map((b) => b.toString(16).padStart(2, "0"))
+          .join("")
+          .toUpperCase();
+
+        const payloadOffset = 4 + bmByteLen;
+        const payloadAscii = String.fromCharCode(...bytes.slice(payloadOffset));
+        const clean = `${mti}${bitmapHex}${payloadAscii}`;
+
+        sanitizationNotes.push(
+          `Format Wireshark / Hex Dump décodé : MTI ASCII "${mti}", Bitmap ${
+            hasSecondary ? "primaire + secondaire (128 bits)" : "primaire (64 bits)"
+          } binaire converti en hex (${bitmapHex}), et ${payloadAscii.length} car. de champs ASCII.`
+        );
+
+        return {
+          clean,
+          detectedFormat: "WIRESHARK_HEX_DUMP",
+          tcpLengthHeader,
+          tpduHeader,
+          sanitizationNotes,
+        };
+      }
+    }
+
+    // Si les octets 4..19 sont tous des caractères hexadécimaux ASCII ([0-9A-Fa-f])
+    const areAsciiHexNibbles = bytes.slice(4, Math.min(bytes.length, 20)).every((b) => {
+      const c = String.fromCharCode(b);
+      return /[0-9a-fA-F]/.test(c);
+    });
+
+    if (areAsciiHexNibbles) {
+      const clean = String.fromCharCode(...bytes);
+      sanitizationNotes.push("Dump Wireshark de trame ASCII texte intégrale décodé.");
+      return {
+        clean,
+        detectedFormat: "WIRESHARK_HEX_DUMP",
+        tcpLengthHeader,
+        tpduHeader,
+        sanitizationNotes,
+      };
+    }
+  }
+
+  // 4. Cas BCD : MTI en 2 octets BCD (ex: [0x11, 0x00] ou [0x02, 0x00])
+  if (bytes.length >= 10) {
+    const bcdMti = bytes.slice(0, 2).map((b) => b.toString(16).padStart(2, "0")).join("");
+    if (/^[0-2][0-8][0-3][0-9]$/.test(bcdMti)) {
+      const hasSecondary = (bytes[2] & 0x80) !== 0;
+      const bmByteLen = hasSecondary ? 16 : 8;
+      const bitmapHex = bytes
+        .slice(2, 2 + bmByteLen)
+        .map((b) => b.toString(16).padStart(2, "0"))
+        .join("")
+        .toUpperCase();
+      const payloadAscii = String.fromCharCode(...bytes.slice(2 + bmByteLen));
+      const clean = `${bcdMti}${bitmapHex}${payloadAscii}`;
+      sanitizationNotes.push(`Format Hex Dump (MTI BCD ${bcdMti}) converti en trame canonique.`);
+      return {
+        clean,
+        detectedFormat: "WIRESHARK_HEX_DUMP",
+        tcpLengthHeader,
+        tpduHeader,
+        sanitizationNotes,
+      };
+    }
+  }
+
+  // Repli : concaténation hex brute
+  const cleanFallback = bytes.map((b) => b.toString(16).padStart(2, "0")).join("").toUpperCase();
+  sanitizationNotes.push("Format Hex Dump brut extrait sans conversion de protocole.");
+  return {
+    clean: cleanFallback,
+    detectedFormat: "WIRESHARK_HEX_DUMP",
+    tcpLengthHeader,
+    tpduHeader,
+    sanitizationNotes,
+  };
+}
+
 export function sanitizeIsoRawInput(rawMessage: string): {
   clean: string;
   detectedFormat: "STANDARD" | "WIRESHARK_HEX_DUMP" | "LOG_EXTRACTED";
@@ -206,30 +337,38 @@ export function sanitizeIsoRawInput(rawMessage: string): {
     .map((l) => l.trim())
     .filter(Boolean);
 
-  // 1. Détection de dump hexadécimal type Wireshark / TCPDump :
-  // Ex: 0000   02 00 72 38 20 01 08 e1 80 00 16 49 70 10 12 34   ..r8 ...Ip.4
-  const wiresharkLineRegex = /^[0-9a-fA-F]{4,8}[:\s]+((?:[0-9a-fA-F]{2}[\s\-]+){2,16}[0-9a-fA-F]{2})/i;
+  // 1. Détection de dump hexadécimal (Wireshark, jPOS log, TCPDump, Hex editor)
+  // Ex: 0000  31 31 30 30 FE 38 00 01  88 A0 E0 00 ...  ....
+  // ou  0000: 31 31 ...
+  const wiresharkLineRegex = /^[0-9a-fA-F]{4,8}[:\s]+((?:[0-9a-fA-F]{2}[\s\-]+)+)/i;
   const wiresharkMatches = lines.filter((l) => wiresharkLineRegex.test(l));
 
-  if (lines.length > 0 && wiresharkMatches.length >= Math.max(1, Math.floor(lines.length * 0.4))) {
-    sanitizationNotes.push("Format Wireshark / Hex Dump détecté : octets extraits et convertis en trame continue.");
-    const byteHexParts: string[] = [];
+  if (lines.length > 0 && wiresharkMatches.length >= 1) {
+    const rawBytes: number[] = [];
     for (const line of lines) {
       const match = line.match(wiresharkLineRegex);
       if (match) {
-        byteHexParts.push(match[1].replace(/[\s\-]/g, ""));
+        const hexTokens = match[1].trim().split(/[\s\-]+/);
+        for (const tok of hexTokens) {
+          if (/^[0-9a-fA-F]{2}$/.test(tok)) {
+            rawBytes.push(parseInt(tok, 16));
+          }
+        }
       }
     }
-    const cleanWireshark = byteHexParts.join("").toUpperCase();
-    return {
-      clean: cleanWireshark,
-      detectedFormat: "WIRESHARK_HEX_DUMP",
-      sanitizationNotes,
-    };
+
+    if (rawBytes.length >= 12) {
+      return decodeHexDumpBytes(rawBytes, sanitizationNotes);
+    }
   }
 
   // 2. Nettoyage de chaîne standard
   let candidate = rawMessage.replace(/[\r\n\t]/g, " ").trim();
+
+  // Nettoyer les balises XML éventuelles si le dump était contenu dans <sendMessage> ou <log>
+  if (candidate.includes("<sendMessage>") || candidate.includes("<receiveMessage>") || candidate.includes("<log")) {
+    candidate = candidate.replace(/<[^>]+>/g, " ").trim();
+  }
 
   // Retirer les séparateurs type log comme "|" ou " - "
   if (candidate.includes("|")) {
@@ -240,12 +379,29 @@ export function sanitizeIsoRawInput(rawMessage: string): {
   // Retirer les espaces internes (ex: "0200 7238 2001...")
   let noSpaces = candidate.replace(/\s+/g, "").toUpperCase();
 
+  // CAS PARTICULIER : Si l'utilisateur colle un flux hex continu d'octets ASCII/binaire
+  // (ex: "31313030FE380001..." où '31 31' = '11', '30 30' = '00')
+  if (
+    /^(3031|3032|3034|3038|3131|3132|3134|3138)/i.test(noSpaces) &&
+    noSpaces.length >= 24 &&
+    noSpaces.length % 2 === 0
+  ) {
+    const continuousBytes: number[] = [];
+    for (let i = 0; i < noSpaces.length; i += 2) {
+      continuousBytes.push(parseInt(noSpaces.slice(i, i + 2), 16));
+    }
+    const decodedContinuous = decodeHexDumpBytes(continuousBytes, sanitizationNotes);
+    if (decodedContinuous.clean.length >= 20) {
+      return decodedContinuous;
+    }
+  }
+
   let tcpLengthHeader: string | undefined = undefined;
   let isoHeader: string | undefined = undefined;
   let tpduHeader: string | undefined = undefined;
 
   // CAS A : La trame commence déjà directement par un MTI valide + Bitmap primaire (16 hex)
-  // Ex: 0200 7238200108E18000...
+  // Ex: 0200 7238200108E18000... ou 1100 FE3800...
   const startsWithMtiAndBitmap = /^(0[1-8][0-3][0-9]|1[1-8][0-3][0-9])[0-9A-F]{16}/.test(noSpaces);
 
   if (!startsWithMtiAndBitmap) {
@@ -326,10 +482,12 @@ export function parseIso8583Message(rawMessage: string): IsoParseResult {
 
   // 1. Extraction MTI (4 caractères)
   const mti = clean.slice(0, 4);
-  const mtiDef = MTI_CATALOG.find((m) => m.mti === mti);
+  const mtiDef = MTI_CATALOG.find((m) => m.mti === mti) || resolveDynamicMti(mti);
   if (!mtiDef) {
     warnings.push(`MTI "${mti}" non répertorié dans les MTI standards ISO 8583 (vérifier si trame 1993 ou 2003).`);
   }
+
+  const isIso1993 = mti.startsWith("1");
 
   let cursor = 4;
 
@@ -370,7 +528,51 @@ export function parseIso8583Message(rawMessage: string): IsoParseResult {
     if (!isPresent) continue;
 
     const deNumber = bitIdx + 1; // DE2, DE3, ...
-    const spec = ISO_DE_DEFINITIONS[deNumber];
+    let spec = ISO_DE_DEFINITIONS[deNumber];
+
+    // Adaptation contextuelle des spécifications de champs selon la norme (ISO 8583:1993 vs ISO 8583:1987)
+    if (isIso1993 && spec) {
+      if (deNumber === 12) {
+        // En norme ISO 8583:1993, DE 12 = Date and Time, Local Transaction (n 12, YYMMDDhhmmss)
+        spec = {
+          ...spec,
+          name: "Date and Time, Local Transaction",
+          format: "n 12",
+          lengthType: "FIXED",
+          maxLength: 12,
+          description: "Horodatage local complet de la transaction (YYMMDDhhmmss - norme 1993).",
+        };
+      } else if (deNumber === 13) {
+        spec = {
+          ...spec,
+          name: "Date, Effective / Settlement",
+          description: "Date d'effet ou de compensation (MMDD - norme 1993).",
+        };
+      } else if (deNumber === 43) {
+        // En norme ISO 8583:1993, DE 43 est souvent préfixé par sa longueur LLVAR (ex: '40' suivi de 40 car.)
+        const next2 = clean.slice(cursor, cursor + 2);
+        if (/^\d{2}$/.test(next2) && parseInt(next2, 10) > 0 && parseInt(next2, 10) <= 99) {
+          spec = {
+            ...spec,
+            name: "Card Acceptor Name/Location",
+            format: "ans ..99",
+            lengthType: "LLVAR",
+            maxLength: 99,
+            description: "Nom et localisation de l'établissement commerçant (LLVAR - norme 1993).",
+          };
+        }
+      } else if (deNumber === 56) {
+        spec = {
+          de: 56,
+          name: "Original Data Elements (ISO 1993)",
+          format: "ans ..35",
+          lengthType: "LLVAR",
+          maxLength: 35,
+          category: "TRACE",
+          description: "Données de la transaction d'origine pour pivot d'extourne (norme 1993).",
+        };
+      }
+    }
 
     if (!spec) {
       warnings.push(`Champ DE${deNumber} présent dans le Bitmap mais sans spécification standard. Arrêt du découpage.`);
@@ -488,12 +690,28 @@ export function parseIso8583Message(rawMessage: string): IsoParseResult {
     if (deNumber === 7) criticalInsights.transmissionDateTime = rawValue;
     if (deNumber === 11) criticalInsights.stan = rawValue;
     if (deNumber === 12) {
-      criticalInsights.localTime = rawValue.replace(/(\d{2})(\d{2})(\d{2})/, "$1:$2:$3");
-      interpretation = `Heure locale: ${criticalInsights.localTime}`;
+      if (rawValue.length >= 12) {
+        const yr = rawValue.slice(0, 2);
+        const mo = rawValue.slice(2, 4);
+        const da = rawValue.slice(4, 6);
+        const hh = rawValue.slice(6, 8);
+        const mm = rawValue.slice(8, 10);
+        const ss = rawValue.slice(10, 12);
+        criticalInsights.localDate = `20${yr}-${mo}-${da}`;
+        criticalInsights.localTime = `${hh}:${mm}:${ss}`;
+        interpretation = `Horodatage local (1993) : 20${yr}-${mo}-${da} ${hh}:${mm}:${ss}`;
+      } else {
+        criticalInsights.localTime = rawValue.replace(/(\d{2})(\d{2})(\d{2})/, "$1:$2:$3");
+        interpretation = `Heure locale : ${criticalInsights.localTime}`;
+      }
     }
     if (deNumber === 13) {
-      criticalInsights.localDate = rawValue.replace(/(\d{2})(\d{2})/, "$1/$2");
-      interpretation = `Date locale: ${criticalInsights.localDate}`;
+      if (isIso1993) {
+        interpretation = `Date d'effet / règlement (1993) : ${rawValue}`;
+      } else {
+        criticalInsights.localDate = rawValue.replace(/(\d{2})(\d{2})/, "$1/$2");
+        interpretation = `Date locale : ${criticalInsights.localDate}`;
+      }
     }
     if (deNumber === 18) {
       criticalInsights.mcc = rawValue;

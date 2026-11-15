@@ -206,8 +206,199 @@ export const MTI_CATALOG: MTIDefinition[] = [
     keyFields: ["DE11 (STAN)", "DE70 (Network Management Code)"],
     operationalUsage: "Supervision des alertes d'infrastructure monétique.",
     diagnosticAdvice: "Vérifier les consoles d'exploitation lors de la réception d'un avis de suspension de service."
+  },
+
+  // 6. ISO 8583:1993 (1xxx)
+  {
+    mti: "1100",
+    name: "Authorization Request (Demande d'Autorisation - ISO 8583:1993)",
+    category: "AUTORISATION",
+    direction: "REQUEST",
+    isoVersion: "ISO 8583:1993 (1xxx)",
+    meaning: "Demande d'autorisation émise selon la norme ISO 8583:1993 (équivalent du 0100 en 1987) pour vérifier la carte et réserver les fonds.",
+    keyFields: ["DE2 (PAN)", "DE3 (Processing Code)", "DE4 (Amount)", "DE11 (STAN)", "DE12 (Local DateTime)", "DE37 (RRN)", "DE41 (TID)", "DE43 (Acceptor)", "DE49 (Currency)", "DE102 (Account 1)"],
+    operationalUsage: "Utilisé sur les commutateurs modernes ISO 1993 (jPOS, Base24-eps, switchs régionaux) pour les requêtes d'autorisation temps réel.",
+    diagnosticAdvice: "Vérifier la réponse 1110 correspondante avec le même STAN (DE11) et RRN (DE37). Vérifier la concordance des devises DE49/50/51."
+  },
+  {
+    mti: "1110",
+    name: "Authorization Response (Réponse d'Autorisation - ISO 8583:1993)",
+    category: "AUTORISATION",
+    direction: "RESPONSE",
+    isoVersion: "ISO 8583:1993 (1xxx)",
+    meaning: "Réponse d'autorisation émetteur en norme 1993, contenant le code réponse (DE39) et l'éventuel code d'approbation (DE38).",
+    keyFields: ["DE2 (PAN)", "DE3 (Proc Code)", "DE4 (Amount)", "DE11 (STAN)", "DE37 (RRN)", "DE38 (Approval Code)", "DE39 (Action Code)"],
+    operationalUsage: "Notification d'accord ou de refus d'autorisation vers l'acquéreur en norme 1993.",
+    diagnosticAdvice: "Analyser le code retour DE39 (00=Approuvé, 51=Solde insuffisant, etc.) pour qualifier la décision émetteur."
+  },
+  {
+    mti: "1120",
+    name: "Authorization Advice (Avis d'Autorisation - ISO 8583:1993)",
+    category: "AUTORISATION",
+    direction: "ADVICE",
+    isoVersion: "ISO 8583:1993 (1xxx)",
+    meaning: "Avis d'autorisation transmis en mode différé (Store and Forward) ou pour forçage en norme 1993.",
+    keyFields: ["DE2 (PAN)", "DE3 (Proc Code)", "DE4 (Amount)", "DE11 (STAN)", "DE37 (RRN)", "DE39 (Action Code)"],
+    operationalUsage: "Information hôte d'une décision prise localement ou en secours (STIP).",
+    diagnosticAdvice: "Vérifier la réception du 1130 pour solder la file SAF."
+  },
+  {
+    mti: "1130",
+    name: "Authorization Advice Response (ISO 8583:1993)",
+    category: "AUTORISATION",
+    direction: "RESPONSE",
+    isoVersion: "ISO 8583:1993 (1xxx)",
+    meaning: "Accusé de réception confirmant l'enregistrement de l'avis d'autorisation 1120.",
+    keyFields: ["DE11 (STAN)", "DE37 (RRN)", "DE39 (Action Code)"],
+    operationalUsage: "Libération de la file d'attente d'avis 1120 sur le switch initiateur.",
+    diagnosticAdvice: "S'assurer que DE39='00' pour clore l'avis."
+  },
+  {
+    mti: "1200",
+    name: "Financial Transaction Request (Demande Financière - ISO 8583:1993)",
+    category: "FINANCIER",
+    direction: "REQUEST",
+    isoVersion: "ISO 8583:1993 (1xxx)",
+    meaning: "Demande financière avec débit direct immédiat du compte porteur en norme 1993 (équivalent du 0200 en 1987).",
+    keyFields: ["DE2 (PAN)", "DE3 (Proc Code)", "DE4 (Amount)", "DE11 (STAN)", "DE12 (Local DateTime)", "DE37 (RRN)", "DE41 (TID)", "DE49 (Currency)"],
+    operationalUsage: "Transaction de retrait GAB ou d'achat direct TPE en norme ISO 8583:1993.",
+    diagnosticAdvice: "En cas de timeout d'attente du 1210, un avis d'annulation 1420 doit être déclenché automatiquement."
+  },
+  {
+    mti: "1210",
+    name: "Financial Transaction Response (Réponse Financière - ISO 8583:1993)",
+    category: "FINANCIER",
+    direction: "RESPONSE",
+    isoVersion: "ISO 8583:1993 (1xxx)",
+    meaning: "Réponse émetteur à la demande financière 1200 en norme 1993.",
+    keyFields: ["DE2 (PAN)", "DE3 (Proc Code)", "DE4 (Amount)", "DE11 (STAN)", "DE37 (RRN)", "DE38 (Auth Code)", "DE39 (Action Code)"],
+    operationalUsage: "Déclenche la délivrance des fonds ou l'impression du reçu transactionnel.",
+    diagnosticAdvice: "Vérifier la concordance exacte entre DE4 (montant) et DE49 (devise)."
+  },
+  {
+    mti: "1220",
+    name: "Financial Transaction Advice (Avis Financier - ISO 8583:1993)",
+    category: "FINANCIER",
+    direction: "ADVICE",
+    isoVersion: "ISO 8583:1993 (1xxx)",
+    meaning: "Avis financier notifiant la réalisation définitive d'une opération financière en norme 1993.",
+    keyFields: ["DE2 (PAN)", "DE3 (Proc Code)", "DE4 (Amount)", "DE11 (STAN)", "DE37 (RRN)", "DE39 (Action Code)"],
+    operationalUsage: "Télécollecte différée et confirmation d'achats en mode Store and Forward.",
+    diagnosticAdvice: "Vérifier le retour d'acquittement 1230 pour éviter les doublons."
+  },
+  {
+    mti: "1230",
+    name: "Financial Transaction Advice Response (ISO 8583:1993)",
+    category: "FINANCIER",
+    direction: "RESPONSE",
+    isoVersion: "ISO 8583:1993 (1xxx)",
+    meaning: "Acquittement par l'hôte de la bonne réception de l'avis financier 1220.",
+    keyFields: ["DE11 (STAN)", "DE37 (RRN)", "DE39 (Action Code)"],
+    operationalUsage: "Purge du message de la file SAF.",
+    diagnosticAdvice: "Vérifier que DE39='00'."
+  },
+  {
+    mti: "1420",
+    name: "Reversal Advice (Avis d'Extourne - ISO 8583:1993)",
+    category: "REVERSAL_CHARGEBACK",
+    direction: "ADVICE",
+    isoVersion: "ISO 8583:1993 (1xxx)",
+    meaning: "Avis d'annulation/extourne en norme 1993. Crucial : en norme 1993, le DE56 remplace le DE90 pour référencer la transaction d'origine.",
+    keyFields: ["DE2 (PAN)", "DE3 (Proc Code)", "DE4 (Amount)", "DE11 (STAN)", "DE37 (RRN)", "DE39 (Reason Code)", "DE56 (Original Data Elements)"],
+    operationalUsage: "Annulation automatique suite à timeout réseau, carte avalée ou incident distributeur GAB.",
+    diagnosticAdvice: "Vérifier impérativement la présence et la structure du DE56 (MTI, STAN, date/heure d'origine) pour appariement avec le 1200 ou 1100."
+  },
+  {
+    mti: "1430",
+    name: "Reversal Advice Response (ISO 8583:1993)",
+    category: "REVERSAL_CHARGEBACK",
+    direction: "RESPONSE",
+    isoVersion: "ISO 8583:1993 (1xxx)",
+    meaning: "Acquittement confirmant la prise en compte de l'extourne 1420 par le switch émetteur.",
+    keyFields: ["DE11 (STAN)", "DE37 (RRN)", "DE39 (Action Code)"],
+    operationalUsage: "Confirmation de recrédit du compte client.",
+    diagnosticAdvice: "Vérifier DE39='00' pour attester du déblocage des fonds."
+  },
+  {
+    mti: "1804",
+    name: "Network Management Request (Gestion Réseau - ISO 8583:1993)",
+    category: "GESTION_RESEAU",
+    direction: "REQUEST",
+    isoVersion: "ISO 8583:1993 (1xxx)",
+    meaning: "Message d'administration réseau ISO 1993 (équivalent du 0800 en 1987) : Echo test, logon/logoff, échange de clés.",
+    keyFields: ["DE7 (Transmission DateTime)", "DE11 (STAN)", "DE70 (Network Management Code)"],
+    operationalUsage: "Supervision du canal socket et keepalive en norme 1993.",
+    diagnosticAdvice: "Vérifier la réponse 1814 dans le délai paramétré (ex: < 3s)."
+  },
+  {
+    mti: "1814",
+    name: "Network Management Response (ISO 8583:1993)",
+    category: "GESTION_RESEAU",
+    direction: "RESPONSE",
+    isoVersion: "ISO 8583:1993 (1xxx)",
+    meaning: "Réponse à la requête de gestion réseau 1804 en norme 1993.",
+    keyFields: ["DE7 (Transmission DateTime)", "DE11 (STAN)", "DE39 (Action Code)", "DE70 (Network Management Code)"],
+    operationalUsage: "Validation de disponibilité de la liaison réseau.",
+    diagnosticAdvice: "Si DE39 != '00', vérifier l'état du switch partenaire."
   }
 ];
+
+export function resolveDynamicMti(mti: string): MTIDefinition {
+  const versionDigit = mti[0] || "0";
+  const classDigit = mti[1] || "1";
+  const funcDigit = mti[2] || "0";
+  const originDigit = mti[3] || "0";
+
+  const versionMap: Record<string, MTIDefinition["isoVersion"]> = {
+    "0": "ISO 8583:1987 (0xxx)",
+    "1": "ISO 8583:1993 (1xxx)",
+    "2": "ISO 8583:2003 (2xxx)",
+  };
+
+  const classMap: Record<string, { label: string; cat: MTIDefinition["category"] }> = {
+    "1": { label: "Autorisation", cat: "AUTORISATION" },
+    "2": { label: "Financier", cat: "FINANCIER" },
+    "3": { label: "Télécollecte / Fichier", cat: "RECONCILIATION" },
+    "4": { label: "Annulation / Reversal", cat: "REVERSAL_CHARGEBACK" },
+    "5": { label: "Réconciliation", cat: "RECONCILIATION" },
+    "6": { label: "Administration", cat: "GESTION_RESEAU" },
+    "7": { label: "Gestion Fraude / Litige", cat: "AUTORISATION" },
+    "8": { label: "Gestion Réseau", cat: "GESTION_RESEAU" },
+  };
+
+  const funcMap: Record<string, { label: string; dir: MTIDefinition["direction"] }> = {
+    "0": { label: "Demande (Request)", dir: "REQUEST" },
+    "1": { label: "Réponse à la Demande", dir: "RESPONSE" },
+    "2": { label: "Avis (Advice)", dir: "ADVICE" },
+    "3": { label: "Réponse à l'Avis", dir: "RESPONSE" },
+    "4": { label: "Notification", dir: "NOTIFICATION" },
+  };
+
+  const originMap: Record<string, string> = {
+    "0": "Acquéreur",
+    "1": "Acquéreur Répété",
+    "2": "Émetteur",
+    "3": "Émetteur Répété",
+    "4": "Autre intermédiaire / Switch",
+  };
+
+  const v = versionMap[versionDigit] || (versionDigit === "1" ? "ISO 8583:1993 (1xxx)" : "ISO 8583:1987 (0xxx)");
+  const c = classMap[classDigit] || { label: "Message Monétique", cat: "FINANCIER" as const };
+  const f = funcMap[funcDigit] || { label: "Flux", dir: "REQUEST" as const };
+  const o = originMap[originDigit] || "Réseau";
+
+  return {
+    mti,
+    name: `${c.label} - ${f.label} (${v.split(" ")[0]})`,
+    category: c.cat,
+    direction: f.dir,
+    isoVersion: v,
+    meaning: `Message MTI ${mti} de classe ${c.label}, fonction ${f.label}, initié par ${o} selon la norme ${v}.`,
+    keyFields: ["DE2 (PAN)", "DE3 (Proc Code)", "DE4 (Amount)", "DE11 (STAN)", "DE37 (RRN)", "DE39 (Response Code)"],
+    operationalUsage: `Échange interbancaire ou terminal-serveur sur réseau monétique ${v}.`,
+    diagnosticAdvice: `Analyser le code réponse DE39 et vérifier la correspondance du STAN (DE11) et RRN (DE37) entre demande et réponse.`,
+  };
+}
 
 export interface MTIDigitsExplanation {
   digitPosition: number;
