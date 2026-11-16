@@ -20,6 +20,8 @@ interface FileTransactionSummary {
   stan?: string;
   terminalId?: string;
   mti?: string;
+  responseCode?: string;
+  responseLabel?: string;
   eventsCount: number;
   firstTimestamp?: string;
 }
@@ -335,7 +337,9 @@ export default function LogAnalyzerPage() {
       tx.rrn.toLowerCase().includes(q) ||
       (tx.stan && tx.stan.toLowerCase().includes(q)) ||
       (tx.terminalId && tx.terminalId.toLowerCase().includes(q)) ||
-      (tx.mti && tx.mti.toLowerCase().includes(q))
+      (tx.mti && tx.mti.toLowerCase().includes(q)) ||
+      (tx.responseCode && tx.responseCode.toLowerCase().includes(q)) ||
+      (tx.responseLabel && tx.responseLabel.toLowerCase().includes(q))
     );
   }, [fileTransactions, txFilter]);
 
@@ -862,12 +866,12 @@ export default function LogAnalyzerPage() {
               </div>
 
               {/* Filtre rapide */}
-              <div style={{ width: "260px" }}>
+              <div style={{ width: "280px" }}>
                 <input
                   type="text"
                   value={txFilter}
                   onChange={(e) => setTxFilter(e.target.value)}
-                  placeholder="Filtrer par RRN, STAN, TID..."
+                  placeholder="Filtrer par RRN, STAN, TID, DE39..."
                   style={{
                     width: "100%",
                     padding: "8px 12px",
@@ -889,6 +893,7 @@ export default function LogAnalyzerPage() {
                     <th style={{ padding: "10px 14px", fontWeight: 700, fontSize: "11.5px", textTransform: "uppercase" }}>STAN (DE11)</th>
                     <th style={{ padding: "10px 14px", fontWeight: 700, fontSize: "11.5px", textTransform: "uppercase" }}>Terminal (DE41)</th>
                     <th style={{ padding: "10px 14px", fontWeight: 700, fontSize: "11.5px", textTransform: "uppercase" }}>Type (MTI)</th>
+                    <th style={{ padding: "10px 14px", fontWeight: 700, fontSize: "11.5px", textTransform: "uppercase" }}>Réponse (DE39)</th>
                     <th style={{ padding: "10px 14px", fontWeight: 700, fontSize: "11.5px", textTransform: "uppercase" }}>Horodatage</th>
                     <th style={{ padding: "10px 14px", fontWeight: 700, fontSize: "11.5px", textTransform: "uppercase" }}>Jalons</th>
                     <th style={{ padding: "10px 14px", fontWeight: 700, fontSize: "11.5px", textTransform: "uppercase", textAlign: "right" }}>Action</th>
@@ -916,8 +921,8 @@ export default function LogAnalyzerPage() {
                       <td style={{ padding: "10px 14px", fontFamily: "monospace", color: "#0f172a", fontWeight: 700 }}>
                         <span
                           style={{
-                            background: txSummary.mti?.startsWith("02") ? "#e0f2fe" : "#f1f5f9",
-                            color: txSummary.mti?.startsWith("02") ? "#0369a1" : "#475569",
+                            background: txSummary.mti?.startsWith("02") ? "#e0f2fe" : txSummary.mti?.startsWith("04") || txSummary.mti?.startsWith("14") ? "#fee2e2" : "#f1f5f9",
+                            color: txSummary.mti?.startsWith("02") ? "#0369a1" : txSummary.mti?.startsWith("04") || txSummary.mti?.startsWith("14") ? "#991b1b" : "#475569",
                             padding: "2px 6px",
                             borderRadius: "4px",
                             fontSize: "11.5px",
@@ -925,6 +930,75 @@ export default function LogAnalyzerPage() {
                         >
                           {txSummary.mti || "—"}
                         </span>
+                      </td>
+                      <td style={{ padding: "10px 14px", fontFamily: "monospace", fontWeight: 700 }}>
+                        {txSummary.responseCode ? (
+                          <span
+                            title={txSummary.responseLabel || `Code réponse: ${txSummary.responseCode}`}
+                            style={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: "4px",
+                              padding: "2px 8px",
+                              borderRadius: "4px",
+                              fontSize: "11.5px",
+                              fontWeight: 800,
+                              background:
+                                txSummary.responseCode === "00" || txSummary.responseCode === "000"
+                                  ? "#ecfdf5"
+                                  : txSummary.responseCode === "51" || txSummary.responseCode === "151"
+                                  ? "#fffbeb"
+                                  : txSummary.responseCode === "55" || txSummary.responseCode === "14" || txSummary.responseCode === "54"
+                                  ? "#fef2f2"
+                                  : txSummary.responseCode === "91" || txSummary.responseCode === "68"
+                                  ? "#fdf4ff"
+                                  : "#f1f5f9",
+                              color:
+                                txSummary.responseCode === "00" || txSummary.responseCode === "000"
+                                  ? "#047857"
+                                  : txSummary.responseCode === "51" || txSummary.responseCode === "151"
+                                  ? "#b45309"
+                                  : txSummary.responseCode === "55" || txSummary.responseCode === "14" || txSummary.responseCode === "54"
+                                  ? "#b91c1c"
+                                  : txSummary.responseCode === "91" || txSummary.responseCode === "68"
+                                  ? "#86198f"
+                                  : "#334155",
+                              border: `1px solid ${
+                                txSummary.responseCode === "00" || txSummary.responseCode === "000"
+                                  ? "#a7f3d0"
+                                  : txSummary.responseCode === "51" || txSummary.responseCode === "151"
+                                  ? "#fde68a"
+                                  : txSummary.responseCode === "55" || txSummary.responseCode === "14" || txSummary.responseCode === "54"
+                                  ? "#fecaca"
+                                  : txSummary.responseCode === "91" || txSummary.responseCode === "68"
+                                  ? "#f5d0fe"
+                                  : "#cbd5e1"
+                              }`,
+                            }}
+                          >
+                            <span>
+                              {txSummary.responseCode === "00" || txSummary.responseCode === "000"
+                                ? "✓"
+                                : txSummary.responseCode === "51" || txSummary.responseCode === "151"
+                                ? "⚠"
+                                : txSummary.responseCode === "91" || txSummary.responseCode === "68"
+                                ? "⏱"
+                                : "✕"}
+                            </span>
+                            <span>{txSummary.responseCode}</span>
+                            {txSummary.responseCode === "00" || txSummary.responseCode === "000" ? (
+                              <span style={{ fontSize: "10px", fontWeight: 700, opacity: 0.85 }}>(Accord)</span>
+                            ) : txSummary.responseCode === "51" || txSummary.responseCode === "151" ? (
+                              <span style={{ fontSize: "10px", fontWeight: 700, opacity: 0.85 }}>(Solde)</span>
+                            ) : txSummary.responseCode === "55" ? (
+                              <span style={{ fontSize: "10px", fontWeight: 700, opacity: 0.85 }}>(PIN)</span>
+                            ) : txSummary.responseCode === "91" ? (
+                              <span style={{ fontSize: "10px", fontWeight: 700, opacity: 0.85 }}>(Timeout)</span>
+                            ) : null}
+                          </span>
+                        ) : (
+                          <span style={{ color: "#94a3b8" }}>—</span>
+                        )}
                       </td>
                       <td style={{ padding: "10px 14px", color: "#64748b", fontSize: "12.5px" }}>
                         {txSummary.firstTimestamp?.substring(0, 19) || "—"}

@@ -9,6 +9,7 @@ import {
 import { parseLogFileContent } from "./parser";
 import { correlateTransactionsByRrn } from "./correlation-engine";
 import { detectTransactionAnomalies } from "./anomaly-detector";
+import { DE39_CATALOG } from "../knowledge-base/data/iso-de39-reference";
 
 interface IndexedFileRecord {
   metadata: LogFileMetadata;
@@ -227,6 +228,8 @@ export function getFileTransactionsSummary(
   stan?: string;
   terminalId?: string;
   mti?: string;
+  responseCode?: string;
+  responseLabel?: string;
   eventsCount: number;
   firstTimestamp?: string;
 }> {
@@ -239,6 +242,8 @@ export function getFileTransactionsSummary(
     stan?: string;
     terminalId?: string;
     mti?: string;
+    responseCode?: string;
+    responseLabel?: string;
     eventsCount: number;
     firstTimestamp?: string;
   }> = [];
@@ -246,12 +251,37 @@ export function getFileTransactionsSummary(
   const rrns = Array.from(fileRecord.rrnIndex.keys()).slice(0, limit);
   for (const rrn of rrns) {
     const eventIds = fileRecord.rrnIndex.get(rrn) || [];
-    const firstEvt = fileRecord.events.find((e) => e.eventId === eventIds[0]);
+    const eventSet = new Set(eventIds);
+    const matchedEvents = fileRecord.events.filter((e) => eventSet.has(e.eventId));
+    const firstEvt = matchedEvents[0];
+
+    // Trouver le code de réponse dans les événements (parcours inverse pour capter la réponse finale)
+    const respEvt = [...matchedEvents].reverse().find(
+      (e) => (e.isoFields && e.isoFields["39"]) || e.responseCodeConversion
+    );
+    const responseCode =
+      respEvt?.isoFields?.["39"] ||
+      respEvt?.responseCodeConversion?.sendCode;
+
+    let responseLabel: string | undefined = undefined;
+    if (responseCode) {
+      const def = DE39_CATALOG.find(
+        (d) => d.code === responseCode || d.code === responseCode.slice(-2)
+      );
+      responseLabel =
+        def?.label ||
+        (responseCode === "00" || responseCode === "000"
+          ? "Approved / Accord"
+          : `Code ${responseCode}`);
+    }
+
     summaries.push({
       rrn,
-      stan: firstEvt?.isoFields["11"],
-      terminalId: firstEvt?.isoFields["41"],
-      mti: firstEvt?.mti,
+      stan: firstEvt?.isoFields?.["11"] || matchedEvents.find((e) => e.isoFields?.["11"])?.isoFields?.["11"],
+      terminalId: firstEvt?.isoFields?.["41"] || matchedEvents.find((e) => e.isoFields?.["41"])?.isoFields?.["41"],
+      mti: firstEvt?.mti || matchedEvents.find((e) => e.mti)?.mti,
+      responseCode,
+      responseLabel,
       eventsCount: eventIds.length,
       firstTimestamp: firstEvt?.timestampRaw || firstEvt?.timestampIso,
     });
