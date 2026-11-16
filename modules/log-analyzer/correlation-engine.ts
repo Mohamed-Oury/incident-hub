@@ -312,7 +312,7 @@ export function correlateTransactionsByRrn(
         associatedEvents.reduce((acc, curr) => acc + curr.confidenceScore, 0) /
         associatedEvents.length,
       events: associatedEvents,
-      anomalies: [], // Rempli par le module d'anomalies
+      anomalies: [],
       comparison,
     });
   }
